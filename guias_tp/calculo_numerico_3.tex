@@ -1,0 +1,311 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Práctica N$^\circ$ 3: Interpolación}
+ \bigskip
+
+\noindent \textbf{Problema de Interpolación:} Dados $n+1$ puntos distintos $x_0, \ldots, x_n$ (llamados nodos) y $n+1$ valores $y_0, \ldots, y_n$, buscamos un polinomio $p(x)$ de grado menor o igual a $n$ tal que $p(x_i) = y_i$ para todo $i = 0, \ldots, n$.
+
+\begin{exercise}[Interpolación como problema lineal]
+El problema de interpolación se puede ver como una transformación lineal entre espacios vectoriales.
+\begin{enumerate}[(a)]
+\item Sea $\mathcal{P}_n$ el espacio de polinomios de grado a lo sumo $n$. Verifique que $\mathcal{P}_n$ es un espacio vectorial y que $\{1, x, x^2, \ldots, x^n\}$ es una base.
+\item Defina el operador de evaluación $\Phi: \mathcal{P}_n \to \mathbb{R}^{n+1}$ dado por:
+\[
+\Phi(p) = (p(x_0), p(x_1), \ldots, p(x_n)).
+\]
+Demuestre que $\Phi$ es una transformación lineal.
+\item Interprete el problema de interpolación como la búsqueda de la transformación inversa $\Phi^{-1}$: ¿qué representan la entrada y la salida de $\Phi^{-1}$?
+\item Demuestre que si los nodos $x_0, \ldots, x_n$ son distintos, el problema de interpolación tiene solución única.
+\textbf{Sugerencia}: Pruebe que $\Phi$ es inyectiva analizando su núcleo. ¿Cuántas raíces puede tener un polinomio de grado $n$ si no es idénticamente nulo? Use que $\dim(\mathcal{P}_n) = n+1$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Matriz de Vandermonde]
+Dados nodos $x_0, x_1, \ldots, x_n$ distintos y valores $y_0, y_1, \ldots, y_n$, queremos encontrar el polinomio $p(x) = \sum_{k=0}^n a_k x^k$ que satisface $p(x_i) = y_i$.
+\begin{enumerate}[(a)]
+\item Escriba el sistema lineal correspondiente en forma matricial $Va = y$. La matriz $V$ se conoce como matriz de Vandermonde. 
+\item Analice el condicionamiento en norma 2 utilizando la caracterización variacional del valor singular mínimo: $\sigma_{\min}(V) = \min_{a \neq 0} \frac{\|Va\|_2}{\|a\|_2}$.
+   \begin{enumerate}[i.]
+   \item Observe que $\|Va\|_2^2 = \sum_{i=0}^n (p(x_i))^2$, donde $p(x)$ es el polinomio con coeficientes $a$.
+   Si los nodos $x_i$ cubren densamente el intervalo $[-1, 1]$, interprete esta suma como una aproximación de Riemann escalada para justificar la relación aproximada (donde $C_n = O(n)$):
+   \[
+   \|Va\|_2^2 \approx C_n \int_{-1}^1 (p(x))^2 dx.
+   \]
+   \item Considere el polinomio de prueba $p(x) = (1-x^2)^n$. Identifique sus coeficientes no nulos y demuestre usando la identidad $\sum_{k=0}^n \binom{n}{k}^2 = \binom{2n}{n}$ que la norma de los coeficientes satisface $\|a\|_2^2 \geq 4^n / (2n+1)$.
+   \item Justifique que la integral $\int_{-1}^1 (1-x^2)^{2n} dx$ es pequeña (tiende a 0 con $n$) mientras que $\|a\|_2^2$ crece exponencialmente.
+   \item Concluya que $\sigma_{\min}(V)$ decae exponencialmente con $n$, lo que implica que $\kappa_2(V)$ crece exponencialmente.
+   \end{enumerate}
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Polinomios base de Lagrange]
+\begin{enumerate}[(a)]
+\item Para los nodos $x_0 = -1, x_1 = 0, x_2 = 1$, calcule explícitamente los tres polinomios base de Lagrange:
+\[
+\ell_k(x) = \prod_{\substack{j=0 \\ j \neq k}}^2 \frac{x - x_j}{x_k - x_j}, \quad k = 0, 1, 2.
+\]
+\item Verifique que $\ell_k(x_j) = \delta_{kj}$ (propiedad de Kronecker).
+\item Verifique que $\ell_0(x) + \ell_1(x) + \ell_2(x) = 1$ para todo $x$ (propiedad de partición de la unidad).
+\item Use la fórmula de Lagrange para encontrar el polinomio que interpola los puntos $(-1, 2), (0, -1), (1, 4)$.
+\item Evalúe $p(0.5)$ y compare con evaluación directa en los polinomios base.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Forma baricéntrica de Lagrange]
+La forma baricéntrica es una reformulación numéricamente estable de la interpolación de Lagrange.
+\begin{enumerate}[(a)]
+\item Defina los pesos baricéntricos:
+\[
+w_k = \frac{1}{\prod_{\substack{j=0 \\ j \neq k}}^n (x_k - x_j)}, \quad k = 0, \ldots, n.
+\]
+\item Para los nodos $x_0 = 0, x_1 = 1, x_2 = 2$, calcule los pesos $w_0, w_1, w_2$.
+\item Demuestre que el polinomio interpolante se puede escribir como:
+\[
+p(x) = \frac{\sum_{k=0}^n \frac{w_k}{x - x_k} y_k}{\sum_{k=0}^n \frac{w_k}{x - x_k}}.
+\]
+\item Compare el costo computacional de evaluar:
+   \begin{itemize}
+   \item La fórmula de Lagrange estándar: $O(n^2)$ por evaluación.
+   \item La forma baricéntrica: $O(n^2)$ preproceso + $O(n)$ por evaluación.
+   \end{itemize}
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Error de interpolación]
+Sea $f \in C^{n+1}([a,b])$ y $p_n$ el polinomio que interpola $f$ en $n+1$ nodos $x_0, \ldots, x_n \in [a,b]$.
+\begin{enumerate}[(a)]
+\item Para $f(x) = e^x$ en $[0, 1]$ con nodos $x_0 = 0, x_1 = 0.5, x_2 = 1$:
+   \begin{itemize}
+   \item Encuentre el polinomio interpolante $p_2(x)$.
+   \item Estime el error máximo en $[0, 1]$ usando la fórmula del error.
+   \item Compare con el error real $|f(0.25) - p_2(0.25)|$.
+   \end{itemize}
+\item ¿En qué puntos $x$ el error es exactamente cero?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Interpolación a trozos]
+Dados nodos $x_0 < \cdots < x_n$ y valores $y_i$, la interpolación lineal a trozos $s(x)$ conecta los puntos $(x_i, y_i)$ con segmentos de recta.
+\begin{enumerate}[(a)]
+\item Escriba la expresión de $s(x)$ en $[x_i, x_{i+1}]$ y verifique su continuidad en los nodos. Verifique que no es diferenciable en general.
+\item Demuestre la cota de error $\|f - s\|_\infty \leq \frac{h^2}{8} \|f''\|_\infty$, donde $h = \max_i \Delta x_i$.
+\item Compare con la interpolación polinomial global: ¿evita $s(x)$ el fenómeno de Runge? ¿Cuál converge más rápido para funciones suaves analíticas?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Splines cúbicos]
+Un \textbf{spline cúbico} $s(x)$ es una función $C^2$ que coincide con un polinomio cúbico en cada subintervalo $[x_i, x_{i+1}]$ e interpola los datos.
+\begin{enumerate}[(a)]
+\item Cuente los grados de libertad ($4n$ coeficientes) y restricciones ($2n$ de interpolación/continuidad en extremos de intervalos, $2(n-1)$ de suavidad $C^1, C^2$). Concluya que faltan 2 condiciones de frontera (ej. ``natural'' $s''=0$, o ``sujeto'' $s'=f'$ en extremos).
+\item Demuestre la \textbf{propiedad variacional}: El spline cúbico natural minimiza la energía de curvatura $\int_a^b [u''(x)]^2 dx$ entre todas las funciones $C^2$ que interpolan los datos.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Cuadratura interpolatoria] Un método muy común y general de integración numérica es interpolar el integrando, e integrar el polinomio interpolante.
+\begin{enumerate}[(a)]
+\item \textbf{Regla del trapecio}: Interpole $f(x)$ en $[a, b]$ con una línea recta pasando por $(a, f(a))$ y $(b, f(b))$. Demuestre que:
+\[
+\int_a^b f(x) dx \approx \frac{b-a}{2}(f(a) + f(b)).
+\]
+\item \textbf{Regla de Simpson}: Interpole $f(x)$ en $[a, b]$ con una parábola pasando por $x_0 = a$, $x_1 = (a+b)/2$, $x_2 = b$. Demuestre que:
+\[
+\int_a^b f(x) dx \approx \frac{b-a}{6}\left(f(a) + 4f\left(\frac{a+b}{2}\right) + f(b)\right).
+\]
+\item Use el teorema del error de interpolación para estimar el error de cada fórmula.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Límite de precisión de las reglas de cuadratura]
+Sea $Q_n(f) = \sum_{i=0}^n w_i f(x_i)$ una regla de cuadratura interpolatoria basada en $n+1$ nodos distintos $x_0, \ldots, x_n$. Demuestre que es imposible construir una regla de cuadratura con $n+1$ nodos que sea exacta para todos los polinomios de grado $2n+2$.
+\textbf{Sugerencia}: Considere el polinomio $P(x) = \prod_{i=0}^n (x-x_i)^2$.
+\end{exercise}
+
+\begin{exercise}[Diferenciación numérica]
+Muchas fórmulas de diferenciación numérica se pueden obtener derivando polinomios que interpolan los datos.
+\begin{enumerate}[(a)]
+\item Interpole $f(x)$ en $x_0, x_0 + h$ con el polinomio $p_1(x)$ de Lagrange.
+\item Derive $p_1(x)$ para obtener la aproximación de diferencias finitas:
+\[
+f'(x_0) \approx \frac{f(x_0 + h) - f(x_0)}{h}.
+\]
+\item Interpole $f(x)$ en $x_0 - h, x_0, x_0 + h$ con el polinomio $p_2(x)$.
+\item Derive $p_2(x)$ y evalúe en $x_0$ para obtener la fórmula centrada:
+\[
+f'(x_0) \approx \frac{f(x_0 + h) - f(x_0 - h)}{2h}.
+\]
+\item Use el teorema del error de interpolación para estimar el error de truncamiento de cada fórmula.
+\end{enumerate}
+\end{exercise} 
+
+
+\subsection*{Transformada Discreta de Fourier}
+
+\begin{exercise}[La DFT como cambio de base unitario]
+Consideremos el espacio vectorial complejo $\mathbb{C}^N$ con el producto interno canónico $\langle u, v \rangle = \sum_{j=0}^{N-1} u_j \overline{v}_j$.
+La matriz de Fourier $F \in \mathbb{C}^{N \times N}$ tiene entradas $F_{jk} = \frac{1}{\sqrt{N}} \omega_N^{jk}$ para $j, k = 0, \ldots, N-1$, donde $\omega_N = e^{2\pi i / N}$.
+\begin{enumerate}[(a)]
+\item Verifique la identidad de ortogonalidad discreta:
+\[
+\sum_{p=0}^{N-1} \omega_N^{jp} \overline{\omega_N^{kp}} = N \delta_{jk}.
+\]
+\item Demuestre que la matriz de Fourier es unitaria, es decir, $F F^* = I$.
+\item Deduzca que la transformación inversa (IDFT) viene dada por la matriz conjugada: $F^{-1} = F^*$.
+\item Escriba explícitamente la fórmula para recuperar un vector $x$ a partir de su transformada $\hat{x} = Fx$:
+\[
+x_j = \frac{1}{\sqrt{N}} \sum_{k=0}^{N-1} \hat{x}_k \omega_N^{-jk}.
+\]
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Equivalencia con la evaluación polinomial]
+En contextos algebraicos, la DFT se define a menudo directamente como la evaluación de un polinomio en las raíces de la unidad, sin referencia a cambios de base.
+Sea $a \in \mathbb{C}^N$ un vector. Asociamos a $a$ el polinomio $P_a(z) = \sum_{j=0}^{N-1} a_j z^j$.
+Definimos la transformada $\mathcal{T}(a) \in \mathbb{C}^N$ como el vector de evaluaciones:
+\[
+\mathcal{T}(a)_k = P_a(\omega_N^k), \quad k=0, \ldots, N-1.
+\]
+
+\begin{enumerate}[(a)]
+   \item Escriba la suma que define $\mathcal{T}(a)_k$ y demuestre que esta definición es equivalente a la definición matricial $\hat{a} = Fa$ vista anteriormente (posiblemente salvo un factor de escala $\sqrt{N}$), estableciendo así la equivalencia entre ambas visiones.
+   \item Observe que el problema de interpolación dado $y = \mathcal{T}(a)$ consiste en hallar la transformación inversa $a = \mathcal{T}^{-1}(y)$. Demuestre que esta inversa $\mathcal{T}^{-1}$ corresponde a aplicar la matriz adjunta $F^*$ (la DFT Inversa), cerrando el círculo: evaluar es aplicar $F$, interpolar es aplicar $F^{-1} = F^*$.
+\end{enumerate}
+
+\end{exercise}
+
+\begin{exercise}[Convolución Discreta]
+Una de las propiedades más importantes de la DFT es su relación con la convolución.
+\begin{enumerate}[(a)]
+\item Dadas dos secuencias $u, v \in \mathbb{C}^N$, definimos su \textbf{convolución circular} $w = u * v$ como:
+\[
+w_k = \sum_{j=0}^{N-1} u_j v_{(k-j) \pmod N}, \quad k=0, \ldots, N-1.
+\]
+\item Demuestre el Teorema de la Convolución: La DFT de la convolución es el producto punto a punto de las DFTs (salvo por un factor de escala dependiente de la normalización):
+\[
+\widehat{(u * v)}_k = \sqrt{N} \hat{u}_k \hat{v}_k.
+\]
+\item Explique cómo esto permite calcular la convolución de dos vectores muy largos de manera eficiente ($O(N \log N)$) usando la Transformada Rápida de Fourier (FFT), en contraste con el costo $O(N^2)$ de la definición directa.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Multiplicación rápida de polinomios]
+Sean $P(x) = \sum_{j=0}^{n-1} a_j x^j$ y $Q(x) = \sum_{k=0}^{n-1} b_k x^k$ dos polinomios de grado menor que $n$. Queremos calcular su producto $R(x) = P(x)Q(x)$.
+\begin{enumerate}[(a)]
+\item Muestre que el coeficiente $c_k$ del término $x^k$ en $R(x)$ está dado por la convolución de los coeficientes de $P$ y $Q$:
+\[
+c_k = \sum_{j=0}^k a_j b_{k-j}.
+\]
+\item Observe que el grado de $R(x)$ puede ser hasta $2n-2$. Para usar el Teorema de la Convolución Cíclica (que opera en vectores de longitud fija $N$), necesitamos ``rellenar con ceros'' (zero-padding).
+Defina vectores extendidos $A, B \in \mathbb{C}^N$ con $N \ge 2n-1$ completando con ceros.
+\item Describa el algoritmo completo para multiplicar polinomios usando FFT:
+   \begin{enumerate}[i.]
+   \item Extender coeficientes a tamaño $N$.
+   \item Calcular $\text{FFT}(A)$ y $\text{FFT}(B)$.
+   \item Multiplicar punto a punto.
+   \item Calcular $\text{IFFT}$ del resultado.
+   \end{enumerate}
+\item Compare la complejidad asintótica de este método con la multiplicación clásica "todos con todos" ($O(n^2)$). ¿A partir de qué grado $n$ aproximado cree que vale la pena usar FFT?
+\end{enumerate}
+\end{exercise}
+
+\subsection*{Interpolación en cuerpos finitos}
+
+\begin{exercise}[Interpolación en cuerpos finitos: definiciones básicas]
+La interpolación polinomial también funciona sobre cuerpos finitos $\mathbb{Z}_p$ donde $p$ es primo.
+\begin{enumerate}[(a)]
+\item Verifique que el espacio de polinomios $\mathcal{P}_n(\mathbb{Z}_p) = \{a_0 + a_1 x + \cdots + a_n x^n : a_i \in \mathbb{Z}_p\}$ es un espacio vectorial sobre $\mathbb{Z}_p$. ¿Cuál es la su dimensión?
+\item Dados $n+1$ puntos distintos $(x_0, y_0), \ldots, (x_n, y_n)$ con $x_i \in \mathbb{Z}_p$ distintos e $y_i \in \mathbb{Z}_p$, demuestre que existe un único polinomio $p \in \mathcal{P}_n(\mathbb{Z}_p)$ tal que $p(x_i) \equiv y_i \pmod{p}$.$\mathbb{Z}_p$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Interpolación en $\mathbb{Z}_7$]
+Trabajaremos en $\mathbb{Z}_7 = \{0, 1, 2, 3, 4, 5, 6\}$ con aritmética módulo 7.
+\begin{enumerate}[(a)]
+\item Calcule la tabla de multiplicación módulo 7 para verificar que todo elemento no nulo tiene inverso multiplicativo.
+\item Queremos interpolar los puntos $(1, 3), (2, 5), (4, 2)$ en $\mathbb{Z}_7$.
+\item Construya la matriz de Vandermonde:
+\[
+V = \begin{pmatrix}
+1 & 1 & 1^2 \\
+1 & 2 & 2^2 \\
+1 & 4 & 4^2
+\end{pmatrix} = \begin{pmatrix}
+1 & 1 & 1 \\
+1 & 2 & 4 \\
+1 & 4 & 2
+\end{pmatrix} \pmod{7}.
+\]
+\item Calcule $\det(V) \pmod{7}$ y verifique que es $V$ invertible.
+\item Resuelva el sistema $Va = y$ donde $y = (3, 5, 2)^T$ para encontrar los coeficientes $(a_0, a_1, a_2)$ del polinomio interpolante $p(x) = a_0 + a_1 x + a_2 x^2 \pmod{7}$.
+\item Verifique que $p(1) \equiv 3$, $p(2) \equiv 5$, $p(4) \equiv 2 \pmod{7}$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Fórmula de Lagrange en $\mathbb{Z}_p$]
+La fórmula de Lagrange también funciona en cuerpos finitos.
+\begin{enumerate}[(a)]
+\item Para $p = 5$, construya los polinomios base de Lagrange para los nodos $x_0 = 1, x_1 = 2, x_2 = 4$ en $\mathbb{Z}_5$.
+\item Recuerde que necesita calcular inversos multiplicativos en $\mathbb{Z}_5$:
+   \begin{itemize}
+   \item $1^{-1} \equiv 1 \pmod{5}$
+   \item $2^{-1} \equiv 3 \pmod{5}$ (ya que $2 \cdot 3 = 6 \equiv 1$)
+   \item $3^{-1} \equiv 2 \pmod{5}$
+   \item $4^{-1} \equiv 4 \pmod{5}$ (ya que $4 \cdot 4 = 16 \equiv 1$)
+   \end{itemize}
+\item Calcule explícitamente:
+\[
+\ell_0(x) = \frac{(x-2)(x-4)}{(1-2)(1-4)} \pmod{5}.
+\]
+\item Simplifique y verifique que $\ell_0(1) \equiv 1$, $\ell_0(2) \equiv 0$, $\ell_0(4) \equiv 0 \pmod{5}$.
+\item Use la fórmula de Lagrange para interpolar los puntos $(1, 2), (2, 4), (4, 1)$ en $\mathbb{Z}_5$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Esquema de Shamir] Un esquema de compartición de secretos $(k, n)$ permite dividir un secreto entre $n$ personas de modo que cualquier $k$ de ellas puedan reconstruirlo, pero $k-1$ no pueden obtener información alguna.
+
+El secreto es un número $s \in \mathbb{Z}_p$ (con $p$ primo grande). Se elige un polinomio aleatorio $f(x) = s + a_1 x + \cdots + a_{k-1} x^{k-1} \pmod{p}$ de grado $k-1$ con $f(0) = s$. Los coeficientes $a_i$ se eligen al azar en $\mathbb{Z}_p$ siguiendo una distribución uniforme. Luego, se distribuyen las $n$ "porciones" (shares): $(1, f(1)), (2, f(2)), \ldots, (n, f(n))$.
+\begin{enumerate}[(a)]
+\item Explique por qué cualquier $k$ porciones permiten reconstruir $f(x)$ mediante interpolación de Lagrange en $\mathbb{Z}_p$, y por tanto recuperar $s = f(0)$.
+\item Explique por qué con solo $k-1$ porciones, el secreto $s$ puede ser cualquier valor en $\mathbb{Z}_p$ con igual probabilidad.
+\textbf{Sugerencia}: Muestre que existe un único polinomio de grado $\le k-1$ compatible con la información parcial y un candidato a secreto $\tilde{s} \in \mathbb{Z}_p$ dado. Concluya el resultado a partir del hecho de que los coeficientes se eligieron uniformemente al azar.
+\end{enumerate}
+\end{exercise}
+
+
+
+\end{document}
+
+
+
+
+
+

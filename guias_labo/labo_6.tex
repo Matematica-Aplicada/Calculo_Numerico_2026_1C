@@ -1,0 +1,53 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Laboratorio N$^\circ$ 6: Ecuaciones Diferenciales Ordinarias}
+ \bigskip
+
+\begin{exercise}[Capa límite]\label{ejer_boundary_layer}
+Considere la ecuación:
+\begin{equation}
+\label{boundary_layer_ej}
+\varepsilon u_{xx} - u_{x} = f, \hspace{1cm} u(0)=\alpha, \quad u(1)=\beta,
+\end{equation}
+cuya solución exacta para el caso $f(x) = -1$ está dada por:
+\[
+u_{\varepsilon}(x) = \alpha + x + (\beta - \alpha -1) \left( \frac{e^{x/\varepsilon}-1 }{e^{1/\varepsilon}-1} \right).
+\]
+\begin{enumerate}
+\item Grafique la solución exacta para el caso $\alpha=1$, $\beta=3$ a medida que $\varepsilon \to 0$. Interprete el significado del término \textit{capa límite} que se suele aplicar al comportamiento de $u_\varepsilon(x)$ para $x$ cerca del borde $\{ x=1 \}$ y $\varepsilon \to 0$. ¿De qué tamaño es la \textit{capa límite}?
+\item Resuelva numéricamente la ecuación \eqref{boundary_layer_ej} usando diferencias centradas para las derivadas primera y segunda, y una malla de tamaño $h$. Grafique el error para distintos valores de $h$ y $\varepsilon$. ¿Qué ocurre si $h \gg 2\varepsilon$?
+\end{enumerate}
+\end{exercise}
+ 
+
+\end{document}

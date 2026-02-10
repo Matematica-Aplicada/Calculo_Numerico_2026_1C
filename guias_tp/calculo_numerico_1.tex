@@ -1,0 +1,336 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newtheorem{definition}{Definición}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Práctica N$^\circ$ 1: Fundamentos de la Computación Numérica}
+ \bigskip
+
+
+\section*{Máquinas de Turing y computabilidad}
+
+\begin{exercise} Diseñe una máquina de Turing que multiplique por 2 un número natural representado en unario (como cadena $1^n$).
+\end{exercise}
+
+\begin{exercise}[Codificación y cardinalidad] Utilizando el concepto de \textbf{codificación} de una máquina de Turing como una cadena $\langle M \rangle$ (y el de máquina de Turing Universal), demuestre que el conjunto de todas las máquinas de Turing es \textbf{enumerable} (existe una biyección con $\mathbb{N}$).
+\end{exercise}
+
+\begin{exercise}[Números computables y cardinalidad]
+Un número real $r$ es \textbf{computable} si existe una máquina de Turing que, dado $n \in \mathbb{N}$, produce los primeros $n$ dígitos de la expansión decimal de $r$. Asumiendo la tesis de Church-Turing, esto es equivalente a decir que existe un algoritmo para calcular $r$ con precisión arbitraria:
+\begin{enumerate}[(a)]
+\item Demuestre que $\pi$ y $e$ son computables.
+\item Demuestre que el conjunto de números computables es enumerable.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Problema del halting]
+El \textbf{problema del halting} pregunta: ¿existe un algoritmo que determine si una máquina de Turing $M$ se detiene con entrada $w$? 
+
+Demuestre que \textbf{no existe tal algoritmo} usando un \textbf{argumento diagonal}:
+\begin{enumerate}[(a)]
+\item Suponga que existe una máquina $H$ que resuelve el problema: $H(\langle M \rangle, w)$ se detiene y responde "sí" si $M$ se detiene con entrada $w$, y responde "no" en caso contrario.
+\item Construya una máquina $D$ que recibe como entrada la codificación $\langle M \rangle$ de una máquina y hace lo siguiente:
+   \begin{itemize}
+   \item Ejecuta $H(\langle M \rangle, \langle M \rangle)$ para determinar si $M$ se detiene con entrada $\langle M \rangle$.
+   \item Si $H$ responde "sí", entonces $D$ entra en un bucle infinito.
+   \item Si $H$ responde "no", entonces $D$ se detiene.
+   \end{itemize}
+\item Obtenga una contradicción analizando qué sucede cuando ejecutamos $D$ con entrada $\langle D \rangle$: ¿se detiene $D(\langle D \rangle)$ o no?
+\end{enumerate}
+\end{exercise}
+
+\section*{Complejidad computacional}
+
+\begin{exercise}[Notación asintótica: definiciones]
+Utilizando las definiciones formales de $O$, $\Omega$ y $\Theta$, determine si las siguientes afirmaciones son verdaderas o falsas. 
+\begin{enumerate}[(a)]
+\item Demuestre o refute: $3n^2 + 5n + 7 = \Theta(n^2)$.
+\item Demuestre o refute: $n^2 = O(n^2 \log n)$.
+\item Demuestre o refute: $2^n = \Omega(3^n)$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Propiedades de la notación $O$].
+\begin{enumerate}[(a)]
+\item Si $f(n) = O(g(n))$ y $g(n) = O(h(n))$, ¿es cierto que $f(n) = O(h(n))$?
+\item Si $f_1(n) = O(g_1(n))$ y $f_2(n) = O(g_2(n))$, demuestre que:
+$f_1(n) + f_2(n) = O(\max\{g_1(n), g_2(n)\})$
+\item Si $f_1(n) = O(g_1(n))$ y $f_2(n) = O(g_2(n))$, demuestre que:
+$ f_1(n) \cdot f_2(n) = O(g_1(n) \cdot g_2(n))$
+\item Simplifique: $O(n^2) + O(n^3)$
+\item Simplifique: $O(n) \cdot O(\log n)$
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Análisis de complejidad: bucles simples]
+Para cada fragmento de código, determine su complejidad temporal en el peor caso:
+\begin{enumerate}[(a)]
+\item 
+\begin{verbatim}
+for i = 1 to n:
+    print(i)
+\end{verbatim}
+\item 
+\begin{verbatim}
+for i = 1 to n:
+    for j = 1 to n:
+        print(i, j)
+\end{verbatim}
+\item 
+\begin{verbatim}
+for i = 1 to n:
+    for j = 1 to i:
+        print(i, j)
+\end{verbatim}
+\item 
+\begin{verbatim}
+for i = 1 to n:
+    for j = 1 to n:
+        for k = 1 to n:
+            print(i, j, k)
+\end{verbatim}
+\item 
+\begin{verbatim}
+i = n
+while i >= 1:
+    print(i)
+    i = i / 2
+\end{verbatim}
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Análisis de complejidad: bucles anidados complejos]
+Calcule la complejidad temporal:
+\begin{enumerate}
+\item 
+\begin{verbatim}
+for i = 1 to n:
+    for j = i to n:
+        for k = j to n:
+            print(i, j, k)
+\end{verbatim}
+\item 
+\begin{verbatim}
+for i = 1 to n:
+    j = 1
+    while j < n:
+        print(i, j)
+        j = j * 2
+\end{verbatim}
+\item 
+\begin{verbatim}
+for i = n to 1 (decrementando):
+    for j = 1 to i*i:
+        print(i, j)
+\end{verbatim}
+\item 
+\begin{verbatim}
+for i = 1 to log(n):
+    for j = 1 to 2^i:
+        print(i, j)
+\end{verbatim}
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Teorema maestro]
+El teorema maestro resuelve recurrencias de la forma:
+\[
+T(n) = aT(n/b) + f(n).
+\]
+\begin{enumerate}[(a)]
+\item Enuncie los tres casos del teorema maestro.
+\item Aplique el teorema maestro para resolver:
+   \begin{itemize}
+   \item $T(n) = 2T(n/2) + O(n)$ 
+   \item $T(n) = 2T(n/2) + O(1)$
+   \item $T(n) = 3T(n/4) + O(n \log n)$
+   \item $T(n) = T(n/2) + O(n)$
+   \end{itemize}
+\item Para $T(n) = 2T(n/2) + O(n \log n)$, explique por qué no se puede aplicar directamente el teorema maestro y resuelva usando el método de sustitución.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Análisis de algoritmos recursivos]
+Para cada algoritmo recursivo, calcule su complejidad usando relaciones de recurrencia:
+\begin{enumerate}[(a)]
+\item \textbf{Factorial}:
+\begin{verbatim}
+def factorial(n):
+    if n <= 1: return 1
+    return n * factorial(n-1)
+\end{verbatim}
+Plantee $T(n) = T(n-1) + O(1)$ y resuelva.
+
+\item \textbf{Fibonacci ingenuo}:
+\begin{verbatim}
+def fib(n):
+    if n <= 1: return n
+    return fib(n-1) + fib(n-2)
+\end{verbatim}
+Plantee $T(n) = T(n-1) + T(n-2) + O(1)$ y demuestre que $T(n) = \Omega(2^{n/2})$.
+
+\item \textbf{Búsqueda binaria}:
+\begin{verbatim}
+def binary_search(arr, x, low, high):
+    if low > high: return -1
+    mid = (low + high) / 2
+    if arr[mid] == x: return mid
+    if arr[mid] > x: return binary_search(arr, x, low, mid-1)
+    return binary_search(arr, x, mid+1, high)
+\end{verbatim}
+Plantee $T(n) = T(n/2) + O(1)$ y resuelva.
+
+\item \textbf{Mergesort}:
+\begin{verbatim}
+def mergesort(arr):
+    if len(arr) <= 1: return arr
+    mid = len(arr) / 2
+    left = mergesort(arr[0:mid])
+    right = mergesort(arr[mid:len(arr)])
+    return merge(left, right)  # O(n) para merge
+\end{verbatim}
+Plantee $T(n) = 2T(n/2) + O(n)$ y resuelva usando el teorema maestro.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Algoritmo de Karatsuba]
+Las bibliotecas de enteros de precisión arbitraria (como Python's \texttt{int}, Java's \texttt{BigInteger}, o GMP) deben multiplicar eficientemente números de miles de dígitos. La multiplicación estándar requiere $O(n^2)$ operaciones para números de $n$ dígitos.El \textbf{algoritmo de Karatsuba} (1960) usa divide-y-vencerás: divide cada número $x, y$ de $n$ dígitos en mitades de $n/2$ dígitos:
+\[
+x = x_1 \cdot B^{n/2} + x_0, \quad y = y_1 \cdot B^{n/2} + y_0
+\]
+donde $B$ es la base (típicamente $B = 2^{32}$ o $2^{64}$). En lugar de las 4 multiplicaciones recursivas del método ingenuo, calcula solo 3:
+\[
+p_1 = x_1 y_1, \quad p_2 = x_0 y_0, \quad p_3 = (x_1 + x_0)(y_1 + y_0)
+\]
+y obtiene el producto como:
+\[
+xy = p_1 \cdot B^n + (p_3 - p_1 - p_2) \cdot B^{n/2} + p_2.
+\]
+
+Demuestre que la complejidad del algoritmo de Karatsuba es $T(n) = \Theta(n^{\log_2 3})$.
+
+\textit{Sugerencia}: Plantee la recurrencia $T(n) = 3T(n/2) + O(n)$ (justificando cada término) y aplique el teorema maestro.
+\end{exercise}
+
+\section*{Aritmética de punto flotante}
+
+En los siguientes ejercicios trabajamos con un sistema de punto flotante \textbf{decimal} con $t = 3$ dígitos de mantisa y redondeo al más cercano. Los números se representan como $\pm d_1.d_2d_3 \times 10^e$ con $d_1 \neq 0$. Denotamos $\text{fl}(x)$ al representante de punto flotante de $x$.
+
+\textbf{Propiedad fundamental}: Si $x$ está en el rango representable, entonces
+\[
+|\text{fl}(x) - x| \leq \frac{1}{2} \times 10^{e-t+1}
+\]
+donde $e$ es el exponente de $x$. Esto implica que el \textbf{error relativo} satisface:
+\[
+\left|\frac{x - \text{fl}(x)}{x}\right| \leq \varepsilon_{\text{mach}} = \frac{1}{2} \times 10^{1-t}.
+\]
+
+\begin{exercise}[Operaciones básicas]
+Con $t = 3$ dígitos:
+\begin{enumerate}
+\item Calcule $\text{fl}(1.23 + 4.56)$ y su error relativo.
+\item Calcule $\text{fl}(1.23 \times 4.56)$ y su error relativo.
+\item Calcule $\text{fl}(9.87 / 3.21)$ y su error relativo.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Propagación del error]
+Sea $\text{fl}(x) = x(1 + \delta_x)$ y $\text{fl}(y) = y(1 + \delta_y)$ con $|\delta_x|, |\delta_y| \leq \varepsilon_{\text{mach}}$.
+\begin{enumerate}
+\item Demuestre que $\text{fl}(\text{fl}(x) + \text{fl}(y)) \approx (x+y)(1 + \delta)$ con $|\delta| \leq \varepsilon_{\text{mach}}$ si no hay cancelación.
+\item Demuestre que $\text{fl}(\text{fl}(x) \times \text{fl}(y)) \approx xy(1 + \delta)$ con $|\delta| \leq 2\varepsilon_{\text{mach}}$.
+\item ¿Por qué el error relativo puede ser arbitrariamente grande en la suma si $x + y \approx 0$?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Cancelación catastrófica]
+Con $t = 3$ dígitos:
+\begin{enumerate}
+\item Calcule $\text{fl}(1.23 - 1.22)$ y observe la pérdida de dígitos significativos.
+\item Suponga $x = 1.234$ e $y = 1.224$ (no representables exactamente). Calcule $\text{fl}(x)$, $\text{fl}(y)$ y luego $\text{fl}(x) - \text{fl}(y)$. Compare con $x - y = 0.01$ exacto.
+\item Explique por qué la cancelación amplifica los errores de redondeo previos.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Raíces de la ecuación cuadrática]
+Considere $x^2 - 200x + 1 = 0$ con $t = 3$ dígitos. Las raíces son $x = 100 \pm \sqrt{9999}$.
+\begin{enumerate}
+\item Calcule ambas raíces usando $x = \frac{200 \pm \text{fl}(\sqrt{9999})}{2}$. Use $\text{fl}(\sqrt{9999}) = 100$. Observe la cancelación en $x_2 = \frac{200 - 100}{2}$.
+\item Calcule $x_2$ usando la fórmula alternativa $x_2 = \frac{1}{x_1}$ (aprovechando que $x_1 x_2 = 1$). Compare.
+\item Alternativamente, use $x = \frac{2c}{-b \mp \sqrt{b^2-4ac}}$ para calcular la raíz pequeña. Compare.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Reformulación algebraica I: conjugado]
+Con $t = 3$ dígitos, calcule $f(x) = \sqrt{x+1} - \sqrt{x}$ para $x = 100$.
+\begin{enumerate}
+\item Método directo: calcule $\text{fl}(\sqrt{101}) - \text{fl}(\sqrt{100})$. Use $\text{fl}(\sqrt{101}) = 10.0$.
+\item Reformule usando el conjugado: $\sqrt{x+1} - \sqrt{x} = \frac{1}{\sqrt{x+1} + \sqrt{x}}$. Calcule con esta fórmula.
+\item Compare los errores relativos (valor exacto: $\approx 0.04988$).
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Reformulación algebraica II: Taylor]
+Con $t = 3$ dígitos, calcule $f(x) = \frac{1 - \cos x}{x^2}$ para $x = 0.1$.
+\begin{enumerate}
+\item Método directo: use $\text{fl}(\cos(0.1)) = 0.995$ y calcule $\text{fl}\left(\frac{1 - 0.995}{0.01}\right)$.
+\item Reformule usando Taylor: $\frac{1 - \cos x}{x^2} = \frac{1}{2} - \frac{x^2}{24} + O(x^4)$. Calcule para $x = 0.1$.
+\item Compare con el valor exacto $\approx 0.4996$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Orden de operaciones]
+Con $t = 3$ dígitos, considere sumar $0.001$ al número $1.00$ repetidamente 1000 veces.
+\begin{enumerate}
+\item Calcule $\text{fl}(1.00 + 0.001)$. ¿Qué observa?
+\item ¿Qué resultado se obtiene después de 1000 iteraciones?
+\item Proponga una forma más precisa de calcular $1.00 + 1000 \times 0.001$.
+\end{enumerate}
+\end{exercise}
+
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{ c c  c }
+  \includegraphics[width=0.39\textwidth]{./neumann_computer.jpg} & \quad & \includegraphics[width=0.2\textwidth]{./turing.jpg} \\
+  John von Neumann  & \quad & Alan Turing \\
+  Budapest 1903 - Washington 1957  & \quad & Londres 1912 - Cheshire 1954
+\end{tabular}
+\end{table}
+ 
+
+\end{document}
+
+
+
+
+
+

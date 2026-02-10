@@ -1,0 +1,501 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Práctica N$^\circ$ 2: Álgebra Lineal Numérica}
+ \bigskip
+
+\section*{Descomposiciones matriciales}
+
+\begin{exercise}[Propiedades de matrices triangulares superiores]
+Sea $\mathcal{T}_n$ el conjunto de matrices triangulares superiores de tamaño $n \times n$.
+\begin{enumerate}[(a)]
+\item Demuestre que si $A, B \in \mathcal{T}_n$, entonces $AB \in \mathcal{T}_n$.
+\item Demuestre que si $A \in \mathcal{T}_n$ tiene todos sus elementos diagonales no nulos, entonces $A$ es inversible.
+\item Demuestre que si $A \in \mathcal{T}_n$ es inversible, entonces $A^{-1} \in \mathcal{T}_n$.
+\end{enumerate}
+\textbf{Sugerencia para (c)}: Considere la ecuación $AA^{-1} = I$ y determine las entradas de $A^{-1}$ por sustitución hacia atrás.
+\end{exercise}
+
+\begin{exercise}[Descomposición $LDL^T$ para matrices simétricas]
+Sea $A \in \mathbb{R}^{n \times n}$ una matriz simétrica que admite una descomposición $LU$ sin pivoteo, donde $L$ es triangular inferior con diagonal unitaria y $U$ es triangular superior.
+\begin{enumerate}[(a)]
+\item Demuestre que $U = DL^T$, donde $D$ es una matriz diagonal.
+\item Concluya que $A$ admite la descomposición $A = LDL^T$.
+\item Verifique explícitamente esta descomposición para la matriz:
+\[
+A = \begin{pmatrix}
+4 & 2 & 2 \\
+2 & 3 & 1 \\
+2 & 1 & 3
+\end{pmatrix}.
+\]
+\item Compare el costo de almacenamiento de $LDL^T$ vs $LU$ para matrices simétricas.
+\end{enumerate}
+\textbf{Sugerencia}: Use que $A = A^T$ y $(LU)^T = U^T L^T = A$.
+\end{exercise}
+
+\begin{exercise}[Eficiencia de LU para matrices tridiagonales]
+Una matriz tridiagonal $A \in \mathbb{R}^{n \times n}$ tiene la forma:
+\[
+A = \begin{pmatrix}
+b_1 & c_1 & 0 & \cdots & 0 \\
+a_2 & b_2 & c_2 & \cdots & 0 \\
+0 & a_3 & b_3 & \ddots & \vdots \\
+\vdots & \ddots & \ddots & \ddots & c_{n-1} \\
+0 & \cdots & 0 & a_n & b_n
+\end{pmatrix}.
+\]
+\begin{enumerate}[(a)]
+\item Demuestre que si $A$ admite descomposición $LU$ sin pivoteo, entonces $L$ y $U$ son bidiagonales:
+\[
+L = \begin{pmatrix}
+1 & 0 & \cdots & 0 \\
+\ell_2 & 1 & \ddots & \vdots \\
+0 & \ddots & \ddots & 0 \\
+\vdots & & \ell_n & 1
+\end{pmatrix}, \quad
+U = \begin{pmatrix}
+u_1 & c_1 & 0 & \cdots \\
+0 & u_2 & c_2 & \ddots \\
+\vdots & \ddots & \ddots & \ddots \\
+0 & \cdots & 0 & u_n
+\end{pmatrix}.
+\]
+\item Derive fórmulas explícitas para $\ell_i$ y $u_i$ en términos de $a_i, b_i, c_i$.
+\item Demuestre que el costo de factorizar $A$ es $O(n)$ operaciones (en lugar de $O(n^3)$ para matrices densas).
+\item Demuestre que el costo de resolver $Ax = b$ dado $A = LU$ es $O(n)$ operaciones.
+\item Aplique el algoritmo a la matriz tridiagonal $5 \times 5$ con $a_i = -1$, $b_i = 2$, $c_i = -1$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Proyección ortogonal mediante factorización QR]
+Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y rango columna completo, y sea $A = QR$ su descomposición QR.
+\begin{enumerate}[(a)]
+\item Demuestre que $P = QQ^T$ es una matriz de proyección, es decir, que $P^2 = P$ y $P^T = P$.
+\item Demuestre que $P$ proyecta sobre el espacio columna de $A$: para todo $y \in \mathbb{R}^m$, se tiene $Py \in \text{Col}(A)$.
+\item Demuestre que $P$ es la proyección ortogonal: $(I - P)y \perp \text{Col}(A)$ para todo $y \in \mathbb{R}^m$.
+\item Calcule explícitamente la matriz de proyección $P$ para:
+\[
+A = \begin{pmatrix}
+1 & 0 \\
+1 & 1 \\
+0 & 1
+\end{pmatrix}.
+\]
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Espacios fundamentales y factorización QR]
+Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y sea $A = QR$ su descomposición QR, donde $Q \in \mathbb{R}^{m \times n}$ tiene columnas ortonormales y $R \in \mathbb{R}^{n \times n}$ es triangular superior.
+\begin{enumerate}[(a)]
+\item \textbf{Espacio columna}: Demuestre que $\text{Col}(A) = \text{Col}(Q)$.
+\item \textbf{Espacio nulo}: Demuestre que $\text{Nul}(A) = \text{Nul}(R)$.
+\item Use (a) y (b) para explicar por qué $A$ y $Q$ tienen el mismo rango.
+\item Si $r = \text{rank}(A) < n$, explique cómo la estructura de $R$ revela esta deficiencia de rango.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Mínimos cuadrados vía QR vs ecuaciones normales]
+Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y rango columna completo, y sea $b \in \mathbb{R}^m$. El problema de mínimos cuadrados es:
+\[
+\min_{x \in \mathbb{R}^n} \|Ax - b\|_2^2.
+\]
+\begin{enumerate}[(a)]
+\item \textbf{Solución vía ecuaciones normales}: Demuestre que la solución satisface $A^TAx = A^Tb$.
+\item \textbf{Solución vía QR}: Si $A = QR$, demuestre que la solución es $x = R^{-1}Q^Tb$.
+\item Demuestre que ambos métodos producen la misma solución en aritmética exacta.
+\item \textbf{Análisis de condicionamiento}: Usando la SVD de $A$, demuestre que:
+\[
+\kappa(A^TA) = \kappa(A)^2 = \kappa(R)^2,
+\]
+donde $\kappa(\cdot)$ denota el número de condición en norma 2. Concluya que QR es numéricamente más estable que las ecuaciones normales cuando $A$ está mal condicionada.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Factorización de Cholesky para matrices definidas positivas]
+Sea $B \in \mathbb{R}^{n \times n}$ una matriz simétrica definida positiva.
+\begin{enumerate}[(a)]
+\item Demuestre que existe una matriz $A \in \mathbb{R}^{n \times n}$ tal que $B = AA^T$.
+\textbf{Sugerencia}: Use que toda matriz definida positiva tiene raíz cuadrada: $B = B^{1/2}B^{1/2}$.
+\item Aplique la descomposición QR a $A^T$: $A^T = QR$. Demuestre que:
+\[
+B = AA^T = (A^T)^T A^T = R^TQ^TQR = R^TR.
+\]
+\item Concluya que $B$ admite la descomposición de Cholesky $B = LL^T$ donde $L = R^T$ es triangular inferior.
+\item Verifique la factorización para:
+\[
+B = \begin{pmatrix}
+4 & 2 \\
+2 & 5
+\end{pmatrix}.
+\]
+\item Compare el costo de Cholesky ($\sim \frac{n^3}{6}$ operaciones) con LU ($\sim \frac{n^3}{3}$ operaciones).
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Norma 2 de matrices normales]
+Una matriz $A \in \mathbb{C}^{n \times n}$ es \textbf{normal} si $A^*A = AA^*$, donde $A^*$ denota la conjugada transpuesta.
+\begin{enumerate}[(a)]
+\item Demuestre que:
+\[
+\|A\|_2 = \max_{1 \leq i \leq n} |\lambda_i|,
+\]
+donde $\lambda_i$ son los autovalores de $A$. (Sugerencia: Use la descomposición espectral para matrices normales: $A = U\Lambda U^*$, donde $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_n)$ y $U$ es unitaria.)
+\item Verifique que matrices hermitianas, unitarias y normales satisfacen $\|A\|_2 = \rho(A)$ (radio espectral).
+\item Muestre con un ejemplo que esto no es cierto para matrices no normales.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}
+Sea $A \in \mathbb{C}^{n \times n}$ una matriz no singular. Demuestre que la distancia de $A$ al conjunto de matrices singulares (en norma 2) es exactamente su menor valor singular $\sigma_n$. Es decir:
+\[
+\min_{B \text{ singular}} \|A - B\|_2 = \sigma_n.
+\]
+\end{exercise}
+
+\begin{exercise}[Descomposición polar desde SVD]
+Toda matriz $A \in \mathbb{R}^{m \times n}$ admite una \textbf{descomposición polar} $A = Q_{\text{polar}} S$, donde:
+\begin{itemize}
+\item $Q_{\text{polar}} \in \mathbb{R}^{m \times n}$ tiene columnas ortonormales ($Q_{\text{polar}}^T Q_{\text{polar}} = I_n$).
+\item $S \in \mathbb{R}^{n \times n}$ es simétrica semidefinida positiva.
+\end{itemize}
+
+Sea $A = U\Sigma V^T$ la descomposición SVD de $A$. Demuestre que:
+\[
+Q_{\text{polar}} = UV^T, \quad S = V\Sigma V^T.
+\]
+
+\end{exercise}
+
+\begin{exercise}[Problema de Procrustes ortogonal]
+Dadas dos matrices $A, B \in \mathbb{R}^{m \times n}$ representando conjuntos de datos (nubes de puntos), queremos encontrar la matriz ortogonal $Q \in \mathbb{R}^{n \times n}$ óptima (geométricamente, la rotación óptima) que transforma $A$ en $B$ minimizando:
+\[
+\min_{Q^TQ = I} \|AQ - B\|_F,
+\]
+donde $\|\cdot\|_F$ es la norma de Frobenius.
+
+\begin{enumerate}[(a)]
+\item Demuestre que minimizar $\|AQ - B\|_F^2$ es equivalente a maximizar $\text{tr}(Q^T A^T B)$.
+\item Sea $A^TB = U\Sigma V^T$ la descomposición SVD de $A^TB$. Demuestre que la solución óptima es:
+\[
+Q = UV^T.
+\]
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Pseudoinversa y solución de norma mínima]
+Sea $A \in \mathbb{R}^{m \times n}$ con SVD $A = U\Sigma V^T = \sum_{i=1}^r \sigma_i u_i v_i^T$. Se define la \textbf{pseudoinversa de Moore-Penrose} como:
+\[
+A^+ = V\Sigma^+ U^T = \sum_{i=1}^r \frac{1}{\sigma_i} v_i u_i^T,
+\]
+donde $\Sigma^+$ es diagonal con entradas $1/\sigma_i$ en las primeras $r$ posiciones.
+\begin{enumerate}[(a)]
+\item Demuestre que $x = A^+ b$ resuelve el problema de cuadrados mínimos $\min_x \|Ax - b\|_2$.
+\item Demuestre que entre todas las soluciones de cuadrados mínimos, $x = A^+b$ tiene norma mínima:
+\[
+\|A^+b\|_2 = \min\{\|x\|_2 : \|Ax - b\|_2 = \min\}.
+\]
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Condicionamiento y propagación del error vía SVD]
+Sea $A \in \mathbb{R}^{n \times n}$ una matriz inversible y considere el sistema lineal $Ax = b$. Suponga que el lado derecho $b$ está contaminado por un error $\Delta b$, de modo que la solución calculada $x + \Delta x$ satisface $A(x + \Delta x) = b + \Delta b$.
+\begin{enumerate}[(a)]
+\item Usando la descomposición SVD de $A = U\Sigma V^T$, demuestre que:
+\[
+\|\Delta x\|_2 \le \frac{1}{\sigma_n} \|\Delta b\|_2 \quad \text{y} \quad \|b\|_2 \le \sigma_1 \|x\|_2.
+\]
+\item Deduzca que el error relativo satisface la cota:
+\[
+\frac{\|\Delta x\|_2}{\|x\|_2} \leq \kappa_2(A) \frac{\|\Delta b\|_2}{\|b\|_2},
+\]
+donde $\kappa_2(A) = \sigma_1 / \sigma_n$ es el número de condición.
+\item Construya un ejemplo de $2 \times 2$ donde la igualdad se alcance.
+\textbf{Sugerencia}: Elija $b$ alineado con el primer vector singular izquierdo $u_1$ (máxima amplificación) y $\Delta b$ alineado con el último $u_n$ (mínima atenuación en la inversa), o viceversa según convenga.
+\item Concluya que si $\kappa_2(A)$ es grande, pequeños errores en $b$ pueden resultar en errores catastróficos en la solución $x$, independientemente del método de resolución del sistema lineal.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Matrices de Householder]
+Una matriz de Householder tiene la forma $H = I - 2vv^T$ donde $v \in \mathbb{R}^n$ con $\|v\|_2 = 1$.
+\begin{enumerate}[(a)]
+\item Demuestre que $H$ es ortogonal: $H^TH = I$.
+\item Demuestre que $H$ es autoinversa: $H^2 = I$ (es decir, $H = H^{-1}$).
+\item Demuestre que $H$ es simétrica: $H^T = H$.
+\item Interprete geométricamente $H$ como una reflexión respecto al hiperplano ortogonal a $v$.
+\item Para un vector $x \in \mathbb{R}^n$ dado, construya $v$ tal que $Hx = \alpha e_1$ donde $e_1 = (1, 0, \ldots, 0)^T$ y $\alpha = \pm\|x\|_2$.
+\end{enumerate}
+\textbf{Sugerencia para (e)}: Tome $v = \frac{x - \alpha e_1}{\|x - \alpha e_1\|}$ con $\alpha = -\text{sign}(x_1)\|x\|_2$ para evitar cancelación.
+\end{exercise}
+
+\begin{exercise}[Factorización QR mediante reflexiones de Householder]
+El algoritmo de Householder construye la factorización QR aplicando reflexiones sucesivas.
+\begin{enumerate}[(a)]
+\item Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$. En el paso $k$, queremos anular las entradas debajo de la diagonal en la columna $k$.
+\item Construya la matriz de Householder $H_k$ que anula las componentes $k+1, \ldots, m$ del vector formado por la columna $k$ de la submatriz restante.
+\item Demuestre que después de $n$ pasos:
+\[
+H_n \cdots H_2 H_1 A = R,
+\]
+donde $R$ es triangular superior.
+\item Concluya que $A = QR$ con $Q = H_1 H_2 \cdots H_n$.
+\item Demuestre que el costo total es $O(2mn^2 - \frac{2n^3}{3})$ operaciones.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Reducción bidiagonal para SVD]
+El cálculo de la SVD de $A \in \mathbb{R}^{m \times n}$ se facilita si primero reducimos $A$ a forma bidiagonal.
+\begin{enumerate}[(a)]
+\item Demuestre que mediante reflexiones de Householder aplicadas alternadamente por izquierda y derecha, se puede reducir $A$ a la forma:
+\[
+A = UBV^T,
+\]
+donde $U \in \mathbb{R}^{m \times m}$ y $V \in \mathbb{R}^{n \times n}$ son ortogonales, y $B \in \mathbb{R}^{m \times n}$ es bidiagonal superior:
+\[
+B = \begin{pmatrix}
+d_1 & f_1 & 0 & \cdots & 0 \\
+0 & d_2 & f_2 & \cdots & 0 \\
+\vdots & \ddots & \ddots & \ddots & \vdots \\
+0 & \cdots & 0 & d_{n-1} & f_{n-1} \\
+0 & \cdots & 0 & 0 & d_n \\
+0 & \cdots & 0 & 0 & 0 \\
+\vdots & & \vdots & \vdots & \vdots
+\end{pmatrix}.
+\]
+\item Explique cómo la SVD de $A$ se obtiene de la SVD de $B$: si $B = \tilde{U}\Sigma \tilde{V}^T$, entonces $A = (U\tilde{U})\Sigma(\tilde{V}^TV^T)$.
+\item Demuestre que el costo de bidiagonalización es $O(2mn^2 - \frac{2n^3}{3})$ operaciones.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Forma de de Hessenberg]
+Una matriz $H \in \mathbb{R}^{n \times n}$ está en \textbf{forma de Hessenberg superior} si $h_{ij} = 0$ para $i > j+1$.
+\begin{enumerate}[(a)]
+\item Demuestre que el costo de calcular la descomposición QR de una matriz $H \in \mathbb{R}^{n \times n}$ en forma de Hessenberg es $O(n^2)$ operaciones. ¿Cuál es el costo para matrices densas generales?
+\textbf{Sugerencia}: Observe que en cada columna $k$ solo es necesario anular una entrada (la subdiagonal). Una reflexión de Householder diseñada para esto modificará únicamente dos filas de la matriz, costando $O(n)$ operaciones.
+\item Demuestre que si $A$ es simétrica y se reduce a forma de Hessenberg mediante transformaciones de semejanza ortogonal $H = Q^TAQ$, entonces $H$ es tridiagonal.
+\textbf{Sugerencia}: Use que $H$ es simétrica ($H = H^T$) y que la forma de Hessenberg superior implica $h_{ij} = 0$ para $i > j+1$.
+\end{enumerate}
+\end{exercise}
+
+\section*{Métodos iterativos}
+
+\begin{exercise}[Método de la potencia: análisis de convergencia]
+Sea $A \in \mathbb{R}^{n \times n}$ una matriz diagonalizable con autovalores $|\lambda_1| > |\lambda_2| \geq \dots \geq |\lambda_n|$ y autovectores linealmente independientes $\{v_1, \dots, v_n\}$.
+El método de la potencia construye la sucesión $x^{(k+1)} = \frac{Ax^{(k)}}{\|Ax^{(k)}\|}$.
+\begin{enumerate}[(a)]
+\item Si escribimos el vector inicial como $x^{(0)} = c_1 v_1 + \dots + c_n v_n$ con $c_1 \neq 0$, demuestre que:
+\[
+A^k x^{(0)} = \lambda_1^k \left( c_1 v_1 + \sum_{j=2}^n c_j \left(\frac{\lambda_j}{\lambda_1}\right)^k v_j \right).
+\]
+\item Deduzca que la dirección de $x^{(k)}$ converge a la dirección de $v_1$ (autovector dominante) cuando $k \to \infty$.
+\item Identifique el término que controla la velocidad de convergencia y exprese la tasa de convergencia en función de los autovalores.
+\item Demuestre que el cociente de Rayleigh $\rho(x^{(k)}) = \frac{(x^{(k)})^T A x^{(k)}}{\|x^{(k)}\|_2^2}$ converge a $\lambda_1$ (asuma convergencia de $x^{(k)}$ a $v_1$ normalizado).
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Método de la potencia inversa]
+El método de la potencia inversa con shift $\sigma$ aplica el método de la potencia a la matriz $M = (A - \sigma I)^{-1}$.
+\begin{enumerate}[(a)]
+\item Demuestre que si $(\lambda, v)$ es un par autovalor-autovector de $A$, con $\lambda \neq \sigma$, entonces $(\mu, v)$ con $\mu = (\lambda - \sigma)^{-1}$ es par autovalor-autovector de $M$.
+\item Suponga que $\lambda_k$ es el autovalor de $A$ más cercano a $\sigma$, tal que $|\lambda_k - \sigma| < |\lambda_j - \sigma|$ para todo $j \neq k$. Demuestre que el método converge al autovector $v_k$.
+\item Demuestre que la tasa de convergencia asintótica es lineal e igual a $|\lambda_k - \sigma|/|\lambda_j - \sigma|$, donde $\lambda_j$ es el segundo autovalor más cercano a $\sigma$.
+\item Analice cómo elegir $\sigma$ para maximizar la velocidad de convergencia y discuta las implicaciones numéricas de elegir $\sigma$ muy cercano a $\lambda_k$ (condicionamiento del sistema lineal vs velocidad de convergencia).
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Iteración de cociente de Rayleigh]
+Este algoritmo es una variante de la potencia inversa donde el shift se actualiza en cada paso usando el cociente de Rayleigh: $\sigma_k = \frac{(x^{(k)})^T A x^{(k)}}{\|x^{(k)}\|_2^2}$.
+\begin{enumerate}[(a)]
+\item Escriba los 3 pasos de una iteración genérica $k \to k+1$:
+   \begin{enumerate}[i.]
+   \item Cálculo del shift: $\sigma_k = \rho(x^{(k)})$.
+   \item Resolución del sistema lineal: $(A - \sigma_k I) y^{(k+1)} = x^{(k)}$.
+   \item Normalización: $x^{(k+1)} = y^{(k+1)} / \|y^{(k+1)}\|$.
+   \end{enumerate}
+\item Explique intuitivamente por qué la convergencia es superlineal.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Método QR e Iteración Ortogonal]
+El \textbf{método QR} utiliza la descomposición QR para calcular autovalores. Consiste en, dada una matriz $A_1 = A \in \mathbb{R}^{n \times n}$, generar una sucesión de matrices $A_k$ definida por:
+\[
+A_k = Q_k R_k \quad (\text{QR}), \qquad A_{k+1} = R_k Q_k.
+\]
+\begin{enumerate}[(a)]
+\item Probar que todas las matrices $A_k$ tienen los mismos autovalores.
+\textbf{Sugerencia}: Demuestre que $A_{k+1}$ es semejante a $A_k$.
+\item Considere las matrices acumuladas $\bar{Q}_k = Q_1 Q_2 \cdots Q_k$ y $\bar{R}_k = R_k R_{k-1} \cdots R_1$.
+Demuestre por inducción que $A^k = \bar{Q}_k \bar{R}_k$. Es decir, $\bar{Q}_k$ proviene de la factorización QR de la potencia $A^k$.
+\textbf{Sugerencia}: Observe que $A_{k+1} = Q_k^T A_k Q_k$ y use la hipótesis inductiva.
+\item Demuestre que $A^k e_1$ es proporcional a la primera columna de $\bar{Q}_k$ (use que $\bar{R}_k$ es triangular superior). Concluya que la primera columna de la matriz ortogonal acumulada converge al autovector dominante de $A$ (simulando el \textbf{método de la potencia} sobre $e_1$).
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Iteración QR y forma de Hessenberg]
+Sea $H \in \mathbb{R}^{n \times n}$ una matriz en forma de Hessenberg superior, y sea $H = QR$ su descomposición QR.
+\begin{enumerate}[(a)]
+\item Demuestre que $Q$ es una matriz de Hessenberg superior.
+\textbf{Sugerencia}: Escriba $Q = H R^{-1}$ y utilice que el producto de una matriz de Hessenberg superior por una triangular superior es de Hessenberg superior.
+\item Demuestre que $H' = RQ$ también está en forma de Hessenberg superior.
+\item Concluya que si comenzamos con $A$ en forma de Hessenberg, todas las iteraciones del algoritmo QR permanecen en forma de Hessenberg.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Algoritmo QR para raíces de polinomios]
+Dado un polinomio mónico $p(\lambda) = \lambda^n + a_{n-1}\lambda^{n-1} + \cdots + a_1\lambda + a_0$, su \textbf{matriz compañera} es:
+\[
+C = \begin{pmatrix}
+0 & 0 & \cdots & 0 & -a_0 \\
+1 & 0 & \cdots & 0 & -a_1 \\
+0 & 1 & \cdots & 0 & -a_2 \\
+\vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & \cdots & 1 & -a_{n-1}
+\end{pmatrix}.
+\]
+\begin{enumerate}[(a)]
+\item Demuestre que el polinomio característico de $C$ es:
+\[
+\det(C - \lambda I) = (-1)^n p(\lambda).
+\]
+Por lo tanto, los autovalores de $C$ son precisamente las raíces de $p$.
+\item Demuestre que $C$ está en forma de Hessenberg superior.
+\item Concluya que el algoritmo QR aplicado a $C$ tiene costo $O(kn^2)$ donde $k$ es el número de iteraciones requerido.
+\end{enumerate}
+\end{exercise}
+
+
+\begin{exercise}[Convergencia de métodos iterativos estacionarios]
+Un método iterativo estacionario para resolver $Ax = b$ tiene la forma $x^{(k+1)} = Gx^{(k)} + c$, donde $G$ es la matriz de iteración.
+\begin{enumerate}[(a)]
+\item Demuestre que para cualquier matriz $G \in \mathbb{R}^{n \times n}$:
+\[
+G^k \to 0 \quad \text{si y solo si} \quad \rho(G) < 1,
+\]
+donde $\rho(G) = \max_i |\lambda_i(G)|$ es el radio espectral.
+\textbf{Sugerencia}: Use la forma de Jordan de $G$ y que todas las normas matriciales son equivalentes.
+\item Demuestre que para cualquier norma matricial:
+\[
+\rho(G) \leq \|G\|.
+\]
+\item Concluya que si $\|G\| < 1$ para alguna norma, entonces el método converge.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Método de Jacobi]
+El método de Jacobi para $Ax = b$ es $x^{(k+1)} = D^{-1}(b - (L+U)x^{(k)})$, donde $A = D + L + U$ (diagonal, triangular inferior estricta, triangular superior estricta).
+\begin{enumerate}[(a)]
+\item Suponga que $A$ es \textbf{estrictamente diagonal dominante por filas}:
+\[
+|a_{ii}| > \sum_{j \neq i} |a_{ij}|, \quad i = 1, \ldots, n.
+\]
+Demuestre que el método de Jacobi converge analizando los autovalores de la matriz de iteración $G_J$.
+\textbf{Sugerencia}: Utilice el Teorema de los Círculos de Gershgorin aplicado a la matriz $G_J = -D^{-1}(L+U)$. Observe que los elementos diagonales de $G_J$ son nulos y relacione los radios de los discos con la condición de diagonal dominancia.
+\item Exhiba un ejemplo de matriz simétrica definida positiva para la cual Jacobi diverge.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Método de Gauss-Seidel]
+El método de Gauss-Seidel para $Ax = b$ es $(D+L)x^{(k+1)} = b - Ux^{(k)}$, con matriz de iteración $G_{GS} = -(D+L)^{-1}U$.
+\begin{enumerate}[(a)]
+\item Suponga que $A$ es estrictamente diagonal dominante por filas. Demuestre que el método de Gauss-Seidel converge analizando los autovalores de $G_{GS}$.
+\textbf{Sugerencia}: Use un argumento similar al de la demostración del Teorema de los Círculos de Gershgorin aplicado a $G_{GS}$.
+\end{enumerate}
+\end{exercise}
+
+
+% \subsection*{Subespacios de Krylov y métodos de Arnoldi/CG/GMRES}
+
+% \begin{exercise}[Relación de Arnoldi y subespacios de Krylov]
+% El proceso de Arnoldi construye una base ortonormal $V_m = [v_1 \mid v_2 \mid \cdots \mid v_m]$ del subespacio de Krylov:
+% \[
+% \mathcal{K}_m(A, b) = \text{span}\{b, Ab, A^2b, \ldots, A^{m-1}b\}.
+% \]
+% \begin{enumerate}[(a)]
+% \item Demuestre la \textbf{relación de Arnoldi}:
+% \[
+% AV_m = V_m H_m + h_{m+1,m} v_{m+1} e_m^T,
+% \]
+% donde $H_m$ es una matriz de Hessenberg superior de tamaño $m \times m$, y $e_m$ es el $m$-ésimo vector canónico.
+% \item Multiplicando por $V_m^T$ y usando ortogonalidad, demuestre que:
+% \[
+% V_m^T A V_m = H_m.
+% \]
+% \item \textbf{Teorema del Residuo de Arnoldi}: Si $x_m = V_m y$ es una aproximación en $\mathcal{K}_m$, demuestre que el residuo $r_m = b - Ax_m$ satisface:
+% \[
+% \|r_m\|_2 = |h_{m+1,m}| |y_m|,
+% \]
+% donde $y_m$ es la última componente de $y$.
+% \item Explique cómo esto proporciona un estimador barato del error sin calcular $Ax_m$ explícitamente.
+% \end{enumerate}
+% \end{exercise}
+
+% \begin{exercise}[Ortogonalidad de residuos en gradientes conjugados]
+% El método de gradientes conjugados (CG) resuelve $Ax = b$ con $A$ simétrica definida positiva construyendo aproximaciones $x_k \in x_0 + \mathcal{K}_k(A, r_0)$ donde $\mathcal{K}_k$ es el subespacio de Krylov y $r_0 = b - Ax_0$.
+% \begin{enumerate}[(a)]
+% \item Demuestre que el residuo $r_k = b - Ax_k$ es ortogonal a todos los residuos previos:
+% \[
+% r_k^T r_j = 0, \quad j = 0, 1, \ldots, k-1.
+% \]
+% \textbf{Sugerencia}: Use la condición de Galerkin: $r_k \perp \mathcal{K}_k(A, r_0)$ y que $r_j \in \mathcal{K}_{j+1}(A, r_0)$.
+% \item Demuestre que la dirección de búsqueda $p_k$ es $A$-conjugada con todas las direcciones previas:
+% \[
+% p_k^T A p_j = 0, \quad j = 0, 1, \ldots, k-1.
+% \]
+% \item Usando la norma energética $\|x\|_A = \sqrt{x^TAx}$, demuestre que $x_k$ minimiza:
+% \[
+% \|x - x^*\|_A^2 = \min_{y \in x_0 + \mathcal{K}_k} \|y - x^*\|_A^2,
+% \]
+% donde $x^* = A^{-1}b$ es la solución exacta.
+% \end{enumerate}
+% \end{exercise}
+
+% \begin{exercise}[Condición de Petrov-Galerkin en GMRES]
+% El método GMRES (Generalized Minimal Residual) inicializado en $x_0 = 0$ construye aproximaciones $x_k \in \mathcal{K}_k(A, b)$ minimizando $\|b - Ax_k\|_2$.
+% \begin{enumerate}[(a)]
+% \item Demuestre que el residuo $r_k = b - Ax_k$ satisface la condición de ortogonalidad de Petrov-Galerkin:
+% \[
+% r_k \perp A\mathcal{K}_k(A, b).
+% \]
+% \item Explique por qué esta es una condición más débil que la ortogonalidad de Galerkin $r_k \perp \mathcal{K}_k$ usada en CG.
+% \item Demuestre que esta condición caracteriza unívocamente la solución que minimiza $\|r_k\|_2$ sobre $\mathcal{K}_k$.
+% \item Compare las propiedades de convergencia de GMRES (aplicable a matrices no simétricas) con CG (solo para matrices simétricas definidas positivas).
+% \end{enumerate}
+% \end{exercise}
+ 
+
+\end{document}
+
+
+
+
+
+
