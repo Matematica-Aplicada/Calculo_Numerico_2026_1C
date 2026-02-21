@@ -1,0 +1,128 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Laboratorio N$^\circ$ 6: Entrenamiento de una Red Neuronal}
+ \bigskip
+
+\subsection*{Red neuronal de una capa}
+
+Una \textbf{red neuronal de una capa oculta} con $m$ neuronas es una función $F: \R^d \to \R$ de la forma
+\[
+F(x; W, b, \alpha) = \sum_{j=1}^m \alpha_j\, \sigma\!\left(\sum_{k=1}^d w_{jk}\, x_k + b_j\right) = \sum_{j=1}^m \alpha_j\, \sigma(w_j \cdot x + b_j),
+\]
+donde:
+\begin{itemize}
+\item $x \in \R^d$ es la entrada,
+\item $W = (w_1, \ldots, w_m) \in \R^{m \times d}$ son los \textit{pesos} de la capa oculta, $b \in \R^m$ los \textit{sesgos},
+\item $\alpha \in \R^m$ son los pesos de la capa de salida,
+\item $\sigma: \R \to \R$ es la \textit{función de activación}, que se aplica componente a componente.
+\end{itemize}
+
+\noindent El conjunto de todos los parámetros es $\theta = (W, b, \alpha) \in \R^p$ con $p = m(d+2)$.
+
+\medskip
+
+\noindent Usaremos la función de activación \textbf{sigmoide}:
+\[
+\sigma(z) = \frac{1}{1 + e^{-z}}.
+\]
+
+\subsection*{Problema de regresión}
+
+Dados $N$ datos de entrenamiento $(x^{(i)}, y^{(i)}) \in \R^d \times \R$ ($i = 1, \ldots, N$), buscamos los parámetros $\theta$ que minimicen el \textit{error cuadrático medio}:
+\[
+L(\theta) = \frac{1}{2N} \sum_{i=1}^N \left(F(x^{(i)}; \theta) - y^{(i)}\right)^2.
+\]
+
+\bigskip
+
+\bej
+\textbf{(Derivada de la sigmoide.)}
+Demuestre que $\sigma'(z) = \sigma(z)(1 - \sigma(z))$. Programe una función que evalúe $\sigma(z)$ y su derivada.
+\fej
+
+\bej
+\textbf{(Gradiente de la función de pérdida.)}
+Sea $r_i(\theta) = F(x^{(i)}; \theta) - y^{(i)}$ el residuo en el dato $i$-ésimo.
+\begin{enumerate}
+\item Demuestre que las derivadas parciales de $L$ respecto de los parámetros son:
+\begin{align*}
+\frac{\partial L}{\partial \alpha_j} &= \frac{1}{N} \sum_{i=1}^N r_i\, \sigma(w_j \cdot x^{(i)} + b_j), \\[4pt]
+\frac{\partial L}{\partial b_j} &= \frac{1}{N} \sum_{i=1}^N r_i\, \alpha_j\, \sigma'(w_j \cdot x^{(i)} + b_j), \\[4pt]
+\frac{\partial L}{\partial w_{jk}} &= \frac{1}{N} \sum_{i=1}^N r_i\, \alpha_j\, \sigma'(w_j \cdot x^{(i)} + b_j)\, x^{(i)}_k.
+\end{align*}
+\item Programe una función \texttt{gradiente(theta, X, y)} que, dados los parámetros y los datos, calcule $\nabla L(\theta) \in \R^p$.
+\item Verifique numéricamente su gradiente comparando con diferencias finitas:
+\[
+\frac{\partial L}{\partial \theta_\ell} \approx \frac{L(\theta + h\, e_\ell) - L(\theta - h\, e_\ell)}{2h}
+\]
+para $h$ pequeño (por ejemplo $h = 10^{-5}$) y varias componentes $\ell$.
+\end{enumerate}
+\fej
+
+\bej
+\textbf{(Descenso por gradiente.)}
+El método de descenso por gradiente con paso constante $\eta > 0$ actualiza los parámetros iterativamente:
+\[
+\theta^{(t+1)} = \theta^{(t)} - \eta\, \nabla L(\theta^{(t)}).
+\]
+
+Considere la función $f(x) = \sin(2\pi x)$ muestreada en $N = 50$ puntos equiespaciados en $[0, 1]$, es decir, $x^{(i)} = i/N$ e $y^{(i)} = \sin(2\pi x^{(i)})$. Use $d = 1$ y $m = 10$ neuronas. Inicialice los parámetros $\theta^{(0)}$ con valores aleatorios pequeños (por ejemplo, normales con media 0 y desvío 0.5).
+
+\begin{enumerate}
+\item Programe el algoritmo de descenso por gradiente. En cada iteración, registre el valor de $L(\theta^{(t)})$.
+\item Corra el algoritmo con $\eta = 0.1$ durante $T = 5000$ iteraciones. Grafique $L(\theta^{(t)})$ en función de $t$. ¿Converge? ¿Es rápido o lento?
+\item Repita con $\eta = 1$ y $\eta = 10$. ¿Qué observa? ¿Alguno de estos valores diverge?
+\item Experimente con distintos valores de $\eta$ hasta encontrar el mayor paso para el cual el algoritmo converge de manera estable. Grafique la curva de pérdida para su elección.
+\item Con el mejor $\eta$ encontrado, grafique la función aprendida $F(x; \theta^{(T)})$ junto con los datos de entrenamiento. ¿Se ajusta bien?
+\end{enumerate}
+\fej
+
+\bej
+\textbf{(Efecto del número de neuronas.)}
+Repita el ejercicio anterior con $m = 2, 5, 20, 50$ neuronas (ajustando $\eta$ en cada caso si es necesario).
+\begin{enumerate}
+\item ¿Cómo cambia la calidad del ajuste al aumentar $m$?
+\item ¿Cómo cambia la velocidad de convergencia?
+\item ¿Qué ocurre si $m$ es muy grande comparado con el número de datos $N$?
+\end{enumerate}
+\fej
+
+\bej
+\textbf{(Una función más difícil.)} Repita el entrenamiento para la función $f(x) = |x - 0.5|$ en $[0,1]$. Esta función no es suave.
+\begin{enumerate}
+\item ¿Logra la red aproximar bien la función? ¿Cuántas neuronas necesita?
+\item Compare la curva de pérdida con la del caso $\sin(2\pi x)$. ¿Converge más lento? ¿Por qué podría ser?
+\end{enumerate}
+\fej
+ 
+\end{document}
