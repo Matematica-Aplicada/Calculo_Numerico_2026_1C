@@ -1,9 +1,6 @@
 # Calculo_Numerico_2026_1C
 
-## Guías de Laboratorio
 
-- [Laboratorio 4 - Teoría de Aproximación](guias_labo/labo_4.pdf)
-- [Laboratorio 5 - Ecuaciones Diferenciales](guias_labo/labo_5.pdf)
 
 ## Guías de Trabajos Prácticos
 
@@ -13,3 +10,9 @@
 - Práctica 4 - Teoría de Aproximación.
 - [Práctica 5 - Ecuaciones Diferenciales](guias_tp/calculo_numerico_5.pdf)
 - Práctica 6 - Ecuaciones no-lineales y Optimización
+
+
+## Guías de Laboratorio
+
+- [Laboratorio 4 - Teoría de Aproximación](guias_labo/labo_4.pdf)
+- [Laboratorio 5 - Ecuaciones Diferenciales](guias_labo/labo_5.pdf)
