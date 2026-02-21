@@ -1,0 +1,302 @@
+\documentclass[12pt]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{enumerate}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+
+\title{\bf Reporte de Prerrequisitos por Práctica\\[0.3cm]
+\large Elementos de Cálculo Numérico --- 1er Cuatrimestre 2026}
+\author{Generado a partir de las guías de ejercicios}
+\date{}
+
+\begin{document}
+\maketitle
+
+\noindent
+Para cada práctica se listan los resultados y conceptos que los alumnos necesitan \textbf{conocer de antemano} para poder resolver los ejercicios.
+No se incluyen los resultados que los propios ejercicios piden demostrar o derivar:
+esos son \emph{contenido} de la guía, no prerrequisitos.
+
+El criterio es: si un resultado aparece en una \emph{sugerencia}, se \emph{usa sin demostración}, o se necesita como \emph{herramienta} para una demostración pedida, entonces es un prerrequisito que debe enseñarse en clase (o asumirse de materias previas).
+
+\tableofcontents
+\newpage
+
+%% ====================================================================
+\section{Práctica 1: Fundamentos de la Computación Numérica}
+%% ====================================================================
+
+\subsection*{Resultados y conceptos que deben enseñarse}
+
+\begin{enumerate}
+\item \textbf{Definición de máquina de Turing} y de máquina de Turing universal.
+Los ejercicios 1--4 piden diseñar y razonar sobre máquinas de Turing, pero la definición formal no se da en la guía.
+
+\item \textbf{Concepto de codificación} $\langle M \rangle$ y de conjunto enumerable.
+El Ej.~2 pide demostrar que el conjunto de MTs es enumerable; necesitan saber qué significa ``enumerable'' y cómo codificar.
+
+\item \textbf{Argumento diagonal de Cantor.}
+El Ej.~4 pide demostrar la indecidibilidad del halting problem usando diagonalización; la técnica debe ser conocida (o al menos la idea de Cantor para los reales).
+
+\item \textbf{Definiciones formales de $O$, $\Omega$, $\Theta$.}
+Se usan desde el Ej.~5 en adelante sin definirlas en el texto de la guía.
+
+\item \textbf{Fórmulas de sumatorias}: $\sum_{i=1}^n i = n(n+1)/2$, $\sum_{i=1}^n i^2 = n(n+1)(2n+1)/6$, series geométricas $\sum_{i=0}^{n-1} r^i = (1-r^n)/(1-r)$.
+Son herramientas necesarias para los Ejs.~7--8 (análisis de bucles).
+
+\item \textbf{Teorema maestro.}
+El Ej.~9(a) pide \emph{enunciarlo}, así que debe haberse visto en clase. Luego se aplica en Ejs.~9(b), 10 y 11.
+
+\item \textbf{Desarrollo de Taylor con resto.}
+Los Ejs.~16--17 (reformulación algebraica) usan $\cos x \approx 1 - x^2/2$ y similares para evitar cancelación catastrófica. Taylor debe ser herramienta conocida de Análisis.
+\end{enumerate}
+
+\subsection*{Lo que NO es prerrequisito (es contenido de los ejercicios)}
+La representación de punto flotante y $\varepsilon_{\text{mach}}$ están \emph{definidas en el texto} de la guía.
+Las propiedades de propagación del error, la cancelación catastrófica y las técnicas de reformulación son lo que los ejercicios piden demostrar o aplicar.
+
+%% ====================================================================
+\section{Práctica 2: Álgebra Lineal Numérica}
+%% ====================================================================
+
+\subsection*{Resultados y conceptos que deben enseñarse}
+
+\begin{enumerate}
+\item \textbf{Álgebra lineal básica} (de materias previas): multiplicación de matrices, inversa, determinante, autovalores y autovectores, espacios vectoriales, rango, núcleo, ortogonalidad, producto interno.
+Toda la práctica se apoya en esto.
+
+\item \textbf{Existencia de la descomposición SVD}: $A = U\Sigma V^T$.
+Se \emph{usa como herramienta} en al menos 8 ejercicios (Ejs.~6, 9, 10, 11, 12, 13, 16, y en el análisis de condicionamiento), pero nunca se pide demostrar su existencia.
+
+\item \textbf{Existencia de la descomposición QR.}
+Se usa como hipótesis en los Ejs.~4--7 (``sea $A = QR$ su descomposición QR\ldots'').
+Los Ejs.~14--15 dan un algoritmo constructivo (Householder), pero los ejercicios anteriores ya la asumen existente.
+
+\item \textbf{Concepto de factorización LU.}
+El Ej.~2 dice ``$A$ admite una descomposición $LU$ sin pivoteo''; el concepto y criterios de existencia deben enseñarse.
+
+\item \textbf{Teorema espectral para matrices normales}: $A = U\Lambda U^*$ con $U$ unitaria.
+Citado explícitamente en la \emph{sugerencia} del Ej.~8: ``Use la descomposición espectral para matrices normales''.
+
+\item \textbf{Forma de Jordan.}
+Citada en la \emph{sugerencia} del Ej.~24: ``Use la forma de Jordan de $G$'' para probar que $G^k \to 0 \Leftrightarrow \rho(G) < 1$.
+
+\item \textbf{Teorema de los Círculos de Gershgorin.}
+Citado en las \emph{sugerencias} de los Ejs.~25 y 26: ``Utilice el Teorema de los Círculos de Gershgorin aplicado a $G_J$'' / ``Use un argumento similar al de Gershgorin''.
+
+\item \textbf{Norma de Frobenius y propiedades de la traza}: $\|A\|_F^2 = \text{tr}(A^TA)$, $\text{tr}(AB) = \text{tr}(BA)$.
+Usadas en el Ej.~11 (Procrustes) sin demostración.
+
+\item \textbf{Radio espectral}: definición $\rho(A) = \max|\lambda_i|$ y relación $\rho(A) \leq \|A\|$.
+Usado en la sección de métodos iterativos (Ejs.~24--26).
+
+\item \textbf{Raíz cuadrada de matrices definidas positivas.}
+Citada en la \emph{sugerencia} del Ej.~7: ``Use que toda matriz definida positiva tiene raíz cuadrada: $B = B^{1/2}B^{1/2}$''.
+
+\item \textbf{Diagonal dominancia estricta}: definición.
+Usada como hipótesis en Ejs.~25--26 pero no definida formalmente en la guía.
+\end{enumerate}
+
+\subsection*{Lo que NO es prerrequisito}
+Las propiedades de matrices triangulares (Ej.~1), la $LDL^T$ (Ej.~2), las propiedades de Householder (Ej.~14), la convergencia de la potencia (Ej.~18), la iteración QR (Ej.~21), la distancia a singulares (Ej.~9), la cota de condicionamiento (Ej.~13), etc., son todas cosas que los ejercicios piden \emph{demostrar}.
+
+%% ====================================================================
+\section{Práctica 3: Interpolación}
+%% ====================================================================
+
+\subsection*{Resultados y conceptos que deben enseñarse}
+
+\begin{enumerate}
+\item \textbf{Un polinomio no nulo de grado $\leq n$ sobre $\mathbb{R}$ tiene a lo sumo $n$ raíces.}
+Citado en la \emph{sugerencia} del Ej.~1(d): ``Use que un polinomio no nulo de grado $\leq n$ tiene a lo sumo $n$ raíces''. Es la herramienta clave para probar la unicidad de la interpolación.
+
+\item \textbf{Teorema del error de interpolación}:
+\[
+f(x) - p_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}\prod_{i=0}^n (x - x_i).
+\]
+Usado \emph{sin demostración} en los Ejs.~5, 8(c) y 10(e): ``Estime el error usando la fórmula del error'', ``Use el teorema del error de interpolación''. Nunca se pide demostrarlo.
+
+\item \textbf{Fórmula de la serie geométrica}: $\sum_{j=0}^{N-1} z^j = \frac{1-z^N}{1-z}$ para $z \neq 1$.
+Citada en la \emph{sugerencia} del Ej.~15(a): ``La suma es una serie geométrica''. Es la herramienta para probar la ortogonalidad de la DFT.
+
+\item \textbf{FFT}: existencia de un algoritmo que calcula la DFT en $O(N\log N)$.
+Usada como caja negra en Ejs.~17(c), 18(c), 19: ``usando la FFT''. El algoritmo no se desarrolla.
+
+\item \textbf{$\mathbb{Z}_p$ es un cuerpo} para $p$ primo.
+Asumido en toda la sección de cuerpos finitos (Ejs.~20--23). En particular, la existencia de inverso multiplicativo.
+
+\item \textbf{Algoritmo de división de polinomios.}
+Citado en la \emph{sugerencia} del Ej.~20(b): ``divida $q(x)$ por $(x-\beta)$ usando el algoritmo de división''. Es la herramienta para la demostración inductiva.
+
+\item \textbf{Identidad combinatoria} $\sum_{k=0}^n \binom{n}{k}^2 = \binom{2n}{n}$.
+Usada en el Ej.~2(b)(ii) para acotar $\|a\|_2^2$; no se pide demostrarla.
+
+\item \textbf{SVD y valor singular mínimo.}
+Usados en el Ej.~2(b) para analizar el condicionamiento de Vandermonde: ``la caracterización variacional del valor singular mínimo''. Presupone la Práctica~2.
+
+\item \textbf{Integración por partes.}
+Necesaria en el Ej.~7(b) para demostrar la propiedad variacional de los splines cúbicos.
+\end{enumerate}
+
+\subsection*{Lo que NO es prerrequisito}
+La existencia y unicidad del interpolante (Ej.~1), la fórmula de Lagrange (definida en el Ej.~3), la forma baricéntrica (derivada en Ej.~4), las propiedades de la DFT (ortogonalidad, inversión, Parseval, convolución --- todo demostrado en Ejs.~15--17), la cota de raíces en $\mathbb{Z}_p$ (demostrada en Ej.~20), Shamir y Reed--Solomon (contenido de Ejs.~22--23).
+
+%% ====================================================================
+\section{Práctica 4: Teoría de Aproximación}
+%% ====================================================================
+
+\subsection*{Resultados y conceptos que deben enseñarse}
+
+\begin{enumerate}
+\item \textbf{Integración por partes.}
+Citada en la \emph{sugerencia} del Ej.~4: ``Integre por partes'' para demostrar el decaimiento $|c_k| \leq Ck^{-n}$.
+
+\item \textbf{Desigualdad de Bessel}: $\sum |c_k|^2 \leq \|f\|_2^2$.
+Citada en la \emph{sugerencia} del Ej.~6: ``aplique\ldots la desigualdad de Bessel''.
+
+\item \textbf{Desigualdad de Cauchy--Schwarz}: $|\langle f, g \rangle| \leq \|f\| \cdot \|g\|$.
+Citada en la \emph{sugerencia} del Ej.~6: ``aplique la desigualdad de Cauchy--Schwarz combinada con\ldots''.
+
+\item \textbf{Criterio M de Weierstrass} para convergencia uniforme de series.
+Citado en la \emph{sugerencia} del Ej.~6: ``Utilice el criterio M de Weierstrass, mostrando que $\sum|c_k| < \infty$''.
+
+\item \textbf{Proceso de Gram--Schmidt.}
+Citado explícitamente en el Ej.~12: ``Utilice el proceso de Gram--Schmidt comenzando con $\{1, x, x^2\}$''.
+
+\item \textbf{Cambio de variables en integrales.}
+Citado en la \emph{sugerencia} del Ej.~9: ``utilice el cambio de variables $x = \cos(t)$''.
+
+\item \textbf{Fórmula de Euler}: $e^{ikx} = \cos(kx) + i\sin(kx)$.
+Usada implícitamente en los Ejs.~3 y 7 para pasar entre forma real y compleja.
+
+\item \textbf{Existencia de mejor aproximación uniforme (polinomial).}
+Usada en el Ej.~15(b): el resultado sobre la constante de Lebesgue compara con ``$p_n^*$, el mejor polinomio de aproximación uniforme de grado $n$'', cuya existencia se asume.
+
+\item \textbf{Cuadratura de Gauss con $n$ nodos es exacta para polinomios de grado $\leq 2n-1$.}
+Enunciado como hecho conocido en el Ej.~13. También afirmado sin demostración en el Ej.~14 para Gauss--Chebyshev.
+
+\item \textbf{Polos complejos y convergencia de interpolación.}
+En la \emph{sugerencia} del Ej.~16(b): ``Considere los polos complejos $x = \pm i/5$ y su proximidad al intervalo real''. Requiere noción de singularidad en el plano complejo.
+\end{enumerate}
+
+\subsection*{Lo que NO es prerrequisito}
+La ortogonalidad de $B_N$ (Ej.~1), la propiedad de mejor aproximación de $S_N$ (Ej.~2), el decaimiento de coeficientes (Ej.~4), la convergencia uniforme (Ej.~6), la exactitud de trapecios para trigonométricas (Ej.~7), la equivalencia interpolación/proyección discretizada (Ej.~14), la cota de la constante de Lebesgue (Ej.~15) --- todo esto es contenido de los ejercicios.
+
+%% ====================================================================
+\section{Práctica 5: Ecuaciones Diferenciales Ordinarias}
+%% ====================================================================
+
+\subsection*{Resultados y conceptos que deben enseñarse}
+
+\begin{enumerate}
+\item \textbf{Desarrollo de Taylor con resto} (orden arbitrario).
+Herramienta fundamental para derivar las fórmulas de diferencias finitas (Ejs.~1--2), los métodos de Euler (Ej.~3), Runge--Kutta (Ej.~4) y para el análisis de error de truncamiento (Ej.~11b).
+
+\item \textbf{Cota de error para Euler explícito}: $|e_n| \leq \frac{Mh}{2L}(e^{L(t_n-t_0)}-1)$.
+Citada en el Ej.~5(c) como fórmula conocida: ``Utilizando la cota de error para el método de Euler explícito\ldots''. Debe enseñarse (o al menos enunciarse) en clase.
+
+\item \textbf{Condición de Lipschitz} y su rol en existencia/unicidad de soluciones de EDOs.
+Usada en el Ej.~5: ``Identifique la constante de Lipschitz de la función $f(t,y)$''.
+
+\item \textbf{Definiciones de consistencia, estabilidad (0-estabilidad) y convergencia} para métodos numéricos de EDOs.
+Se usan sin definir formalmente en los Ejs.~3(d), 6, 8, 9.
+
+\item \textbf{Teorema de Gershgorin.}
+Citado en la \emph{sugerencia} del Ej.~11(d): ``Utilice el teorema de los círculos de Gershgorin para mostrar que los autovalores de $A^h$ son positivos''.
+
+\item \textbf{$\|A^{-1}\|_2 = 1/\min_k|\lambda_k|$ para matrices normales (en particular simétricas).}
+Usado explícitamente en Ejs.~12(c), 13(c) y 15(c). Es un resultado de la Práctica~2 (Ej.~8).
+
+\item \textbf{Identidades} $e^{i\theta} + e^{-i\theta} = 2\cos\theta$ y $e^{i\theta} - e^{-i\theta} = 2i\sin\theta$.
+Indicadas en los Ejs.~12 y 13 para el análisis de Fourier.
+
+\item \textbf{Matrices normales}: definición $A^*A = AA^*$.
+Usada en Ej.~13(c): ``Muestre que la matriz $A_N$ es normal y que por lo tanto $\|A_N^{-1}\|_2 = 1/\min_k|\lambda_k|$''.
+\end{enumerate}
+
+\subsection*{Lo que NO es prerrequisito}
+Las fórmulas de diferencias finitas (Ejs.~1--2), la estabilidad/convergencia de los métodos de Euler (Ej.~3), la derivación de RK2 (Ej.~4), la condición de la raíz (Ej.~7), el análisis de Adams-Bashforth y BDF (Ejs.~8--9), los autovalores del laplaciano discreto (Ejs.~12, 15, 16) --- todo es contenido de los ejercicios.
+
+%% ====================================================================
+\section{Práctica 6: Sistemas No-Lineales y Optimización}
+%% ====================================================================
+
+\subsection*{Resultados y conceptos que deben enseñarse}
+
+\begin{enumerate}
+\item \textbf{Teorema del valor intermedio (Bolzano).}
+Fundamento del método de bisección (Ej.~1): la existencia de raíz en $[a,b]$ cuando $f(a)f(b) < 0$ se asume como resultado conocido de Análisis.
+
+\item \textbf{Desarrollo de Taylor en $\mathbb{R}$ y en $\mathbb{R}^n$} (con resto).
+\begin{itemize}
+\item En 1D: usado para derivar Newton (Ej.~3a) y para demostrar convergencia cuadrática (Ej.~3b).
+\item En $\mathbb{R}^n$: usado explícitamente en el Ej.~8 (``Usando el desarrollo de Taylor vectorial\ldots'') y en el Ej.~12 (``Deduzca esta fórmula a partir de la aproximación cuadrática'').
+\end{itemize}
+
+\item \textbf{Definición de Jacobiana}, gradiente y Hessiana.
+La Jacobiana se usa desde el Ej.~7 (``Calcule la matriz Jacobiana $J_F(x,y)$'').
+El gradiente y la Hessiana se usan en Ejs.~11--16 (``Calcule $\nabla f$ y $\nabla^2 f$'').
+Las definiciones no se dan en la guía.
+
+\item \textbf{Continuidad Lipschitz de la Jacobiana.}
+Asumida como hipótesis en el Ej.~8(b): ``Si $J_F$ es Lipschitz con constante $L$, es decir $\|J_F(x)-J_F(y)\| \leq L\|x-y\|$''. El concepto debe ser conocido.
+
+\item \textbf{Desigualdad de descenso para funciones $L$-suaves.}
+Dada como punto de partida en el Ej.~13(b):
+``Partiendo de la desigualdad de descenso para funciones $L$-suaves: $f(y) \leq f(x) + \nabla f(x)^T(y-x) + \frac{L}{2}\|y-x\|^2$''.
+Debe demostrarse o al menos enunciarse en clase.
+
+\item \textbf{Convexidad fuerte}: definición.
+Usada como hipótesis en el Ej.~13 (``$f$ es $\mu$-fuertemente convexa'') para deducir la tasa de convergencia lineal. La definición no se da en la guía.
+
+\item \textbf{Costo de la factorización LU}: $O(n^3/3)$.
+Usado en el Ej.~10(a): ``¿Cuál es el costo de cada iteración de Newton si la Jacobiana se resuelve mediante factorización LU?''. Presupone la Práctica~2.
+\end{enumerate}
+
+\subsection*{Lo que NO es prerrequisito}
+La cota de error de bisección (Ej.~1b), la fórmula de Newton y su convergencia cuadrática (Ej.~3), la pérdida de orden en raíces múltiples (Ej.~4), el orden de la secante (enunciado en Ej.~5 sin demostración), la convergencia cuadrática en $\mathbb{R}^n$ (Ej.~8), la cota de descenso del gradiente (Ej.~13b) --- todo es contenido de los ejercicios.
+
+%% ====================================================================
+\section*{Resumen transversal}
+%% ====================================================================
+
+\subsection*{Resultados ``estrella'' que se reutilizan en varias prácticas}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Resultado} & \textbf{Usado en} \\
+\hline
+Desarrollo de Taylor con resto & P1, P3, P4, P5, P6 \\
+SVD (existencia y propiedades) & P2, P3 \\
+Teorema de Gershgorin & P2, P5 \\
+$\|A^{-1}\|_2 = 1/\min|\lambda_k|$ (matrices normales) & P2, P5 \\
+Serie geométrica & P1, P3, P4 \\
+Integración por partes & P3, P4 \\
+Desigualdad de Cauchy--Schwarz & P4 \\
+Costo de LU: $O(n^3/3)$ & P2, P6 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Dependencias entre prácticas}
+
+\begin{center}
+\begin{tabular}{|c|l|l|}
+\hline
+\textbf{Práctica} & \textbf{Tema principal} & \textbf{Usa resultados de} \\
+\hline
+1 & Turing, complejidad, punto flotante & Análisis (Taylor) \\
+2 & LU, QR, SVD, autovalores, iterativos & Álgebra lineal (prerreq.) \\
+3 & Interpolación, DFT, cuerpos finitos & P2 (SVD, $\sigma_{\min}$) \\
+4 & Fourier, Chebyshev, cuadratura & Análisis (Bessel, Weierstrass) \\
+5 & Diferencias finitas, PVI, PVC & P2 (Gershgorin, normales) \\
+6 & Newton, bisección, gradiente & P2 (costo LU), Análisis (Taylor $\mathbb{R}^n$) \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{document}
