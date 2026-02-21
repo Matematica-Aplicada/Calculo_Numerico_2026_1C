@@ -1,0 +1,337 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Práctica N$^\circ$ 6: Sistemas No-Lineales y Optimización Numérica}
+ \bigskip
+
+\section*{Método de bisección}
+
+\bej
+El método de bisección busca una raíz de $f$ en un intervalo $[a,b]$ donde $f(a)f(b)<0$.
+\begin{enumerate}[(a)]
+\item Describa el algoritmo de bisección y explique por qué genera una sucesión de intervalos encajados $[a_k,b_k]$ tales que $f(a_k)f(b_k)<0$.
+\item Demuestre que después de $k$ iteraciones el error satisface
+\[
+|x_k - x^*| \leq \frac{b-a}{2^{k+1}},
+\]
+donde $x^* \in [a,b]$ es una raíz de $f$ y $x_k$ es el punto medio de $[a_k,b_k]$.
+\item ¿Cuántas iteraciones se necesitan para garantizar un error menor que $\varepsilon > 0$?
+\item Aplique bisección a $f(x)= x^3-2$ en $[1,2]$ para aproximar $\sqrt[3]{2}$. Calcule las primeras 5 iteraciones.
+\end{enumerate}
+\fej
+
+\bej
+(Limitaciones de bisección)
+\begin{enumerate}[(a)]
+\item Dé un ejemplo de función continua con una raíz donde bisección no pueda aplicarse directamente. ¿Qué condición falla?
+\item ¿Es posible que bisección converja a un punto que no sea raíz de $f$? Justifique.
+\item Compare la tasa de convergencia de bisección (lineal con factor $1/2$) con la de un método de convergencia cuadrática. Si ambos parten con un error inicial de $1$, ¿cuántas iteraciones necesita cada uno para alcanzar un error de $10^{-12}$?
+\end{enumerate}
+\fej
+
+\section*{Método de Newton en $\R$}
+
+\bej
+Sea $f:\R \to \R$ una función dos veces diferenciable. El método de Newton genera la sucesión:
+\[
+x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)}.
+\]
+\begin{enumerate}[(a)]
+\item Deduzca la fórmula del método a partir de la aproximación lineal (Taylor de orden 1) de $f$ alrededor de $x_k$.
+\item Suponga que $f(x^*)=0$, $f'(x^*)\neq 0$ y $f \in C^2$ en un entorno de $x^*$. Defina el error $e_k = x_k - x^*$ y demuestre que
+\[
+e_{k+1} = -\frac{f''(\xi_k)}{2f'(x_k)}\,e_k^2,
+\]
+para cierto $\xi_k$ entre $x_k$ y $x^*$. Concluya que la convergencia es localmente cuadrática.
+\item Aplique el método de Newton a $f(x)=x^2 - a$ ($a>0$) para obtener la iteración:
+\[
+x_{k+1} = \frac{1}{2}\left(x_k + \frac{a}{x_k}\right).
+\]
+Partiendo de $x_0 = 1$, calcule las primeras 4 iteraciones para $a=2$ y compare con $\sqrt{2}$.
+\end{enumerate}
+\fej
+
+\bej
+(Raíces múltiples y pérdida de orden)
+Considere $f(x) = (x-1)^2$.
+\begin{enumerate}[(a)]
+\item Aplique Newton a esta función y muestre que la iteración resultante es:
+\[
+x_{k+1} = \frac{x_k + 1}{2}.
+\]
+\item Demuestre que $|e_{k+1}| = \frac{1}{2}|e_k|$, es decir, la convergencia es solo lineal (no cuadrática). ¿Por qué se pierde el orden?
+\item Proponga la modificación $x_{k+1} = x_k - m\,\frac{f(x_k)}{f'(x_k)}$ con $m=2$ (multiplicidad conocida) y demuestre que se recupera la convergencia cuadrática.
+\end{enumerate}
+\fej
+
+\bej
+(Método de la secante)
+El método de la secante reemplaza $f'(x_k)$ por la diferencia dividida $\frac{f(x_k)-f(x_{k-1})}{x_k - x_{k-1}}$:
+\[
+x_{k+1} = x_k - f(x_k) \frac{x_k - x_{k-1}}{f(x_k) - f(x_{k-1})}.
+\]
+\begin{enumerate}[(a)]
+\item ¿Qué ventaja tiene este método respecto de Newton?
+\item Aplique el método de la secante a $f(x)=x^3-2$ con $x_0=1$, $x_1=2$. Calcule $x_2$, $x_3$ y $x_4$.
+\item Puede demostrarse que el orden de convergencia del método de la secante es $p=\frac{1+\sqrt{5}}{2} \approx 1.618$ (el número áureo). Compare la eficiencia del método de la secante contra Newton, teniendo en cuenta que la secante no requiere evaluar $f'$.
+\end{enumerate}
+\fej
+
+\bej
+Considere la ecuación $e^{-x} = x$.
+\begin{enumerate}[(a)]
+\item Muestre que existe una única solución $x^* \in (0,1)$.
+\item Halle la solución aplicando bisección en $[0,1]$ hasta obtener un error menor que $10^{-2}$.
+\item Aplique Newton a $f(x)=e^{-x}-x$ con $x_0 = 0$. Calcule $x_1$, $x_2$ y $x_3$.
+\item Compare la velocidad de convergencia de ambos métodos.
+\end{enumerate}
+\fej
+
+\section*{Método de Newton para sistemas no lineales en $\R^n$}
+
+\begin{exercise}[Newton para sistemas $2\times 2$]
+Considere el sistema no lineal:
+\[
+F(x,y) = \begin{pmatrix} x^2 + y^2 - 4 \\ xy - 1 \end{pmatrix} = 0.
+\]
+\begin{enumerate}[(a)]
+\item Calcule la matriz Jacobiana $J_F(x,y)$.
+\item Escriba la iteración de Newton: dado $(x_k,y_k)$, resolver $J_F(x_k,y_k)\,\delta = -F(x_k,y_k)$ y actualizar $(x_{k+1},y_{k+1}) = (x_k,y_k) + \delta$.
+\item Partiendo de $(x_0,y_0)=(2,1)$, realice una iteración de Newton. Resuelva el sistema lineal $2\times 2$ explícitamente.
+\item ¿Cuántas soluciones tiene el sistema? Discuta qué punto inicial llevaría a cada una de ellas.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Convergencia cuadrática local]\label{ej_convergencia_newton}
+Sea $F:\R^n \to \R^n$ continuamente diferenciable, con $F(x^*)=0$ y $J_F(x^*)$ invertible.
+\begin{enumerate}[(a)]
+\item Usando el desarrollo de Taylor vectorial
+\[
+F(x^*) = F(x_k) + J_F(x_k)(x^*-x_k) + R_k,
+\]
+y la definición de la iteración de Newton, demuestre que el error $e_{k+1} = x_{k+1}-x^*$ satisface
+\[
+e_{k+1} = -[J_F(x_k)]^{-1}\, R_k.
+\]
+\item Si $J_F$ es Lipschitz con constante $L$, es decir $\|J_F(x)-J_F(y)\| \leq L\|x-y\|$, acote $\|R_k\|$ y concluya que
+\[
+\|e_{k+1}\| \leq C\,\|e_k\|^2,
+\]
+para cierta constante $C>0$, siempre que $x_0$ esté suficientemente cerca de $x^*$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Intersección de curvas]
+El sistema de ecuaciones:
+\[
+\begin{cases}
+x^2 + y^2 = 1 \\
+y = x^3
+\end{cases}
+\]
+describe la intersección de una circunferencia con una cúbica.
+\begin{enumerate}[(a)]
+\item Plantee el sistema como $F(x,y) = 0$ y calcule la Jacobiana.
+\item Realice dos iteraciones de Newton partiendo de $(x_0,y_0) = (0.8, 0.5)$.
+\item ¿Qué ocurre si se parte de $(x_0,y_0) = (0,0)$? ¿Y de $(0,1)$? Discuta.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Costo computacional del método de Newton]
+Considere la aplicación del método de Newton a un sistema $F:\R^n \to \R^n$.
+\begin{enumerate}[(a)]
+\item ¿Cuál es el costo de cada iteración de Newton si la Jacobiana se resuelve mediante factorización LU? Expréselo en términos de $n$.
+\item Si $n$ es grande y la Jacobiana es esparsa (por ejemplo, tridiagonal), ¿cómo puede explotarse esta estructura?
+\item En el método de Newton modificado, se fija la Jacobiana $J_F(x_0)$ y se resuelve $J_F(x_0)\,\delta = -F(x_k)$ en cada iteración. ¿Cuál es la ventaja computacional? ¿Qué se pierde en términos de convergencia?
+\end{enumerate}
+\end{exercise}
+
+\section*{Newton para optimización}
+
+\begin{exercise}[Newton vs gradiente en 1D]
+Considere la función $f(x) = \frac{1}{2}(x-3)^2 + 1$.
+\begin{enumerate}[(a)]
+\item Aplique una iteración del método de Newton para optimización ($x_{k+1} = x_k - f''(x_k)^{-1}f'(x_k)$) partiendo de $x_0=0$. ¿Qué observa?
+\item Aplique descenso por gradiente con paso $\alpha = 0.5$ partiendo de $x_0=0$. Calcule $x_1$, $x_2$ y $x_3$.
+\item Repita con $f(x) = (x-3)^4$. ¿Qué le pasa a Newton? ¿Y al gradiente?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Newton para optimización en $\R^n$]
+Para minimizar $f:\R^n \to \R$ suave, el método de Newton busca raíces de $\nabla f(x) = 0$:
+\[
+x_{k+1} = x_k - [\nabla^2 f(x_k)]^{-1}\,\nabla f(x_k).
+\]
+\begin{enumerate}[(a)]
+\item Deduzca esta fórmula a partir de la aproximación cuadrática (Taylor de orden 2) de $f$ alrededor de $x_k$.
+\item Considere $f(x_1,x_2) = x_1^2 + 10\,x_2^2$. Calcule $\nabla f$ y $\nabla^2 f$.
+\item Realice una iteración de Newton partiendo de $x_0 = (5,1)^T$. ¿Qué observa?
+\item ¿Cuál es el número de condición $\kappa = L/\mu$ de esta función? ¿Cómo afecta este valor al descenso por gradiente?
+\end{enumerate}
+\end{exercise}
+
+\section*{Descenso por gradiente}
+
+\begin{exercise}[Descenso por gradiente con paso constante]
+Sea $f:\R^n \to \R$ una función $\mu$-fuertemente convexa y $L$-suave. El método de descenso por gradiente con paso constante $\alpha$ genera la secuencia $x_{k+1} = x_k - \alpha\,\nabla f(x_k)$.
+\begin{enumerate}[(a)]
+\item ¿Qué significa geométricamente que $-\nabla f(x)$ sea la dirección de máximo decrecimiento?
+\item Partiendo de la desigualdad de descenso para funciones $L$-suaves:
+\[
+f(y) \leq f(x) + \nabla f(x)^T(y-x) + \frac{L}{2}\|y-x\|^2,
+\]
+demuestre que con $\alpha = 1/L$:
+\[
+f(x_{k+1}) \leq f(x_k) - \frac{1}{2L}\|\nabla f(x_k)\|^2.
+\]
+\item Usando además la convexidad fuerte, concluya que:
+\[
+f(x_{k+1}) - f(x^*) \leq \left(1 - \frac{\mu}{L}\right)(f(x_k) - f(x^*)).
+\]
+\item ¿Cuántas iteraciones se necesitan para reducir el error $f(x_k)-f(x^*)$ por un factor de $\varepsilon$?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Efecto del número de condición]
+Considere la función cuadrática $f(x_1,x_2) = \frac{1}{2}(a\,x_1^2 + b\,x_2^2)$ con $0 < a \leq b$.
+\begin{enumerate}[(a)]
+\item Identifique las constantes $\mu$ y $L$ para esta función. ¿Cuál es el número de condición $\kappa$?
+\item Demuestre que descenso por gradiente con $\alpha = 1/b$ produce la iteración:
+\[
+x_1^{(k+1)} = \left(1 - \frac{a}{b}\right)x_1^{(k)}, \quad x_2^{(k+1)} = 0.
+\]
+Concluya que la convergencia es lenta en la dirección $x_1$ cuando $a \ll b$.
+\item Calcule las primeras 5 iteraciones para $a=1$, $b=100$, partiendo de $x_0 = (1,1)^T$.
+\item Repita con $a=1$, $b=1$. ¿Cuántas iteraciones se necesitan ahora?
+\item Explique la analogía entre el número de condición en optimización y el número de condición de una matriz en sistemas lineales.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Elección del paso]
+\begin{enumerate}[(a)]
+\item Considere $f(x) = \frac{1}{2}x^2$ y descenso por gradiente con paso $\alpha$. Muestre que la iteración es $x_{k+1} = (1-\alpha)x_k$ y determine para qué valores de $\alpha$ el método converge, diverge, u oscila.
+\item Para la misma función, ¿cuál es el paso óptimo?
+\item Para una función general $L$-suave, ¿por qué el paso $\alpha = 1/L$ es una elección natural?
+\item (Búsqueda lineal) En la práctica, a menudo se elige $\alpha_k$ resolviendo (aproximadamente)
+\[
+\alpha_k = \arg\min_{\alpha > 0} f(x_k - \alpha\,\nabla f(x_k)).
+\]
+¿Por qué es esto razonable? ¿Cuál es su desventaja?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Función de Rosenbrock]
+La función de Rosenbrock es un clásico test de optimización:
+\[
+f(x_1,x_2) = (1-x_1)^2 + 100(x_2-x_1^2)^2.
+\]
+\begin{enumerate}[(a)]
+\item Encuentre el único minimizador $x^*$ de $f$.
+\item Calcule $\nabla f(x_1,x_2)$ y $\nabla^2 f(x_1,x_2)$.
+\item Evalúe la Hessiana en el mínimo. ¿Cuáles son los autovalores? ¿Cuál es el número de condición?
+\item Explique por qué esta función es difícil para descenso por gradiente. ¿Qué forma tienen las curvas de nivel?
+\item Realice dos iteraciones de Newton partiendo de $(x_0,y_0) = (0,0)$.
+\end{enumerate}
+\end{exercise}
+
+\section*{Cuadrados mínimos no lineales}
+
+\begin{exercise}[Método de Gauss-Newton]
+Considere el problema de ajustar el modelo $y = ae^{bx}$ a los datos:
+\[
+\begin{array}{c|cccc}
+x_i & 0 & 1 & 2 & 3 \\
+\hline
+y_i & 2.0 & 2.7 & 3.7 & 5.0
+\end{array}
+\]
+Definimos los residuos $r_i(a,b) = ae^{bx_i} - y_i$, $i=1,\ldots,4$.
+\begin{enumerate}[(a)]
+\item Escriba la función objetivo $f(a,b) = \frac{1}{2}\sum_{i=1}^4 r_i^2$.
+\item Calcule la Jacobiana $J_r(a,b) \in \R^{4\times 2}$ del vector de residuos.
+\item Verifique que el gradiente de $f$ es $\nabla f = J_r^T r$ y que la aproximación de Gauss-Newton a la Hessiana es $J_r^T J_r$.
+\item Escriba la iteración de Gauss-Newton. ¿Por qué equivale a resolver un problema de cuadrados mínimos lineales en cada paso?
+\item Partiendo de $(a_0,b_0)=(2, 0.3)$, realice una iteración de Gauss-Newton.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Levenberg-Marquardt]
+El método de Levenberg-Marquardt modifica Gauss-Newton resolviendo en cada paso:
+\[
+(J_r^T J_r + \lambda_k I)\,\delta = -J_r^T r,
+\]
+donde $\lambda_k > 0$ es un parámetro de amortiguamiento.
+\begin{enumerate}[(a)]
+\item Muestre que si $\lambda_k \to 0$ se recupera el paso de Gauss-Newton, y si $\lambda_k \to \infty$ se obtiene un paso en la dirección del gradiente con norma pequeña.
+\item ¿Por qué la regularización $\lambda_k I$ mejora la robustez del método cuando $J_r^T J_r$ está mal condicionada o es singular?
+\item Describa una estrategia adaptativa para $\lambda_k$: si la iteración reduce $f$, ¿qué se hace con $\lambda_k$? ¿Y si la aumenta?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Ajuste de modelo logístico]
+Se desea ajustar un modelo de crecimiento logístico $P(t) = \frac{K}{1+Ae^{-rt}}$ a datos de población $(t_i, P_i)$. Los parámetros a estimar son $\theta=(K,A,r)$.
+\begin{enumerate}[(a)]
+\item Escriba los residuos $r_i(\theta) = P(t_i) - P_i$ y calcule las derivadas parciales $\frac{\partial r_i}{\partial K}$, $\frac{\partial r_i}{\partial A}$, $\frac{\partial r_i}{\partial r}$.
+\item ¿Cuáles son las dimensiones de la Jacobiana $J_r(\theta)$ si se tienen $m$ datos?
+\item Explique por qué Gauss-Newton converge cuadráticamente cuando los residuos en el óptimo son pequeños ($\|r(\theta^*)\| \approx 0$), pero solo linealmente si los residuos son grandes.
+\end{enumerate}
+\end{exercise}
+
+\section*{Problemas integradores}
+
+\begin{exercise}[Punto fijo y convergencia]
+Considere la iteración de punto fijo $x_{k+1}=g(x_k)$ para encontrar una raíz de $f(x)=0$, donde $g(x) = x - \varphi(x)f(x)$ para cierta función $\varphi$.
+\begin{enumerate}[(a)]
+\item Muestre que si $x^*$ es punto fijo de $g$ con $f(x^*) \neq 0$ solo si $\varphi(x^*)=0$. ¿Qué se necesita para que $x^*$ sea raíz de $f$?
+\item Demuestre que eligiendo $\varphi(x) = 1/f'(x)$ se obtiene el método de Newton.
+\item ¿Qué elección de $\varphi$ constante garantiza convergencia local (por el teorema de punto fijo de Banach)?
+\item Demuestre que Newton es la única elección de $\varphi$ (dependiente de $x$) que da convergencia cuadrática (suponiendo $f'(x^*)\neq 0$).
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Cuadrados mínimos lineales como caso particular]
+Considere el problema lineal de cuadrados mínimos $\min_x \|Ax-b\|^2$ con $A \in \R^{m\times n}$, $m \geq n$.
+\begin{enumerate}[(a)]
+\item Defina los residuos $r(x) = Ax - b$ y su Jacobiana $J_r$. Verifique que $J_r = A$ (constante).
+\item Muestre que el paso de Gauss-Newton produce la solución exacta $x^* = (A^TA)^{-1}A^Tb$ en una sola iteración, independientemente del punto inicial.
+\item ¿Por qué ocurre esto? ¿Qué propiedad especial tiene la Hessiana $\nabla^2 f$ cuando los residuos son lineales?
+\end{enumerate}
+\end{exercise}
+
+
+\end{document}
+
+
+
+
+
+

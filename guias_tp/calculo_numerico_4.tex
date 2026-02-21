@@ -1,0 +1,249 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Práctica N$^\circ$ 4: Teoría de Aproximación}
+ \bigskip
+
+\bej 
+Muestre que el conjunto de funciones 
+    \[
+    B_N = \{ 1, \sin(x), \cos(x), ..., \sin(Nx), \cos(Nx) \} 
+    \]
+    es ortogonal con respecto al producto interno definido por:
+    \begin{equation}
+        (f,g)_2 = \int_0^{2\pi} f(x) g(x) dx
+    \end{equation}
+y calcule la norma de cada función en $B_N$ asociada a $(\cdot,\cdot)_2$ que se denotará por $\| \cdot \|_2$.
+\fej
+
+\bej Sea $f$ una función de cuadrado integrable en $[0,2\pi]$. Definimos los coeficientes de Fourier de $f$ como
+    \[
+        a_k = \frac{1}{\pi} \int_0^{2\pi} f(x) \cos(kx) \, dx, \quad k \ge 0
+    \]
+    \[
+        b_k = \frac{1}{\pi} \int_0^{2\pi} f(x) \sin(kx) \, dx, \quad k \ge 1
+    \]
+    y la suma parcial de Fourier como:
+    \[
+        S_N(f)(x) = \frac{a_0}{2} + \sum_{k=1}^N \left( a_k \cos(kx) + b_k \sin(kx) \right).
+    \]
+    Demuestre la propiedad de mejor aproximación en media cuadrática: de todos los elementos del subespacio generado por $B_N$, $S_N(f)$ es el que minimiza el error en norma $\| \cdot \|_2$. Es decir:
+    \[
+        \| f - S_N(f) \|_2 \le \| f - p \|_2 \quad \text{para todo } p \in \langle B_N \rangle.
+    \]
+\fej
+
+\bej
+(Forma Compleja de la Serie de Fourier)
+Considere la serie de Fourier en su forma compleja:
+\[ S_N(f)(x) = \sum_{k=-N}^{N} c_k e^{ikx} \]
+donde los coeficientes están dados por $c_k = \frac{1}{2\pi} \int_0^{2\pi} f(x) e^{-ikx} \, dx$.
+Muestre que esta representación es equivalente a la forma trigonométrica real obtenida en el Ejercicio 2, estableciendo las siguientes relaciones entre los coeficientes para $k \ge 1$:
+\[ c_0 = \frac{a_0}{2}, \quad c_k = \frac{a_k - i b_k}{2}, \quad c_{-k} = \frac{a_k + i b_k}{2}. \]
+\fej
+
+\bej
+Se define, para cada $n\in \mathbb{N}$, el espacio de funciones suaves y periódicas como:
+$$C^n_{per}([0,2\pi]) = \left\lbrace f \in C^n([0,2\pi]) : f^{(p)}(0) = f^{(p)}(2\pi) \mbox{ para todo } 0\le p\le n-1 \right\rbrace $$
+Muestre que, dada $f\in C^n_{per}([0,2\pi])$, sus coeficientes de Fourier decaen con orden $n$: es decir, muestre que $|c_k| \leq C k^{-n}$ para una cierta constante $C$ independiente de $k$. Sugerencia: Integre por partes.
+\fej
+
+\bej
+(Cálculo de Coeficientes y Decaimiento)
+\begin{enumerate}[(a)]
+    \item Calcule los coeficientes de Fourier (en el intervalo $[-\pi, \pi]$) de la función signo: $f(x) = \text{sgn}(x)$ (onda cuadrada).
+    \item Calcule los coeficientes de Fourier de la onda triangular: $g(x) = |x|$ en $[-\pi, \pi]$.
+    \item Analice la tasa de decaimiento de los coeficientes obtenidos cuando $k \to \infty$. Relacione este resultado con la suavidad de las funciones y con el resultado del ejercicio anterior.
+\end{enumerate}
+\fej
+
+\bej
+(Convergencia Uniforme) Demuestre que si $f \in C^1_{per}([0,2\pi])$, la serie de Fourier de $f$ converge uniformemente a $f$ en todo el intervalo.
+\par\noindent\textit{Sugerencia:} Utilice el criterio M de Weierstrass, mostrando que $\sum |c_k| < \infty$. Para ello, relacione los coeficientes de $f$ con los de la derivada $f'$ (que es de cuadrado integrable) integrando por partes, y luego aplique la desigualdad de Cauchy-Schwarz combinada con la desigualdad de Bessel.
+\fej
+
+\bej
+(Exactitud de Trapecios para Trigonométricas)
+Demuestre que la regla de los trapecios compuesta con $N$ nodos en $[0, 2\pi]$, dada por:
+\[ Q_N(g) = \frac{2\pi}{N} \sum_{j=0}^{N-1} g(x_j), \quad \text{donde } x_j = \frac{2\pi j}{N}, \]
+integra exactamente a las funciones base $g(x) = e^{imx}$ para todo entero $m$ que no sea un múltiplo no nulo de $N$. ¿Qué ocurre si $m$ es un múltiplo de $N$?
+\fej
+
+\bej
+(De Fourier a la DFT)
+Considere los coeficientes de Fourier en forma compleja $c_k = \frac{1}{2\pi} \int_0^{2\pi} f(x) e^{-ikx} \, dx$.
+\begin{enumerate}[(a)]
+    \item Aproxime la integral utilizando la regla de los trapecios compuesta con $N$ puntos $Q_N$. Llame $\tilde{c}_k$ al resultado.
+    \item Muestre que se obtiene la expresión:
+    \[ \tilde{c}_k = \frac{1}{N} \sum_{j=0}^{N-1} f(x_j) e^{-i \frac{2\pi k j}{N}} \]
+    Esta es la definición de la Transformada Discreta de Fourier (DFT) de la secuencia de valores muestreados $f(x_j)$, salvo factores de normalización.
+\end{enumerate}
+\fej
+
+\bej
+Los polinomios de Chebyshev de primera especie se definen en el intervalo $[-1, 1]$ mediante la relación $T_n(x) = \cos(n \arccos x)$. Demuestre que son ortogonales con el producto escalar
+$$ (f,g)_w = \int_{-1}^1 \frac{f(x) g(x)}{\sqrt{1-x^2}} dx $$
+Sugerencia: utilice el cambio de variables $x=\cos(t)$ y la ortogonalidad de las funciones trigonométricas (Ejercicio 1).
+\fej
+
+\bej
+Muestre que el coeficiente $k$-ésimo de una serie de Chebyshev de una función $f:[-1,1]\to\mathbb{R}$ coincide con el coeficiente de Fourier $b_k$ de la función $f(\cos(\theta))$ para $\theta\in [0,2\pi]$.
+\fej
+
+\bej
+(Mejor aproximación en $L^2$)
+Consideremos el espacio de funciones de cuadrado integrable en $[-1, 1]$ con el producto interno estándar ($w(x)=1$). Queremos encontrar el polinomio $p(x)$ de grado a lo sumo 1 que mejor aproxima a la función $f(x) = e^x$ en el sentido de los cuadrados mínimos (norma $L^2$).
+\begin{enumerate}[(a)]
+    \item Recuerde que los primeros polinomios de Legendre son $P_0(x) = 1$ y $P_1(x) = x$. Verifique que son ortogonales en $[-1, 1]$.
+    \item Calcule las normas $\|P_0\|^2$ y $\|P_1\|^2$.
+    \item La proyección ortogonal de $f$ sobre el subespacio generado por $\{P_0, P_1\}$ está dada por:
+    \[
+    p(x) = \frac{\langle f, P_0 \rangle}{\|P_0\|^2} P_0(x) + \frac{\langle f, P_1 \rangle}{\|P_1\|^2} P_1(x).
+    \]
+    Calcule explícitamente este polinomio para $f(x) = e^x$.
+    \item Compare cualitativamente este polinomio con:
+    \begin{itemize}
+        \item El polinomio de Taylor de grado 1 centrado en $x=0$.
+        \item El polinomio interpolador de Lagrange en los nodos $-1$ y $1$.
+    \end{itemize}
+\end{enumerate}
+\fej
+
+\bej
+(Construcción de Polinomios Ortogonales)
+Se desea construir una familia de polinomios $\{q_0, q_1, q_2\}$ ortogonales en el intervalo $[0, 1]$ respecto al peso $w(x) = 1$.
+\begin{enumerate}
+    \item Utilice el proceso de Gram-Schmidt comenzando con la base canónica $\{1, x, x^2\}$ para obtener $q_0, q_1, q_2$.
+    \item Verifique que las raíces de $q_2(x)$ son reales, distintas y están dentro del intervalo $(0, 1)$.
+\end{enumerate}
+\fej
+
+\bej
+(Cuadratura Gaussiana)
+Queremos aproximar la integral $I(f) = \int_{-1}^1 f(x)\,dx$ mediante una regla de cuadratura de 2 puntos:
+\[
+Q(f) = w_1 f(x_1) + w_2 f(x_2).
+\]
+\begin{enumerate}
+    \item Sabemos que la cuadratura de Gauss con $n$ nodos es exacta para polinomios de grado $2n-1$. Para $n=2$, esto significa que debe ser exacta para polinomios hasta grado 3.
+    \item Utilice las raíces del polinomio de Legendre $P_2(x)$ (hallado/deducido en ejercicios anteriores) como nodos $x_1, x_2$.
+    \item Determine los pesos $w_1, w_2$ imponiendo que la regla sea exacta para $f(x)=1$ y $f(x)=x$ (o usando la fórmula de interpolación de Lagrange para los pesos).
+    \item Verifique que la regla obtenida integra exactamente a $x^2$ y $x^3$.
+    \item Use esta regla para aproximar $\int_{-1}^1 e^x dx$ y compare con el valor exacto.
+\end{enumerate}
+\fej
+
+
+\bej
+(Interpolación vs Proyección)
+Los coeficientes de la serie de Chebyshev de $f$ están dados por las integrales $c_k = \frac{2}{\pi} \int_{-1}^1 f(x) T_k(x) (1-x^2)^{-1/2} dx$ (con $c_0$ dividido por 2).
+Considere la fórmula de cuadratura de Gauss-Chebyshev con $M$ puntos, que es exacta para polinomios de grado $2M-1$:
+\[ \int_{-1}^1 \frac{g(x)}{\sqrt{1-x^2}} dx \approx \frac{\pi}{M} \sum_{j=1}^M g(x_j), \]
+donde $x_j$ son las raíces de $T_M(x)$.
+\begin{enumerate}[(a)]
+    \item Aproxime la integral de los coeficientes $c_k$ usando esta regla de cuadratura con $M=N+1$ puntos.
+    \item Muestre que los coeficientes aproximados $\tilde{c}_k$ coinciden con los coeficientes del polinomio interpolador de $f$ en los nodos de Chebyshev $x_0, \dots, x_N$, expresado en la base $\{T_0, \dots, T_N\}$.
+    \item Concluya que calcular la interpolación en nodos de Chebyshev es equivalente a discretizar la proyección ortogonal mediante cuadratura Gaussiana.
+\end{enumerate}
+\fej
+
+\begin{exercise}[Constante de Lebesgue]
+La constante de Lebesgue $\Lambda_n$ mide qué tan bien condicionado está el problema de interpolación.
+\begin{enumerate}[(a)]
+\item Defina la constante de Lebesgue:
+\[
+\Lambda_n = \max_{x \in [a,b]} \sum_{k=0}^n |\ell_k(x)|.
+\]
+\item Demuestre que el error de interpolación satisface:
+\[
+\|f - p_n\|_\infty \leq (1 + \Lambda_n) \|f - p_n^*\|_\infty,
+\]
+donde $p_n^*$ es el mejor polinomio de aproximación uniforme de grado $n$.
+\item Investigue y enuncie los valores de $\Lambda_n$ para:
+   \begin{itemize}
+   \item Nodos equiespaciados: $\Lambda_n = O(2^n / n)$ (crece exponencialmente).
+   \item Nodos de Chebyshev: $\Lambda_n = O(\log n)$ (crece logarítmicamente).
+   \end{itemize}
+\item Explique por qué una constante de Lebesgue grande indica que la interpolación puede amplificar errores en los datos.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Fenómeno de Runge]
+El fenómeno de Runge muestra que aumentar el grado de interpolación con nodos equiespaciados puede hacer diverger el polinomio interpolante.
+\begin{enumerate}[(a)]
+\item Considere la función de Runge $f(x) = \frac{1}{1 + 25x^2}$ en $[-1, 1]$.
+\item Explique por qué esta función, siendo analítica en $\mathbb{R}$, presenta problemas de convergencia en interpolación polinomial.
+\textbf{Sugerencia}: Considere los polos complejos $x = \pm i/5$ y su proximidad al intervalo real.
+\item Para nodos equiespaciados $x_k = -1 + 2k/n$ en $[-1, 1]$, el producto:
+\[
+\prod_{k=0}^n (x - x_k)
+\]
+crece exponencialmente cuando $x$ se acerca a los extremos $\pm 1$. Estime el orden de magnitud de este producto cerca de $x = 1$.
+\item Usando el teorema del error de interpolación, explique por qué aunque $f$ sea suave, el error de interpolación puede crecer con $n$ para nodos equiespaciados.
+\item ¿Por qué el fenómeno de Runge no ocurre con nodos de Chebyshev?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Nodos de Chebyshev]
+Los nodos de Chebyshev resuelven el fenómeno de Runge al minimizar el error de interpolación.
+\begin{enumerate}[(a)]
+\item Los nodos de Chebyshev en $[-1, 1]$ se definen como:
+\[
+x_k = \cos\left(\frac{(2k+1)\pi}{2(n+1)}\right), \quad k = 0, \ldots, n.
+\]
+Calcule los nodos de Chebyshev para $n = 4$ (5 nodos).
+\item Verifique que estos nodos son las raíces del polinomio de Chebyshev $T_{n+1}(x)$.
+\item Observe que los nodos se acumulan cerca de los extremos $x = \pm 1$ y están más espaciados en el centro. ¿Por qué esta distribución es óptima?
+\item Demuestre que con nodos de Chebyshev:
+\[
+\left|\prod_{k=0}^n (x - x_k)\right| \leq \frac{1}{2^n}, \quad \forall x \in [-1, 1].
+\]
+\textbf{Sugerencia}: Use que $\prod_{k=0}^n (x - x_k) = \frac{1}{2^n} T_{n+1}(x)$ y que $|T_{n+1}(x)| \leq 1$ en $[-1,1]$.
+\item Explique por qué esta cota garantiza convergencia para funciones suficientemente suaves, a diferencia de nodos equiespaciados.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Error de interpolación con nodos de Chebyshev]
+\begin{enumerate}[(a)]
+\item Enuncie el teorema: Si $f \in C^{n+1}[-1,1]$ y $p_n$ interpola $f$ en los nodos de Chebyshev, entonces:
+\[
+\|f - p_n\|_\infty \leq \frac{\|f^{(n+1)}\|_\infty}{2^n (n+1)!}.
+\]
+\item Compare esta cota con la de nodos equiespaciados donde $\prod_{k=0}^n (x - x_k)$ puede crecer exponencialmente.
+\item Para $f(x) = \sin(x)$ en $[-1, 1]$, estime el error máximo de interpolación con $n = 10$ nodos de Chebyshev.
+\item ¿Para qué valor de $n$ el error es menor que $10^{-10}$?
+\item Investigue sobre convergencia para funciones analíticas: la interpolación de Chebyshev converge geométricamente (exponencialmente) para funciones analíticas.
+\end{enumerate}
+\end{exercise}
+
+
+\end{document}

@@ -46,7 +46,8 @@ El problema de interpolación se puede ver como una transformación lineal entre
 Demuestre que $\Phi$ es una transformación lineal.
 \item Interprete el problema de interpolación como la búsqueda de la transformación inversa $\Phi^{-1}$: ¿qué representan la entrada y la salida de $\Phi^{-1}$?
 \item Demuestre que si los nodos $x_0, \ldots, x_n$ son distintos, el problema de interpolación tiene solución única.
-\textbf{Sugerencia}: Pruebe que $\Phi$ es inyectiva analizando su núcleo. ¿Cuántas raíces puede tener un polinomio de grado $n$ si no es idénticamente nulo? Use que $\dim(\mathcal{P}_n) = n+1$.
+
+\textbf{Sugerencia}: Pruebe que $\Phi$ es inyectiva. Use que un polinomio no nulo de grado $\leq n$ tiene a lo sumo $n$ raíces.
 \end{enumerate}
 \end{exercise}
 
@@ -170,36 +171,76 @@ f'(x_0) \approx \frac{f(x_0 + h) - f(x_0 - h)}{2h}.
 
 \subsection*{Transformada Discreta de Fourier}
 
-\begin{exercise}[La DFT como cambio de base unitario]
-Consideremos el espacio vectorial complejo $\mathbb{C}^N$ con el producto interno canónico $\langle u, v \rangle = \sum_{j=0}^{N-1} u_j \overline{v}_j$.
-La matriz de Fourier $F \in \mathbb{C}^{N \times N}$ tiene entradas $F_{jk} = \frac{1}{\sqrt{N}} \omega_N^{jk}$ para $j, k = 0, \ldots, N-1$, donde $\omega_N = e^{2\pi i / N}$.
+Dado $x \in \mathbb{C}^N$, definimos su DFT como $\hat{x} \in \mathbb{C}^N$ con
+\[
+\hat{x}_k = \sum_{j=0}^{N-1} x_j\, \omega_N^{jk}, \quad k = 0, \ldots, N-1, \qquad \text{donde } \omega_N = e^{2\pi i/N}.
+\]
+
+\begin{exercise}[Aliasing]
+Sea $x_j = \omega_N^{mj}$ el modo de Fourier de frecuencia $m$ muestreado en la grilla $j = 0, \ldots, N-1$.
 \begin{enumerate}[(a)]
-\item Verifique la identidad de ortogonalidad discreta:
-\[
-\sum_{p=0}^{N-1} \omega_N^{jp} \overline{\omega_N^{kp}} = N \delta_{jk}.
-\]
-\item Demuestre que la matriz de Fourier es unitaria, es decir, $F F^* = I$.
-\item Deduzca que la transformación inversa (IDFT) viene dada por la matriz conjugada: $F^{-1} = F^*$.
-\item Escriba explícitamente la fórmula para recuperar un vector $x$ a partir de su transformada $\hat{x} = Fx$:
-\[
-x_j = \frac{1}{\sqrt{N}} \sum_{k=0}^{N-1} \hat{x}_k \omega_N^{-jk}.
-\]
+\item Demuestre que $\omega_N^{(m+N)j} = \omega_N^{mj}$ para todo $j$. Concluya que los modos de frecuencia $m$ y $m + N$ producen exactamente la misma señal discreta.
+\item Más generalmente, demuestre que los modos de frecuencia $m$ y $m + kN$ son indistinguibles para todo $k \in \mathbb{Z}$.
+\item Concluya que con $N$ muestras solo se pueden representar $N$ frecuencias distintas. ¿Cuáles son las frecuencias ``esencialmente distintas''?
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Equivalencia con la evaluación polinomial]
-En contextos algebraicos, la DFT se define a menudo directamente como la evaluación de un polinomio en las raíces de la unidad, sin referencia a cambios de base.
-Sea $a \in \mathbb{C}^N$ un vector. Asociamos a $a$ el polinomio $P_a(z) = \sum_{j=0}^{N-1} a_j z^j$.
-Definimos la transformada $\mathcal{T}(a) \in \mathbb{C}^N$ como el vector de evaluaciones:
-\[
-\mathcal{T}(a)_k = P_a(\omega_N^k), \quad k=0, \ldots, N-1.
-\]
-
+\begin{exercise}[Reindexación de frecuencias]
+La DFT indexa las frecuencias como $k = 0, 1, \ldots, N-1$. Pero usando aliasing, las frecuencias altas se pueden reinterpretar como frecuencias negativas.
 \begin{enumerate}[(a)]
-   \item Escriba la suma que define $\mathcal{T}(a)_k$ y demuestre que esta definición es equivalente a la definición matricial $\hat{a} = Fa$ vista anteriormente (posiblemente salvo un factor de escala $\sqrt{N}$), estableciendo así la equivalencia entre ambas visiones.
-   \item Observe que el problema de interpolación dado $y = \mathcal{T}(a)$ consiste en hallar la transformación inversa $a = \mathcal{T}^{-1}(y)$. Demuestre que esta inversa $\mathcal{T}^{-1}$ corresponde a aplicar la matriz adjunta $F^*$ (la DFT Inversa), cerrando el círculo: evaluar es aplicar $F$, interpolar es aplicar $F^{-1} = F^*$.
+\item Para $N$ par, demuestre que el modo $k = N - \ell$ (con $1 \leq \ell \leq N/2-1$) es idéntico al modo de frecuencia $-\ell$. Concluya que la DFT con índices $k = 0, \ldots, N-1$ es equivalente a usar frecuencias $k = -N/2, \ldots, N/2 - 1$.
+\item Si $x \in \mathbb{R}^N$ (señal real), demuestre que $\hat{x}_{N-k} = \overline{\hat{x}_k}$. Concluya que los coeficientes de Fourier para frecuencias negativas son los conjugados de los positivos, y que por lo tanto la DFT de una señal real queda determinada por los coeficientes $\hat{x}_0, \hat{x}_1, \ldots, \hat{x}_{N/2}$.
 \end{enumerate}
+\end{exercise}
 
+\begin{exercise}[Difracción por rendijas múltiples]
+Una red de difracción tiene $N$ rendijas equiespaciadas con separación $d$. La amplitud compleja en el ángulo $\theta$ es proporcional a la suma $A(\theta) = \sum_{n=0}^{N-1} a_n\, e^{i n q d}$, donde $q = \frac{2\pi \sin\theta}{\lambda}$ y $a_n \in \{0, 1\}$ indica si la rendija $n$-ésima está abierta.
+\begin{enumerate}[(a)]
+\item Identifique $A(\theta)$ como la evaluación del polinomio $P_a(z) = \sum_{n=0}^{N-1} a_n z^n$ en $z = e^{iqd}$. Concluya que calcular la intensidad $I(\theta) = |A(\theta)|^2$ en los $N$ ángulos $q_k = \frac{2\pi k}{Nd}$ equivale a calcular la DFT de $a$.
+\item Explique por qué usar la FFT para obtener el patrón de difracción completo es más eficiente que evaluar $A(\theta)$ en cada ángulo por separado.
+\end{enumerate}
+\end{exercise}
+
+
+\begin{exercise}[La DFT como producto matricial]
+\begin{enumerate}[(a)]
+\item Escriba la DFT $\hat{x}_k = \sum_{j=0}^{N-1} x_j\, \omega_N^{jk}$ como un producto matricial $\hat{x} = F\, x$, donde $F \in \mathbb{C}^{N \times N}$ es la \textit{matriz de Fourier} con entradas $F_{kj} = \omega_N^{jk}$.
+\item Observe que $F$ es la matriz de Vandermonde evaluada en los nodos $z_0 = 1,\, z_1 = \omega_N,\, z_2 = \omega_N^2,\, \ldots,\, z_{N-1} = \omega_N^{N-1}$:
+\[
+F = \begin{pmatrix}
+1 & 1 & 1 & \cdots & 1 \\
+1 & \omega_N & \omega_N^2 & \cdots & \omega_N^{N-1} \\
+1 & \omega_N^2 & \omega_N^4 & \cdots & \omega_N^{2(N-1)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & \omega_N^{N-1} & \omega_N^{2(N-1)} & \cdots & \omega_N^{(N-1)^2}
+\end{pmatrix}.
+\]
+\item Interprete: calcular la DFT es evaluar el polinomio $P_x(z) = \sum_{j=0}^{N-1} x_j z^j$ en las $N$ raíces de la unidad. Calcular la DFT inversa es interpolar a partir de esas evaluaciones. ¿Por qué la inversión es posible?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Unitariedad de la matriz de Fourier]
+Sea $F$ la matriz de Fourier del ejercicio anterior.
+\begin{enumerate}[(a)]
+\item Demuestre la identidad de ortogonalidad: $\sum_{j=0}^{N-1} \omega_N^{jk} \overline{\omega_N^{j\ell}} = N\,\delta_{k\ell}$.
+
+\textbf{Sugerencia}: La suma es una serie geométrica.
+\item Deduzca que $F\overline{F} = NI$, y por lo tanto $F^{-1} = \frac{1}{N}\overline{F}$.
+\item Escriba explícitamente la fórmula de la DFT inversa:
+\[
+x_j = \frac{1}{N} \sum_{k=0}^{N-1} \hat{x}_k\, \omega_N^{-jk}.
+\]
+Compare con la fórmula de la DFT directa. ¿En qué se diferencian?
+\item Concluya que $\frac{1}{\sqrt{N}}F$ es una matriz unitaria. 
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Teorema de Parseval discreto]
+Usando que $\frac{1}{\sqrt{N}}F$ es unitaria, demuestre la identidad de Parseval:
+\[
+\sum_{k=0}^{N-1} |\hat{x}_k|^2 = N \sum_{j=0}^{N-1} |x_j|^2.
+\]
+Interprete: la energía en el dominio del tiempo es proporcional a la energía en frecuencia.
 \end{exercise}
 
 \begin{exercise}[Convolución Discreta]
@@ -214,6 +255,15 @@ w_k = \sum_{j=0}^{N-1} u_j v_{(k-j) \pmod N}, \quad k=0, \ldots, N-1.
 \widehat{(u * v)}_k = \sqrt{N} \hat{u}_k \hat{v}_k.
 \]
 \item Explique cómo esto permite calcular la convolución de dos vectores muy largos de manera eficiente ($O(N \log N)$) usando la Transformada Rápida de Fourier (FFT), en contraste con el costo $O(N^2)$ de la definición directa.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Superposición e invariancia traslacional]
+Considere $N$ fuentes equiespaciadas en un intervalo $[0, L)$ con condiciones de contorno periódicas, ubicadas en $x_j = jh$ con $h = L/N$ ($j = 0, \ldots, N-1$). La fuente en $x_j$ tiene amplitud $\rho_j \in \mathbb{C}$. Cada fuente unitaria genera un potencial dado por una función $g$ que depende solo de la distancia: el potencial en $x$ debido a una fuente unitaria en $x'$ es $g(x - x')$.
+\begin{enumerate}[(a)]
+\item (\textbf{Invariancia traslacional}) Defina $f_m = g(mh)$ para $m = 0, \ldots, N-1$. Demuestre que el potencial en $x_n$ debido a una fuente unitaria en $x_j$ es $f_{(n-j) \bmod N}$, es decir, depende solo de $n - j$.
+\item (\textbf{Linealidad}) Usando que el potencial total es la suma de las contribuciones individuales ponderadas por las amplitudes, demuestre que el potencial total en $x_n$ es $\phi_n = \sum_{j=0}^{N-1} \rho_j\, f_{(n-j) \bmod N}$. Concluya que $\phi = \rho * f$ (convolución circular).
+\item Use el Teorema de la Convolución para concluir que $\phi$ se puede calcular en $O(N \log N)$ operaciones en vez de $O(N^2)$.
 \end{enumerate}
 \end{exercise}
 
@@ -237,66 +287,60 @@ Defina vectores extendidos $A, B \in \mathbb{C}^N$ con $N \ge 2n-1$ completando 
 \end{enumerate}
 \end{exercise}
 
-\subsection*{Interpolación en cuerpos finitos}
+\subsection*{Interpolación en cuerpos finitos (*)}
 
 \begin{exercise}[Interpolación en cuerpos finitos: definiciones básicas]
 La interpolación polinomial también funciona sobre cuerpos finitos $\mathbb{Z}_p$ donde $p$ es primo.
 \begin{enumerate}[(a)]
-\item Verifique que el espacio de polinomios $\mathcal{P}_n(\mathbb{Z}_p) = \{a_0 + a_1 x + \cdots + a_n x^n : a_i \in \mathbb{Z}_p\}$ es un espacio vectorial sobre $\mathbb{Z}_p$. ¿Cuál es la su dimensión?
-\item Dados $n+1$ puntos distintos $(x_0, y_0), \ldots, (x_n, y_n)$ con $x_i \in \mathbb{Z}_p$ distintos e $y_i \in \mathbb{Z}_p$, demuestre que existe un único polinomio $p \in \mathcal{P}_n(\mathbb{Z}_p)$ tal que $p(x_i) \equiv y_i \pmod{p}$.$\mathbb{Z}_p$.
+\item Verifique que el espacio de polinomios $\mathcal{P}_n(\mathbb{Z}_p) = \{a_0 + a_1 x + \cdots + a_n x^n : a_i \in \mathbb{Z}_p\}$ es un espacio vectorial sobre $\mathbb{Z}_p$. ¿Cuál es su dimensión?
+\item Demuestre que un polinomio no nulo $q \in \mathcal{P}_n(\mathbb{Z}_p)$ tiene a lo sumo $n$ raíces en $\mathbb{Z}_p$.
+
+\textit{Sugerencia}: Use inducción en $n$. Si $q(\beta) = 0$, divida $q(x)$ por el polinomio mónico $(x - \beta)$ usando el algoritmo de división para obtener $q(x) = (x - \beta)\,\tilde{q}(x)$ con $\tilde{q} \in \mathcal{P}_{n-1}(\mathbb{Z}_p)$. 
+\item Dados $n+1$ puntos distintos $(x_0, y_0), \ldots, (x_n, y_n)$ con $x_i, y_i \in \mathbb{Z}_p$, demuestre que existe un único polinomio $p \in \mathcal{P}_n(\mathbb{Z}_p)$ tal que $p(x_i) = y_i$ para todo $i$.
 \end{enumerate}
 \end{exercise}
 
 \begin{exercise}[Interpolación en $\mathbb{Z}_7$]
-Trabajaremos en $\mathbb{Z}_7 = \{0, 1, 2, 3, 4, 5, 6\}$ con aritmética módulo 7.
+Considere los puntos $(1, 3), (2, 5), (4, 2)$ en $\mathbb{Z}_7$.
 \begin{enumerate}[(a)]
-\item Calcule la tabla de multiplicación módulo 7 para verificar que todo elemento no nulo tiene inverso multiplicativo.
-\item Queremos interpolar los puntos $(1, 3), (2, 5), (4, 2)$ en $\mathbb{Z}_7$.
-\item Construya la matriz de Vandermonde:
-\[
-V = \begin{pmatrix}
-1 & 1 & 1^2 \\
-1 & 2 & 2^2 \\
-1 & 4 & 4^2
-\end{pmatrix} = \begin{pmatrix}
-1 & 1 & 1 \\
-1 & 2 & 4 \\
-1 & 4 & 2
-\end{pmatrix} \pmod{7}.
-\]
-\item Calcule $\det(V) \pmod{7}$ y verifique que es $V$ invertible.
-\item Resuelva el sistema $Va = y$ donde $y = (3, 5, 2)^T$ para encontrar los coeficientes $(a_0, a_1, a_2)$ del polinomio interpolante $p(x) = a_0 + a_1 x + a_2 x^2 \pmod{7}$.
-\item Verifique que $p(1) \equiv 3$, $p(2) \equiv 5$, $p(4) \equiv 2 \pmod{7}$.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Fórmula de Lagrange en $\mathbb{Z}_p$]
-La fórmula de Lagrange también funciona en cuerpos finitos.
-\begin{enumerate}[(a)]
-\item Para $p = 5$, construya los polinomios base de Lagrange para los nodos $x_0 = 1, x_1 = 2, x_2 = 4$ en $\mathbb{Z}_5$.
-\item Recuerde que necesita calcular inversos multiplicativos en $\mathbb{Z}_5$:
-   \begin{itemize}
-   \item $1^{-1} \equiv 1 \pmod{5}$
-   \item $2^{-1} \equiv 3 \pmod{5}$ (ya que $2 \cdot 3 = 6 \equiv 1$)
-   \item $3^{-1} \equiv 2 \pmod{5}$
-   \item $4^{-1} \equiv 4 \pmod{5}$ (ya que $4 \cdot 4 = 16 \equiv 1$)
-   \end{itemize}
-\item Calcule explícitamente:
-\[
-\ell_0(x) = \frac{(x-2)(x-4)}{(1-2)(1-4)} \pmod{5}.
-\]
-\item Simplifique y verifique que $\ell_0(1) \equiv 1$, $\ell_0(2) \equiv 0$, $\ell_0(4) \equiv 0 \pmod{5}$.
-\item Use la fórmula de Lagrange para interpolar los puntos $(1, 2), (2, 4), (4, 1)$ en $\mathbb{Z}_5$.
+\item Halle los coeficientes del polinomio interpolante $p(x) = a_0 + a_1 x + a_2 x^2$ resolviendo el sistema de Vandermonde $Va = y$ en $\mathbb{Z}_7$.
+\item Evalúe $p(3)$ usando la fórmula de Lagrange (sin calcular los coeficientes).
 \end{enumerate}
 \end{exercise}
 
 \begin{exercise}[Esquema de Shamir] Un esquema de compartición de secretos $(k, n)$ permite dividir un secreto entre $n$ personas de modo que cualquier $k$ de ellas puedan reconstruirlo, pero $k-1$ no pueden obtener información alguna.
 
-El secreto es un número $s \in \mathbb{Z}_p$ (con $p$ primo grande). Se elige un polinomio aleatorio $f(x) = s + a_1 x + \cdots + a_{k-1} x^{k-1} \pmod{p}$ de grado $k-1$ con $f(0) = s$. Los coeficientes $a_i$ se eligen al azar en $\mathbb{Z}_p$ siguiendo una distribución uniforme. Luego, se distribuyen las $n$ "porciones" (shares): $(1, f(1)), (2, f(2)), \ldots, (n, f(n))$.
+El secreto es un número $s \in \mathbb{Z}_p$ (con $p$ primo grande). Se elige un polinomio $f(x) = s + a_1 x + \cdots + a_{k-1} x^{k-1} \pmod{p}$ de grado $k-1$ con $f(0) = s$. Los coeficientes $a_i$ se eligen al azar en $\mathbb{Z}_p$ siguiendo una distribución uniforme. Luego, se distribuyen las $n$ "porciones" (shares): $(1, f(1)), (2, f(2)), \ldots, (n, f(n))$.
 \begin{enumerate}[(a)]
 \item Explique por qué cualquier $k$ porciones permiten reconstruir $f(x)$ mediante interpolación de Lagrange en $\mathbb{Z}_p$, y por tanto recuperar $s = f(0)$.
 \item Explique por qué con solo $k-1$ porciones, el secreto $s$ puede ser cualquier valor en $\mathbb{Z}_p$ con igual probabilidad.
 \textbf{Sugerencia}: Muestre que existe un único polinomio de grado $\le k-1$ compatible con la información parcial y un candidato a secreto $\tilde{s} \in \mathbb{Z}_p$ dado. Concluya el resultado a partir del hecho de que los coeficientes se eligieron uniformemente al azar.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Códigos de Reed-Solomon]
+Un código de Reed-Solomon $\text{RS}(n,k)$ sobre $\mathbb{Z}_p$ codifica un mensaje $(m_0, \ldots, m_{k-1}) \in \mathbb{Z}_p^k$ como las evaluaciones del polinomio $m(x) = m_0 + m_1 x + \cdots + m_{k-1}x^{k-1}$ en $n$ puntos prefijados $\alpha_1, \ldots, \alpha_n \in \mathbb{Z}_p$, produciendo la palabra código $c = (m(\alpha_1), \ldots, m(\alpha_n))$. 
+
+Suponga que se recibe un vector $r \in \mathbb{Z}_p^n$ que difiere de la verdadera palabra código $c \in \mathbb{Z}_p^n$ en a lo sumo $t$ posiciones (desconocidas). Se definen dos polinomios desconocidos:
+\begin{itemize}
+\item El polinomio localizador de errores $E(x) = e_0 + e_1 x + \cdots + e_{t-1}x^{t-1} + x^t$ (mónico de grado $t$), cuyas raíces son exactamente los puntos de evaluación $\alpha_j$ donde ocurrieron errores.
+\item El polinomio $N(x) = m(x)\cdot E(x) = n_0 + n_1 x + \cdots + n_{k-1+t}\,x^{k-1+t}$, de grado $\leq k - 1 + t$.
+\end{itemize}
+
+\begin{enumerate}[(a)]
+\item Demuestre que para todo $i = 1, \ldots, n$ vale la ``ecuación clave'' de la corrección de errores:
+\[
+r_i \cdot E(\alpha_i) = N(\alpha_i).
+\]
+\textbf{Sugerencia}: Distinga dos casos. Si no hay error en la posición $i$, entonces $r_i = m(\alpha_i)$. Si hay error en la posición $i$, entonces $\alpha_i$ es raíz de $E$.
+
+\item Demuestre que si $n \geq k + 2t$, el mensaje $m(x)$ queda unívocamente determinado por el vector recibido $r$ y la ecuación clave. Concluya que se pueden corregir hasta $t \leq \lfloor(n-k)/2\rfloor$ errores.
+
+\textbf{Sugerencia}: Suponga que $(E, N)$ y $(E', N')$ son dos soluciones de la ecuación clave y considere $P(x) = N(x)E'(x) - N'(x)E(x)$. Demuestre que $P(\alpha_i) = 0$ para todo $i$, acote $\deg(P)$, y use el Ejercicio 15(b) para concluir que $P \equiv 0$. ¿Qué implica esto sobre el cociente $N/E$?
+
+\item Observe que la ecuación clave es lineal en los coeficientes (desconocidos) de $E$ y $N$. Escriba explícitamente el sistema $A\,\mathbf{x} = \mathbf{b}$ en $\mathbb{Z}_p$ de tamaño $n \times (k+2t)$ que permite encontrar los coeficientes de $E$ y $N$ a partir de $r$ y los puntos de evaluación $\alpha_i$. 
+
+\item Usando el resultado de (b), deduzca que el sistema lineal tiene solución única. ¿Cuál es la complejidad de resolver el sistema? ¿Depende de $p$? ¿Tiene sentido hablar del número de condición en aritmética modular?
 \end{enumerate}
 \end{exercise}
 

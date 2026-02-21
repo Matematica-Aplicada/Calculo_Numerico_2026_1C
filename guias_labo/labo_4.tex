@@ -1,0 +1,46 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Laboratorio N$^\circ$ 4: Teoría de Aproximación}
+ \bigskip
+
+\bej
+Considere la ecuación diferencial $ -u'' + u = f(x) $ con condiciones de borde periódicas: $u(x)=u(x+2\pi)$. 
+\begin{itemize}
+\item Escriba un código que, dado un lado derecho $f$, calcule su serie de Fourier aproximando la integral mediante la regla de trapecios compuesta.
+\item Utilizando que el operador $-u'' + u$ se puede representar en la base de Fourier como una matriz diagonal, despeje la expansión correspondiente de la solución $u=u^N$ en dicha base. 
+\item Pruebe su código para los casos $f=f_1=10\sin^3|x-\pi| - 6\sin|x-\pi|$, y $f=f_2=e^{\sin(x)}(\sin^2(x) + \sin(x))$.
+\item Grafique el máximo error absoluto entre lo obtenido y las soluciónes exactas $u_1=\sin^3|x-\pi|$ y $u_2=e^{\sin(x)}$ en función de $N$ y en escala log-log (el gráfico debería ser una recta), y compare las pendientes obtenidas con el grado de regularidad de las soluciones.
+\end{itemize}
+\fej
+
+\end{document}
