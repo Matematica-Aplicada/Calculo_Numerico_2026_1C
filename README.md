@@ -16,7 +16,7 @@
 
 - [Laboratorio 1 - Programación](guias_labo/labo_1.pdf)
 - [Laboratorio 2 - Cuadrados Mínimos](guias_labo/labo_2.pdf)
-- [Laboratorio 3 - Convolución y FFT](guias_labo/labo_3.pdf)
+- [Laboratorio 3 - FFT](guias_labo/labo_3.pdf)
 - [Laboratorio 4 - Series de Fourier](guias_labo/labo_4.pdf)
 - [Laboratorio 5 - Ecuaciones Diferenciales](guias_labo/labo_5.pdf)
 - [Laboratorio 6 - Redes Neuronales](guias_labo/labo_6.pdf)
