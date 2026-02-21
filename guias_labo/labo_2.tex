@@ -30,43 +30,34 @@
  \hrulefill
 
  \bigskip
- \centerline{\bf Laboratorio N$^\circ$ 2: Raíces de Polinomios via Autovalores}
+ \centerline{\bf Laboratorio N$^\circ$ 2: Cuadrados Mínimos}
  \bigskip
 
 \bej
-\textbf{(Raíces de un polinomio como autovalores de la matriz compañera.)}
+\textbf{(Ajuste polinomial por cuadrados mínimos.)}
 
-Dado un polinomio mónico de grado $n$,
+Dados $N$ datos $(x_i, y_i)$, queremos encontrar el polinomio $p(x) = c_0 + c_1 x + \cdots + c_n x^n$ de grado $n < N$ que minimiza el error cuadrático:
 \[
-p(x) = x^n + a_{n-1}x^{n-1} + \cdots + a_1 x + a_0,
+\min_{c \in \R^{n+1}} \| A c - y \|_2^2,
 \]
-su \textit{matriz compañera} es la matriz $C \in \R^{n \times n}$ definida por:
-\[
-C = \begin{pmatrix}
-0 & 0 & \cdots & 0 & -a_0 \\
-1 & 0 & \cdots & 0 & -a_1 \\
-0 & 1 & \cdots & 0 & -a_2 \\
-\vdots & \vdots & \ddots & \vdots & \vdots \\
-0 & 0 & \cdots & 1 & -a_{n-1}
-\end{pmatrix}.
-\]
+donde $A \in \R^{N \times (n+1)}$ es la matriz de Vandermonde con $A_{ij} = x_i^j$ e $y = (y_1, \ldots, y_N)^T$.
 
 \begin{enumerate}
-\item Verifique (a mano, para $n = 3$) que el polinomio característico de $C$ es $\det(xI - C) = p(x)$. Concluya que las raíces de $p$ son los autovalores de $C$.
+\item Genere $N = 50$ datos con $x_i$ equiespaciados en $[0, 1]$ e $y_i = \sin(2\pi x_i) + \varepsilon_i$, donde $\varepsilon_i \sim \mathcal{N}(0, 0.2^2)$ es ruido gaussiano. Grafique los datos.
 
-\item Considere el polinomio de grado 100 con raíces conocidas $r_k = k$ ($k = 1, \ldots, 100$):
-\[
-p(x) = \prod_{k=1}^{100} (x - k).
-\]
-Expanda el producto para obtener los coeficientes $a_0, \ldots, a_{99}$ (use \texttt{numpy.polynomial.polynomial.polyfromroots} o \texttt{numpy.poly}).
+\item Para un grado $n$ dado, arme la matriz $A$ y resuelva el problema de cuadrados mínimos de tres maneras distintas:
+\begin{enumerate}[i.]
+\item \textbf{Ecuaciones normales}: resuelva $A^T A\, c = A^T y$ usando \texttt{numpy.linalg.solve}.
+\item \textbf{Factorización QR}: calcule $A = QR$ con \texttt{numpy.linalg.qr} y resuelva $Rc = Q^T y$.
+\item \textbf{SVD}: use \texttt{numpy.linalg.lstsq} (que internamente usa la SVD).
+\end{enumerate}
+Verifique que los tres métodos dan (aproximadamente) el mismo resultado para $n = 5$.
 
-\item Construya la matriz compañera $C$ de $100 \times 100$ y calcule sus autovalores usando \texttt{numpy.linalg.eig} (o \texttt{eigvals}).
+\item Repita para $n = 5, 10, 15, 20$. Grafique el polinomio ajustado junto con los datos en cada caso. ¿A partir de qué grado se observa sobreajuste (overfitting)?
 
-\item Compare los autovalores obtenidos con las raíces exactas $1, 2, \ldots, 100$. Grafique el error $|r_k - \tilde{r}_k|$ en función de $k$, donde $\tilde{r}_k$ es el autovalor más cercano a $r_k$. ¿El error es uniforme o crece para ciertas raíces?
+\item Para cada $n$, calcule el número de condición $\kappa_2(A)$ y el número de condición $\kappa_2(A^T A)$. ¿Qué relación hay entre ambos? ¿Para qué valores de $n$ las ecuaciones normales dejan de dar resultados confiables? Compare con los resultados de QR y SVD.
 
-\item Repita el experimento usando aritmética de punto flotante de mayor precisión (por ejemplo, \texttt{mpmath} con 50 dígitos) para expandir los coeficientes. ¿Mejoran los resultados? ¿Dónde se introduce el error: al expandir el producto o al calcular los autovalores?
-
-\item Repita para el polinomio de Wilkinson $W(x) = \prod_{k=1}^{20}(x-k)$ y perturbe el coeficiente de $x^{19}$ sumándole $2^{-23}$. ¿Cuánto cambian las raíces? Relacione con el condicionamiento del problema.
+\item Grafique el error $\|c_{\text{normales}} - c_{\text{SVD}}\|_\infty$ en función de $n$. ¿A partir de qué grado los métodos dan resultados significativamente distintos?
 \end{enumerate}
 \fej
 
