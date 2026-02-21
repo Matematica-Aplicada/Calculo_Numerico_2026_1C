@@ -2,6 +2,7 @@
 
 ## Guías de Laboratorio
 
+- [Laboratorio 4 - Teoría de Aproximación](guias_labo/labo_4.pdf)
 - [Laboratorio 5 - Ecuaciones Diferenciales](guias_labo/labo_5.pdf)
 
 ## Guías de Trabajos Prácticos
