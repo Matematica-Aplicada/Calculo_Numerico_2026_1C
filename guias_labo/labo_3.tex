@@ -1,0 +1,85 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Laboratorio N$^\circ$ 3: Convolución y FFT}
+ \bigskip
+
+\bej
+\textbf{(Convolución circular.)}
+Dados dos vectores $u, v \in \C^N$, su convolución circular es el vector $w \in \C^N$ con
+\[
+w_k = \sum_{j=0}^{N-1} u_j\, v_{(k-j) \bmod N}, \quad k = 0, \ldots, N-1.
+\]
+
+\begin{enumerate}
+\item Programe una función \texttt{conv\_circular\_directa(u, v)} que calcule $w$ usando la definición (dos bucles anidados, o un bucle y slicing). ¿Cuál es la complejidad de este algoritmo?
+
+\item Programe una función \texttt{conv\_circular\_fft(u, v)} que calcule $w$ usando la FFT:
+\begin{enumerate}[i.]
+\item Calcular $\hat{u} = \texttt{fft}(u)$ y $\hat{v} = \texttt{fft}(v)$.
+\item Multiplicar punto a punto: $\hat{w}_k = \hat{u}_k \cdot \hat{v}_k$.
+\item Recuperar $w = \texttt{ifft}(\hat{w})$.
+\end{enumerate}
+¿Cuál es la complejidad de este algoritmo?
+
+\item Genere vectores aleatorios $u, v \in \R^N$ para $N = 2^{10}$ y verifique que ambas funciones dan el mismo resultado (salvo errores de redondeo). ¿Cuál es el máximo de $|w_{\text{directa}} - w_{\text{fft}}|$?
+
+\item Mida el tiempo de ejecución de ambas funciones para $N = 2^8, 2^{10}, 2^{12}, 2^{14}, 2^{16}$. Grafique los tiempos en escala log-log. ¿Se observa la diferencia $O(N^2)$ vs.\ $O(N \log N)$?
+\end{enumerate}
+\fej
+
+\bej
+\textbf{(Convolución lineal via FFT.)}
+Dados $u \in \C^M$ y $v \in \C^K$, su convolución lineal es el vector $w \in \C^{M+K-1}$ con
+\[
+w_k = \sum_{j} u_j\, v_{k-j}, \quad k = 0, \ldots, M+K-2,
+\]
+donde $u_j = 0$ para $j \notin \{0, \ldots, M-1\}$ y $v_j = 0$ para $j \notin \{0, \ldots, K-1\}$.
+
+\begin{enumerate}
+\item Programe una función \texttt{conv\_lineal\_directa(u, v)} que calcule $w$ usando la definición.
+
+\item Para calcular la convolución lineal usando FFT, hay que realizar \textit{zero-padding}: extender ambos vectores a longitud $N \geq M + K - 1$ completando con ceros.
+\begin{enumerate}[i.]
+\item Explique por qué si $N < M + K - 1$, la convolución circular de los vectores extendidos \textbf{no} coincide con la convolución lineal (se produce \textit{aliasing temporal}).
+\item Programe una función \texttt{conv\_lineal\_fft(u, v)} que haga el zero-padding adecuado, aplique la convolución circular via FFT, y devuelva los primeros $M+K-1$ elementos.
+\end{enumerate}
+
+\item Genere $u \in \R^{100}$ y $v \in \R^{50}$ aleatorios. Verifique que \texttt{conv\_lineal\_fft} da el mismo resultado que \texttt{conv\_lineal\_directa}. Compare también con \texttt{numpy.convolve(u, v)}.
+
+\item Ilustre el efecto del aliasing: calcule la convolución circular (sin zero-padding) de $u$ y $v$ extendidos a $N = \max(M, K)$ y compare con la convolución lineal correcta. Grafique ambos resultados superpuestos. ¿Dónde se concentran las diferencias?
+
+\item Mida el tiempo de ejecución de ambos métodos para $M = K = 2^8, 2^{10}, 2^{12}, 2^{14}$. ¿A partir de qué tamaño la versión FFT es más rápida?
+\end{enumerate}
+\fej
+
+\end{document}

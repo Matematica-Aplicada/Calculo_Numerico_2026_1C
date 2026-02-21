@@ -1,0 +1,79 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Laboratorio N$^\circ$ 1: Introducción a la Programación}
+ \bigskip
+
+\bej
+\textbf{(Inestabilidad numérica de una recurrencia.)}
+Defina $I_n = \int_0^1 x^n e^x\, dx$ para $n \geq 0$.
+\begin{enumerate}
+\item Calcule $I_0$ exactamente.
+\item Integrando por partes, demuestre que $I_n = e - n\, I_{n-1}$ para $n \geq 1$.
+\item Programe la recurrencia y calcule $I_n$ para $n = 1, 2, \ldots, 25$. ¿Qué observa? ¿Los valores obtenidos son razonables? (Observe que $0 < I_n < e$ para todo $n$, y que $I_n \to 0$.)
+\end{enumerate}
+\fej
+
+\bej
+\textbf{(Año bisiesto.)}
+En el calendario gregoriano, un año es bisiesto si es divisible por 4, \textit{excepto} los años divisibles por 100, que no son bisiestos, \textit{salvo} que también sean divisibles por 400, en cuyo caso sí lo son.
+\begin{enumerate}
+\item Escriba una función \texttt{es\_bisiesto(n)} que dado un entero $n$ devuelva \texttt{True} si el año $n$ es bisiesto y \texttt{False} en caso contrario.
+\item Verifique que su función da los resultados correctos para los años 1900 (no bisiesto), 2000 (bisiesto), 2024 (bisiesto) y 2025 (no bisiesto).
+\item Use su función para contar cuántos años bisiestos hay entre 1 y 2026.
+\end{enumerate}
+\fej
+
+\bej
+\textbf{(Conjetura de Collatz.)}
+Dado un entero positivo $n$, defina la sucesión:
+\[
+a_{k+1} = \begin{cases} a_k / 2 & \text{si } a_k \text{ es par,} \\ 3a_k + 1 & \text{si } a_k \text{ es impar,} \end{cases}
+\]
+con $a_0 = n$. La conjetura de Collatz afirma que esta sucesión siempre llega al valor 1, independientemente del valor inicial $n$.
+\begin{enumerate}
+\item Escriba una función \texttt{collatz(n)} que devuelva la lista de valores de la sucesión desde $a_0 = n$ hasta el primer $a_k = 1$.
+\item Grafique la sucesión para $n = 27$. ¿Cuántos pasos tarda en llegar a 1? ¿Cuál es el valor máximo que alcanza?
+\item Verifique la conjetura para todo $n$ entre 1 y 10000. Para cada $n$, registre la cantidad de pasos hasta llegar a 1. Grafique esta cantidad en función de $n$.
+\end{enumerate}
+\fej
+
+\bej
+\textbf{(Búsqueda binaria.)}
+Dada una lista ordenada $a_0 \leq a_1 \leq \cdots \leq a_{n-1}$ y un valor $v$, la búsqueda binaria encuentra un índice $i$ tal que $a_i = v$ (o determina que $v$ no está en la lista) comparando $v$ con el elemento central y descartando la mitad de la lista en cada paso.
+\begin{enumerate}
+\item Escriba una función \texttt{busqueda\_binaria(lista, v)} que devuelva el índice $i$ tal que $\texttt{lista[i]} = v$, o $-1$ si $v$ no está en la lista.
+\item Pruebe su función buscando varios valores en la lista $[2, 5, 8, 12, 16, 23, 38, 42, 77, 91]$.
+\end{enumerate}
+\fej
+
+\end{document}

@@ -1,0 +1,73 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Laboratorio N$^\circ$ 2: Raíces de Polinomios via Autovalores}
+ \bigskip
+
+\bej
+\textbf{(Raíces de un polinomio como autovalores de la matriz compañera.)}
+
+Dado un polinomio mónico de grado $n$,
+\[
+p(x) = x^n + a_{n-1}x^{n-1} + \cdots + a_1 x + a_0,
+\]
+su \textit{matriz compañera} es la matriz $C \in \R^{n \times n}$ definida por:
+\[
+C = \begin{pmatrix}
+0 & 0 & \cdots & 0 & -a_0 \\
+1 & 0 & \cdots & 0 & -a_1 \\
+0 & 1 & \cdots & 0 & -a_2 \\
+\vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & \cdots & 1 & -a_{n-1}
+\end{pmatrix}.
+\]
+
+\begin{enumerate}
+\item Verifique (a mano, para $n = 3$) que el polinomio característico de $C$ es $\det(xI - C) = p(x)$. Concluya que las raíces de $p$ son los autovalores de $C$.
+
+\item Considere el polinomio de grado 100 con raíces conocidas $r_k = k$ ($k = 1, \ldots, 100$):
+\[
+p(x) = \prod_{k=1}^{100} (x - k).
+\]
+Expanda el producto para obtener los coeficientes $a_0, \ldots, a_{99}$ (use \texttt{numpy.polynomial.polynomial.polyfromroots} o \texttt{numpy.poly}).
+
+\item Construya la matriz compañera $C$ de $100 \times 100$ y calcule sus autovalores usando \texttt{numpy.linalg.eig} (o \texttt{eigvals}).
+
+\item Compare los autovalores obtenidos con las raíces exactas $1, 2, \ldots, 100$. Grafique el error $|r_k - \tilde{r}_k|$ en función de $k$, donde $\tilde{r}_k$ es el autovalor más cercano a $r_k$. ¿El error es uniforme o crece para ciertas raíces?
+
+\item Repita el experimento usando aritmética de punto flotante de mayor precisión (por ejemplo, \texttt{mpmath} con 50 dígitos) para expandir los coeficientes. ¿Mejoran los resultados? ¿Dónde se introduce el error: al expandir el producto o al calcular los autovalores?
+
+\item Repita para el polinomio de Wilkinson $W(x) = \prod_{k=1}^{20}(x-k)$ y perturbe el coeficiente de $x^{19}$ sumándole $2^{-23}$. ¿Cuánto cambian las raíces? Relacione con el condicionamiento del problema.
+\end{enumerate}
+\fej
+
+\end{document}
