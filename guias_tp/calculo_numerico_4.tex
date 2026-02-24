@@ -100,13 +100,7 @@ integra exactamente a las funciones base $g(x) = e^{imx}$ para todo entero $m$ q
 
 \bej
 (De Fourier a la DFT)
-Considere los coeficientes de Fourier en forma compleja $c_k = \frac{1}{2\pi} \int_0^{2\pi} f(x) e^{-ikx} \, dx$.
-\begin{enumerate}[(a)]
-    \item Aproxime la integral utilizando la regla de los trapecios compuesta con $N$ puntos $Q_N$. Llame $\tilde{c}_k$ al resultado.
-    \item Muestre que se obtiene la expresión:
-    \[ \tilde{c}_k = \frac{1}{N} \sum_{j=0}^{N-1} f(x_j) e^{-i \frac{2\pi k j}{N}} \]
-    Esta es la definición de la Transformada Discreta de Fourier (DFT) de la secuencia de valores muestreados $f(x_j)$, salvo factores de normalización.
-\end{enumerate}
+Considere los coeficientes de Fourier en forma compleja $c_k = \frac{1}{2\pi} \int_0^{2\pi} f(x) e^{-ikx} \, dx$. Muestre que al aproximar la integral utilizando la regla de los trapecios compuesta con $N$ puntos $Q_N$ se obtiene Transformada Discreta de Fourier (DFT) de la secuencia de valores muestreados $f(x_j)$, salvo factores de normalización.
 \fej
 
 \bej
