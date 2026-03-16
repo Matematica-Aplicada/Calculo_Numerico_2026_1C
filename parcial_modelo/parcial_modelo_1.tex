@@ -1,0 +1,153 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Parcial Modelo 1 (Guías 1 a 3)}
+ \bigskip
+
+%%% Ejercicio 1 — Guía 1: complejidad + aritmética de punto flotante %%%
+
+\begin{exercise}[Evaluación eficiente de polinomios]
+Sea $p(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_n x^n$.
+
+\begin{enumerate}[(a)]
+\item Considere el siguiente algoritmo que evalúa $p(x)$ calculando cada potencia $x^k$ desde cero:
+\begin{verbatim}
+S = a[0]
+for k = 1 to n:
+    xk = 1
+    for j = 1 to k:
+        xk = xk * x
+    S = S + a[k] * xk
+\end{verbatim}
+Cuente el número total de multiplicaciones (operaciones \texttt{*}) y deduzca que la complejidad es $O(n^2)$.
+
+\item El \textbf{método de Horner} reescribe el polinomio como
+\[
+p(x) = a_0 + x\bigl(a_1 + x\bigl(a_2 + \cdots + x(a_{n-1} + x\,a_n)\cdots\bigr)\bigr)
+\]
+y lo evalúa de adentro hacia afuera:
+\begin{verbatim}
+S = a[n]
+for k = n-1 downto 0:
+    S = S * x + a[k]
+\end{verbatim}
+Cuente el número total de multiplicaciones y sumas y deduzca la complejidad.
+
+\item Sea $p(x) = x^3 - 3x^2 + 3x - 1$. Evalúe $p(1.01)$ paso a paso usando el método de Horner en aritmética de punto flotante con $t = 3$ dígitos decimales significativos (redondeo al más cercano).
+
+\item Observe que $p(x) = (x-1)^3$. Evalúe $(1.01 - 1)^3$ con $t = 3$ dígitos y compare con el resultado del inciso anterior. Identifique en qué paso del método de Horner se produce pérdida catastrófica de dígitos significativos.
+\end{enumerate}
+\end{exercise}
+
+
+%%% Ejercicio 2 — Guía 2: álgebra lineal numérica (SVD, cuadrados mínimos, leverage) %%%
+
+\begin{exercise}[Cuadrados mínimos y puntos de alto leverage]
+Sea $A \in \mathbb{R}^{m \times n}$ con $m > n$ y rango columna completo, y sea $A = U\Sigma V^T$ su SVD reducida ($U \in \mathbb{R}^{m \times n}$ con columnas ortonormales, $\Sigma \in \mathbb{R}^{n \times n}$ diagonal con $\sigma_1 \geq \cdots \geq \sigma_n > 0$, $V \in \mathbb{R}^{n \times n}$ ortogonal). La solución de cuadrados mínimos de $\min_x \|Ax - b\|_2$ es $\hat{x} = A^+ b$ y el vector de valores ajustados es $\hat{b} = A\hat{x}$.
+
+\begin{enumerate}[(a)]
+\item Demuestre que $\hat{x} = V\Sigma^{-1}U^T b$ y que $\hat{b} = Hb$, donde $H = UU^T \in \mathbb{R}^{m \times m}$ se llama \emph{hat matrix} (porque ``le pone el sombrero'' a $b$).
+
+\item Demuestre que $H$ es un proyector ortogonal ($H^2 = H$, $H^T = H$). Deduzca que sus autovalores son $0$ o $1$, que las entradas diagonales satisfacen $0 \leq h_{ii} \leq 1$, y que $\sum_{i=1}^m h_{ii} = n$.
+
+\textbf{Sugerencia para $h_{ii} \leq 1$:} use que $h_{ii} = e_i^T H e_i = \|He_i\|_2^2$ (¿por qué?) y que $\|H\|_2 \leq 1$.
+
+\item Suponga que $b$ se perturba únicamente en la coordenada $i$: $\tilde{b} = b + \delta\, e_i$. Calcule el cambio en el valor ajustado $\hat{b}_i$ y concluya que $h_{ii}$ mide la fracción de la perturbación $\delta$ que se transmite al valor ajustado en el punto $i$.
+En estadística, $h_{ii}$ se denomina el \emph{leverage} del punto $i$: si $h_{ii} \approx 1$, la observación $i$ determina casi completamente su propio valor ajustado, independientemente del resto de los datos.
+
+\item Se ajusta una recta $\varphi(t) = c_0 + c_1 t$ a datos tomados en $t_1 = 0$, $t_2 = 1$, $t_3 = 2$, $t_4 = 9$, con la matriz de diseño
+\[
+A = \begin{pmatrix} 1 & 0 \\ 1 & 1 \\ 1 & 2 \\ 1 & 9 \end{pmatrix}.
+\]
+Calcule $(A^TA)^{-1}$ y los cuatro leverages $h_{ii} = a_i^T(A^TA)^{-1}a_i$, donde $a_i^T$ es la $i$-ésima fila de~$A$. Verifique que la suma de los leverages es $n = 2$. Determine qué punto tiene leverage más alto y qué porcentaje de una perturbación en ese dato se transmite directamente a su valor ajustado.
+\end{enumerate}
+\end{exercise}
+
+%%% Ejercicio 3 — Guía 3: cuadratura + FFT %%%
+
+\begin{exercise}[Beam gaussiano, regla de trapecios y FFT]
+Considere la integral tipo convolución que modela un \emph{beam gaussiano}:
+\[
+I(x)=\int_{-L}^{L} f(\xi)\, \exp\!\left(-\frac{(x-\xi)^2}{\sigma^2}\right)\, d\xi.
+\]
+Sea una grilla uniforme $\xi_j=-L+jh$ con $h=\frac{2L}{N}$, $j=0,\ldots,N$, y sea $x_i=-L+ih$, $i=0,\ldots,N$.
+\begin{enumerate}[(a)]
+\item Discretice $I(x_i)$ con la regla de trapecios compuesta y escriba la suma resultante en términos de $f_j = f(\xi_j)$ y del kernel gaussiano evaluado en los nodos.
+\item Defina $g_k = \exp\!\bigl(-{(kh)^2}/{\sigma^2}\bigr)$. Muestre que la suma del inciso anterior se puede escribir como
+\[
+I(x_i) \approx h \sum_{j=0}^{N} f_j \; g_{i-j},
+\]
+identificando el resultado como una convolución discreta (lineal) de las secuencias $\{f_j\}$ y $\{g_k\}$, salvo correcciones en los extremos del trapecio.
+
+\item Para calcular los $N+1$ valores $I(x_0), \ldots, I(x_N)$ simultáneamente usando FFT:
+\begin{enumerate}[i.]
+\item Indique cómo extender las secuencias con ceros (\emph{zero-padding}) para que la convolución circular de la FFT reproduzca la convolución lineal deseada.
+\item Describa los tres pasos del algoritmo (FFT directa, producto punto a punto, FFT inversa) y determine la complejidad total.
+\end{enumerate}
+\end{enumerate}
+\end{exercise}
+
+%%% Ejercicio 4 — Guía 3: interpolación %%%
+
+\begin{exercise}[Interpolación inteligente: $\sqrt{x}\sin(x)$]
+Se desea evaluar $f(x) = \sqrt{x}\,\sin(x)$ en puntos arbitrarios del intervalo $[0, \pi]$ usando interpolación polinomial en $n+1$ nodos equiespaciados $x_k = \frac{k\pi}{n}$, $k=0,\ldots,n$.
+
+Se proponen dos estrategias:
+\begin{itemize}
+\item \textbf{Estrategia A:} Interpolar directamente $f(x) = \sqrt{x}\,\sin(x)$ con un polinomio $p_n(x)$ de grado $\leq n$.
+\item \textbf{Estrategia B:} Interpolar solamente $g(x) = \sin(x)$ con un polinomio $q_n(x)$ de grado $\leq n$, y luego evaluar $\sqrt{x}\,q_n(x)$.
+\end{itemize}
+
+\begin{enumerate}[(a)]
+\item El teorema del error de interpolación establece que si $\varphi \in C^{n+1}([a,b])$, entonces para cada $x$ existe $\xi$ tal que
+\[
+\varphi(x) - p_n(x) = \frac{\varphi^{(n+1)}(\xi)}{(n+1)!}\,\prod_{k=0}^{n}(x - x_k).
+\]
+Calcule $f'(x) = \frac{\sin x}{2\sqrt{x}} + \sqrt{x}\cos x$ y $f''(x)$. Observe que $f''(x)$ tiene un término proporcional a $x^{-3/2}$. Deduzca que $\|f^{(n+1)}\|_\infty$ en $[0, \pi]$ es no acotada (diverge cuando $x \to 0^+$). Concluya que el teorema del error no se puede aplicar directamente a la estrategia~A.
+
+\item Calcule $g^{(n+1)}(x)$ para $g(x) = \sin(x)$ y demuestre que $\|g^{(n+1)}\|_\infty = 1$ para todo $n$.
+
+\item Usando el teorema del error para la estrategia~B, demuestre que
+\[
+|f(x) - \sqrt{x}\,q_n(x)| \leq \frac{\sqrt{\pi}}{(n+1)!}\,\prod_{k=0}^{n}|x - x_k|
+\]
+para todo $x \in [0, \pi]$.
+
+\item Para nodos equiespaciados con paso $h = \pi/n$, admita la cota estándar $\prod_{k=0}^{n}|x-x_k| \leq \frac{n!\, h^{n+1}}{4}$ (válida para $x$ entre dos nodos consecutivos). Deduzca que el error de la estrategia B satisface
+\[
+\|f - \sqrt{\cdot}\, q_n\|_\infty \leq \frac{\sqrt{\pi}\,\pi^{n+1}}{4\,(n+1)\,n^{n+1}}.
+\]
+Concluya que el error decrece más rápido que cualquier potencia de $1/n$.
+\end{enumerate}
+\end{exercise}
+
+\end{document}

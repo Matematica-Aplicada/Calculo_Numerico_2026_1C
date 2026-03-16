@@ -83,13 +83,12 @@ Dados nodos $x_0, x_1, \ldots, x_n$ distintos y valores $y_0, y_1, \ldots, y_n$,
 \end{exercise}
 
 \begin{exercise}[Forma baricéntrica de Lagrange]
-La forma baricéntrica es una reformulación numéricamente estable de la interpolación de Lagrange.
+La forma baricéntrica es una reformulación de la interpolación de Lagrange.
 \begin{enumerate}[(a)]
 \item Defina los pesos baricéntricos:
 \[
 w_k = \frac{1}{\prod_{\substack{j=0 \\ j \neq k}}^n (x_k - x_j)}, \quad k = 0, \ldots, n.
 \]
-\item Para los nodos $x_0 = 0, x_1 = 1, x_2 = 2$, calcule los pesos $w_0, w_1, w_2$.
 \item Demuestre que el polinomio interpolante se puede escribir como:
 \[
 p(x) = \frac{\sum_{k=0}^n \frac{w_k}{x - x_k} y_k}{\sum_{k=0}^n \frac{w_k}{x - x_k}}.
@@ -120,7 +119,6 @@ Dados nodos $x_0 < \cdots < x_n$ y valores $y_i$, la interpolación lineal a tro
 \begin{enumerate}[(a)]
 \item Escriba la expresión de $s(x)$ en $[x_i, x_{i+1}]$ y verifique su continuidad en los nodos. Verifique que no es diferenciable en general.
 \item Demuestre la cota de error $\|f - s\|_\infty \leq \frac{h^2}{8} \|f''\|_\infty$, donde $h = \max_i \Delta x_i$.
-\item Compare con la interpolación polinomial global: ¿evita $s(x)$ el fenómeno de Runge? ¿Cuál converge más rápido para funciones suaves analíticas?
 \end{enumerate}
 \end{exercise}
 
@@ -128,17 +126,17 @@ Dados nodos $x_0 < \cdots < x_n$ y valores $y_i$, la interpolación lineal a tro
 Un \textbf{spline cúbico} $s(x)$ es una función $C^2$ que coincide con un polinomio cúbico en cada subintervalo $[x_i, x_{i+1}]$ e interpola los datos.
 \begin{enumerate}[(a)]
 \item Cuente los grados de libertad ($4n$ coeficientes) y restricciones ($2n$ de interpolación/continuidad en extremos de intervalos, $2(n-1)$ de suavidad $C^1, C^2$). Concluya que faltan 2 condiciones de frontera (ej. ``natural'' $s''=0$, o ``sujeto'' $s'=f'$ en extremos).
-\item Demuestre la \textbf{propiedad variacional}: El spline cúbico natural minimiza la energía de curvatura $\int_a^b [u''(x)]^2 dx$ entre todas las funciones $C^2$ que interpolan los datos.
+\item Demuestre la propiedad variacional: El spline cúbico natural minimiza la energía de curvatura $\int_a^b [u''(x)]^2 dx$ entre todas las funciones $C^2$ que interpolan los datos.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Cuadratura interpolatoria] Un método muy común y general de integración numérica es interpolar el integrando, e integrar el polinomio interpolante.
+\begin{exercise}[Cuadratura interpolatoria] Un método muy común y general de integración numérica es interpolar el integrando, e integrar el polinomio resultante de manera analítica.
 \begin{enumerate}[(a)]
-\item \textbf{Regla del trapecio}: Interpole $f(x)$ en $[a, b]$ con una línea recta pasando por $(a, f(a))$ y $(b, f(b))$. Demuestre que:
+\item \textbf{Regla del trapecio}: Interpole $f(x)$ en $[a, b]$ con una línea recta pasando por $(a, f(a))$ y $(b, f(b))$. Demuestre que obtiene la aproximación:
 \[
 \int_a^b f(x) dx \approx \frac{b-a}{2}(f(a) + f(b)).
 \]
-\item \textbf{Regla de Simpson}: Interpole $f(x)$ en $[a, b]$ con una parábola pasando por $x_0 = a$, $x_1 = (a+b)/2$, $x_2 = b$. Demuestre que:
+\item \textbf{Regla de Simpson}: Interpole $f(x)$ en $[a, b]$ con una parábola pasando por $x_0 = a$, $x_1 = (a+b)/2$, $x_2 = b$. Demuestre que obtiene la aproximación:
 \[
 \int_a^b f(x) dx \approx \frac{b-a}{6}\left(f(a) + 4f\left(\frac{a+b}{2}\right) + f(b)\right).
 \]
@@ -147,8 +145,13 @@ Un \textbf{spline cúbico} $s(x)$ es una función $C^2$ que coincide con un poli
 \end{exercise}
 
 \begin{exercise}[Límite de precisión de las reglas de cuadratura]
-Sea $Q_n(f) = \sum_{i=0}^n w_i f(x_i)$ una regla de cuadratura interpolatoria basada en $n+1$ nodos distintos $x_0, \ldots, x_n$. Demuestre que es imposible construir una regla de cuadratura con $n+1$ nodos que sea exacta para todos los polinomios de grado $2n+2$.
-\textbf{Sugerencia}: Considere el polinomio $P(x) = \prod_{i=0}^n (x-x_i)^2$.
+Sea $Q_n(f) = \sum_{i=0}^n w_i f(x_i)$ una regla de cuadratura interpolatoria basada en $n+1$ nodos distintos $x_0, \ldots, x_n$.
+\begin{enumerate}[(a)]
+\item Si es posible elegir tanto los nodos como los pesos, ¿Cuántos grados de libertad existen? 
+\item Demuestre que es imposible construir una regla de cuadratura con $n+1$ nodos que sea exacta para todos los polinomios de grado $2n+2$.\textbf{Sugerencia}: Considere el polinomio $P(x) = \prod_{i=0}^n (x-x_i)^2$.
+\end{enumerate}
+
+
 \end{exercise}
 
 \begin{exercise}[Diferenciación numérica]

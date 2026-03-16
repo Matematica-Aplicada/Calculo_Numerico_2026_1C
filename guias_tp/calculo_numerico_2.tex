@@ -50,17 +50,8 @@ Sea $A \in \mathbb{R}^{n \times n}$ una matriz simétrica que admite una descomp
 \begin{enumerate}[(a)]
 \item Demuestre que $U = DL^T$, donde $D$ es una matriz diagonal.
 \item Concluya que $A$ admite la descomposición $A = LDL^T$.
-\item Verifique explícitamente esta descomposición para la matriz:
-\[
-A = \begin{pmatrix}
-4 & 2 & 2 \\
-2 & 3 & 1 \\
-2 & 1 & 3
-\end{pmatrix}.
-\]
 \item Compare el costo de almacenamiento de $LDL^T$ vs $LU$ para matrices simétricas.
 \end{enumerate}
-\textbf{Sugerencia}: Use que $A = A^T$ y $(LU)^T = U^T L^T = A$.
 \end{exercise}
 
 \begin{exercise}[Eficiencia de LU para matrices tridiagonales]
@@ -92,8 +83,7 @@ u_1 & c_1 & 0 & \cdots \\
 \]
 \item Derive fórmulas explícitas para $\ell_i$ y $u_i$ en términos de $a_i, b_i, c_i$.
 \item Demuestre que el costo de factorizar $A$ es $O(n)$ operaciones (en lugar de $O(n^3)$ para matrices densas).
-\item Demuestre que el costo de resolver $Ax = b$ dado $A = LU$ es $O(n)$ operaciones.
-\item Aplique el algoritmo a la matriz tridiagonal $5 \times 5$ con $a_i = -1$, $b_i = 2$, $c_i = -1$.
+\item Demuestre que el costo de resolver $Ax = b$ dado $A = LU$ es $O(n)$ operaciones. ¿Cuántas eran para matrices densas?
 \end{enumerate}
 \end{exercise}
 
@@ -133,11 +123,6 @@ Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y rango columna completo, y s
 \item \textbf{Solución vía ecuaciones normales}: Demuestre que la solución satisface $A^TAx = A^Tb$.
 \item \textbf{Solución vía QR}: Si $A = QR$, demuestre que la solución es $x = R^{-1}Q^Tb$.
 \item Demuestre que ambos métodos producen la misma solución en aritmética exacta.
-\item \textbf{Análisis de condicionamiento}: Usando la SVD de $A$, demuestre que:
-\[
-\kappa(A^TA) = \kappa(A)^2 = \kappa(R)^2,
-\]
-donde $\kappa(\cdot)$ denota el número de condición en norma 2. Concluya que QR es numéricamente más estable que las ecuaciones normales cuando $A$ está mal condicionada.
 \end{enumerate}
 \end{exercise}
 
@@ -151,21 +136,13 @@ Sea $B \in \mathbb{R}^{n \times n}$ una matriz simétrica definida positiva.
 B = AA^T = (A^T)^T A^T = R^TQ^TQR = R^TR.
 \]
 \item Concluya que $B$ admite la descomposición de Cholesky $B = LL^T$ donde $L = R^T$ es triangular inferior.
-\item Verifique la factorización para:
-\[
-B = \begin{pmatrix}
-4 & 2 \\
-2 & 5
-\end{pmatrix}.
-\]
-\item Compare el costo de Cholesky ($\sim \frac{n^3}{6}$ operaciones) con LU ($\sim \frac{n^3}{3}$ operaciones).
 \end{enumerate}
 \end{exercise}
 
 \begin{exercise}[Norma 2 de matrices normales]
 Una matriz $A \in \mathbb{C}^{n \times n}$ es \textbf{normal} si $A^*A = AA^*$, donde $A^*$ denota la conjugada transpuesta.
 \begin{enumerate}[(a)]
-\item Demuestre que:
+\item Demuestre que si $A \in \mathbb{C}^{n \times n}$ es normal, entonces
 \[
 \|A\|_2 = \max_{1 \leq i \leq n} |\lambda_i|,
 \]
@@ -213,17 +190,22 @@ Q = UV^T.
 \end{exercise}
 
 \begin{exercise}[Pseudoinversa y solución de norma mínima]
-Sea $A \in \mathbb{R}^{m \times n}$ con SVD $A = U\Sigma V^T = \sum_{i=1}^r \sigma_i u_i v_i^T$. Se define la \textbf{pseudoinversa de Moore-Penrose} como:
+Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y $r = \text{rank}(A) \leq n$. Sea $A = U\Sigma V^T$ su SVD, donde $U = (u_1 \mid \cdots \mid u_m) \in \mathbb{R}^{m \times m}$ y $V = (v_1 \mid \cdots \mid v_n) \in \mathbb{R}^{n \times n}$ son ortogonales, y $\Sigma \in \mathbb{R}^{m \times n}$ tiene entradas diagonales $\sigma_1 \geq \cdots \geq \sigma_r > 0 = \sigma_{r+1} = \cdots = \sigma_n$. Se define la \textbf{pseudoinversa de Moore-Penrose} como:
 \[
-A^+ = V\Sigma^+ U^T = \sum_{i=1}^r \frac{1}{\sigma_i} v_i u_i^T,
+A^+ = V\Sigma^+ U^T = \sum_{i=1}^r \frac{1}{\sigma_i} v_i u_i^T \in \mathbb{R}^{n \times m},
 \]
-donde $\Sigma^+$ es diagonal con entradas $1/\sigma_i$ en las primeras $r$ posiciones.
+donde $\Sigma^+ \in \mathbb{R}^{n \times m}$ tiene entradas diagonales $1/\sigma_1, \ldots, 1/\sigma_r, 0, \ldots, 0$.
+
+Consideramos el problema de cuadrados mínimos $\min_x \|Ax - b\|_2$
 \begin{enumerate}[(a)]
-\item Demuestre que $x = A^+ b$ resuelve el problema de cuadrados mínimos $\min_x \|Ax - b\|_2$.
-\item Demuestre que entre todas las soluciones de cuadrados mínimos, $x = A^+b$ tiene norma mínima:
+\item Demuestre que si $r < n$, el problema de cuadrados mínimos admite infinitas soluciones.
+\textbf{Sugerencia}: Si $\hat{x}$ es una solución, considere $\hat{x} + z$ con $z \in \text{Ker}(A)$.
+\item Demuestre que $x = A^+ b$ es una solución del problema de cuadrados mínimos.
+\item Demuestre que entre todas las soluciones de cuadrados mínimos, $x = A^+b$ tiene norma mínima. Es decir, si definimos el conjunto de soluciones de cuadrados mínimos como
 \[
-\|A^+b\|_2 = \min\{\|x\|_2 : \|Ax - b\|_2 = \min\}.
+\mathcal{S} = \operatorname{argmin}_{x \in \mathbb{R}^n} \|Ax - b\|_2,
 \]
+entonces $\|A^+b\|_2 = \min_{x \in \mathcal{S}} \|x\|_2$.
 \end{enumerate}
 \end{exercise}
 
@@ -243,6 +225,15 @@ donde $\kappa_2(A) = \sigma_1 / \sigma_n$ es el número de condición.
 \textbf{Sugerencia}: Elija $b$ alineado con el primer vector singular izquierdo $u_1$ (máxima amplificación) y $\Delta b$ alineado con el último $u_n$ (mínima atenuación en la inversa), o viceversa según convenga.
 \item Concluya que si $\kappa_2(A)$ es grande, pequeños errores en $b$ pueden resultar en errores catastróficos en la solución $x$, independientemente del método de resolución del sistema lineal.
 \end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Condicionamiento de mínimos cuadrados vía SVD]
+Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y rango columna completo, con descomposición QR $A = QR$ y SVD $A = U\Sigma V^T$.
+Usando la SVD de $A$, demuestre que:
+\[
+\kappa(A^TA) = \kappa(A)^2 = \kappa(R)^2,
+\]
+donde $\kappa(\cdot)$ denota el número de condición en norma 2. Concluya que resolver el problema de mínimos cuadrados vía QR es numéricamente más estable que vía las ecuaciones normales cuando $A$ está mal condicionada.
 \end{exercise}
 
 \begin{exercise}[Matrices de Householder]
@@ -296,17 +287,29 @@ d_1 & f_1 & 0 & \cdots & 0 \\
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Forma de de Hessenberg]
-Una matriz $H \in \mathbb{R}^{n \times n}$ está en \textbf{forma de Hessenberg superior} si $h_{ij} = 0$ para $i > j+1$.
-\begin{enumerate}[(a)]
-\item Demuestre que el costo de calcular la descomposición QR de una matriz $H \in \mathbb{R}^{n \times n}$ en forma de Hessenberg es $O(n^2)$ operaciones. ¿Cuál es el costo para matrices densas generales?
+\subsubsection*{Reducción a forma de Hessenberg}
+
+Una matriz $H \in \mathbb{R}^{n \times n}$ está en \textbf{forma de Hessenberg superior} si $h_{ij} = 0$ para $i > j+1$:
+\[
+H = \begin{pmatrix}
+* & * & * & \cdots & * \\
+* & * & * & \cdots & * \\
+0 & * & * & \cdots & * \\
+\vdots & \ddots & \ddots & \ddots & \vdots \\
+0 & \cdots & 0 & * & *
+\end{pmatrix}.
+\]
+
+\begin{exercise}
+Demuestre que el costo de calcular la descomposición QR de una matriz $H \in \mathbb{R}^{n \times n}$ en forma de Hessenberg es $O(n^2)$ operaciones. ¿Cuál es el costo para matrices densas generales?
 \textbf{Sugerencia}: Observe que en cada columna $k$ solo es necesario anular una entrada (la subdiagonal). Una reflexión de Householder diseñada para esto modificará únicamente dos filas de la matriz, costando $O(n)$ operaciones.
-\item Demuestre que si $A$ es simétrica y se reduce a forma de Hessenberg mediante transformaciones de semejanza ortogonal $H = Q^TAQ$, entonces $H$ es tridiagonal.
-\textbf{Sugerencia}: Use que $H$ es simétrica ($H = H^T$) y que la forma de Hessenberg superior implica $h_{ij} = 0$ para $i > j+1$.
-\end{enumerate}
 \end{exercise}
 
-\section*{Métodos iterativos}
+\begin{exercise}
+Demuestre que si $A$ es simétrica y se reduce a forma de Hessenberg mediante transformaciones de semejanza ortogonal $H = Q^TAQ$, entonces $H$ es tridiagonal.
+\end{exercise}
+
+\section*{Métodos iterativo para autovalores y sistemas lineales}
 
 \begin{exercise}[Método de la potencia: análisis de convergencia]
 Sea $A \in \mathbb{R}^{n \times n}$ una matriz diagonalizable con autovalores $|\lambda_1| > |\lambda_2| \geq \dots \geq |\lambda_n|$ y autovectores linealmente independientes $\{v_1, \dots, v_n\}$.
