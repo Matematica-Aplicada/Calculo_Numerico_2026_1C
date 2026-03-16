@@ -54,7 +54,7 @@ Un número real $r$ es \textbf{computable} si existe una máquina de Turing que,
 \begin{exercise}[Problema del halting]
 El \textbf{problema del halting} pregunta: ¿existe un algoritmo que determine si una máquina de Turing $M$ se detiene con entrada $w$? 
 
-Demuestre que \textbf{no existe tal algoritmo} usando un \textbf{argumento diagonal}:
+Demuestre que \textbf{no existe tal algoritmo}:
 \begin{enumerate}[(a)]
 \item Suponga que existe una máquina $H$ que resuelve el problema: $H(\langle M \rangle, w)$ se detiene y responde "sí" si $M$ se detiene con entrada $w$, y responde "no" en caso contrario.
 \item Construya una máquina $D$ que recibe como entrada la codificación $\langle M \rangle$ de una máquina y hace lo siguiente:

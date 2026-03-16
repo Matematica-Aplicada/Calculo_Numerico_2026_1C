@@ -92,6 +92,30 @@ Muestre que, dada $f\in C^n_{per}([0,2\pi])$, sus coeficientes de Fourier decaen
 \fej
 
 \bej
+(Cota mejorada del error de truncamiento de Fourier)
+Sea $f \in C^n_{per}([0,2\pi])$ con $n \geq 2$. Sabemos que los coeficientes de Fourier satisfacen $\hat{f}_k = \widehat{f^{(n)}}_k / (ik)^n$, de modo que $|\hat{f}_k| = |\widehat{f^{(n)}}_k| / |k|^n$.
+\begin{enumerate}[(a)]
+    \item Muestre que, usando la desigualdad de Cauchy-Schwarz:
+    \[
+    \sum_{|k| > N} |\hat{f}_k| = \sum_{|k| > N} \frac{|\widehat{f^{(n)}}_k|}{|k|^n} \leq \left(\sum_{|k| > N} |\widehat{f^{(n)}}_k|^2\right)^{1/2} \cdot \left(\sum_{|k| > N} \frac{1}{|k|^{2n}}\right)^{1/2}.
+    \]
+    \item Acote el primer factor usando la desigualdad de Bessel aplicada a $f^{(n)}$ con la base ortonormal $\{e^{ikx}/\sqrt{2\pi}\}$, para obtener:
+    \[
+    \left(\sum_{|k| > N} |\widehat{f^{(n)}}_k|^2\right)^{1/2} \leq \frac{\|f^{(n)}\|_{L^2}}{\sqrt{2\pi}}.
+    \]
+    \item Acote el segundo factor comparando la serie con una integral:
+    \[
+    \sum_{|k| > N} \frac{1}{|k|^{2n}} \leq \frac{2}{(2n-1)N^{2n-1}}.
+    \]
+    \item Combine los resultados anteriores para concluir que:
+    \[
+    \|f - S_N f\|_\infty \leq \sum_{|k| > N} |\hat{f}_k| \leq \frac{\|f^{(n)}\|_{L^2}}{\sqrt{\pi(2n-1)}} \cdot \frac{1}{N^{n - 1/2}}.
+    \]
+    \item Compare esta tasa $O(N^{1/2-n})$ con la $O(N^{1-n})$ que se obtiene por comparación directa con una integral (sin usar Cauchy-Schwarz ni Bessel). ¿De dónde proviene la ganancia de $N^{-1/2}$?
+\end{enumerate}
+\fej
+
+\bej
 (Exactitud de Trapecios para Trigonométricas)
 Demuestre que la regla de los trapecios compuesta con $N$ nodos en $[0, 2\pi]$, dada por:
 \[ Q_N(g) = \frac{2\pi}{N} \sum_{j=0}^{N-1} g(x_j), \quad \text{donde } x_j = \frac{2\pi j}{N}, \]

@@ -48,6 +48,79 @@ u_{\varepsilon}(x) = \alpha + x + (\beta - \alpha -1) \left( \frac{e^{x/\varepsi
 \item Resuelva numéricamente la ecuación \eqref{boundary_layer_ej} usando diferencias centradas para las derivadas primera y segunda, y una malla de tamaño $h$. Grafique el error para distintos valores de $h$ y $\varepsilon$. ¿Qué ocurre si $h \gg 2\varepsilon$?
 \end{enumerate}
 \end{exercise}
- 
+
+\begin{exercise}[Patrones de Turing en un sistema de reacción-difusión]\label{ejer_turing}
+
+En su célebre artículo \textit{The Chemical Basis of Morphogenesis} (1952), Alan Turing propuso que patrones espaciales estacionarios ---como las manchas de un jaguar o las rayas de una cebra--- pueden surgir espontáneamente de la interacción entre dos sustancias químicas que difunden a velocidades distintas. Este fenómeno, conocido como \textbf{inestabilidad de Turing}, se modela mediante un sistema de ecuaciones de reacción-difusión.
+
+Considere el \textbf{modelo de Schnakenberg} en el dominio cuadrado $[0, L]^2$ con condiciones de contorno periódicas:
+\begin{equation}\label{schnakenberg}
+\left\lbrace
+\begin{aligned}
+\frac{\partial u}{\partial t} &= D_u \nabla^2 u + \gamma\!\left(a - u + u^2 v\right), \\[4pt]
+\frac{\partial v}{\partial t} &= D_v \nabla^2 v + \gamma\!\left(b - u^2 v\right),
+\end{aligned}
+\right.
+\end{equation}
+donde $u(x,y,t)$ y $v(x,y,t)$ representan las concentraciones del \textit{activador} y del \textit{inhibidor} respectivamente, $D_u$ y $D_v > 0$ son sus coeficientes de difusión, y $a, b, \gamma > 0$ son parámetros cinéticos.
+
+\begin{enumerate}
+\item \textbf{Estado estacionario homogéneo.} Verifique que, en ausencia de difusión, el sistema \eqref{schnakenberg} admite el estado estacionario espacialmente uniforme
+\[
+u_s = a + b, \qquad v_s = \frac{b}{(a+b)^2}.
+\]
+Compruebe además que, si $a$ y $b$ satisfacen $b - a > 0$ y $(a+b)^3 > b - a$ (verificado para los valores del punto~4), la matriz jacobiana de los términos de reacción evaluada en $(u_s, v_s)$:
+\[
+J = \gamma \begin{pmatrix} \dfrac{b-a}{a+b} & (a+b)^2 \\[8pt] -\dfrac{2b}{a+b} & -(a+b)^2 \end{pmatrix}
+\]
+tiene traza negativa y determinante positivo, de modo que el equilibrio es \textbf{linealmente estable} sin difusión.
+
+\item \textbf{Discretización espacial (método de líneas).} Tome una malla uniforme de $N \times N$ puntos $\{(x_i, y_j)\}$ con paso $h = L/N$ e índices periódicos. Discretice el laplaciano $\nabla^2 w$ con el estencil estándar de 5 puntos:
+\[
+(\nabla^2 w)_{i,j} \approx \frac{w_{i+1,j} + w_{i-1,j} + w_{i,j+1} + w_{i,j-1} - 4w_{i,j}}{h^2},
+\]
+donde todos los índices se toman módulo $N$.
+
+\textbf{Sugerencia:} En \texttt{numpy}, el laplaciano discreto puede calcularse eficientemente usando \texttt{numpy.roll}:
+\begin{verbatim}
+  def laplaciano(w, h):
+      return (np.roll(w,1,0) + np.roll(w,-1,0)
+            + np.roll(w,1,1) + np.roll(w,-1,1) - 4*w) / h**2
+\end{verbatim}
+
+\item \textbf{Esquema de Euler explícito.} Avance en el tiempo con paso $\dt$ mediante:
+\[
+\begin{aligned}
+U^{n+1}_{i,j} &= U^{n}_{i,j} + \dt \Big[ D_u\, (\nabla^2 U^n)_{i,j} + \gamma\!\left(a - U^n_{i,j} + (U^n_{i,j})^2 V^n_{i,j}\right) \Big], \\[4pt]
+V^{n+1}_{i,j} &= V^{n}_{i,j} + \dt \Big[ D_v\, (\nabla^2 V^n)_{i,j} + \gamma\!\left(b - (U^n_{i,j})^2 V^n_{i,j}\right) \Big].
+\end{aligned}
+\]
+Implemente este esquema en Python.\footnote{Si se usan arreglos 2D de \texttt{numpy} para $U$ y $V$, la actualización completa se escribe en operaciones vectorizadas sin ningún bucle explícito.} Como condición inicial, perturbe aleatoriamente el estado estacionario:
+\[
+U^0_{i,j} = u_s + 0{,}01\,\xi_{i,j}, \qquad V^0_{i,j} = v_s + 0{,}01\,\eta_{i,j},
+\]
+donde $\xi_{i,j}, \eta_{i,j} \sim \mathcal{U}(-1, 1)$ son i.i.d.
+
+\item \textbf{Simulación.} Utilice los siguientes parámetros:
+\[
+a = 0{,}1, \quad b = 0{,}9, \quad \gamma = 1000, \quad D_u = 0{,}05, \quad D_v = 1, \quad L = 1, \quad N = 100.
+\]
+El paso temporal $\dt = 2 \times 10^{-5}$ y tiempo final $T = 1{,}5$. Grafique la concentración del activador $U(x,y,T)$ usando \texttt{plt.imshow}. Debería observar un patrón de \textbf{manchas} (spots) que emerge espontáneamente de la perturbación aleatoria inicial.
+
+\item \textbf{Restricción de estabilidad.} Para el método de Euler explícito aplicado al laplaciano discreto en 2D con paso $h$, la restricción de estabilidad es:
+\[
+\dt \leq \frac{h^2}{4\, D_{\max}}, \qquad D_{\max} = \max(D_u, D_v).
+\]
+Verifique que el paso temporal del punto anterior satisface esta condición. ¿Qué ocurre si elige $\dt = 5 \times 10^{-5}$?
+
+\item \textbf{Transición de patrones.} Fijando los demás parámetros, varíe la relación $d = D_v / D_u$ tomando $D_u = 1/d$ y $D_v = 1$ para $d \in \{1, 5, 10, 20, 40, 100\}$ (ajuste $\dt$ en cada caso para satisfacer la CFL). Para cada valor de $d$, grafique la solución en $T = 1{,}5$.
+\begin{enumerate}[(a)]
+\item ¿A partir de qué valor de $d$ se observa formación de patrones?
+\item ¿Qué tipo de estructuras se forman (manchas, rayas, laberintos)?
+\item ¿Qué ocurre cuando $d = 1$, es decir, cuando las dos especies difunden a la misma velocidad? Justifique el resultado observado con el análisis de estabilidad del punto~1.
+\end{enumerate}
+
+\end{enumerate}
+\end{exercise}
 
 \end{document}
