@@ -903,20 +903,6 @@ Para IEEE~754 doble precisión, $\beta=2$, $t=53$:
 Esto significa que un número de punto flotante de doble precisión tiene aproximadamente $15$--$16$ dígitos decimales significativos.
 \end{example}
 
-\subsubsection*{Espaciado entre números consecutivos}
-
-El épsilon de máquina determina la resolución \textit{relativa} del sistema.  Para entender esto, observemos cómo están espaciados los números de máquina.
-
-Sea $x = d_0.d_1\cdots d_{t-1} \times \beta^e$ un número de máquina normalizado.  Todos los números de máquina con el mismo exponente $e$ difieren solo en los dígitos de la mantisa.  La distancia entre dos números consecutivos con exponente $e$ es
-\[
-\Delta_e = \beta^{-(t-1)} \times \beta^e = \beta^{e-t+1}.
-\]
-Nótese que este espaciado \textbf{depende del exponente} $e$: los números de máquina se hacen más densos cerca de cero y más espaciados lejos del origen. Sin embargo, el espaciado \textit{relativo} es aproximadamente uniforme.  En efecto, como los números con exponente $e$ satisfacen $\beta^{e-1}\le|x|<\beta^e$\footnote{Para $e=e_{\min}$ el rango es $\beta^{e_{\min}-1}\le |x|<\beta^{e_{\min}}$.  Ignoramos los subnormales en este análisis.}, el espaciado relativo satisface:
-\[
-\frac{\Delta_e}{|x|} \;\le\; \frac{\beta^{e-t+1}}{\beta^{e-1}} \;=\; \beta^{2-t}.
-\]
-Pero $\epsilon_{\text{mach}}=\beta^{1-t}$, así que $\Delta_e/|x| \le \beta\cdot\epsilon_{\text{mach}}$ para todo $x$ normalizado. En el caso particular $\beta=2$, esto da $\Delta_e/|x|\le 2\epsilon_{\text{mach}}$, y la cota fina (que probaremos a continuación) muestra que al redondear al más cercano, el error relativo no supera $\epsilon_{\text{mach}}/2$.
-
 \subsection{Redondeo y la cota fundamental de error}\label{subsec:cota_fundamental}
 
 \begin{definition}[Función de redondeo]\label{def:redondeo}
