@@ -1,5 +1,6 @@
 \documentclass[a4paper,11pt]{report}
 \usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage{booktabs}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{geometry}
@@ -843,6 +844,31 @@ Además del rango normalizado, el estándar define:
 \item Mayor número representable: $(2-2^{-52})\times 2^{1023} \approx 1.798 \times 10^{308}$.
 \end{itemize}
 \end{example}
+
+\subsubsection*{Formatos de punto flotante en GPUs y machine learning}
+
+La doble precisión (FP64) es el estándar en cálculo científico, pero en aplicaciones de aprendizaje automático y procesamiento en GPUs se utilizan formatos de menor precisión que permiten mayor rendimiento y menor consumo de memoria.  La siguiente tabla resume los formatos más comunes.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lccccl@{}}
+\toprule
+\textbf{Formato} & \textbf{Bits} & \textbf{Signo} & \textbf{Exponente} & \textbf{Mantisa}${}^{(*)}$ & $\boldsymbol{\epsilon_{\text{mach}}}$ \\
+\midrule
+FP64 (double)  & 64 & 1 & 11 & 52 (53) & $2^{-52}\approx 2.2\times 10^{-16}$ \\
+FP32 (float)   & 32 & 1 &  8 & 23 (24) & $2^{-23}\approx 1.2\times 10^{-7}$ \\
+TF32           & 19 & 1 &  8 & 10 (11) & $2^{-10}\approx 9.8\times 10^{-4}$ \\
+FP16 (half)    & 16 & 1 &  5 & 10 (11) & $2^{-10}\approx 9.8\times 10^{-4}$ \\
+BF16 (bfloat16)& 16 & 1 &  8 &  7 \phantom{0}(8)  & $2^{-7}\;\approx 7.8\times 10^{-3}$ \\
+FP8 (E5M2)     &  8 & 1 &  5 &  2 \phantom{0}(3)  & $2^{-2}\;= 0.25$ \\
+FP8 (E4M3)     &  8 & 1 &  4 &  3 \phantom{0}(4)  & $2^{-3}\;= 0.125$ \\
+\bottomrule
+\end{tabular}
+\caption{Formatos de punto flotante utilizados en GPUs y machine learning. La columna ``Mantisa'' indica los bits almacenados y, entre paréntesis, la precisión total $t$ incluyendo el bit implícito. TF32 es un formato de NVIDIA (Ampere y posterior); BF16 fue introducido por Google Brain; los formatos FP8 fueron estandarizados para las arquitecturas NVIDIA Hopper y AMD MI300.}
+\label{tab:formatos_flotante}
+\end{table}
+
+Nótese que BF16 tiene el mismo rango de exponentes que FP32 (8~bits), lo que evita problemas de overflow/underflow al entrenar redes neuronales, a costa de menor precisión.  En contraste, FP16 tiene mayor precisión que BF16 pero un rango de exponentes mucho más reducido.  TF32 combina el exponente de FP32 con una mantisa intermedia y se usa internamente en las unidades tensoriales de NVIDIA.  Los formatos FP8 de 8~bits, con precisiones de apenas 3 o 4~bits, se utilizan para inferencia y entrenamiento con cuantización agresiva.
 
 \subsection{Épsilon de máquina}\label{subsec:epsilon_maquina}
 
