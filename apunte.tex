@@ -909,7 +909,31 @@ Esto significa que un número de punto flotante de doble precisión tiene aproxi
 La \textbf{función de redondeo al más cercano} $\operatorname{fl}\colon\mathbb{R}\to\mathbb{F}$ asigna a cada número real $x$ (en el rango representable) el número de máquina más cercano a $x$.  En caso de empate, el estándar IEEE~754 utiliza la regla \textit{round to even} (se elige el número cuyo último dígito es par).
 \end{definition}
 
-La propiedad más importante del redondeo es la siguiente cota de error relativo.
+La propiedad más importante del redondeo es la siguiente cota de error relativo. Para demostrarla, necesitamos primero entender el espaciado entre números de máquina consecutivos.
+
+\begin{lemma}[Espaciado entre números de máquina consecutivos]\label{lem:espaciado}
+En el sistema $\mathbb{F}(\beta,t,e_{\min},e_{\max})$, dos números de máquina normalizados consecutivos con exponente $e$ distan exactamente
+\[
+\Delta_e = \beta^{e-(t-1)}.
+\]
+\end{lemma}
+
+\begin{proof}
+Un número de máquina normalizado con exponente $e$ tiene la forma
+\[
+x = d_0.\,d_1\,d_2\cdots d_{t-1} \;\times\; \beta^e,
+\]
+donde $d_0\neq 0$ y $0\le d_i\le \beta-1$.  Esto equivale a escribir
+\[
+x = \left(\sum_{k=0}^{t-1} d_k\,\beta^{-k}\right)\beta^e = \left(\sum_{k=0}^{t-1} d_k\,\beta^{t-1-k}\right)\beta^{e-(t-1)}.
+\]
+La cantidad entre paréntesis, $m = \sum_{k=0}^{t-1} d_k\,\beta^{t-1-k}$, es un entero (pues cada término es un entero). Además, dos números de máquina consecutivos con el mismo exponente $e$ difieren en que sus enteros $m$ correspondientes difieren en $1$.  Por lo tanto, la distancia entre ellos es
+\[
+\Delta_e = 1 \times \beta^{e-(t-1)} = \beta^{e-(t-1)}.
+\]
+\end{proof}
+
+Nótese que este espaciado \textbf{depende del exponente} $e$: los números de máquina se hacen más densos cerca de cero y más espaciados lejos del origen. Sin embargo, el espaciado \textit{relativo} es aproximadamente uniforme: como los números normalizados con exponente $e$ satisfacen $|x|\ge\beta^e$, se tiene $\Delta_e/|x| \le \beta^{e-(t-1)}/\beta^e = \beta^{1-t} = \epsilon_{\text{mach}}$.
 
 \begin{theorem}[Cota fundamental del error de redondeo]\label{thm:cota_redondeo}
 Para todo número real $x$ en el rango normalizado del sistema $\mathbb{F}(\beta,t,e_{\min},e_{\max})$, se cumple
@@ -922,28 +946,13 @@ Equivalentemente, existe $\delta$ con $|\delta|\le \tfrac{1}{2}\epsilon_{\text{m
 La cantidad $u = \tfrac{1}{2}\epsilon_{\text{mach}} = \tfrac{1}{2}\beta^{1-t}$ se denomina el \textbf{unit roundoff} y representa la máxima precisión relativa que puede esperarse de una operación de punto flotante.
 
 \begin{proof}
-Sea $x\neq 0$ un número real en el rango normalizado.  Entonces $x$ se encuentra entre dos números de máquina consecutivos.  Escribimos
+Sea $x\neq 0$ un número real en el rango normalizado, con exponente $e$ (es decir, $\beta^e \le |x| < \beta^{e+1}$).  Por el Lema~\ref{lem:espaciado}, $x$ se encuentra entre dos números de máquina consecutivos $x^-$ y $x^+ = x^- + \beta^{e-(t-1)}$.  El redondeo al más cercano satisface
 \[
-x = \pm\, d_0.d_1\cdots d_{t-1}\,d_t\,d_{t+1}\cdots\;\times\;\beta^e,
+|\operatorname{fl}(x)-x| \;\le\; \tfrac{1}{2}\,(x^+-x^-) \;=\; \tfrac{1}{2}\,\beta^{e-(t-1)}.
 \]
-con $d_0\neq 0$, donde los dígitos $d_t, d_{t+1},\ldots$ son los que no caben en la mantisa.
-
-Los dos números de máquina consecutivos que encierran a $|x|$ son:
-\begin{align*}
-x^- &= d_0.d_1\cdots d_{t-1}\;\times\;\beta^e,\\
-x^+ &= x^- + \beta^{e-(t-1)}.
-\end{align*}
-El redondeo al más cercano satisface
+Como $|x|\ge\beta^e$, dividiendo:
 \[
-|\operatorname{fl}(x)-x| \;\le\; \tfrac{1}{2}\,(x^+-x^-) \;=\; \tfrac{1}{2}\,\beta^{e-(t-1)} \;=\;\tfrac{1}{2}\,\beta^{e-t+1}.
-\]
-Como $x$ es normalizado con exponente $e$, la mantisa satisface $d_0\ge 1$, y por lo tanto
-\[
-|x| \;\ge\; 1.0\cdots 0 \times \beta^e \;=\;\beta^e.
-\]
-Dividiendo:
-\[
-\frac{|\operatorname{fl}(x)-x|}{|x|} \;\le\; \frac{\tfrac{1}{2}\,\beta^{e-t+1}}{\beta^e} \;=\; \tfrac{1}{2}\,\beta^{1-t} \;=\; \tfrac{1}{2}\,\epsilon_{\text{mach}}.
+\frac{|\operatorname{fl}(x)-x|}{|x|} \;\le\; \frac{\tfrac{1}{2}\,\beta^{e-(t-1)}}{\beta^e} \;=\; \tfrac{1}{2}\,\beta^{1-t} \;=\; \tfrac{1}{2}\,\epsilon_{\text{mach}}.
 \]
 Para la formulación equivalente, basta definir $\delta = (\operatorname{fl}(x)-x)/x$; la cota recién demostrada da $|\delta|\le \tfrac{1}{2}\epsilon_{\text{mach}}$, y entonces $\operatorname{fl}(x) = x + x\delta = x(1+\delta)$.
 \end{proof}
@@ -960,11 +969,57 @@ u = \frac{\epsilon_{\text{mach}}}{2} = \frac{2^{-52}}{2} = 2^{-53} \approx 1.11\
 Esto significa que toda representación en punto flotante introduce un error relativo de a lo sumo $\sim 10^{-16}$.
 \end{example}
 
-La formulación $\operatorname{fl}(x)=x(1+\delta)$ con $|\delta|\le u$ es particularmente útil para el \textbf{análisis de errores de redondeo}: permite propagar errores a través de secuencias de operaciones aritméticas.  El estándar IEEE~754 garantiza además que cada operación aritmética elemental ($+,-,\times,/$) se realiza con esta misma precisión: si $a,b\in\mathbb{F}$, entonces
+La formulación $\operatorname{fl}(x)=x(1+\delta)$ es particularmente útil para propagar errores a través de secuencias de operaciones aritméticas.  El estándar IEEE~754 garantiza además que cada operación aritmética elemental se realiza con esta misma precisión, lo que enunciamos como corolario.
+
+\begin{corollary}[Modelo estándar de aritmética de punto flotante]\label{cor:modelo_estandar}
+Sea $u = \tfrac{1}{2}\epsilon_{\emph{mach}}$.  En aritmética IEEE~754, para todo par de números de máquina $a,b\in\mathbb{F}$ y toda operación $\texttt{op}\in\{+,-,\times,/\}$ (con $b\neq 0$ para la división), existe $\delta$ con $|\delta|\le u$ tal que
 \[
-\operatorname{fl}(a\mathbin{\texttt{op}} b) = (a\mathbin{\texttt{op}} b)(1+\delta), \qquad |\delta|\le u,
+\operatorname{fl}(a\mathbin{\texttt{op}} b) = (a\mathbin{\texttt{op}} b)(1+\delta).
 \]
-donde $\texttt{op}\in\{+,-,\times,/\}$.
+Es decir, el resultado en punto flotante es el resultado exacto perturbado por un error relativo de a lo sumo $u$.
+\end{corollary}
+
+Este modelo es el punto de partida del \textbf{análisis de errores de redondeo}: para estudiar un algoritmo, se reemplaza cada operación aritmética por la versión perturbada y se propagan los $\delta$.
+
+\begin{example}[Error de redondeo de la suma]\label{ex:error_suma}
+Sean $a,b\in\mathbb{F}$.  La suma en punto flotante satisface
+\[
+\operatorname{fl}(a+b) = (a+b)(1+\delta_1), \qquad |\delta_1|\le u.
+\]
+El error absoluto es $|\operatorname{fl}(a+b)-(a+b)| = |a+b|\,|\delta_1| \le u\,|a+b|$, y el error relativo (cuando $a+b\neq 0$) es simplemente $|\delta_1|\le u$.  La suma de dos números de máquina introduce, pues, un error relativo de a lo sumo $u$ \emph{sobre el resultado exacto}.
+
+Sin embargo, si $a$ y $b$ tienen signos opuestos y son de magnitud similar, $|a+b|$ puede ser mucho menor que $|a|$ o $|b|$: aunque el error relativo \emph{de la operación} es pequeño, el resultado puede tener pocos dígitos significativos respecto de los operandos originales.  Esto es la cancelación catastrófica (Ejemplo~\ref{ex:cancelacion}).
+\end{example}
+
+\begin{example}[Error de redondeo de la multiplicación]\label{ex:error_mult}
+Sean $a,b\in\mathbb{F}$.  La multiplicación en punto flotante satisface
+\[
+\operatorname{fl}(a\cdot b) = a\cdot b\,(1+\delta_1), \qquad |\delta_1|\le u.
+\]
+El error relativo es directamente $|\delta_1|\le u$, independientemente de los valores de $a$ y $b$.  La multiplicación es, en este sentido, una operación ``benigna'' para los errores de redondeo: no sufre cancelación.
+\end{example}
+
+\begin{example}[Propagación de errores: el producto interno]\label{ex:error_producto_interno}
+Consideremos el cálculo de $s = a_1 b_1 + a_2 b_2$ en punto flotante.  Cada paso introduce su propio $\delta$:
+\begin{align*}
+p_1 &= \operatorname{fl}(a_1 b_1) = a_1 b_1\,(1+\delta_1), \\
+p_2 &= \operatorname{fl}(a_2 b_2) = a_2 b_2\,(1+\delta_2), \\
+\hat{s} &= \operatorname{fl}(p_1 + p_2) = (p_1+p_2)(1+\delta_3),
+\end{align*}
+con $|\delta_i|\le u$.  Sustituyendo:
+\[
+\hat{s} = \bigl(a_1 b_1(1+\delta_1) + a_2 b_2(1+\delta_2)\bigr)(1+\delta_3).
+\]
+Expandiendo y descartando términos de orden $u^2$ (que son despreciables, del orden de $10^{-32}$ en doble precisión):
+\[
+\hat{s} \approx a_1 b_1\,(1+\delta_1+\delta_3) + a_2 b_2\,(1+\delta_2+\delta_3).
+\]
+El error absoluto satisface
+\[
+|\hat{s} - s| \;\lesssim\; 2u\,(|a_1 b_1| + |a_2 b_2|).
+\]
+Nótese que la cota depende de $|a_1 b_1|+|a_2 b_2|$ y no de $|a_1 b_1 + a_2 b_2|$: si los términos se cancelan parcialmente, el error relativo $|\hat{s}-s|/|s|$ puede ser grande.  Este análisis se generaliza al producto interno de vectores de dimensión $n$, donde la cota toma la forma $|\hat{s}-s|\lesssim nu\sum|a_i b_i|$.
+\end{example}
 
 \subsection{Consecuencias y ejemplos}
 
