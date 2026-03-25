@@ -25,3 +25,5 @@
 *.gls
 *.glg
 *-blx.bib
+
+.venv

@@ -791,67 +791,188 @@ En aritmética de 8 bits con signo (rango $[-128, 127]$):
 \]
 \end{example}
 
-\subsection{Punto flotante IEEE 754}
+\subsection{Números de punto flotante}
 
-Los números reales se representan en \textbf{formato de punto flotante} según el estándar IEEE 754.
+Los números reales se representan en una computadora de forma aproximada, utilizando un número finito de bits.  Ya hemos visto la representación de enteros; pasamos ahora a la representación de números reales.
 
-\textbf{Formato de 64 bits (double precision)}:
+\begin{definition}[Sistema de punto flotante]
+Un \textbf{sistema de punto flotante} $\mathbb{F}(\beta,\,t,\,e_{\min},\,e_{\max})$ queda determinado por:
+\begin{itemize}
+\item una \textbf{base} $\beta \geq 2$,
+\item una \textbf{precisión} $t \geq 1$ (cantidad de dígitos significativos),
+\item un rango de exponentes $e_{\min} \leq e \leq e_{\max}$.
+\end{itemize}
+Un \textbf{número de máquina normalizado} es un número de la forma
 \[
-x = (-1)^s \times 1.f \times 2^{e - 1023},
+x = \pm\, \underbrace{d_0.\,d_1\,d_2 \cdots d_{t-1}}_{\text{mantisa}} \;\times\; \beta^{e},
 \]
-donde:
-\begin{itemize}
-\item $s$: 1 bit de signo.
-\item $e$: 11 bits para el exponente (rango $0 \leq e \leq 2047$).
-\item $f$: 52 bits para la mantisa fraccionaria.
-\end{itemize}
-
-\begin{itemize}
-\item \textbf{Números normales}: $1 \leq e \leq 2046$. El 1 implícito da 53 bits de precisión.
-\item \textbf{Números subnormales}: $e = 0$, permiten representar valores muy pequeños cerca de cero.
-\item \textbf{Infinito}: $e = 2047$, $f = 0$.
-\item \textbf{NaN} (Not a Number): $e = 2047$, $f \neq 0$. Resulta de operaciones indefinidas como $0/0$.
-\end{itemize}
-
-\begin{example}[Rango de double precision]
-\begin{itemize}
-\item Mínimo positivo normalizado: $\approx 2.225 \times 10^{-308}$.
-\item Máximo: $\approx 1.798 \times 10^{308}$.
-\item Épsilon de máquina: $\epsilon = 2^{-52} \approx 2.22 \times 10^{-16}$ (precisión relativa).
-\end{itemize}
-\end{example}
-
-\subsection{Errores de punto flotante}
-
-Las operaciones de punto flotante no son exactas. El error relativo típico es del orden del épsilon de máquina.
-
-\begin{definition}[Error de redondeo]
-Cuando un número real $x$ se representa en punto flotante como $\text{fl}(x)$, el error relativo satisface:
-\[
-\left| \frac{x - \text{fl}(x)}{x} \right| \leq \frac{\epsilon}{2},
-\]
-donde $\epsilon = 2^{-52}$ para double precision.
+donde $0 \le d_i \le \beta-1$ para todo $i$, $d_0 \neq 0$ (condición de normalización), y $e_{\min}\le e\le e_{\max}$.  Además se incluye el $0$.
 \end{definition}
 
-\begin{example}[Pérdida de significancia]
-Restar números muy cercanos puede causar pérdida de dígitos significativos:
+La condición $d_0\neq 0$ garantiza la unicidad de la representación. Los dígitos $d_0.d_1\cdots d_{t-1}$ se llaman la \textbf{mantisa} (o \textit{significando}) y son $t$ dígitos en total. Nótese que como $d_0\ne 0$ y $d_0\le\beta-1$, la mantisa satisface
 \[
-a = 1.234567890123456, \quad b = 1.234567890123455.
+1 \;\le\; d_0.d_1\cdots d_{t-1} \;<\; \beta.
 \]
-En precisión finita:
+
+\subsubsection*{Formato IEEE 754 de doble precisión}
+
+El estándar IEEE~754 utiliza base $\beta = 2$. En \textbf{doble precisión} (64~bits), los parámetros son:
 \[
-a - b \approx 0.000000000000001 \quad \text{(solo 1 dígito significativo restante)}.
+\beta = 2,\qquad t = 53,\qquad e_{\min} = -1022,\qquad e_{\max} = 1023.
 \]
+Los 64 bits se distribuyen así:
+\begin{itemize}
+\item $s$: 1~bit de \textbf{signo}.
+\item $e$: 11~bits para el \textbf{exponente} (almacenado con sesgo 1023).
+\item $f$: 52~bits para la parte fraccionaria de la \textbf{mantisa}.
+\end{itemize}
+Como la base es $2$, la condición de normalización fuerza $d_0=1$, que no necesita almacenarse (``bit implícito''). Así los 52~bits almacenados, junto con el bit implícito, dan $t=53$ bits de precisión.  Un número normalizado se escribe
+\[
+x = (-1)^s \times 1.\underbrace{f_1 f_2\cdots f_{52}}_{52\text{ bits}} \times 2^{e-1023}.
+\]
+Además del rango normalizado, el estándar define:
+\begin{itemize}
+\item \textbf{Números subnormales} ($e=0$): permiten representar valores muy pequeños cerca de cero, sacrificando precisión gradualmente (\textit{gradual underflow}).
+\item $\pm\textbf{Infinito}$ ($e=2047$, $f=0$): resultado de desbordamientos (\textit{overflow}).
+\item \textbf{NaN} (\textit{Not a Number}, $e=2047$, $f\neq 0$): resultado de operaciones indefinidas como $0/0$ o $\sqrt{-1}$.
+\end{itemize}
+
+\begin{example}[Rango de doble precisión]
+\begin{itemize}
+\item Menor positivo normalizado: $2^{-1022} \approx 2.225 \times 10^{-308}$.
+\item Mayor número representable: $(2-2^{-52})\times 2^{1023} \approx 1.798 \times 10^{308}$.
+\end{itemize}
 \end{example}
 
-\begin{example}[Suma no asociativa]
+\subsection{Épsilon de máquina}\label{subsec:epsilon_maquina}
+
+¿Cuál es la ``resolución'' de un sistema de punto flotante? Para responder esta pregunta, consideremos la distancia entre el número $1$ y el siguiente número de máquina.
+
+En el sistema $\mathbb{F}(\beta,t,e_{\min},e_{\max})$, el número $1$ se representa como $1.\underbrace{00\cdots 0}_{t-1} \times \beta^0$. El siguiente número representable es
+\[
+1.\underbrace{00\cdots 0}_{t-2}1 \times \beta^0 \;=\; 1 + \beta^{-(t-1)}.
+\]
+La distancia entre estos dos números motiva la siguiente definición central.
+
+\begin{definition}[Épsilon de máquina]\label{def:epsilon_maquina}
+El \textbf{épsilon de máquina} del sistema $\mathbb{F}(\beta,t,e_{\min},e_{\max})$ es
+\[
+\boxed{\epsilon_{\text{mach}} = \beta^{1-t}.}
+\]
+\end{definition}
+
+\begin{remark}
+En la literatura existen dos convenciones: algunos autores definen $\epsilon_{\text{mach}} = \beta^{1-t}$ (la distancia de $1$ al siguiente representable) y otros definen $\epsilon_{\text{mach}} = \tfrac{1}{2}\beta^{1-t}$ (el máximo error relativo de redondeo, llamado \textit{unit roundoff}).  Seguimos la primera convención, que es la utilizada por IEEE, MATLAB (\texttt{eps}), NumPy (\texttt{np.finfo(float).eps}), y Julia (\texttt{eps()}).  En esta convención, la cota de error relativo de redondeo es $\epsilon_{\text{mach}}/2$.
+\end{remark}
+
+Veamos por qué $\epsilon_{\text{mach}} = \beta^{1-t}$ coincide con la distancia entre $1$ y el siguiente número de máquina.  
+Ya observamos que dicha distancia vale $\beta^{-(t-1)} = \beta^{1-t}$.  
+Esto es consistente: $\epsilon_{\text{mach}} = \beta^{1-t}$.
+
+\begin{example}[Doble precisión]
+Para IEEE~754 doble precisión, $\beta=2$, $t=53$:
+\[
+\epsilon_{\text{mach}} = 2^{1-53} = 2^{-52} \approx 2.220\times 10^{-16}.
+\]
+Esto significa que un número de punto flotante de doble precisión tiene aproximadamente $15$--$16$ dígitos decimales significativos.
+\end{example}
+
+\subsubsection*{Espaciado entre números consecutivos}
+
+El épsilon de máquina determina la resolución \textit{relativa} del sistema.  Para entender esto, observemos cómo están espaciados los números de máquina.
+
+Sea $x = d_0.d_1\cdots d_{t-1} \times \beta^e$ un número de máquina normalizado.  Todos los números de máquina con el mismo exponente $e$ difieren solo en los dígitos de la mantisa.  La distancia entre dos números consecutivos con exponente $e$ es
+\[
+\Delta_e = \beta^{-(t-1)} \times \beta^e = \beta^{e-t+1}.
+\]
+Nótese que este espaciado \textbf{depende del exponente} $e$: los números de máquina se hacen más densos cerca de cero y más espaciados lejos del origen. Sin embargo, el espaciado \textit{relativo} es aproximadamente uniforme.  En efecto, como los números con exponente $e$ satisfacen $\beta^{e-1}\le|x|<\beta^e$\footnote{Para $e=e_{\min}$ el rango es $\beta^{e_{\min}-1}\le |x|<\beta^{e_{\min}}$.  Ignoramos los subnormales en este análisis.}, el espaciado relativo satisface:
+\[
+\frac{\Delta_e}{|x|} \;\le\; \frac{\beta^{e-t+1}}{\beta^{e-1}} \;=\; \beta^{2-t}.
+\]
+Pero $\epsilon_{\text{mach}}=\beta^{1-t}$, así que $\Delta_e/|x| \le \beta\cdot\epsilon_{\text{mach}}$ para todo $x$ normalizado. En el caso particular $\beta=2$, esto da $\Delta_e/|x|\le 2\epsilon_{\text{mach}}$, y la cota fina (que probaremos a continuación) muestra que al redondear al más cercano, el error relativo no supera $\epsilon_{\text{mach}}/2$.
+
+\subsection{Redondeo y la cota fundamental de error}\label{subsec:cota_fundamental}
+
+\begin{definition}[Función de redondeo]\label{def:redondeo}
+La \textbf{función de redondeo al más cercano} $\operatorname{fl}\colon\mathbb{R}\to\mathbb{F}$ asigna a cada número real $x$ (en el rango representable) el número de máquina más cercano a $x$.  En caso de empate, el estándar IEEE~754 utiliza la regla \textit{round to even} (se elige el número cuyo último dígito es par).
+\end{definition}
+
+La propiedad más importante del redondeo es la siguiente cota de error relativo.
+
+\begin{theorem}[Cota fundamental del error de redondeo]\label{thm:cota_redondeo}
+Para todo número real $x$ en el rango normalizado del sistema $\mathbb{F}(\beta,t,e_{\min},e_{\max})$, se cumple
+\[
+\boxed{\frac{|\operatorname{fl}(x)-x|}{|x|} \;\le\; \frac{1}{2}\,\epsilon_{\text{mach}} \;=\; \frac{1}{2}\,\beta^{1-t}.}
+\]
+Equivalentemente, existe $\delta$ con $|\delta|\le \tfrac{1}{2}\epsilon_{\text{mach}}$ tal que $\operatorname{fl}(x) = x(1+\delta)$.
+\end{theorem}
+
+La cantidad $u = \tfrac{1}{2}\epsilon_{\text{mach}} = \tfrac{1}{2}\beta^{1-t}$ se denomina el \textbf{unit roundoff} y representa la máxima precisión relativa que puede esperarse de una operación de punto flotante.
+
+\begin{proof}
+Sea $x\neq 0$ un número real en el rango normalizado.  Entonces $x$ se encuentra entre dos números de máquina consecutivos.  Escribimos
+\[
+x = \pm\, d_0.d_1\cdots d_{t-1}\,d_t\,d_{t+1}\cdots\;\times\;\beta^e,
+\]
+con $d_0\neq 0$, donde los dígitos $d_t, d_{t+1},\ldots$ son los que no caben en la mantisa.
+
+Los dos números de máquina consecutivos que encierran a $|x|$ son:
+\begin{align*}
+x^- &= d_0.d_1\cdots d_{t-1}\;\times\;\beta^e,\\
+x^+ &= x^- + \beta^{e-(t-1)}.
+\end{align*}
+El redondeo al más cercano satisface
+\[
+|\operatorname{fl}(x)-x| \;\le\; \tfrac{1}{2}\,(x^+-x^-) \;=\; \tfrac{1}{2}\,\beta^{e-(t-1)} \;=\;\tfrac{1}{2}\,\beta^{e-t+1}.
+\]
+Como $x$ es normalizado con exponente $e$, la mantisa satisface $d_0\ge 1$, y por lo tanto
+\[
+|x| \;\ge\; 1.0\cdots 0 \times \beta^e \;=\;\beta^e.
+\]
+Dividiendo:
+\[
+\frac{|\operatorname{fl}(x)-x|}{|x|} \;\le\; \frac{\tfrac{1}{2}\,\beta^{e-t+1}}{\beta^e} \;=\; \tfrac{1}{2}\,\beta^{1-t} \;=\; \tfrac{1}{2}\,\epsilon_{\text{mach}}.
+\]
+Para la formulación equivalente, basta definir $\delta = (\operatorname{fl}(x)-x)/x$; la cota recién demostrada da $|\delta|\le \tfrac{1}{2}\epsilon_{\text{mach}}$, y entonces $\operatorname{fl}(x) = x + x\delta = x(1+\delta)$.
+\end{proof}
+
+\begin{remark}
+La cota es ajustada: se alcanza (hasta factores de redondeo) cuando $x$ está justo en el punto medio entre dos consecutivos y $|x|$ es apenas mayor que $\beta^e$.  Por ejemplo, en doble precisión el número $x=1+2^{-53}$ (punto medio entre $1$ y $1+2^{-52}$) se redondea con error relativo exactamente $2^{-53}=\epsilon_{\text{mach}}/2$.
+\end{remark}
+
+\begin{example}[Doble precisión]
+Para IEEE~754 doble precisión:
+\[
+u = \frac{\epsilon_{\text{mach}}}{2} = \frac{2^{-52}}{2} = 2^{-53} \approx 1.11\times 10^{-16}.
+\]
+Esto significa que toda representación en punto flotante introduce un error relativo de a lo sumo $\sim 10^{-16}$.
+\end{example}
+
+La formulación $\operatorname{fl}(x)=x(1+\delta)$ con $|\delta|\le u$ es particularmente útil para el \textbf{análisis de errores de redondeo}: permite propagar errores a través de secuencias de operaciones aritméticas.  El estándar IEEE~754 garantiza además que cada operación aritmética elemental ($+,-,\times,/$) se realiza con esta misma precisión: si $a,b\in\mathbb{F}$, entonces
+\[
+\operatorname{fl}(a\mathbin{\texttt{op}} b) = (a\mathbin{\texttt{op}} b)(1+\delta), \qquad |\delta|\le u,
+\]
+donde $\texttt{op}\in\{+,-,\times,/\}$.
+
+\subsection{Consecuencias y ejemplos}
+
+\begin{example}[Pérdida de significancia --- cancelación catastrófica]\label{ex:cancelacion}
+Restar números muy cercanos puede causar pérdida de dígitos significativos.  Si $a = 1.234567890123456$ y $b = 1.234567890123455$, entonces
+\[
+a - b \approx 1\times 10^{-15} \quad \text{(queda un solo dígito significativo)}.
+\]
+El resultado tiene una precisión relativa mucho peor que $\epsilon_{\text{mach}}$, no porque la resta esté mal hecha, sino porque los dígitos significativos de $a$ y $b$ se cancelan.  Este fenómeno se llama \textbf{cancelación catastrófica}.
+\end{example}
+
+\begin{example}[La suma no es asociativa en punto flotante]
 En punto flotante, $(a + b) + c \neq a + (b + c)$ en general:
 \[
-(10^{16} + 1) - 10^{16} = 0 \quad \text{(el 1 se pierde)},
+(10^{16} + 1) - 10^{16} = 0 \quad \text{(el 1 se pierde al sumarse a $10^{16}$)},
 \]
 \[
-10^{16} + (1 - 10^{16}) = 10^{16} + (-10^{16} + 1) = 1 \quad \text{(diferente orden)}.
+10^{16} + (1 - 10^{16}) = 10^{16} + (-10^{16} + 1) = 1 \quad \text{(orden diferente)}.
 \]
+El resultado depende del orden de evaluación porque la precisión relativa es fija: los números representables cerca de $10^{16}$ están espaciados en más de $1$.
 \end{example}
 
 \subsection{Precisión arbitraria por software}
