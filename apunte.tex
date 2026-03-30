@@ -1439,7 +1439,7 @@ x = (A^*A)^{-1}A^*b.
 \end{theorem}
 
 \begin{proof}
-Sea $x$ el minimizador de $\|Ax - b\|_2$. Por el Teorema de proyección ortogonal, el error $r = Ax - b$ debe ser ortogonal al espacio columna de $A$, es decir, $r \perp \text{Im}(A)$.
+Sea $x$ el minimizador de $\|Ax - b\|_2$. Por el Teorema de proyección ortogonal (Teorema~\ref{thm:proyeccion_ortogonal}), el error $r = Ax - b$ debe ser ortogonal al espacio columna de $A$, es decir, $r \perp \text{Im}(A)$.
 
 Esto significa que para todo $v \in \mathbb{C}^n$, tenemos $Av \perp r$, o equivalentemente:
 \[
@@ -1475,17 +1475,9 @@ x = (A^*A)^{-1}A^*b.
 \]
 \end{proof}
 
-\begin{remark}[Condicionamiento de las ecuaciones normales]
-El problema con las ecuaciones normales es que la matriz $A^*A$ tiene número de condición que es el \emph{cuadrado} del número de condición de $A$:
-\[
-\kappa_2(A^*A) = \kappa_2(A)^2.
-\]
-Esto puede hacer que el problema de cuadrados mínimos se vuelva numéricamente intratable incluso cuando $A$ está moderadamente condicionada.
-\end{remark}
-
 \subsection{QR para cuadrados mínimos}
 
-Una alternativa mucho mejor condicionada es usar la \textbf{factorización QR}.
+Una alternativa a las ecuaciones normales es usar la \textbf{factorización QR}.
 
 \begin{theorem}[Factorización QR]
 Toda matriz $A \in \mathbb{C}^{m \times n}$ con $m \geq n$ admite una factorización:
@@ -6552,12 +6544,16 @@ Por ortonormalidad, $(e_j, e_k) = \delta_{jk}$ (delta de Kronecker), así que:
 \]
 \end{proof}
 
-\begin{theorem}[Teorema de la Mejor Aproximación en Subespacios Finitos]
+\begin{theorem}[Proyección ortogonal]
+\label{thm:proyeccion_ortogonal}
 Sea $V$ un espacio de pre-Hilbert y $S$ un subespacio de \textbf{dimensión finita} de $V$. Para cualquier $u \in V$, existe un \textbf{único} vector $s_0 \in S$ tal que:
 \[
 \|u - s_0\| = \inf_{s \in S} \|u - s\|.
 \]
-Este vector $s_0$ se llama la \textbf{mejor aproximación} de $u$ en $S$, o la \textbf{proyección ortogonal} $P_S(u)$.
+Este vector $s_0$ se llama la \textbf{mejor aproximación} de $u$ en $S$, o la \textbf{proyección ortogonal} $P_S(u)$. Además, $s_0$ es el único vector en $S$ que satisface la \textbf{condición de ortogonalidad}:
+\[
+(u - s_0, s) = 0 \quad \text{para todo } s \in S.
+\]
 \end{theorem}
 \begin{proof}
 La demostración se basa en tomar una base ortonormal $\{e_1, \ldots, e_n\}$ para $S$ y definir explícitamente 
@@ -6573,14 +6569,19 @@ Como $(u - s_0) \perp (s_0 - s)$ (el vector $(u-s_0)$ es ortogonal a todo $S$), 
 \|u - s\|^2 = \|u - s_0\|^2 + \|s_0 - s\|^2 \geq \|u - s_0\|^2,
 \]
 con igualdad si y solo si $s = s_0$.
-\end{proof}
 
-\begin{corollary}[Caracterización Ortogonal]
-La mejor aproximación $s_0 = P_S(u)$ es el único vector en $S$ que satisface:
+Para la condición de ortogonalidad, notemos que si $s_0$ es el minimizador, para cualquier $s \in S$ y $t \in \mathbb{R}$:
 \[
-(u - s_0, s) = 0 \quad \text{para todo } s \in S.
+\|u - s_0\|^2 \leq \|u - (s_0 + ts)\|^2 = \|u - s_0\|^2 - 2t \operatorname{Re}(u - s_0, s) + t^2\|s\|^2.
 \]
-\end{corollary}
+Dividiendo por $t > 0$ (y luego $t < 0$) y haciendo $t \to 0$, se obtiene $\operatorname{Re}(u - s_0, s) = 0$. Repitiendo con $is$ se obtiene $\operatorname{Im}(u - s_0, s) = 0$, y por lo tanto $(u - s_0, s) = 0$.
+
+Recíprocamente, si $(u - s_0, s) = 0$ para todo $s \in S$, entonces para cualquier $s \in S$:
+\[
+\|u - s\|^2 = \|(u - s_0) + (s_0 - s)\|^2 = \|u - s_0\|^2 + \|s_0 - s\|^2 \geq \|u - s_0\|^2,
+\]
+donde usamos que $(u - s_0) \perp (s_0 - s) \in S$.
+\end{proof}
 
 \section{Factorización de Schur y Teorema Espectral}
 
