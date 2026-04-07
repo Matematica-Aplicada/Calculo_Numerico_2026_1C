@@ -114,6 +114,18 @@ Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y sea $A = QR$ su descomposic
 \end{enumerate}
 \end{exercise}
 
+\begin{exercise}[Factorización de Cholesky para matrices definidas positivas]
+Sea $B \in \mathbb{R}^{n \times n}$ una matriz simétrica definida positiva.
+\begin{enumerate}[(a)]
+\item \textbf{Existencia}: Demuestre que $B$ admite una descomposición $B = LL^T$, donde $L$ es triangular inferior.
+
+\textbf{Sugerencia}: Escriba $B = B^{1/2} B^{1/2}$ usando la raíz cuadrada matricial y aplique la descomposición QR a $B^{1/2}$.
+\item \textbf{Algoritmo}: Suponiendo que la descomposición $B = LL^T$ existe, derive fórmulas explícitas para las entradas de $L$ y estime el costo del algoritmo.
+
+\textbf{Sugerencia}: Iguale entradas en $B = LL^T$ columna por columna. La entrada $(i,j)$ da $b_{ij} = \sum_{k=1}^{\min(i,j)} \ell_{ik}\ell_{jk}$. Para determinar la columna $j$ de $L$ (es decir, $\ell_{jj}, \ell_{j+1,j}, \ldots, \ell_{nj}$), suponiendo conocidas las columnas $1, \ldots, j-1$: primero despeje $\ell_{jj}$ de la entrada diagonal $(j,j)$, y luego $\ell_{ij}$ para $i > j$.
+\end{enumerate}
+\end{exercise}
+
 \begin{exercise}[Ajuste polinomial por cuadrados mínimos]
 Se mide la deformación $y$ (en mm) de una viga en función de la carga aplicada $t$ (en kN), obteniendo los datos:
 \begin{center}
@@ -187,18 +199,7 @@ Considere un La central ($\omega_0 = 440 \cdot 2\pi$ rad/s) con $n = 3$ armónic
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Factorización de Cholesky para matrices definidas positivas]
-Sea $B \in \mathbb{R}^{n \times n}$ una matriz simétrica definida positiva.
-\begin{enumerate}[(a)]
-\item Demuestre que existe una matriz $A \in \mathbb{R}^{n \times n}$ tal que $B = AA^T$.
-\textbf{Sugerencia}: Use que toda matriz definida positiva tiene raíz cuadrada: $B = B^{1/2}B^{1/2}$.
-\item Aplique la descomposición QR a $A^T$: $A^T = QR$. Demuestre que:
-\[
-B = AA^T = (A^T)^T A^T = R^TQ^TQR = R^TR.
-\]
-\item Concluya que $B$ admite la descomposición de Cholesky $B = LL^T$ donde $L = R^T$ es triangular inferior.
-\end{enumerate}
-\end{exercise}
+
 
 \begin{exercise}
 Sea $A \in \mathbb{C}^{n \times n}$ una matriz no singular. Demuestre que la distancia de $A$ al conjunto de matrices singulares (en norma 2) es exactamente su menor valor singular $\sigma_n$. Es decir:
