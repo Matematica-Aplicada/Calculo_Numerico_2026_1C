@@ -1691,6 +1691,18 @@ Combinando ambas desigualdades, obtenemos la cota para el error relativo:
 
 Esta cota es alcanzable (es decir, es óptima). El peor caso ocurre cuando $b$ está alineado con la dirección de máxima amplificación ($u_1$) y el error $\delta b$ está alineado con la dirección de mínima amplificación ($u_n$), que corresponde a la máxima amplificación de la inversa. En ese caso, el error relativo en la solución se amplifica exactamente por un factor $\kappa_2(A)$.
 
+\begin{example}[Optimalidad de la cota]
+Consideremos $A = \operatorname{diag}(\sigma_1, \sigma_2)$ con $\sigma_1 > \sigma_2 > 0$ (aquí $A = U\Sigma V^*$ con $U = V = I$). Tomamos $b = e_1 = (1, 0)^T$ (alineado con la dirección de $\sigma_1$) y $\delta b = \epsilon \, e_2$ (alineado con la dirección de $\sigma_2$). Entonces:
+\[
+x = A^{-1} b = \left(\frac{1}{\sigma_1}, 0\right)^T, \quad \delta x = A^{-1} \delta b = \left(0, \frac{\epsilon}{\sigma_2}\right)^T.
+\]
+El error relativo resulta:
+\[
+\frac{\|\delta x\|_2 / \|x\|_2}{\|\delta b\|_2 / \|b\|_2} = \frac{\epsilon / \sigma_2}{1/\sigma_1} \cdot \frac{1}{\epsilon} = \frac{\sigma_1}{\sigma_2} = \kappa_2(A).
+\]
+Esto confirma que la cota se alcanza con igualdad.
+\end{example}
+
 Un problema es \textbf{mal condicionado} si $\kappa_2(A) \gg 1$, lo cual ocurre cuando $\sigma_n \approx 0$. Esto es consistente con la expansión de la solución en términos de la SVD, donde los términos asociados a $\sigma_n$ pequeño dominan el error.
 
 
@@ -1898,6 +1910,16 @@ Como $A$ es normal, por el teorema espectral $A = U\Lambda U^*$ con $U$ unitaria
 
 Para la inversa, $A^{-1} = U\Lambda^{-1}U^*$ es también normal, con autovalores $1/\lambda_k$. Sus valores singulares son $1/|\lambda_k|$, y el mayor de ellos es $1/\min_k |\lambda_k|$.
 \end{proof}
+
+\begin{remark}
+El Corolario~\ref{cor:inv_normal} se aplica en particular a las matrices hermitianas ($A = A^*$) y a las unitarias ($A^*A = I$), que son casos particulares de matrices normales. Para las unitarias, todos los autovalores tienen módulo 1, de modo que $\|A\|_2 = 1$ y $\kappa_2(A) = 1$.
+
+La hipótesis de normalidad es esencial. Por ejemplo, la matriz triangular superior
+\[
+A = \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}
+\]
+tiene $\rho(A) = 0$ (su único autovalor es $\lambda = 0$), pero $\|A\|_2 = 1$ (pues $\sigma_1 = 1$). Este ejemplo muestra que para matrices no normales, la desigualdad $\rho(A) \leq \|A\|_2$ del Teorema~\ref{thm:radio_espectral_norma} puede ser estricta.
+\end{remark}
 
 \subsection{Raíz cuadrada de matrices semidefinidas positivas}
 

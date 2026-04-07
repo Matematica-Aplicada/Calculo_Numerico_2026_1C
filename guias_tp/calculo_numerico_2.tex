@@ -114,15 +114,76 @@ Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y sea $A = QR$ su descomposic
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Mínimos cuadrados vía QR vs ecuaciones normales]
-Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y rango columna completo, y sea $b \in \mathbb{R}^m$. El problema de mínimos cuadrados es:
+\begin{exercise}[Ajuste polinomial por cuadrados mínimos]
+Se mide la deformación $y$ (en mm) de una viga en función de la carga aplicada $t$ (en kN), obteniendo los datos:
+\begin{center}
+\begin{tabular}{c|ccccc}
+$t_k$ & 1 & 2 & 3 & 4 & 5 \\ \hline
+$y_k$ & 0.5 & 2.5 & 5.8 & 11.2 & 18.1
+\end{tabular}
+\end{center}
+Se propone ajustar un polinomio de grado 2: $p(t) = c_0 + c_1 t + c_2 t^2$.
+\begin{enumerate}[(a)]
+\item Escriba el sistema sobredeterminado $Ac = y$.
+\item Plantee las ecuaciones normales $A^TAc = A^Ty$ y calcule $A^TA$ y $A^Ty$.
+\item ¿Qué cambiaría en la matriz $A$ si en lugar de la base $\{1, t, t^2\}$ se usara la base $\{1, t, \tfrac{1}{2}(3t^2-1)\}$?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Linealización de modelos no lineales]
+En muchas aplicaciones, los datos siguen un modelo que no es lineal en los parámetros, pero puede \textbf{linealizarse} mediante un cambio de variable.
+\begin{enumerate}[(a)]
+\item \textbf{Modelo exponencial}: La concentración de un fármaco en sangre sigue $y = \alpha \, e^{\beta t}$, donde $\alpha > 0$ y $\beta < 0$ son desconocidos. Se tienen los datos:
+\begin{center}
+\begin{tabular}{c|ccccc}
+$t_k$ (horas) & 0 & 1 & 2 & 3 & 4 \\ \hline
+$y_k$ (mg/L) & 10.2 & 6.9 & 4.3 & 3.2 & 1.9
+\end{tabular}
+\end{center}
+Aplique logaritmo natural a ambos lados del modelo y plantee el problema de cuadrados mínimos resultante. Identifique la matriz $A$ y el vector $b$.
+\item \textbf{Modelo potencial}: La velocidad del viento $y$ a altura $t$ sigue una ley de potencia $y = \alpha \, t^{\beta}$. Se tienen las mediciones:
+\begin{center}
+\begin{tabular}{c|ccccc}
+$t_k$ (metros) & 10 & 20 & 40 & 80 & 100 \\ \hline
+$y_k$ (m/s) & 5.1 & 5.9 & 6.8 & 7.8 & 8.2
+\end{tabular}
+\end{center}
+Linealice el modelo y plantee el problema de cuadrados mínimos correspondiente.
+\item \textbf{Discusión}: La linealización transforma el problema de minimizar $\sum_k (y_k - \alpha e^{\beta t_k})^2$ en minimizar $\sum_k (\ln y_k - \ln\alpha - \beta t_k)^2$. ¿Son equivalentes estos dos problemas de optimización? ¿En qué sentido la linealización altera el peso relativo de las observaciones?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Cuadrados mínimos en el caso complejo: ajuste de sinusoides]
+Un sismógrafo registra una señal $y(t)$ que se modela como superposición de ondas sinusoidales de frecuencias conocidas $\omega_1, \omega_2, \ldots, \omega_n$:
 \[
-\min_{x \in \mathbb{R}^n} \|Ax - b\|_2^2.
+y(t) = \sum_{j=1}^n c_j \, e^{i\omega_j t}, \quad c_j \in \mathbb{C}.
+\]
+Las amplitudes complejas $c_j$ (que codifican amplitud y fase de cada onda) son desconocidas. Se dispone de $m > n$ mediciones $y_k = y(t_k)$ en tiempos $t_1, \ldots, t_m$, contaminadas por ruido, por lo que el sistema es incompatible y se busca la solución de cuadrados mínimos:
+\[
+\min_{c \in \mathbb{C}^n} \|Ac - y\|_2, \quad \text{donde } A_{kj} = e^{i\omega_j t_k}, \quad y = (y_1, \ldots, y_m)^T.
 \]
 \begin{enumerate}[(a)]
-\item \textbf{Solución vía ecuaciones normales}: Demuestre que la solución satisface $A^TAx = A^Tb$.
-\item \textbf{Solución vía QR}: Si $A = QR$, demuestre que la solución es $x = R^{-1}Q^Tb$.
-\item Demuestre que ambos métodos producen la misma solución en aritmética exacta.
+\item Escriba las ecuaciones normales para este problema. Verifique que la matriz $A^*A$ es hermítica y definida positiva.
+\item Suponga $n = 2$ frecuencias $\omega_1 = 1$, $\omega_2 = 3$, con $m = 4$ mediciones equiespaciadas $t_k = \frac{\pi}{4}(k-1)$, $k = 1, \ldots, 4$. Escriba explícitamente la matriz $A \in \mathbb{C}^{4 \times 2}$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Análisis del timbre de un instrumento musical]
+Cuando un instrumento musical produce una nota con frecuencia fundamental $\omega_0$, la señal resultante es una superposición de la fundamental y sus \textbf{armónicos superiores} $2\omega_0, 3\omega_0, \ldots$:
+\[
+y(t) = \sum_{j=1}^n c_j \, e^{i j \omega_0 t}, \quad c_j \in \mathbb{C}.
+\]
+La frecuencia fundamental $\omega_0$ determina la \textit{nota} (por ejemplo, un La central corresponde a $440$ Hz). El \textbf{timbre}, que es lo que permite distinguir la misma nota tocada por un piano, un violín o una flauta, está determinado por las amplitudes relativas $|c_1|, |c_2|, \ldots, |c_n|$ de cada armónico. Por ejemplo, una flauta tiene casi toda la energía en la fundamental ($|c_1| \gg |c_j|$ para $j \geq 2$), mientras que un oboe tiene armónicos superiores muy pronunciados.
+
+El objetivo es, dada una grabación de una nota conocida, estimar los coeficientes $c_j$ para caracterizar el timbre del instrumento. Se toman $m > n$ muestras $y_k = y(t_k)$ (contaminadas por ruido) y se plantea el problema de cuadrados mínimos:
+\[
+\min_{c \in \mathbb{C}^n} \|Ac - y\|_2, \quad \text{donde } A_{kj} = e^{i j \omega_0 t_k}, \quad y = (y_1, \ldots, y_m)^T.
+\]
+
+Considere un La central ($\omega_0 = 440 \cdot 2\pi$ rad/s) con $n = 3$ armónicos y $m = 6$ muestras equiespaciadas en $t_k = \frac{k-1}{6 \cdot 440}$ para $k = 1, \ldots, 6$.
+\begin{enumerate}[(a)]
+\item Escriba la matriz $A \in \mathbb{C}^{6 \times 3}$ y verifique que las columnas de $A$ son ortogonales, es decir, que $A^*A = 6 I_3$.
+\item Use el teorema de la proyección ortogonal para escribir directamente la solución de cuadrados mínimos. ¿Cuál es la complejidad del algoritmo obtenido, en comparación con resolver las ecuaciones normales o realizar la descomposición QR?
 \end{enumerate}
 \end{exercise}
 
@@ -136,19 +197,6 @@ Sea $B \in \mathbb{R}^{n \times n}$ una matriz simétrica definida positiva.
 B = AA^T = (A^T)^T A^T = R^TQ^TQR = R^TR.
 \]
 \item Concluya que $B$ admite la descomposición de Cholesky $B = LL^T$ donde $L = R^T$ es triangular inferior.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Norma 2 de matrices normales]
-Una matriz $A \in \mathbb{C}^{n \times n}$ es \textbf{normal} si $A^*A = AA^*$, donde $A^*$ denota la conjugada transpuesta.
-\begin{enumerate}[(a)]
-\item Demuestre que si $A \in \mathbb{C}^{n \times n}$ es normal, entonces
-\[
-\|A\|_2 = \max_{1 \leq i \leq n} |\lambda_i|,
-\]
-donde $\lambda_i$ son los autovalores de $A$. (Sugerencia: Use la descomposición espectral para matrices normales: $A = U\Lambda U^*$, donde $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_n)$ y $U$ es unitaria.)
-\item Verifique que matrices hermitianas, unitarias y normales satisfacen $\|A\|_2 = \rho(A)$ (radio espectral).
-\item Muestre con un ejemplo que esto no es cierto para matrices no normales.
 \end{enumerate}
 \end{exercise}
 
@@ -209,23 +257,7 @@ entonces $\|A^+b\|_2 = \min_{x \in \mathcal{S}} \|x\|_2$.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Condicionamiento y propagación del error vía SVD]
-Sea $A \in \mathbb{R}^{n \times n}$ una matriz inversible y considere el sistema lineal $Ax = b$. Suponga que el lado derecho $b$ está contaminado por un error $\Delta b$, de modo que la solución calculada $x + \Delta x$ satisface $A(x + \Delta x) = b + \Delta b$.
-\begin{enumerate}[(a)]
-\item Usando la descomposición SVD de $A = U\Sigma V^T$, demuestre que:
-\[
-\|\Delta x\|_2 \le \frac{1}{\sigma_n} \|\Delta b\|_2 \quad \text{y} \quad \|b\|_2 \le \sigma_1 \|x\|_2.
-\]
-\item Deduzca que el error relativo satisface la cota:
-\[
-\frac{\|\Delta x\|_2}{\|x\|_2} \leq \kappa_2(A) \frac{\|\Delta b\|_2}{\|b\|_2},
-\]
-donde $\kappa_2(A) = \sigma_1 / \sigma_n$ es el número de condición.
-\item Construya un ejemplo de $2 \times 2$ donde la igualdad se alcance.
-\textbf{Sugerencia}: Elija $b$ alineado con el primer vector singular izquierdo $u_1$ (máxima amplificación) y $\Delta b$ alineado con el último $u_n$ (mínima atenuación en la inversa), o viceversa según convenga.
-\item Concluya que si $\kappa_2(A)$ es grande, pequeños errores en $b$ pueden resultar en errores catastróficos en la solución $x$, independientemente del método de resolución del sistema lineal.
-\end{enumerate}
-\end{exercise}
+
 
 \begin{exercise}[Condicionamiento de mínimos cuadrados vía SVD]
 Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y rango columna completo, con descomposición QR $A = QR$ y SVD $A = U\Sigma V^T$.
@@ -236,78 +268,79 @@ Usando la SVD de $A$, demuestre que:
 donde $\kappa(\cdot)$ denota el número de condición en norma 2. Concluya que resolver el problema de mínimos cuadrados vía QR es numéricamente más estable que vía las ecuaciones normales cuando $A$ está mal condicionada.
 \end{exercise}
 
-\begin{exercise}[Matrices de Householder]
-Una matriz de Householder tiene la forma $H = I - 2vv^T$ donde $v \in \mathbb{R}^n$ con $\|v\|_2 = 1$.
-\begin{enumerate}[(a)]
-\item Demuestre que $H$ es ortogonal: $H^TH = I$.
-\item Demuestre que $H$ es autoinversa: $H^2 = I$ (es decir, $H = H^{-1}$).
-\item Demuestre que $H$ es simétrica: $H^T = H$.
-\item Interprete geométricamente $H$ como una reflexión respecto al hiperplano ortogonal a $v$.
-\item Para un vector $x \in \mathbb{R}^n$ dado, construya $v$ tal que $Hx = \alpha e_1$ donde $e_1 = (1, 0, \ldots, 0)^T$ y $\alpha = \pm\|x\|_2$.
-\end{enumerate}
-\textbf{Sugerencia para (e)}: Tome $v = \frac{x - \alpha e_1}{\|x - \alpha e_1\|}$ con $\alpha = -\text{sign}(x_1)\|x\|_2$ para evitar cancelación.
-\end{exercise}
 
-\begin{exercise}[Factorización QR mediante reflexiones de Householder]
-El algoritmo de Householder construye la factorización QR aplicando reflexiones sucesivas.
-\begin{enumerate}[(a)]
-\item Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$. En el paso $k$, queremos anular las entradas debajo de la diagonal en la columna $k$.
-\item Construya la matriz de Householder $H_k$ que anula las componentes $k+1, \ldots, m$ del vector formado por la columna $k$ de la submatriz restante.
-\item Demuestre que después de $n$ pasos:
-\[
-H_n \cdots H_2 H_1 A = R,
-\]
-donde $R$ es triangular superior.
-\item Concluya que $A = QR$ con $Q = H_1 H_2 \cdots H_n$.
-\item Demuestre que el costo total es $O(2mn^2 - \frac{2n^3}{3})$ operaciones.
-\end{enumerate}
-\end{exercise}
+% \section*{Matrices de Householder}
 
-\begin{exercise}[Reducción bidiagonal para SVD]
-El cálculo de la SVD de $A \in \mathbb{R}^{m \times n}$ se facilita si primero reducimos $A$ a forma bidiagonal.
-\begin{enumerate}[(a)]
-\item Demuestre que mediante reflexiones de Householder aplicadas alternadamente por izquierda y derecha, se puede reducir $A$ a la forma:
-\[
-A = UBV^T,
-\]
-donde $U \in \mathbb{R}^{m \times m}$ y $V \in \mathbb{R}^{n \times n}$ son ortogonales, y $B \in \mathbb{R}^{m \times n}$ es bidiagonal superior:
-\[
-B = \begin{pmatrix}
-d_1 & f_1 & 0 & \cdots & 0 \\
-0 & d_2 & f_2 & \cdots & 0 \\
-\vdots & \ddots & \ddots & \ddots & \vdots \\
-0 & \cdots & 0 & d_{n-1} & f_{n-1} \\
-0 & \cdots & 0 & 0 & d_n \\
-0 & \cdots & 0 & 0 & 0 \\
-\vdots & & \vdots & \vdots & \vdots
-\end{pmatrix}.
-\]
-\item Explique cómo la SVD de $A$ se obtiene de la SVD de $B$: si $B = \tilde{U}\Sigma \tilde{V}^T$, entonces $A = (U\tilde{U})\Sigma(\tilde{V}^TV^T)$.
-\item Demuestre que el costo de bidiagonalización es $O(2mn^2 - \frac{2n^3}{3})$ operaciones.
-\end{enumerate}
-\end{exercise}
+% \begin{exercise}
+% Una matriz de Householder tiene la forma $H = I - 2vv^T$ donde $v \in \mathbb{R}^n$ con $\|v\|_2 = 1$.
+% \begin{enumerate}[(a)]
+% \item Demuestre que $H$ es ortogonal: $H^TH = I$.
+% \item Demuestre que $H$ es autoinversa: $H^2 = I$ (es decir, $H = H^{-1}$).
+% \item Demuestre que $H$ es simétrica: $H^T = H$.
+% \item Interprete geométricamente $H$ como una reflexión respecto al hiperplano ortogonal a $v$.
+% \item Para un vector $x \in \mathbb{R}^n$ dado, construya $v$ tal que $Hx = \alpha e_1$ donde $e_1 = (1, 0, \ldots, 0)^T$ y $\alpha = \pm\|x\|_2$.
+% \end{enumerate}
+% \textbf{Sugerencia para (e)}: Tome $v = \frac{x - \alpha e_1}{\|x - \alpha e_1\|}$ con $\alpha = -\text{sign}(x_1)\|x\|_2$ para evitar cancelación.
+% \end{exercise}
 
-\subsubsection*{Reducción a forma de Hessenberg}
+% \begin{exercise}[Factorización QR mediante reflexiones de Householder]
+% El algoritmo de Householder construye la factorización QR aplicando reflexiones sucesivas.
+% \begin{enumerate}[(a)]
+% \item Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$. En el paso $k$, queremos anular las entradas debajo de la diagonal en la columna $k$.
+% \item Construya la matriz de Householder $H_k$ que anula las componentes $k+1, \ldots, m$ del vector formado por la columna $k$ de la submatriz restante.
+% \item Demuestre que después de $n$ pasos:
+% \[
+% H_n \cdots H_2 H_1 A = R,
+% \]
+% donde $R$ es triangular superior.
+% \item Concluya que $A = QR$ con $Q = H_1 H_2 \cdots H_n$.
+% \item Demuestre que el costo total es $O(2mn^2 - \frac{2n^3}{3})$ operaciones.
+% \end{enumerate}
+% \end{exercise}
 
-Una matriz $H \in \mathbb{R}^{n \times n}$ está en \textbf{forma de Hessenberg superior} si $h_{ij} = 0$ para $i > j+1$:
-\[
-H = \begin{pmatrix}
-* & * & * & \cdots & * \\
-* & * & * & \cdots & * \\
-0 & * & * & \cdots & * \\
-\vdots & \ddots & \ddots & \ddots & \vdots \\
-0 & \cdots & 0 & * & *
-\end{pmatrix}.
-\]
+% \begin{exercise}[Reducción bidiagonal para SVD]
+% El cálculo de la SVD de $A \in \mathbb{R}^{m \times n}$ se facilita si primero reducimos $A$ a forma bidiagonal.
+% \begin{enumerate}[(a)]
+% \item Demuestre que mediante reflexiones de Householder aplicadas alternadamente por izquierda y derecha, se puede reducir $A$ a la forma:
+% \[
+% A = UBV^T,
+% \]
+% donde $U \in \mathbb{R}^{m \times m}$ y $V \in \mathbb{R}^{n \times n}$ son ortogonales, y $B \in \mathbb{R}^{m \times n}$ es bidiagonal superior:
+% \[
+% B = \begin{pmatrix}
+% d_1 & f_1 & 0 & \cdots & 0 \\
+% 0 & d_2 & f_2 & \cdots & 0 \\
+% \vdots & \ddots & \ddots & \ddots & \vdots \\
+% 0 & \cdots & 0 & d_{n-1} & f_{n-1} \\
+% 0 & \cdots & 0 & 0 & d_n \\
+% 0 & \cdots & 0 & 0 & 0 \\
+% \vdots & & \vdots & \vdots & \vdots
+% \end{pmatrix}.
+% \]
+% \item Explique cómo la SVD de $A$ se obtiene de la SVD de $B$: si $B = \tilde{U}\Sigma \tilde{V}^T$, entonces $A = (U\tilde{U})\Sigma(\tilde{V}^TV^T)$.
+% \item Demuestre que el costo de bidiagonalización es $O(2mn^2 - \frac{2n^3}{3})$ operaciones.
+% \end{enumerate}
+% \end{exercise}
 
-\begin{exercise}
-Demuestre que el costo de calcular la descomposición QR de una matriz $H \in \mathbb{R}^{n \times n}$ en forma de Hessenberg es $O(n^2)$ operaciones. ¿Cuál es el costo para matrices densas generales?
-\textbf{Sugerencia}: Observe que en cada columna $k$ solo es necesario anular una entrada (la subdiagonal). Una reflexión de Householder diseñada para esto modificará únicamente dos filas de la matriz, costando $O(n)$ operaciones.
-\end{exercise}
+% \begin{exercise}
+% Una matriz $H \in \mathbb{R}^{n \times n}$ está en \textbf{forma de Hessenberg superior} si $h_{ij} = 0$ para $i > j+1$:
+% \[
+% H = \begin{pmatrix}
+% * & * & * & \cdots & * \\
+% * & * & * & \cdots & * \\
+% 0 & * & * & \cdots & * \\
+% \vdots & \ddots & \ddots & \ddots & \vdots \\
+% 0 & \cdots & 0 & * & *
+% \end{pmatrix}.
+% \]
 
-\begin{exercise}
-Demuestre que si $A$ es simétrica y se reduce a forma de Hessenberg mediante transformaciones de semejanza ortogonal $H = Q^TAQ$, entonces $H$ es tridiagonal.
-\end{exercise}
+% Demuestre que el costo de calcular la descomposición QR de una matriz $H \in \mathbb{R}^{n \times n}$ en forma de Hessenberg es $O(n^2)$ operaciones. ¿Cuál es el costo para matrices densas generales?
+% \textbf{Sugerencia}: Observe que en cada columna $k$ solo es necesario anular una entrada (la subdiagonal). Una reflexión de Householder diseñada para esto modificará únicamente dos filas de la matriz, costando $O(n)$ operaciones.
+% \end{exercise}
+
+% \begin{exercise}
+% Demuestre que si $A$ es simétrica y se reduce a forma de Hessenberg mediante transformaciones de semejanza ortogonal $H = Q^TAQ$, entonces $H$ es tridiagonal.
+% \end{exercise}
 
 \section*{Métodos iterativo para autovalores y sistemas lineales}
 
@@ -325,28 +358,28 @@ A^k x^{(0)} = \lambda_1^k \left( c_1 v_1 + \sum_{j=2}^n c_j \left(\frac{\lambda_
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Método de la potencia inversa]
-El método de la potencia inversa con shift $\sigma$ aplica el método de la potencia a la matriz $M = (A - \sigma I)^{-1}$.
-\begin{enumerate}[(a)]
-\item Demuestre que si $(\lambda, v)$ es un par autovalor-autovector de $A$, con $\lambda \neq \sigma$, entonces $(\mu, v)$ con $\mu = (\lambda - \sigma)^{-1}$ es par autovalor-autovector de $M$.
-\item Suponga que $\lambda_k$ es el autovalor de $A$ más cercano a $\sigma$, tal que $|\lambda_k - \sigma| < |\lambda_j - \sigma|$ para todo $j \neq k$. Demuestre que el método converge al autovector $v_k$.
-\item Demuestre que la tasa de convergencia asintótica es lineal e igual a $|\lambda_k - \sigma|/|\lambda_j - \sigma|$, donde $\lambda_j$ es el segundo autovalor más cercano a $\sigma$.
-\item Analice cómo elegir $\sigma$ para maximizar la velocidad de convergencia y discuta las implicaciones numéricas de elegir $\sigma$ muy cercano a $\lambda_k$ (condicionamiento del sistema lineal vs velocidad de convergencia).
-\end{enumerate}
-\end{exercise}
+% \begin{exercise}[Método de la potencia inversa]
+% El método de la potencia inversa con shift $\sigma$ aplica el método de la potencia a la matriz $M = (A - \sigma I)^{-1}$.
+% \begin{enumerate}[(a)]
+% \item Demuestre que si $(\lambda, v)$ es un par autovalor-autovector de $A$, con $\lambda \neq \sigma$, entonces $(\mu, v)$ con $\mu = (\lambda - \sigma)^{-1}$ es par autovalor-autovector de $M$.
+% \item Suponga que $\lambda_k$ es el autovalor de $A$ más cercano a $\sigma$, tal que $|\lambda_k - \sigma| < |\lambda_j - \sigma|$ para todo $j \neq k$. Demuestre que el método converge al autovector $v_k$.
+% \item Demuestre que la tasa de convergencia asintótica es lineal e igual a $|\lambda_k - \sigma|/|\lambda_j - \sigma|$, donde $\lambda_j$ es el segundo autovalor más cercano a $\sigma$.
+% \item Analice cómo elegir $\sigma$ para maximizar la velocidad de convergencia y discuta las implicaciones numéricas de elegir $\sigma$ muy cercano a $\lambda_k$ (condicionamiento del sistema lineal vs velocidad de convergencia).
+% \end{enumerate}
+% \end{exercise}
 
-\begin{exercise}[Iteración de cociente de Rayleigh]
-Este algoritmo es una variante de la potencia inversa donde el shift se actualiza en cada paso usando el cociente de Rayleigh: $\sigma_k = \frac{(x^{(k)})^T A x^{(k)}}{\|x^{(k)}\|_2^2}$.
-\begin{enumerate}[(a)]
-\item Escriba los 3 pasos de una iteración genérica $k \to k+1$:
-   \begin{enumerate}[i.]
-   \item Cálculo del shift: $\sigma_k = \rho(x^{(k)})$.
-   \item Resolución del sistema lineal: $(A - \sigma_k I) y^{(k+1)} = x^{(k)}$.
-   \item Normalización: $x^{(k+1)} = y^{(k+1)} / \|y^{(k+1)}\|$.
-   \end{enumerate}
-\item Explique intuitivamente por qué la convergencia es superlineal.
-\end{enumerate}
-\end{exercise}
+% \begin{exercise}[Iteración de cociente de Rayleigh]
+% Este algoritmo es una variante de la potencia inversa donde el shift se actualiza en cada paso usando el cociente de Rayleigh: $\sigma_k = \frac{(x^{(k)})^T A x^{(k)}}{\|x^{(k)}\|_2^2}$.
+% \begin{enumerate}[(a)]
+% \item Escriba los 3 pasos de una iteración genérica $k \to k+1$:
+%    \begin{enumerate}[i.]
+%    \item Cálculo del shift: $\sigma_k = \rho(x^{(k)})$.
+%    \item Resolución del sistema lineal: $(A - \sigma_k I) y^{(k+1)} = x^{(k)}$.
+%    \item Normalización: $x^{(k+1)} = y^{(k+1)} / \|y^{(k+1)}\|$.
+%    \end{enumerate}
+% \item Explique intuitivamente por qué la convergencia es superlineal.
+% \end{enumerate}
+% \end{exercise}
 
 \begin{exercise}[Método QR e Iteración Ortogonal]
 El \textbf{método QR} utiliza la descomposición QR para calcular autovalores. Consiste en, dada una matriz $A_1 = A \in \mathbb{R}^{n \times n}$, generar una sucesión de matrices $A_k$ definida por:
@@ -363,15 +396,15 @@ Demuestre por inducción que $A^k = \bar{Q}_k \bar{R}_k$. Es decir, $\bar{Q}_k$ 
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Iteración QR y forma de Hessenberg]
-Sea $H \in \mathbb{R}^{n \times n}$ una matriz en forma de Hessenberg superior, y sea $H = QR$ su descomposición QR.
-\begin{enumerate}[(a)]
-\item Demuestre que $Q$ es una matriz de Hessenberg superior.
-\textbf{Sugerencia}: Escriba $Q = H R^{-1}$ y utilice que el producto de una matriz de Hessenberg superior por una triangular superior es de Hessenberg superior.
-\item Demuestre que $H' = RQ$ también está en forma de Hessenberg superior.
-\item Concluya que si comenzamos con $A$ en forma de Hessenberg, todas las iteraciones del algoritmo QR permanecen en forma de Hessenberg.
-\end{enumerate}
-\end{exercise}
+% \begin{exercise}[Iteración QR y forma de Hessenberg]
+% Sea $H \in \mathbb{R}^{n \times n}$ una matriz en forma de Hessenberg superior, y sea $H = QR$ su descomposición QR.
+% \begin{enumerate}[(a)]
+% \item Demuestre que $Q$ es una matriz de Hessenberg superior.
+% \textbf{Sugerencia}: Escriba $Q = H R^{-1}$ y utilice que el producto de una matriz de Hessenberg superior por una triangular superior es de Hessenberg superior.
+% \item Demuestre que $H' = RQ$ también está en forma de Hessenberg superior.
+% \item Concluya que si comenzamos con $A$ en forma de Hessenberg, todas las iteraciones del algoritmo QR permanecen en forma de Hessenberg.
+% \end{enumerate}
+% \end{exercise}
 
 \begin{exercise}[Algoritmo QR para raíces de polinomios]
 Dado un polinomio mónico $p(\lambda) = \lambda^n + a_{n-1}\lambda^{n-1} + \cdots + a_1\lambda + a_0$, su \textbf{matriz compañera} es:
@@ -390,8 +423,8 @@ C = \begin{pmatrix}
 \det(C - \lambda I) = (-1)^n p(\lambda).
 \]
 Por lo tanto, los autovalores de $C$ son precisamente las raíces de $p$.
-\item Demuestre que $C$ está en forma de Hessenberg superior.
-\item Concluya que el algoritmo QR aplicado a $C$ tiene costo $O(kn^2)$ donde $k$ es el número de iteraciones requerido.
+% \item Demuestre que $C$ está en forma de Hessenberg superior.
+% \item Concluya que el algoritmo QR aplicado a $C$ tiene costo $O(kn^2)$ donde $k$ es el número de iteraciones requerido.
 \end{enumerate}
 \end{exercise}
 
