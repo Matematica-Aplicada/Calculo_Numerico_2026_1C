@@ -1,0 +1,172 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Ejercicios tipo parcial -- Guías 1 a 3}
+ \bigskip
+
+%%% Ejercicio 1 — Guía 1: complejidad + aritmética de punto flotante %%%
+
+\begin{exercise}[Evaluación eficiente de polinomios y errores de cancelación]
+Sea $p(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_n x^n$. El \textbf{método de Horner} reescribe el polinomio como
+\[
+p(x) = a_0 + x\bigl(a_1 + x\bigl(a_2 + \cdots + x(a_{n-1} + x\,a_n)\cdots\bigr)\bigr).
+\]
+
+\begin{enumerate}[(a)]
+\item Escriba el pseudocódigo del método de Horner. Cuente el número de multiplicaciones y sumas y determine la complejidad. Además, escriba un algoritmo ``ingenuo'' que evalúe $p(x)$ recalculando cada potencia $x^k$ con un ciclo interno, cuente sus multiplicaciones y compare las complejidades.
+
+\item Sea $p(x) = x^3 - 3x^2 + 3x - 1$. Evalúe $p(1.01)$ paso a paso usando el método de Horner en aritmética de punto flotante con $t = 3$ dígitos decimales significativos (redondeo al más cercano). Observando que $p(x) = (x-1)^3$, evalúe $(1.01-1)^3$ con la misma aritmética, compare los resultados e identifique en qué paso del método de Horner se produce una pérdida catastrófica de dígitos significativos.
+\end{enumerate}
+\end{exercise}
+
+
+%%% Ejercicio 2 — Guía 2: álgebra lineal numérica (SVD, cuadrados mínimos, LOO-CV) %%%
+
+\begin{exercise}[Cuadrados mínimos, hat matrix y validación cruzada leave-one-out]
+Sea $A \in \mathbb{R}^{m \times n}$ con $m > n$ y rango columna completo. La solución de cuadrados mínimos de $\min_x \|Ax - b\|_2$ es
+\[
+\hat{x} = (A^TA)^{-1}A^Tb.
+\]
+El vector de valores ajustados es
+\[
+\hat{b} = A\hat{x} = Hb, \qquad H = A(A^TA)^{-1}A^T,
+\]
+y el residuo es
+\[
+e = b - \hat{b} = (I-H)b.
+\]
+Use el Lema P1 de la sección \emph{Preliminares}.
+
+Para cada $i = 1, \ldots, m$, sea $\hat{x}^{(-i)}$ la solución de cuadrados mínimos que se obtiene al eliminar la observación $i$-ésima (es decir, la fila $a_i^T$ de $A$ y la entrada $b_i$ de $b$), y sea
+\[
+e_i^{(-i)} = b_i - a_i^T \hat{x}^{(-i)}
+\]
+el \emph{error de predicción leave-one-out} en el punto $i$.
+
+\begin{enumerate}[(a)]
+\item Defina $b^{(i)} \in \mathbb{R}^m$ como el vector que coincide con $b$ en todas las coordenadas salvo la $i$-ésima, donde
+\[
+b_i^{(i)} = a_i^T \hat{x}^{(-i)}.
+\]
+Demuestre que $\hat{x}^{(-i)}$ es también la solución de cuadrados mínimos de
+\[
+\min_x \|Ax - b^{(i)}\|_2.
+\]
+
+\item Defina $\hat{b}^{(i)} := H b^{(i)}$. Usando que $\hat{b}=Hb$ y que $b_i^{(i)}=\hat{b}_i^{(i)}$, demuestre la fórmula de leave-one-out:
+\[
+e_i^{(-i)} = \frac{e_i}{1 - h_{ii}}.
+\]
+\end{enumerate}
+\end{exercise}
+
+%%% Ejercicio 2* — Guía 2: condicionamiento en cuadrados mínimos %%%
+
+\begin{exercise}[Condicionamiento en norma 2 para cuadrados mínimos]
+Sea $A \in \mathbb{R}^{m\times n}$ con $m>n$ y rango columna completo, y sea $A^+$ su pseudoinversa de Moore--Penrose. Para un dato $b\in\mathbb{R}^m$, defina
+\[
+\hat{x}=A^+b,
+\qquad
+\hat{b}=A\hat{x}=Hb,
+\qquad
+H=A(A^TA)^{-1}A^T.
+\]
+Considere una perturbación solo en el dato: $b^{\delta}=b+\delta b$ (la matriz $A$ no se perturba), y defina
+\[
+\hat{x}^{\delta}=A^+b^{\delta},
+\qquad
+\delta x=\hat{x}^{\delta}-\hat{x}.
+\]
+
+\begin{enumerate}[(a)]
+\item Demuestre que
+\[
+\frac{\|\delta x\|_2}{\|\hat{x}\|_2}
+\le
+\kappa_2(A)\,\frac{\|\delta b\|_2}{\|\hat b\|_2}
+\]
+\item Definiendo
+\[
+\cos\theta=\frac{\|Hb\|_2}{\|b\|_2}=\frac{\|\hat b\|_2}{\|b\|_2},
+\]
+deduzca la forma equivalente
+\[
+\frac{\|\delta x\|_2}{\|\hat{x}\|_2}
+\le
+\frac{\kappa_2(A)}{\cos\theta}\,\frac{\|\delta b\|_2}{\|b\|_2}.
+\]
+\end{enumerate}
+\end{exercise}
+
+%%% Ejercicio 3 — Guía 3: cuadratura + FFT %%%
+
+\begin{exercise}[Beam gaussiano, regla de trapecios y FFT]
+Considere la integral tipo convolución que modela un \emph{beam gaussiano}:
+\[
+I(x)=\int_{-L}^{L} f(\xi)\, \exp\!\left(-\frac{(x-\xi)^2}{\sigma^2}\right)\, d\xi.
+\]
+Suponga que $f$ se extiende a $\mathbb{R}$ y que $|f(\xi)|\le M$ para todo $\xi$. Para $L$ suficientemente grande, la cola gaussiana fuera de $[-L,L]$ es despreciable, por lo que $I(x)$ se aproxima por una convolución truncada con error exponencialmente pequeño en $L$.
+
+Sea una grilla uniforme $\xi_j=-L+jh$ con $h=\frac{2L}{N}$, $j=0,\ldots,N$, y sea $x_i=-L+ih$, $i=0,\ldots,N$.
+\begin{enumerate}[(a)]
+\item Muestre primero que, para $|x|\le L$, el error de truncar la convolución en $[-L,L]$ satisface una cota del tipo
+\[
+\left|\int_{\mathbb{R}} f(\xi)e^{-\frac{(x-\xi)^2}{\sigma^2}}\,d\xi-\int_{-L}^{L} f(\xi)e^{-\frac{(x-\xi)^2}{\sigma^2}}\,d\xi\right|
+\le C\,e^{-L^2/\sigma^2},
+\]
+con $C$ independiente de $L$. Luego discretice $I(x_i)$ con la regla de trapecios compuesta. Definiendo $g_k = \exp\!\bigl(-{(kh)^2}/{\sigma^2}\bigr)$, muestre que la suma resultante se puede escribir como una convolución discreta lineal
+\[
+I(x_i) \approx h \sum_{j=0}^{N} f_j \, g_{i-j},
+\]
+salvo correcciones en los extremos del trapecio.
+
+\item Describa cómo calcular los $N+1$ valores $I(x_0), \ldots, I(x_N)$ simultáneamente usando FFT: explique cómo extender las secuencias con ceros (\emph{zero-padding}) para que la convolución circular reproduzca la convolución lineal, describa los tres pasos del algoritmo (FFT directa, producto punto a punto, FFT inversa) y determine la complejidad total.
+\end{enumerate}
+\end{exercise}
+
+%%% Ejercicio 4 — Guía 3: interpolación %%%
+
+\begin{exercise}[Interpolación inteligente: $\sqrt{x}\sin(x)$]
+Se desea evaluar $f(x) = \sqrt{x}\,\sin(x)$ en puntos arbitrarios del intervalo $[0, \pi]$ usando interpolación polinomial en $n+1$ nodos equiespaciados $x_k = \frac{k\pi}{n}$, $k=0,\ldots,n$. Se consideran dos estrategias: \textbf{A)} interpolar directamente $f(x)$ con un polinomio $p_n$ de grado $\leq n$; \textbf{B)} interpolar solamente $g(x) = \sin(x)$ con un polinomio $q_n$ de grado $\leq n$ y luego evaluar $\sqrt{x}\,q_n(x)$. El teorema del error de interpolación establece que si $\varphi \in C^{n+1}([a,b])$, entonces para cada $x$ existe $\xi$ tal que $\varphi(x) - p_n(x) = \frac{\varphi^{(n+1)}(\xi)}{(n+1)!}\prod_{k=0}^{n}(x - x_k)$. Para nodos equiespaciados con paso $h$ se admite la cota estándar $\prod_{k=0}^{n}|x-x_k| \leq \frac{n!\, h^{n+1}}{4}$.
+
+\begin{enumerate}[(a)]
+\item Calcule $f''(x)$ y observe que contiene un término proporcional a $x^{-3/2}$. Deduzca que $\|f^{(n+1)}\|_\infty$ en $[0, \pi]$ diverge cuando $x \to 0^+$, y concluya que el teorema del error no se puede aplicar a la estrategia~A.
+
+\item Usando que $\|g^{(n+1)}\|_\infty = 1$ para todo $n$, aplique el teorema del error a la estrategia~B para demostrar que
+\[
+\|f - \sqrt{\cdot}\, q_n\|_\infty \leq \frac{\sqrt{\pi}\,\pi^{n+1}}{4\,(n+1)\,n^{n+1}}.
+\]
+Concluya que el error de la estrategia~B decrece más rápido que cualquier potencia de~$1/n$.
+\end{enumerate}
+\end{exercise}
+
+\end{document}

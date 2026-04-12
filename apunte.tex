@@ -1412,7 +1412,7 @@ que se resuelve por sustitución hacia atrás en $O(n^2)$ operaciones.
 
 \section{Cuadrados mínimos y proyección ortogonal}
 
-El problema de \textbf{cuadrados mínimos} consiste en encontrar $x \in \mathbb{C}^n$ que minimiza el residuo $\|Ax - b\|_2$ para un sistema sobredeterminado $Ax=b$ ($m \geq n$).
+El problema de \textbf{cuadrados mínimos} consiste en encontrar $x \in \mathbb{C}^n$ que minimiza el residuo $\|Ax - b\|_2$ para un sistema sobredeterminado $Ax=b$, con $A\in\mathbb{C}^{m \times n}$ ($m \geq n$) y $b \in \mathbb{C}^m$.
 
 Recordemos de Álgebra Lineal que si $S$ es un subespacio de un espacio con producto interno $V$, la mejor aproximación de un vector $b \in V$ en $S$ es su \textbf{proyección ortogonal} $P_S(b)$. Esta proyección se caracteriza por la propiedad de que el error es ortogonal al subespacio:
 \[
@@ -1477,7 +1477,7 @@ x = (A^*A)^{-1}A^*b.
 
 \subsection{QR para cuadrados mínimos}
 
-Una alternativa a las ecuaciones normales es usar la \textbf{factorización QR}.
+Una alternativa a la solución directa de las ecuaciones normales es usar la \textbf{factorización QR}.
 
 \begin{theorem}[Factorización QR]
 Toda matriz $A \in \mathbb{C}^{m \times n}$ con $m \geq n$ admite una factorización:
@@ -1508,14 +1508,6 @@ Como $Q$ es unitaria, preserva la norma:
 \]
 Esto se minimiza cuando $R_1 x = Q_1^* b$, dando un residuo mínimo de $\|Q_2^* b\|_2$.
 \end{proof}
-
-\begin{remark}[Ventajas del método QR]
-\begin{enumerate}
-\item El número de condición del problema no se eleva al cuadrado: $\kappa_2(R_1) = \kappa_2(A)$.
-\item El método es numéricamente estable.
-\item No requiere formar explícitamente $A^*A$, evitando pérdida de precisión.
-\end{enumerate}
-\end{remark}
 
 
 \section{Descomposición en Valores Singulares (SVD)}
@@ -1629,6 +1621,110 @@ Pero también $Av_j = 0$ en este caso, pues $v_j \in \ker(A)$ (ya que $A^*Av_j =
 Por lo tanto, $A = U\Sigma V^*$, lo que completa la demostración.
 \end{proof}
 
+\begin{definition}[Pseudoinversa de Moore--Penrose]
+Sea $A\in\mathbb{C}^{m\times n}$ y sea
+\[
+A=U\Sigma V^*,\qquad
+\Sigma=\operatorname{diag}(\sigma_1,\ldots,\sigma_r,0,\ldots,0),\qquad
+\sigma_1\ge\cdots\ge\sigma_r>0,
+\]
+una SVD de $A$, con $r=\operatorname{rank}(A)$. Se define
+\[
+\Sigma^+=\operatorname{diag}\!\left(\frac1{\sigma_1},\ldots,\frac1{\sigma_r},0,\ldots,0\right),
+\qquad
+A^+:=V\Sigma^+U^*.
+\]
+La matriz $A^+$ se llama \textbf{pseudoinversa de Moore--Penrose} de $A$.
+\end{definition}
+
+\begin{theorem}[Pseudoinversa y cuadrados mínimos en el caso general]
+Sea $A\in\mathbb{C}^{m\times n}$ (sin hipótesis de rango completo) y sea $d\in\mathbb{C}^m$. Entonces:
+\begin{enumerate}[(i)]
+\item El problema
+\[
+\min_{x\in\mathbb{C}^n}\|Ax-d\|_2
+\]
+siempre tiene solución.
+\item El vector
+\[
+x^\dagger:=A^+d
+\]
+es una solución de mínimos cuadrados y es la \textbf{única} solución de norma mínima.
+\item El conjunto de todas las soluciones de mínimos cuadrados es
+\[
+\{x^\dagger+z:\, z\in\ker(A)\}.
+\]
+\item Si $\operatorname{rank}(A)=n$ (columnas linealmente independientes), entonces la solución es única y
+\[
+A^+=(A^*A)^{-1}A^*,
+\qquad
+x^\dagger=(A^*A)^{-1}A^*d.
+\]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Con la SVD, para $y=V^*x$ y $c=U^*d$:
+\[
+\|Ax-d\|_2=\|\Sigma y-c\|_2^2
+=\sum_{i=1}^r|\sigma_i y_i-c_i|^2+\sum_{i=r+1}^{m}|c_i|^2.
+\]
+El mínimo se obtiene imponiendo $y_i=c_i/\sigma_i$ para $i\le r$; las componentes $y_{r+1},\ldots,y_n$ no afectan el valor del residuo. Por lo tanto existe minimizador y el de norma mínima se obtiene tomando esas componentes libres iguales a $0$:
+\[
+y^\dagger=(c_1/\sigma_1,\ldots,c_r/\sigma_r,0,\ldots,0)^T=\Sigma^+c.
+\]
+Volviendo a $x$:
+\[
+x^\dagger=Vy^\dagger=V\Sigma^+U^*d=A^+d.
+\]
+Si $x$ es cualquier otro minimizador, coincide con $x^\dagger$ en las primeras $r$ componentes de $y$ y difiere solo en componentes asociadas a valores singulares nulos; eso equivale a sumar un vector de $\ker(A)$.
+
+Si $\operatorname{rank}(A)=n$, entonces no hay componentes libres, la solución es única y además
+\[
+A^*A=V\Sigma^2V^*\quad\Rightarrow\quad (A^*A)^{-1}A^*=V\Sigma^{-1}U^*=A^+.
+\]
+\end{proof}
+
+
+
+
+\begin{lemma}[Propiedades de la matriz \emph{hat}]
+Sea $A\in\mathbb{C}^{m\times n}$ con $m\ge n$ y $\operatorname{rank}(A)=n$, y defina
+\[
+H:=AA^+=A(A^*A)^{-1}A^*\in\mathbb{C}^{m\times m}.
+\]
+Entonces:
+\begin{enumerate}[(i)]
+\item $H^*=H$ y $H^2=H$.
+\item $H$ es el proyector ortogonal sobre $\operatorname{Col}(A)$.
+\item Para todo $d\in\mathbb{C}^m$, si $\hat{x}=A^+d$, entonces el ajuste es
+\[
+\hat{d}=A\hat{x}=Hd.
+\]
+\item Si $h_{ii}$ denota la diagonal de $H$, entonces $0\le h_{ii}\le 1$ para todo $i$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+De la definición, usando $(A^*A)^{-1}$ hermítica, se obtiene $H^*=H$. Además,
+\[
+H^2=A(A^*A)^{-1}A^*A(A^*A)^{-1}A^*=A(A^*A)^{-1}A^*=H.
+\]
+Así, $H$ es proyector hermítico, luego proyección ortogonal sobre su imagen. Como $H=AA^+$, se tiene $\operatorname{Im}(H)=\operatorname{Col}(A)$. También,
+\[
+\hat{d}=A\hat{x}=A(A^+d)=Hd.
+\]
+Finalmente, para el vector canónico $e_i$,
+\[
+h_{ii}=e_i^*He_i=(He_i)^*He_i=\|He_i\|_2^2\ge0,
+\]
+y como $H$ es proyector ortogonal, $\|H\|_2=1$, de modo que
+\[
+h_{ii}=\|He_i\|_2^2\le \|H\|_2^2\|e_i\|_2^2\le 1.
+\]
+\end{proof}
+
+
 La descomposición en valores singulares no es solo una herramienta teórica, sino que tiene profundas implicaciones prácticas en la resolución de problemas numéricos. A continuación, exploramos su relación con el condicionamiento y la regularización.
 
 \subsection{Condicionamiento y problemas mal condicionados}
@@ -1666,28 +1762,65 @@ Dado que los valores singulares de $A^{-1}$ son $1/\sigma_n \geq \cdots \geq 1/\
 \kappa_2(A) = \frac{\sigma_1}{\sigma_n}.
 \]
 
-Este número gobierna la propagación de errores. En particular, si $\delta b$ es una perturbación en $b$, la solución perturbada $x + \delta x$ satisface $A(x + \delta x) = b + \delta b$, de donde $A \delta x = \delta b$.
+\begin{theorem}[Cota de error relativo para $Ax=b$ en norma 2]
+Sea $A\in\mathbb{C}^{n\times n}$ inversible, y sea $x=A^{-1}b$ con $b\neq 0$. Para una perturbación $\delta b\in\mathbb{C}^n$, defina
+\[
+x+\delta x:=A^{-1}(b+\delta b),
+\]
+equivalentemente $A\delta x=\delta b$. Entonces
+\[
+\frac{\|\delta x\|_2}{\|x\|_2}
+\le
+\kappa_2(A)\,\frac{\|\delta b\|_2}{\|b\|_2},
+\qquad
+\kappa_2(A)=\|A\|_2\|A^{-1}\|_2.
+\]
+\end{theorem}
 
-Usando la SVD, podemos analizar la magnitud de $\delta x$:
-\[
-\delta x = A^{-1} \delta b = \sum_{i=1}^n \frac{u_i^* \delta b}{\sigma_i} v_i.
-\]
-Tomando norma 2:
-\[
-\|\delta x\|_2^2 = \sum_{i=1}^n \frac{|u_i^* \delta b|^2}{\sigma_i^2} \leq \frac{1}{\sigma_n^2} \sum_{i=1}^n |u_i^* \delta b|^2 = \frac{1}{\sigma_n^2} \|\delta b\|_2^2.
-\]
-Por lo tanto, $\|\delta x\|_2 \leq \frac{1}{\sigma_n} \|\delta b\|_2$.
+\begin{proof}
+Sea $A=U\Sigma V^*$ su SVD, con $\Sigma=\operatorname{diag}(\sigma_1,\dots,\sigma_n)$, $\sigma_1\ge\cdots\ge\sigma_n>0$.
 
-Por otro lado, como $Ax = b$, tenemos $b = \sum_{i=1}^n \sigma_i (v_i^* x) u_i$, y:
+Como $\delta x=A^{-1}\delta b$, se tiene
 \[
-\|b\|_2^2 = \sum_{i=1}^n \sigma_i^2 |v_i^* x|^2 \leq \sigma_1^2 \sum_{i=1}^n |v_i^* x|^2 = \sigma_1^2 \|x\|_2^2.
+\delta x=\sum_{i=1}^n \frac{u_i^*\delta b}{\sigma_i}v_i,
 \]
-De aquí, $\|x\|_2 \geq \frac{\|b\|_2}{\sigma_1}$.
+y por ortonormalidad de $\{u_i\}$ y $\{v_i\}$:
+\[
+\|\delta x\|_2^2
+=\sum_{i=1}^n\frac{|u_i^*\delta b|^2}{\sigma_i^2}
+\le \frac{1}{\sigma_n^2}\sum_{i=1}^n|u_i^*\delta b|^2
+=\frac{1}{\sigma_n^2}\|\delta b\|_2^2.
+\]
+Luego
+\[
+\|\delta x\|_2\le \frac{1}{\sigma_n}\|\delta b\|_2.
+\]
 
-Combinando ambas desigualdades, obtenemos la cota para el error relativo:
+Además, de $b=Ax=U\Sigma V^*x$ se obtiene
 \[
-\frac{\|\delta x\|_2}{\|x\|_2} \leq \frac{\frac{1}{\sigma_n} \|\delta b\|_2}{\frac{1}{\sigma_1} \|b\|_2} = \frac{\sigma_1}{\sigma_n} \frac{\|\delta b\|_2}{\|b\|_2} = \kappa_2(A) \frac{\|\delta b\|_2}{\|b\|_2}.
+b=\sum_{i=1}^n \sigma_i(v_i^*x)u_i,
 \]
+y por lo tanto
+\[
+\|b\|_2^2
+=\sum_{i=1}^n\sigma_i^2|v_i^*x|^2
+\le \sigma_1^2\sum_{i=1}^n|v_i^*x|^2
+=\sigma_1^2\|x\|_2^2.
+\]
+Así,
+\[
+\|x\|_2\ge \frac{\|b\|_2}{\sigma_1}.
+\]
+
+Combinando ambas cotas:
+\[
+\frac{\|\delta x\|_2}{\|x\|_2}
+\le
+\frac{(1/\sigma_n)\|\delta b\|_2}{(1/\sigma_1)\|b\|_2}
+=\frac{\sigma_1}{\sigma_n}\frac{\|\delta b\|_2}{\|b\|_2}
+=\kappa_2(A)\frac{\|\delta b\|_2}{\|b\|_2}.
+\]
+\end{proof}
 
 Esta cota es alcanzable (es decir, es óptima). El peor caso ocurre cuando $b$ está alineado con la dirección de máxima amplificación ($u_1$) y el error $\delta b$ está alineado con la dirección de mínima amplificación ($u_n$), que corresponde a la máxima amplificación de la inversa. En ese caso, el error relativo en la solución se amplifica exactamente por un factor $\kappa_2(A)$.
 
@@ -2397,192 +2530,192 @@ donde $U$ y $V$ son unitarias y $B$ es bidiagonal (solo diagonal y superdiagonal
 Si $A$ es normal ($AA^* = A^*A$), en particular si es hermítica, la forma de Hessenberg obtenida por transformaciones de Householder es \textbf{tridiagonal}. Esto hace que el método QR sea especialmente eficiente para matrices hermíticas, con costo $O(n)$ por iteración en lugar de $O(n^2)$.
 \end{remark}
 
-\section{Métodos iterativos basados en subespacios de Krylov}
+% \section{Métodos iterativos basados en subespacios de Krylov}
 
-\begin{definition}[Subespacio de Krylov]
-Dados $A \in \mathbb{C}^{n \times n}$ y $v \in \mathbb{C}^n$ no nulo, el \textbf{subespacio de Krylov} de dimensión $k$ es:
-\[
-\mathcal{K}_k(A, v) = \text{span}\{v, Av, A^2v, \ldots, A^{k-1}v\}.
-\]
-\end{definition}
+% \begin{definition}[Subespacio de Krylov]
+% Dados $A \in \mathbb{C}^{n \times n}$ y $v \in \mathbb{C}^n$ no nulo, el \textbf{subespacio de Krylov} de dimensión $k$ es:
+% \[
+% \mathcal{K}_k(A, v) = \text{span}\{v, Av, A^2v, \ldots, A^{k-1}v\}.
+% \]
+% \end{definition}
 
-\begin{remark}
-El subespacio de Krylov captura la información de cómo la matriz $A$ actúa repetidamente sobre el vector inicial $v$. Para una matriz invertible, existe un $m \leq n$ tal que $\mathcal{K}_m(A, v) = \mathcal{K}_{m+1}(A, v)$, momento en el cual se dice que el método ha alcanzado convergencia exacta.
-\end{remark}
+% \begin{remark}
+% El subespacio de Krylov captura la información de cómo la matriz $A$ actúa repetidamente sobre el vector inicial $v$. Para una matriz invertible, existe un $m \leq n$ tal que $\mathcal{K}_m(A, v) = \mathcal{K}_{m+1}(A, v)$, momento en el cual se dice que el método ha alcanzado convergencia exacta.
+% \end{remark}
 
-\subsection{Método de Arnoldi}
+% \subsection{Método de Arnoldi}
 
-El \textbf{método de Arnoldi} es una variante del método QR que aprovecha la estructura de subespacios de Krylov para matrices grandes y dispersas.
+% El \textbf{método de Arnoldi} es una variante del método QR que aprovecha la estructura de subespacios de Krylov para matrices grandes y dispersas.
 
-\begin{definition}[Método de Arnoldi]
-Dado $A \in \mathbb{C}^{n \times n}$ y un vector inicial $q_1$ unitario, el método de Arnoldi construye una base ortonormal $\{q_1, \ldots, q_k\}$ del subespacio de Krylov $\mathcal{K}_k(A, q_1)$ tal que:
-\[
-AQ_k = Q_k H_k + h_{k+1,k} q_{k+1} e_k^T,
-\]
-donde $Q_k = (q_1 \, | \, \cdots \, | \, q_k)$ y $H_k$ es una matriz de Hessenberg de tamaño $k \times k$.
-\end{definition}
+% \begin{definition}[Método de Arnoldi]
+% Dado $A \in \mathbb{C}^{n \times n}$ y un vector inicial $q_1$ unitario, el método de Arnoldi construye una base ortonormal $\{q_1, \ldots, q_k\}$ del subespacio de Krylov $\mathcal{K}_k(A, q_1)$ tal que:
+% \[
+% AQ_k = Q_k H_k + h_{k+1,k} q_{k+1} e_k^T,
+% \]
+% donde $Q_k = (q_1 \, | \, \cdots \, | \, q_k)$ y $H_k$ es una matriz de Hessenberg de tamaño $k \times k$.
+% \end{definition}
 
-\textbf{Algoritmo (Arnoldi):}
-\begin{enumerate}
-\item $q_1 = v / \|v\|_2$ (normalizar vector inicial)
-\item Para $j = 1, \ldots, k$:
-   \begin{enumerate}
-   \item $w = Aq_j$
-   \item Para $i = 1, \ldots, j$ (Gram-Schmidt):
-      \begin{itemize}
-      \item $h_{ij} = (w, q_i)$
-      \item $w \leftarrow w - h_{ij} q_i$
-      \end{itemize}
-   \item $h_{j+1,j} = \|w\|_2$
-   \item $q_{j+1} = w / h_{j+1,j}$
-   \end{enumerate}
-\end{enumerate}
+% \textbf{Algoritmo (Arnoldi):}
+% \begin{enumerate}
+% \item $q_1 = v / \|v\|_2$ (normalizar vector inicial)
+% \item Para $j = 1, \ldots, k$:
+%    \begin{enumerate}
+%    \item $w = Aq_j$
+%    \item Para $i = 1, \ldots, j$ (Gram-Schmidt):
+%       \begin{itemize}
+%       \item $h_{ij} = (w, q_i)$
+%       \item $w \leftarrow w - h_{ij} q_i$
+%       \end{itemize}
+%    \item $h_{j+1,j} = \|w\|_2$
+%    \item $q_{j+1} = w / h_{j+1,j}$
+%    \end{enumerate}
+% \end{enumerate}
 
-\begin{remark}[Aplicación a autovalores]
-Los autovalores de la matriz pequeña $H_k$ (llamados \textbf{valores de Ritz}) aproximan los autovalores de $A$. Se puede aplicar el método QR directamente a $H_k \in \mathbb{C}^{k \times k}$ (con $k \ll n$) para obtener aproximaciones de los autovalores de $A$ con mucho menor costo computacional.
-\end{remark}
-
-
-\subsection{GMRES}
-
-El método GMRES (Generalized Minimal RESidual) es un algoritmo iterativo para resolver sistemas lineales $Ax = b$ con $A \in \mathbb{C}^{n \times n}$ no singular. GMRES es particularmente efectivo para matrices grandes y ralas que no necesariamente son hermíticas definidas positivas, donde otros métodos iterativos pueden fallar.
-
-\begin{definition}[Iteración GMRES]
-Sea $Ax = b$ un sistema lineal con $A \in \mathbb{C}^{n \times n}$ no singular. Dada una aproximación inicial $x_0 \in \mathbb{C}^n$, sea $r_0 = b - Ax_0$ el residuo inicial. Para cada $k \geq 1$, GMRES define la $k$-ésima iteración como:
-\[
-x_k = x_0 + z_k, \quad \text{donde } z_k \in \mathcal{K}_k(A, r_0)
-\]
-es el vector que minimiza el residuo:
-\[
-\|r_k\|_2 = \|b - Ax_k\|_2 = \|r_0 - Az_k\|_2 = \min_{z \in \mathcal{K}_k(A, r_0)} \|r_0 - Az\|_2.
-\]
-\end{definition}
-
-Esta caracterización de GMRES como un problema de cuadrados mínimos es fundamental: en cada iteración, buscamos la mejor aproximación dentro del subespacio de Krylov que minimiza la norma del residuo.
-
-La implementación práctica de GMRES se basa en el proceso de Arnoldi, que construye una base ortonormal del subespacio de Krylov mediante ortogonalización de Gram-Schmidt modificada.
-
-\begin{theorem}[Proceso de Arnoldi]
-Sea $A \in \mathbb{C}^{n \times n}$ y $v \in \mathbb{C}^n$ con $\|v\|_2 = 1$. El proceso de Arnoldi construye una matriz $Q_k = [q_1, \ldots, q_k] \in \mathbb{C}^{n \times k}$ con columnas ortonormales que forman una base de $\mathcal{K}_k(A, v)$, y una matriz de Hessenberg superior $H_k \in \mathbb{C}^{k \times k}$ tal que:
-\[
-AQ_k = Q_k H_k + h_{k+1,k} q_{k+1} e_k^*,
-\]
-o equivalentemente, en forma compacta:
-\[
-AQ_k = Q_{k+1} \tilde{H}_k,
-\]
-donde $Q_{k+1} = [Q_k, q_{k+1}]$ y $\tilde{H}_k \in \mathbb{C}^{(k+1) \times k}$ es una matriz de Hessenberg superior con entradas $h_{ij}$ para $i \leq j+1$.
-\end{theorem}
-
-\begin{proof}
-El proceso es constructivo. Iniciando con $q_1 = v$, para $j = 1, \ldots, k$:
-\begin{enumerate}
-\item Calcular $w = Aq_j$.
-\item Ortogonalizar contra $q_1, \ldots, q_j$: para $i = 1, \ldots, j$,
-\[
-h_{ij} = (w, q_i), \quad w \leftarrow w - h_{ij} q_i.
-\]
-\item Normalizar: $h_{j+1,j} = \|w\|_2$, $q_{j+1} = w / h_{j+1,j}$.
-\end{enumerate}
-Por construcción, $\{q_1, \ldots, q_k\}$ es ortonormal y genera $\mathcal{K}_k(A, v)$. La relación $AQ_k = Q_{k+1}\tilde{H}_k$ se verifica directamente de la construcción.
-\end{proof}
-
-\begin{theorem}[Formulación reducida de GMRES]
-Con la descomposición de Arnoldi $AQ_k = Q_{k+1}\tilde{H}_k$ y $r_0 = \beta q_1$ donde $\beta = \|r_0\|_2$, el problema de minimización de GMRES:
-\[
-\min_{z \in \mathcal{K}_k(A, r_0)} \|r_0 - Az\|_2
-\]
-es equivalente al problema de cuadrados mínimos de dimensión reducida:
-\[
-\min_{y \in \mathbb{C}^k} \|\beta e_1 - \tilde{H}_k y\|_2,
-\]
-donde $e_1 \in \mathbb{C}^{k+1}$ es el primer vector canónico. La solución está relacionada por $z_k = Q_k y_k$.
-\end{theorem}
-
-\begin{proof}
-Como $z \in \mathcal{K}_k(A, r_0)$, podemos escribir $z = Q_k y$ para algún $y \in \mathbb{C}^k$. Entonces:
-\[
-\|r_0 - Az\|_2 = \|\beta q_1 - AQ_k y\|_2 = \|\beta q_1 - Q_{k+1}\tilde{H}_k y\|_2.
-\]
-Multiplicando por $Q_{k+1}^*$ (que preserva la norma pues $Q_{k+1}$ tiene columnas ortonormales):
-\[
-\|r_0 - Az\|_2 = \|Q_{k+1}^*(\beta q_1 - Q_{k+1}\tilde{H}_k y)\|_2 = \|\beta e_1 - \tilde{H}_k y\|_2,
-\]
-donde usamos que $Q_{k+1}^* q_1 = e_1$. Este problema de tamaño $(k+1) \times k$ se resuelve eficientemente mediante factorización QR de $\tilde{H}_k$.
-\end{proof}
+% \begin{remark}[Aplicación a autovalores]
+% Los autovalores de la matriz pequeña $H_k$ (llamados \textbf{valores de Ritz}) aproximan los autovalores de $A$. Se puede aplicar el método QR directamente a $H_k \in \mathbb{C}^{k \times k}$ (con $k \ll n$) para obtener aproximaciones de los autovalores de $A$ con mucho menor costo computacional.
+% \end{remark}
 
 
-El costo computacional de GMRES después de $k$ iteraciones es:
-\begin{itemize}
-\item \textbf{Productos matriz-vector}: $k$ multiplicaciones $Aq_j$, cada una costando $O(n^2)$ para matrices densas u $O(n)$ para matrices dispersas.
-\item \textbf{Ortogonalizaciones}: $O(k^2n)$ operaciones para mantener ortogonalidad con todos los vectores previos.
-\item \textbf{Problema de cuadrados mínimos}: $O(k^2)$ para resolver $\min \|\beta e_1 - \tilde{H}_k y\|_2$.
-\item \textbf{Memoria}: Almacenar $Q_k$ requiere $O(kn)$ memoria.
-\end{itemize}
+% \subsection{GMRES}
 
-Para problemas grandes, el crecimiento en memoria y costo de ortogonalización motiva el uso de \textbf{GMRES reiniciado} (GMRES(m)), que reinicia el método cada $m$ iteraciones, sacrificando optimalidad teórica por eficiencia práctica.
+% El método GMRES (Generalized Minimal RESidual) es un algoritmo iterativo para resolver sistemas lineales $Ax = b$ con $A \in \mathbb{C}^{n \times n}$ no singular. GMRES es particularmente efectivo para matrices grandes y ralas que no necesariamente son hermíticas definidas positivas, donde otros métodos iterativos pueden fallar.
 
-\subsubsection{Análisis de convergencia}
+% \begin{definition}[Iteración GMRES]
+% Sea $Ax = b$ un sistema lineal con $A \in \mathbb{C}^{n \times n}$ no singular. Dada una aproximación inicial $x_0 \in \mathbb{C}^n$, sea $r_0 = b - Ax_0$ el residuo inicial. Para cada $k \geq 1$, GMRES define la $k$-ésima iteración como:
+% \[
+% x_k = x_0 + z_k, \quad \text{donde } z_k \in \mathcal{K}_k(A, r_0)
+% \]
+% es el vector que minimiza el residuo:
+% \[
+% \|r_k\|_2 = \|b - Ax_k\|_2 = \|r_0 - Az_k\|_2 = \min_{z \in \mathcal{K}_k(A, r_0)} \|r_0 - Az\|_2.
+% \]
+% \end{definition}
 
-\begin{theorem}[Cota de convergencia óptima]\label{thm:gmres_optimal}
-Después de $k$ iteraciones de GMRES, el residuo satisface:
-\[
-\frac{\|r_k\|_2}{\|r_0\|_2} = \min_{\substack{p \in \mathcal{P}_k \\ p(0) = 1}} \|p(A)r_0\|_2,
-\]
-donde $\mathcal{P}_k$ denota el conjunto de polinomios de grado a lo más $k$.
-\end{theorem}
+% Esta caracterización de GMRES como un problema de cuadrados mínimos es fundamental: en cada iteración, buscamos la mejor aproximación dentro del subespacio de Krylov que minimiza la norma del residuo.
 
-\begin{proof}
-De $x_k = x_0 + z_k$ con $z_k \in \mathcal{K}_k(A, r_0)$, tenemos:
-\[
-r_k = r_0 - Az_k.
-\]
-Como $z_k \in \mathcal{K}_k(A, r_0) = \text{span}\{r_0, Ar_0, \ldots, A^{k-1}r_0\}$, existe un polinomio $q$ de grado $\leq k-1$ tal que $z_k = q(A)r_0$. Entonces:
-\[
-r_k = r_0 - Aq(A)r_0 = (I - Aq(A))r_0 = p(A)r_0,
-\]
-donde $p(z) = 1 - zq(z)$ es un polinomio de grado $\leq k$ con $p(0) = 1$. La minimización en GMRES garantiza que elegimos el mejor polinomio posible.
-\end{proof}
+% La implementación práctica de GMRES se basa en el proceso de Arnoldi, que construye una base ortonormal del subespacio de Krylov mediante ortogonalización de Gram-Schmidt modificada.
 
-\begin{theorem}[Cota espectral para matrices diagonalizables]\label{thm:gmres_diag}
-Si $A$ es diagonalizable, $A = X\Lambda X^{-1}$ con autovalores $\lambda_1, \ldots, \lambda_n$, entonces:
-\[
-\frac{\|r_k\|_2}{\|r_0\|_2} \leq \kappa(X) \min_{\substack{p \in \mathcal{P}_k \\ p(0) = 1}} \max_{i=1,\ldots,n} |p(\lambda_i)|,
-\]
-donde $\kappa(X) = \|X\|_2 \|X^{-1}\|_2$ es el número de condición de la matriz de autovectores.
-\end{theorem}
+% \begin{theorem}[Proceso de Arnoldi]
+% Sea $A \in \mathbb{C}^{n \times n}$ y $v \in \mathbb{C}^n$ con $\|v\|_2 = 1$. El proceso de Arnoldi construye una matriz $Q_k = [q_1, \ldots, q_k] \in \mathbb{C}^{n \times k}$ con columnas ortonormales que forman una base de $\mathcal{K}_k(A, v)$, y una matriz de Hessenberg superior $H_k \in \mathbb{C}^{k \times k}$ tal que:
+% \[
+% AQ_k = Q_k H_k + h_{k+1,k} q_{k+1} e_k^*,
+% \]
+% o equivalentemente, en forma compacta:
+% \[
+% AQ_k = Q_{k+1} \tilde{H}_k,
+% \]
+% donde $Q_{k+1} = [Q_k, q_{k+1}]$ y $\tilde{H}_k \in \mathbb{C}^{(k+1) \times k}$ es una matriz de Hessenberg superior con entradas $h_{ij}$ para $i \leq j+1$.
+% \end{theorem}
 
-\begin{proof}
-Del Teorema~\ref{thm:gmres_optimal}, $r_k = p(A)r_0$ para algún polinomio $p$ con $p(0) = 1$. Usando la diagonalización:
-\[
-p(A) = X p(\Lambda) X^{-1},
-\]
-donde $p(\Lambda) = \text{diag}(p(\lambda_1), \ldots, p(\lambda_n))$. Entonces:
-\[
-\|r_k\|_2 = \|p(A)r_0\|_2 \leq \|X\|_2 \|p(\Lambda)\|_2 \|X^{-1}\|_2 \|r_0\|_2 = \kappa(X) \max_i |p(\lambda_i)| \|r_0\|_2.
-\]
-\end{proof}
+% \begin{proof}
+% El proceso es constructivo. Iniciando con $q_1 = v$, para $j = 1, \ldots, k$:
+% \begin{enumerate}
+% \item Calcular $w = Aq_j$.
+% \item Ortogonalizar contra $q_1, \ldots, q_j$: para $i = 1, \ldots, j$,
+% \[
+% h_{ij} = (w, q_i), \quad w \leftarrow w - h_{ij} q_i.
+% \]
+% \item Normalizar: $h_{j+1,j} = \|w\|_2$, $q_{j+1} = w / h_{j+1,j}$.
+% \end{enumerate}
+% Por construcción, $\{q_1, \ldots, q_k\}$ es ortonormal y genera $\mathcal{K}_k(A, v)$. La relación $AQ_k = Q_{k+1}\tilde{H}_k$ se verifica directamente de la construcción.
+% \end{proof}
 
-\begin{corollary}[Convergencia para matrices normales]
-Si $A$ es normal ($A^*A = AA^*$), entonces $X$ es unitaria y $\kappa(X) = 1$. En este caso:
-\[
-\frac{\|r_k\|_2}{\|r_0\|_2} \leq \min_{\substack{p \in \mathcal{P}_k \\ p(0) = 1}} \max_{\lambda \in \sigma(A)} |p(\lambda)|,
-\]
-donde $\sigma(A)$ denota el espectro de $A$.
-\end{corollary}
+% \begin{theorem}[Formulación reducida de GMRES]
+% Con la descomposición de Arnoldi $AQ_k = Q_{k+1}\tilde{H}_k$ y $r_0 = \beta q_1$ donde $\beta = \|r_0\|_2$, el problema de minimización de GMRES:
+% \[
+% \min_{z \in \mathcal{K}_k(A, r_0)} \|r_0 - Az\|_2
+% \]
+% es equivalente al problema de cuadrados mínimos de dimensión reducida:
+% \[
+% \min_{y \in \mathbb{C}^k} \|\beta e_1 - \tilde{H}_k y\|_2,
+% \]
+% donde $e_1 \in \mathbb{C}^{k+1}$ es el primer vector canónico. La solución está relacionada por $z_k = Q_k y_k$.
+% \end{theorem}
 
-\begin{theorem}[Convergencia para autovalores agrupados]
-Si los autovalores de $A$ están agrupados en $m$ clusters distintos con $m \ll n$, entonces GMRES converge en a lo más $m$ iteraciones (ignorando errores de redondeo).
-\end{theorem}
+% \begin{proof}
+% Como $z \in \mathcal{K}_k(A, r_0)$, podemos escribir $z = Q_k y$ para algún $y \in \mathbb{C}^k$. Entonces:
+% \[
+% \|r_0 - Az\|_2 = \|\beta q_1 - AQ_k y\|_2 = \|\beta q_1 - Q_{k+1}\tilde{H}_k y\|_2.
+% \]
+% Multiplicando por $Q_{k+1}^*$ (que preserva la norma pues $Q_{k+1}$ tiene columnas ortonormales):
+% \[
+% \|r_0 - Az\|_2 = \|Q_{k+1}^*(\beta q_1 - Q_{k+1}\tilde{H}_k y)\|_2 = \|\beta e_1 - \tilde{H}_k y\|_2,
+% \]
+% donde usamos que $Q_{k+1}^* q_1 = e_1$. Este problema de tamaño $(k+1) \times k$ se resuelve eficientemente mediante factorización QR de $\tilde{H}_k$.
+% \end{proof}
 
-\begin{remark}[Interpretación geométrica]
-La cota del Teorema~\ref{thm:gmres_diag} muestra que GMRES converge rápido cuando:
-\begin{itemize}
-\item Los autovalores están bien agrupados (permite polinomios que son pequeños en el espectro).
-\item La matriz está bien condicionada espectralmente ($\kappa(X) \approx 1$).
-\item Los autovalores están alejados del origen (facilita la construcción de polinomios pequeños).
-\end{itemize}
-\end{remark}
+
+% El costo computacional de GMRES después de $k$ iteraciones es:
+% \begin{itemize}
+% \item \textbf{Productos matriz-vector}: $k$ multiplicaciones $Aq_j$, cada una costando $O(n^2)$ para matrices densas u $O(n)$ para matrices dispersas.
+% \item \textbf{Ortogonalizaciones}: $O(k^2n)$ operaciones para mantener ortogonalidad con todos los vectores previos.
+% \item \textbf{Problema de cuadrados mínimos}: $O(k^2)$ para resolver $\min \|\beta e_1 - \tilde{H}_k y\|_2$.
+% \item \textbf{Memoria}: Almacenar $Q_k$ requiere $O(kn)$ memoria.
+% \end{itemize}
+
+% Para problemas grandes, el crecimiento en memoria y costo de ortogonalización motiva el uso de \textbf{GMRES reiniciado} (GMRES(m)), que reinicia el método cada $m$ iteraciones, sacrificando optimalidad teórica por eficiencia práctica.
+
+% \subsubsection{Análisis de convergencia}
+
+% \begin{theorem}[Cota de convergencia óptima]\label{thm:gmres_optimal}
+% Después de $k$ iteraciones de GMRES, el residuo satisface:
+% \[
+% \frac{\|r_k\|_2}{\|r_0\|_2} = \min_{\substack{p \in \mathcal{P}_k \\ p(0) = 1}} \|p(A)r_0\|_2,
+% \]
+% donde $\mathcal{P}_k$ denota el conjunto de polinomios de grado a lo más $k$.
+% \end{theorem}
+
+% \begin{proof}
+% De $x_k = x_0 + z_k$ con $z_k \in \mathcal{K}_k(A, r_0)$, tenemos:
+% \[
+% r_k = r_0 - Az_k.
+% \]
+% Como $z_k \in \mathcal{K}_k(A, r_0) = \text{span}\{r_0, Ar_0, \ldots, A^{k-1}r_0\}$, existe un polinomio $q$ de grado $\leq k-1$ tal que $z_k = q(A)r_0$. Entonces:
+% \[
+% r_k = r_0 - Aq(A)r_0 = (I - Aq(A))r_0 = p(A)r_0,
+% \]
+% donde $p(z) = 1 - zq(z)$ es un polinomio de grado $\leq k$ con $p(0) = 1$. La minimización en GMRES garantiza que elegimos el mejor polinomio posible.
+% \end{proof}
+
+% \begin{theorem}[Cota espectral para matrices diagonalizables]\label{thm:gmres_diag}
+% Si $A$ es diagonalizable, $A = X\Lambda X^{-1}$ con autovalores $\lambda_1, \ldots, \lambda_n$, entonces:
+% \[
+% \frac{\|r_k\|_2}{\|r_0\|_2} \leq \kappa(X) \min_{\substack{p \in \mathcal{P}_k \\ p(0) = 1}} \max_{i=1,\ldots,n} |p(\lambda_i)|,
+% \]
+% donde $\kappa(X) = \|X\|_2 \|X^{-1}\|_2$ es el número de condición de la matriz de autovectores.
+% \end{theorem}
+
+% \begin{proof}
+% Del Teorema~\ref{thm:gmres_optimal}, $r_k = p(A)r_0$ para algún polinomio $p$ con $p(0) = 1$. Usando la diagonalización:
+% \[
+% p(A) = X p(\Lambda) X^{-1},
+% \]
+% donde $p(\Lambda) = \text{diag}(p(\lambda_1), \ldots, p(\lambda_n))$. Entonces:
+% \[
+% \|r_k\|_2 = \|p(A)r_0\|_2 \leq \|X\|_2 \|p(\Lambda)\|_2 \|X^{-1}\|_2 \|r_0\|_2 = \kappa(X) \max_i |p(\lambda_i)| \|r_0\|_2.
+% \]
+% \end{proof}
+
+% \begin{corollary}[Convergencia para matrices normales]
+% Si $A$ es normal ($A^*A = AA^*$), entonces $X$ es unitaria y $\kappa(X) = 1$. En este caso:
+% \[
+% \frac{\|r_k\|_2}{\|r_0\|_2} \leq \min_{\substack{p \in \mathcal{P}_k \\ p(0) = 1}} \max_{\lambda \in \sigma(A)} |p(\lambda)|,
+% \]
+% donde $\sigma(A)$ denota el espectro de $A$.
+% \end{corollary}
+
+% \begin{theorem}[Convergencia para autovalores agrupados]
+% Si los autovalores de $A$ están agrupados en $m$ clusters distintos con $m \ll n$, entonces GMRES converge en a lo más $m$ iteraciones (ignorando errores de redondeo).
+% \end{theorem}
+
+% \begin{remark}[Interpretación geométrica]
+% La cota del Teorema~\ref{thm:gmres_diag} muestra que GMRES converge rápido cuando:
+% \begin{itemize}
+% \item Los autovalores están bien agrupados (permite polinomios que son pequeños en el espectro).
+% \item La matriz está bien condicionada espectralmente ($\kappa(X) \approx 1$).
+% \item Los autovalores están alejados del origen (facilita la construcción de polinomios pequeños).
+% \end{itemize}
+% \end{remark}
 
 
 \chapter{Interpolación}

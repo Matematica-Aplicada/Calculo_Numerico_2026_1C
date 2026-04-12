@@ -19,12 +19,23 @@ compile_xelatex() {
     local base="$(basename "$file" .tex)"
     yellow "  [xelatex] $file"
     cd "$dir"
-    if latexmk -xelatex -interaction=nonstopmode -halt-on-error "$base.tex" \
-            > "$base.compile.log" 2>&1; then
-        green "    OK → $base.pdf"
+    if command -v xelatex >/dev/null 2>&1; then
+        if latexmk -xelatex -interaction=nonstopmode -halt-on-error "$base.tex" \
+                > "$base.compile.log" 2>&1; then
+            green "    OK → $base.pdf"
+        else
+            red "    FAILED — ver $dir/$base.compile.log"
+            ERRORS=$((ERRORS + 1))
+        fi
     else
-        red "    FAILED — ver $dir/$base.compile.log"
-        ERRORS=$((ERRORS + 1))
+        yellow "    xelatex no está instalado; uso pdflatex"
+        if latexmk -pdf -interaction=nonstopmode -halt-on-error "$base.tex" \
+                > "$base.compile.log" 2>&1; then
+            green "    OK → $base.pdf"
+        else
+            red "    FAILED — ver $dir/$base.compile.log"
+            ERRORS=$((ERRORS + 1))
+        fi
     fi
     cd "$ROOT"
 }
@@ -56,11 +67,11 @@ clean_dir() {
 
 # ── opcional: limpiar primero ──────────────────────────────────────────────────
 
-if [[ "$1" == "--clean" ]]; then
+if [ "$1" = "--clean" ]; then
     echo "=== Limpiando auxiliares ==="
     clean_dir "$ROOT"
-    for dir in guias_tp guias_labo parcial_modelo; do
-        [[ -d "$ROOT/$dir" ]] && clean_dir "$ROOT/$dir"
+    for dir in guias_tp guias_labo parcial_modelo parciales_modelo; do
+        [ -d "$ROOT/$dir" ] && clean_dir "$ROOT/$dir"
     done
     echo ""
 fi
@@ -97,9 +108,17 @@ if ls "$ROOT"/parcial_modelo/*.tex 2>/dev/null | grep -q .; then
     echo ""
 fi
 
+if ls "$ROOT"/parciales_modelo/*.tex 2>/dev/null | grep -q .; then
+    echo "=== Parciales modelo ==="
+    for f in "$ROOT"/parciales_modelo/*.tex; do
+        compile_pdflatex "$f"
+    done
+    echo ""
+fi
+
 # ── resumen ──────────────────────────────────────────────────────────────────
 
-if [[ $ERRORS -eq 0 ]]; then
+if [ "$ERRORS" -eq 0 ]; then
     green "=== Todo compiló correctamente ==="
 else
     red "=== $ERRORS archivo(s) fallaron. Revisá los .compile.log ==="
