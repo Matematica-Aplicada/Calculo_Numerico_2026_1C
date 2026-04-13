@@ -127,46 +127,50 @@ deduzca la forma equivalente
 \end{enumerate}
 \end{exercise}
 
+\begin{exercise}Ejercicio correspondiente a la guía 3 (TBD)\end{exercise}
+
+\begin{exercise}Ejercicio correspondiente a la guía 3 (TBD)\end{exercise}
+
 %%% Ejercicio 3 — Guía 3: cuadratura + FFT %%%
 
-\begin{exercise}[Beam gaussiano, regla de trapecios y FFT]
-Considere la integral tipo convolución que modela un \emph{beam gaussiano}:
-\[
-I(x)=\int_{-L}^{L} f(\xi)\, \exp\!\left(-\frac{(x-\xi)^2}{\sigma^2}\right)\, d\xi.
-\]
-Suponga que $f$ se extiende a $\mathbb{R}$ y que $|f(\xi)|\le M$ para todo $\xi$. Para $L$ suficientemente grande, la cola gaussiana fuera de $[-L,L]$ es despreciable, por lo que $I(x)$ se aproxima por una convolución truncada con error exponencialmente pequeño en $L$.
+% \begin{exercise}[Beam gaussiano, regla de trapecios y FFT]
+% Considere la integral tipo convolución que modela un \emph{beam gaussiano}:
+% \[
+% I(x)=\int_{-L}^{L} f(\xi)\, \exp\!\left(-\frac{(x-\xi)^2}{\sigma^2}\right)\, d\xi.
+% \]
+% Suponga que $f$ se extiende a $\mathbb{R}$ y que $|f(\xi)|\le M$ para todo $\xi$. Para $L$ suficientemente grande, la cola gaussiana fuera de $[-L,L]$ es despreciable, por lo que $I(x)$ se aproxima por una convolución truncada con error exponencialmente pequeño en $L$.
 
-Sea una grilla uniforme $\xi_j=-L+jh$ con $h=\frac{2L}{N}$, $j=0,\ldots,N$, y sea $x_i=-L+ih$, $i=0,\ldots,N$.
-\begin{enumerate}[(a)]
-\item Muestre primero que, para $|x|\le L$, el error de truncar la convolución en $[-L,L]$ satisface una cota del tipo
-\[
-\left|\int_{\mathbb{R}} f(\xi)e^{-\frac{(x-\xi)^2}{\sigma^2}}\,d\xi-\int_{-L}^{L} f(\xi)e^{-\frac{(x-\xi)^2}{\sigma^2}}\,d\xi\right|
-\le C\,e^{-L^2/\sigma^2},
-\]
-con $C$ independiente de $L$. Luego discretice $I(x_i)$ con la regla de trapecios compuesta. Definiendo $g_k = \exp\!\bigl(-{(kh)^2}/{\sigma^2}\bigr)$, muestre que la suma resultante se puede escribir como una convolución discreta lineal
-\[
-I(x_i) \approx h \sum_{j=0}^{N} f_j \, g_{i-j},
-\]
-salvo correcciones en los extremos del trapecio.
+% Sea una grilla uniforme $\xi_j=-L+jh$ con $h=\frac{2L}{N}$, $j=0,\ldots,N$, y sea $x_i=-L+ih$, $i=0,\ldots,N$.
+% \begin{enumerate}[(a)]
+% \item Muestre primero que, para $|x|\le L$, el error de truncar la convolución en $[-L,L]$ satisface una cota del tipo
+% \[
+% \left|\int_{\mathbb{R}} f(\xi)e^{-\frac{(x-\xi)^2}{\sigma^2}}\,d\xi-\int_{-L}^{L} f(\xi)e^{-\frac{(x-\xi)^2}{\sigma^2}}\,d\xi\right|
+% \le C\,e^{-L^2/\sigma^2},
+% \]
+% con $C$ independiente de $L$. Luego discretice $I(x_i)$ con la regla de trapecios compuesta. Definiendo $g_k = \exp\!\bigl(-{(kh)^2}/{\sigma^2}\bigr)$, muestre que la suma resultante se puede escribir como una convolución discreta lineal
+% \[
+% I(x_i) \approx h \sum_{j=0}^{N} f_j \, g_{i-j},
+% \]
+% salvo correcciones en los extremos del trapecio.
 
-\item Describa cómo calcular los $N+1$ valores $I(x_0), \ldots, I(x_N)$ simultáneamente usando FFT: explique cómo extender las secuencias con ceros (\emph{zero-padding}) para que la convolución circular reproduzca la convolución lineal, describa los tres pasos del algoritmo (FFT directa, producto punto a punto, FFT inversa) y determine la complejidad total.
-\end{enumerate}
-\end{exercise}
+% \item Describa cómo calcular los $N+1$ valores $I(x_0), \ldots, I(x_N)$ simultáneamente usando FFT: explique cómo extender las secuencias con ceros (\emph{zero-padding}) para que la convolución circular reproduzca la convolución lineal, describa los tres pasos del algoritmo (FFT directa, producto punto a punto, FFT inversa) y determine la complejidad total.
+% \end{enumerate}
+% \end{exercise}
 
-%%% Ejercicio 4 — Guía 3: interpolación %%%
+% %%% Ejercicio 4 — Guía 3: interpolación %%%
 
-\begin{exercise}[Interpolación inteligente: $\sqrt{x}\sin(x)$]
-Se desea evaluar $f(x) = \sqrt{x}\,\sin(x)$ en puntos arbitrarios del intervalo $[0, \pi]$ usando interpolación polinomial en $n+1$ nodos equiespaciados $x_k = \frac{k\pi}{n}$, $k=0,\ldots,n$. Se consideran dos estrategias: \textbf{A)} interpolar directamente $f(x)$ con un polinomio $p_n$ de grado $\leq n$; \textbf{B)} interpolar solamente $g(x) = \sin(x)$ con un polinomio $q_n$ de grado $\leq n$ y luego evaluar $\sqrt{x}\,q_n(x)$. El teorema del error de interpolación establece que si $\varphi \in C^{n+1}([a,b])$, entonces para cada $x$ existe $\xi$ tal que $\varphi(x) - p_n(x) = \frac{\varphi^{(n+1)}(\xi)}{(n+1)!}\prod_{k=0}^{n}(x - x_k)$. Para nodos equiespaciados con paso $h$ se admite la cota estándar $\prod_{k=0}^{n}|x-x_k| \leq \frac{n!\, h^{n+1}}{4}$.
+% \begin{exercise}[Interpolación inteligente: $\sqrt{x}\sin(x)$]
+% Se desea evaluar $f(x) = \sqrt{x}\,\sin(x)$ en puntos arbitrarios del intervalo $[0, \pi]$ usando interpolación polinomial en $n+1$ nodos equiespaciados $x_k = \frac{k\pi}{n}$, $k=0,\ldots,n$. Se consideran dos estrategias: \textbf{A)} interpolar directamente $f(x)$ con un polinomio $p_n$ de grado $\leq n$; \textbf{B)} interpolar solamente $g(x) = \sin(x)$ con un polinomio $q_n$ de grado $\leq n$ y luego evaluar $\sqrt{x}\,q_n(x)$. El teorema del error de interpolación establece que si $\varphi \in C^{n+1}([a,b])$, entonces para cada $x$ existe $\xi$ tal que $\varphi(x) - p_n(x) = \frac{\varphi^{(n+1)}(\xi)}{(n+1)!}\prod_{k=0}^{n}(x - x_k)$. Para nodos equiespaciados con paso $h$ se admite la cota estándar $\prod_{k=0}^{n}|x-x_k| \leq \frac{n!\, h^{n+1}}{4}$.
 
-\begin{enumerate}[(a)]
-\item Calcule $f''(x)$ y observe que contiene un término proporcional a $x^{-3/2}$. Deduzca que $\|f^{(n+1)}\|_\infty$ en $[0, \pi]$ diverge cuando $x \to 0^+$, y concluya que el teorema del error no se puede aplicar a la estrategia~A.
+% \begin{enumerate}[(a)]
+% \item Calcule $f''(x)$ y observe que contiene un término proporcional a $x^{-3/2}$. Deduzca que $\|f^{(n+1)}\|_\infty$ en $[0, \pi]$ diverge cuando $x \to 0^+$, y concluya que el teorema del error no se puede aplicar a la estrategia~A.
 
-\item Usando que $\|g^{(n+1)}\|_\infty = 1$ para todo $n$, aplique el teorema del error a la estrategia~B para demostrar que
-\[
-\|f - \sqrt{\cdot}\, q_n\|_\infty \leq \frac{\sqrt{\pi}\,\pi^{n+1}}{4\,(n+1)\,n^{n+1}}.
-\]
-Concluya que el error de la estrategia~B decrece más rápido que cualquier potencia de~$1/n$.
-\end{enumerate}
-\end{exercise}
+% \item Usando que $\|g^{(n+1)}\|_\infty = 1$ para todo $n$, aplique el teorema del error a la estrategia~B para demostrar que
+% \[
+% \|f - \sqrt{\cdot}\, q_n\|_\infty \leq \frac{\sqrt{\pi}\,\pi^{n+1}}{4\,(n+1)\,n^{n+1}}.
+% \]
+% Concluya que el error de la estrategia~B decrece más rápido que cualquier potencia de~$1/n$.
+% \end{enumerate}
+% \end{exercise}
 
 \end{document}

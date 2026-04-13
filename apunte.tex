@@ -1621,6 +1621,8 @@ Pero también $Av_j = 0$ en este caso, pues $v_j \in \ker(A)$ (ya que $A^*Av_j =
 Por lo tanto, $A = U\Sigma V^*$, lo que completa la demostración.
 \end{proof}
 
+\subsection{Pseudoinversa de Moore-Penrose}
+
 \begin{definition}[Pseudoinversa de Moore--Penrose]
 Sea $A\in\mathbb{C}^{m\times n}$ y sea
 \[
@@ -1686,12 +1688,42 @@ A^*A=V\Sigma^2V^*\quad\Rightarrow\quad (A^*A)^{-1}A^*=V\Sigma^{-1}U^*=A^+.
 \end{proof}
 
 
+\begin{lemma}[Propiedades elementales de la pseudoinversa]
+Sea $A\in\mathbb{C}^{m\times n}$ y sea $A^+$ su pseudoinversa de Moore--Penrose. Entonces:
+\begin{enumerate}[(i)]
+\item $AA^+A=A$.
+\item $A^+AA^+=A^+$.
+\item $(AA^+)^*=AA^+$.
+\item $(A^+A)^*=A^+A$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Sea $A=U\Sigma V^*$ una SVD de $A$ con $\Sigma=\operatorname{diag}(\sigma_1,\ldots,\sigma_r,0,\ldots,0)$, de modo que $A^+=V\Sigma^+U^*$.
+Observemos primero que $\Sigma^+$ es la matriz diagonal con entradas $1/\sigma_i$ para $i\le r$ y $0$ en el resto, de modo que
+\[
+\Sigma\Sigma^+=\Sigma^+\Sigma=\operatorname{diag}(\underbrace{1,\ldots,1}_{r},0,\ldots,0).
+\]
+En particular, $\Sigma\Sigma^+$ y $\Sigma^+\Sigma$ son matrices diagonales reales, por lo tanto $(\Sigma\Sigma^+)^*=\Sigma\Sigma^+$ y $(\Sigma^+\Sigma)^*=\Sigma^+\Sigma$. Además,
+\[
+\Sigma\Sigma^+\Sigma=\Sigma,\qquad \Sigma^+\Sigma\Sigma^+=\Sigma^+.
+\]
+Con esto, las cuatro propiedades se verifican directamente:
+\begin{enumerate}[(i)]
+\item $AA^+A=(U\Sigma V^*)(V\Sigma^+U^*)(U\Sigma V^*)=U(\Sigma\Sigma^+\Sigma)V^*=U\Sigma V^*=A$.
+\item $A^+AA^+=(V\Sigma^+U^*)(U\Sigma V^*)(V\Sigma^+U^*)=V(\Sigma^+\Sigma\Sigma^+)U^*=V\Sigma^+U^*=A^+$.
+\item $(AA^+)^*=(U\Sigma\Sigma^+U^*)^*=U(\Sigma\Sigma^+)^*U^*=U\Sigma\Sigma^+U^*=AA^+$.
+\item $(A^+A)^*=(V\Sigma^+\Sigma V^*)^*=V(\Sigma^+\Sigma)^*V^*=V\Sigma^+\Sigma V^*=A^+A$.
+\end{enumerate}
+\end{proof}
+
+
 
 
 \begin{lemma}[Propiedades de la matriz \emph{hat}]
-Sea $A\in\mathbb{C}^{m\times n}$ con $m\ge n$ y $\operatorname{rank}(A)=n$, y defina
+Sea $A\in\mathbb{C}^{m\times n}$ y defina
 \[
-H:=AA^+=A(A^*A)^{-1}A^*\in\mathbb{C}^{m\times m}.
+H:=AA^+\in\mathbb{C}^{m\times m}.
 \]
 Entonces:
 \begin{enumerate}[(i)]
@@ -1706,41 +1738,90 @@ Entonces:
 \end{lemma}
 
 \begin{proof}
-De la definición, usando $(A^*A)^{-1}$ hermítica, se obtiene $H^*=H$. Además,
+Por el lema anterior,
 \[
-H^2=A(A^*A)^{-1}A^*A(A^*A)^{-1}A^*=A(A^*A)^{-1}A^*=H.
+H^*=(AA^+)^*=AA^+=H,
 \]
-Así, $H$ es proyector hermítico, luego proyección ortogonal sobre su imagen. Como $H=AA^+$, se tiene $\operatorname{Im}(H)=\operatorname{Col}(A)$. También,
+y también,
+\[
+H^2=(AA^+)(AA^+)=(AA^+A)A^+=AA^+=H,
+\]
+porque $AA^+A=A$.
+Así, $H$ es proyector hermítico, luego por la Proposición~\ref{prop:proyector_hermitico} es la proyección ortogonal sobre su imagen. Como $H=AA^+$, se tiene $\operatorname{Im}(H)=\operatorname{Col}(A)$: en efecto, $\operatorname{Im}(AA^+)\subseteq\operatorname{Col}(A)$ porque $AA^+y$ es combinación lineal de columnas de $A$, y recíprocamente si $z\in\operatorname{Col}(A)$, $z=Ax$ para algún $x$, entonces $z=AA^+Ax\in\operatorname{Im}(AA^+)$ (usando $AA^+A=A$). También,
 \[
 \hat{d}=A\hat{x}=A(A^+d)=Hd.
 \]
 Finalmente, para el vector canónico $e_i$,
 \[
-h_{ii}=e_i^*He_i=(He_i)^*He_i=\|He_i\|_2^2\ge0,
+h_{ii}=\langle e_i,He_i\rangle.
 \]
-y como $H$ es proyector ortogonal, $\|H\|_2=1$, de modo que
+Como $H$ es proyección ortogonal, $e_i-He_i\perp He_i$, y por lo tanto
 \[
-h_{ii}=\|He_i\|_2^2\le \|H\|_2^2\|e_i\|_2^2\le 1.
+h_{ii}=\langle He_i+(e_i-He_i),He_i\rangle=\langle He_i,He_i\rangle=\|He_i\|_2^2\ge0.
+\]
+Además, aplicando el Teorema~\ref{thm:pitagoras_appendix} a la descomposición ortogonal
+\(e_i=He_i+(e_i-He_i)\),
+\[
+\|e_i\|_2^2=\|He_i\|_2^2+\|e_i-He_i\|_2^2\ge \|He_i\|_2^2.
+\]
+Como $\|e_i\|_2=1$, concluimos
+\[
+h_{ii}=\|He_i\|_2^2\le 1.
 \]
 \end{proof}
 
-
-La descomposición en valores singulares no es solo una herramienta teórica, sino que tiene profundas implicaciones prácticas en la resolución de problemas numéricos. A continuación, exploramos su relación con el condicionamiento y la regularización.
 
 \subsection{Condicionamiento y problemas mal condicionados}
 
 El condicionamiento mide la sensibilidad de la solución de un sistema lineal $Ax=b$ ante perturbaciones. Para cuantificar esto rigurosamente, nos restringiremos a la \textbf{norma 2} (o norma espectral), que está íntimamente ligada a la SVD.
 
-\begin{definition}[Norma 2 y Número de Condición]
-La \textbf{norma 2} de un vector $x$ es $\|x\|_2 = \sqrt{x^*x}$. La norma matricial inducida (o norma espectral) se define como:
+\begin{definition}[Norma 2 y Número de Condición]\label{def_norma_A}
+Sea $A\in\mathbb{C}^{m\times n}$. La \textbf{norma 2} de un vector $x\in\mathbb{C}^n$ es $\|x\|_2 = \sqrt{x^*x}$. La norma matricial inducida (o norma espectral) se define como:
 \[
-\|A\|_2 = \max_{x \neq 0} \frac{\|Ax\|_2}{\|x\|_2}.
+\|A\|_2 = \sup_{x \in\mathbb{C}^n,\, x \neq 0} \frac{\|Ax\|_2}{\|x\|_2}.
 \]
-El \textbf{número de condición espectral} de una matriz inversible $A$ se define como:
+El \textbf{número de condición espectral} de una matriz inversible $A\in\mathbb{C}^{n\times n}$ se define como:
 \[
 \kappa_2(A) = \|A\|_2 \|A^{-1}\|_2.
 \]
 \end{definition}
+
+\subsection{Propiedades de la norma de matrices}
+
+\begin{definition}[Radio espectral]
+El \textbf{radio espectral} de una matriz $A \in \mathbb{C}^{n \times n}$ es:
+\[
+\rho(A) = \max_{1 \leq i \leq n} |\lambda_i(A)|,
+\]
+donde $\lambda_1, \ldots, \lambda_n$ son los autovalores de $A$.
+\end{definition}
+
+\begin{theorem}[Relación entre radio espectral y norma]\label{thm:radio_espectral_norma}
+Para toda norma matricial inducida $\|\cdot\|$ y toda matriz $A \in \mathbb{C}^{n \times n}$:
+\[
+\rho(A) \leq \|A\|.
+\]
+\end{theorem}
+
+\begin{proof}
+Sea $\lambda$ un autovalor de $A$ con autovector $v$, es decir, $Av = \lambda v$ con $v \neq 0$. Entonces:
+\[
+|\lambda| \|v\| = \|\lambda v\| = \|Av\| \leq \|A\| \|v\|.
+\]
+Dividiendo por $\|v\| > 0$: $|\lambda| \leq \|A\|$. Como esto vale para todo autovalor, $\rho(A) \leq \|A\|$.
+\end{proof}
+
+\begin{lemma}[Acotación de una media ponderada]\label{lem:suma_ponderada_max}
+Sean $\lambda_1,\ldots,\lambda_n\in\mathbb{R}$, y sean $\lambda_{\min}:=\min_i\lambda_i$, $\lambda_{\max}:=\max_i \lambda_i$. Si $\alpha_1,\ldots,\alpha_n\ge 0$ y $\sum_{i=1}^n \alpha_i=1$, entonces
+\[
+\lambda_{\min}\le\sum_{i=1}^n \alpha_i\lambda_i\le \lambda_{\max}.
+\]
+Ambas cotas se alcanzan eligiendo $\alpha_k=1$ para el índice $k$ que realiza el mínimo o el máximo respectivamente.
+\end{lemma}
+
+\begin{proof}
+Como $\lambda_{\min}\le\lambda_i\le\lambda_{\max}$ para todo $i$, multiplicando por $\alpha_i\ge 0$ y sumando sobre $i$ se obtiene la doble desigualdad. La igualdad en cada extremo es inmediata.
+\end{proof}
 
 \begin{theorem}
 La norma espectral de $A$ es igual a su mayor valor singular: $\|A\|_2 = \sigma_1(A)$.
@@ -1754,13 +1835,45 @@ Hacemos el cambio de variable $y = V^* x$. Como $V$ es unitaria, $\|y\|_2 = \|x\
 \[
 \frac{\|\Sigma y\|_2^2}{\|y\|_2^2} = \frac{\sum_{i=1}^n \sigma_i^2 |y_i|^2}{\sum_{i=1}^n |y_i|^2}.
 \]
-Como $\sigma_1 \geq \sigma_2 \geq \cdots \geq 0$, esta suma ponderada se maximiza cuando todo el peso está en $\sigma_1$ (es decir, $y = e_1$, lo que corresponde a $x = v_1$). El valor máximo es $\sigma_1^2$. Tomando raíz cuadrada, obtenemos $\|A\|_2 = \sigma_1$.
+Como $y\neq 0$, definimos
+\[
+\alpha_i:=\frac{|y_i|^2}{\sum_{j=1}^n |y_j|^2},\qquad i=1,\dots,n.
+\]
+Entonces $\alpha_i\ge 0$ y $\sum_{i=1}^n \alpha_i=1$. Aplicando el lema anterior con $\lambda_i=\sigma_i^2$ y usando que $\sigma_1\ge\sigma_2\ge\cdots\ge 0$, obtenemos
+\[
+\frac{\|\Sigma y\|_2^2}{\|y\|_2^2}=\sum_{i=1}^n \alpha_i\sigma_i^2
+\le \sum_{i=1}^n \alpha_i\sigma_1^2=\sigma_1^2.
+\]
+Así, para todo $y\neq 0$, se cumple $\frac{\|\Sigma y\|_2^2}{\|y\|_2^2}\le \sigma_1^2$. Además, tomando $y=e_1$ se obtiene la igualdad:
+\[
+\frac{\|\Sigma e_1\|_2^2}{\|e_1\|_2^2}=\sigma_1^2.
+\]
+Luego el máximo es $\sigma_1^2$. Tomando raíz cuadrada, obtenemos $\|A\|_2 = \sigma_1$.
 \end{proof}
 
-Dado que los valores singulares de $A^{-1}$ son $1/\sigma_n \geq \cdots \geq 1/\sigma_1$, tenemos que $\|A^{-1}\|_2 = 1/\sigma_n$. Por lo tanto:
+Para calcular $\|A^{-1}\|_2$, usemos directamente la SVD. Si
+\[
+A=U\Sigma V^*,\qquad \Sigma=\operatorname{diag}(\sigma_1,\ldots,\sigma_n),\ \sigma_n>0,
+\]
+entonces
+\[
+A^{-1}=(U\Sigma V^*)^{-1}=V\Sigma^{-1}U^*=V\operatorname{diag}(1/\sigma_1,\ldots,1/\sigma_n)U^*.
+\]
+Así, los valores singulares de $A^{-1}$ son $1/\sigma_1,\ldots,1/\sigma_n$, y ordenados quedan
+$1/\sigma_n\ge\cdots\ge 1/\sigma_1$. Aplicando el teorema anterior,
+$\|A^{-1}\|_2=1/\sigma_n$. Por lo tanto:
 \[
 \kappa_2(A) = \frac{\sigma_1}{\sigma_n}.
 \]
+
+\begin{remark}
+El supremo en la definición \ref{def_norma_A} se toma sobre vectores \emph{complejos}, lo cual es natural ya que $A\in\mathbb{C}^{m\times n}$. Para matrices \emph{reales} $A\in\mathbb{R}^{m\times n}$, el supremo sobre $\mathbb{C}^n$ coincide con el supremo sobre $\mathbb{R}^n$: dado $x=u+iv\in\mathbb{C}^n$,
+\[
+\|Ax\|_2^2=\|Au\|_2^2+\|Av\|_2^2
+\le \sigma_1^2(\|u\|_2^2+\|v\|_2^2)=\sigma_1^2\|x\|_2^2,
+\]
+y la cota se alcanza en el vector singular derecho real $v_1$. En el caso complejo esta coincidencia no se da en general (los vectores singulares de una matriz compleja son complejos), de modo que restringir el supremo a $\mathbb{R}^n$ podría dar un valor estrictamente menor.
+\end{remark}
 
 \begin{theorem}[Cota de error relativo para $Ax=b$ en norma 2]
 Sea $A\in\mathbb{C}^{n\times n}$ inversible, y sea $x=A^{-1}b$ con $b\neq 0$. Para una perturbación $\delta b\in\mathbb{C}^n$, defina
@@ -1784,7 +1897,7 @@ Como $\delta x=A^{-1}\delta b$, se tiene
 \[
 \delta x=\sum_{i=1}^n \frac{u_i^*\delta b}{\sigma_i}v_i,
 \]
-y por ortonormalidad de $\{u_i\}$ y $\{v_i\}$:
+de modo que, aplicando Parseval (Teorema~\ref{thm:parseval_finito_appendix}, ecuación~\eqref{parseval_finito_appendix}) en las bases ortonormales $\{v_i\}$ y $\{u_i\}$,
 \[
 \|\delta x\|_2^2
 =\sum_{i=1}^n\frac{|u_i^*\delta b|^2}{\sigma_i^2}
@@ -1800,7 +1913,7 @@ Además, de $b=Ax=U\Sigma V^*x$ se obtiene
 \[
 b=\sum_{i=1}^n \sigma_i(v_i^*x)u_i,
 \]
-y por lo tanto
+y nuevamente por Parseval (Teorema~\ref{thm:parseval_finito_appendix}),
 \[
 \|b\|_2^2
 =\sum_{i=1}^n\sigma_i^2|v_i^*x|^2
@@ -1935,46 +2048,23 @@ A - A_k = \sum_{i=k+1}^p \sigma_i u_i v_i^*.
 \]
 La norma 2 de esta matriz es su mayor valor singular, que es $\sigma_{k+1}$. Por lo tanto, $\|A - A_k\|_2 = \sigma_{k+1}$.
 
-Ahora debemos probar que para cualquier matriz $B$ con $\text{rango}(B) \leq k$, $\|A - B\|_2 \geq \sigma_{k+1}$.
+Ahora debemos probar que para cualquier $B$ con $\operatorname{rango}(B) \leq k$, se cumple $\|A - B\|_2 \geq \sigma_{k+1}$.
+La idea es construir un vector unitario $z$ que esté en $\ker(B)$ (para poder eliminar $B$) y en $W := \operatorname{span}\{v_1, \ldots, v_{k+1}\}$ (para acotar $\|Az\|_2$ por abajo).
 
-Como $\text{rango}(B) \leq k$, la dimensión del núcleo de $B$ satisface:
+Sea $W$ como arriba, con $\dim(W) = k+1$. Como $\dim(\ker B) = n-\operatorname{rango}(B) \geq n-k$ (Teorema~\ref{thm:rango_nulidad}), el Corolario~\ref{cor:dim_interseccion} de la Fórmula de Grassmann da:
 \[
-\dim(\ker(B)) = n - \text{rango}(B) \geq n - k.
+\dim(W \cap \ker B) \geq (k+1)+(n-k)-n = 1,
 \]
-Consideremos el subespacio $W \subset \mathbb{C}^n$ generado por los primeros $k+1$ vectores singulares derechos de $A$:
+así que existe $z \in W \cap \ker(B)$ unitario. Escribimos $z = \sum_{i=1}^{k+1} c_i v_i$ con $\sum|c_i|^2=1$. Entonces:
 \[
-W = \text{span}\{v_1, \ldots, v_{k+1}\}.
+\|A-B\|_2 \geq \|(A-B)z\|_2 = \|Az\|_2
+= \left\|\sum_{i=1}^{k+1} c_i\sigma_i u_i\right\|_2,
 \]
-Tenemos $\dim(W) = k+1$.
-
-La intersección de $W$ y $\ker(B)$ no puede ser trivial, ya que:
+y aplicando la cota inferior del Lema~\ref{lem:suma_ponderada_max} con $\lambda_i = \sigma_i^2$ (el mínimo de $\sigma_1^2,\ldots,\sigma_{k+1}^2$ es $\sigma_{k+1}^2$),
 \[
-\dim(W \cap \ker(B)) = \dim(W) + \dim(\ker(B)) - \dim(W + \ker(B))
+\|Az\|_2^2 = \sum_{i=1}^{k+1}|c_i|^2\sigma_i^2 \geq \sigma_{k+1}^2.
 \]
-\[
-\geq (k+1) + (n-k) - n = 1.
-\]
-Por lo tanto, existe un vector unitario $z \in W \cap \ker(B)$ (con $\|z\|_2 = 1$).
-
-Como $z \in \ker(B)$, tenemos $Bz = 0$, así que:
-\[
-\|A - B\|_2 \geq \|(A - B)z\|_2 = \|Az - Bz\|_2 = \|Az\|_2.
-\]
-Como $z \in W$, podemos escribir $z = \sum_{i=1}^{k+1} c_i v_i$ con $\sum |c_i|^2 = 1$. Entonces:
-\[
-Az = \sum_{i=1}^{k+1} c_i A v_i = \sum_{i=1}^{k+1} c_i \sigma_i u_i.
-\]
-Calculando la norma al cuadrado:
-\[
-\|Az\|_2^2 = \sum_{i=1}^{k+1} |c_i|^2 \sigma_i^2 \geq \sigma_{k+1}^2 \sum_{i=1}^{k+1} |c_i|^2 = \sigma_{k+1}^2.
-\]
-(Usamos que $\sigma_i \geq \sigma_{k+1}$ para $i \leq k+1$).
-
-Finalmente:
-\[
-\|A - B\|_2 \geq \|Az\|_2 \geq \sigma_{k+1}.
-\]
-Esto prueba que $A_k$ es óptima en norma 2.
+Luego $\|A-B\|_2 \geq \sigma_{k+1}$, y como $B$ era arbitrario, $A_k$ es óptima en norma 2.
 \end{proof}
 
 \subsection{Norma de Frobenius y propiedades de la traza}
@@ -2006,273 +2096,40 @@ Sean $A \in \mathbb{C}^{m \times n}$ y $B \in \mathbb{C}^{n \times m}$. Entonces
 (3) $\|UAV\|_F^2 = \operatorname{tr}(V^*A^*U^*UAV) = \operatorname{tr}(V^*A^*AV) = \operatorname{tr}(A^*AVV^*) = \operatorname{tr}(A^*A) = \|A\|_F^2$.
 \end{proof}
 
-\subsection{Radio espectral y propiedades espectrales}
-
-\begin{definition}[Radio espectral]
-El \textbf{radio espectral} de una matriz $A \in \mathbb{C}^{n \times n}$ es:
-\[
-\rho(A) = \max_{1 \leq i \leq n} |\lambda_i(A)|,
-\]
-donde $\lambda_1, \ldots, \lambda_n$ son los autovalores de $A$.
-\end{definition}
-
-\begin{theorem}[Relación entre radio espectral y norma]\label{thm:radio_espectral_norma}
-Para toda norma matricial inducida $\|\cdot\|$ y toda matriz $A \in \mathbb{C}^{n \times n}$:
-\[
-\rho(A) \leq \|A\|.
-\]
-\end{theorem}
-
-\begin{proof}
-Sea $\lambda$ un autovalor de $A$ con autovector $v$, es decir, $Av = \lambda v$ con $v \neq 0$. Entonces:
-\[
-|\lambda| \|v\| = \|\lambda v\| = \|Av\| \leq \|A\| \|v\|.
-\]
-Dividiendo por $\|v\| > 0$: $|\lambda| \leq \|A\|$. Como esto vale para todo autovalor, $\rho(A) \leq \|A\|$.
-\end{proof}
-
-\begin{corollary}[Norma 2 de la inversa para matrices normales]\label{cor:inv_normal}
-Si $A \in \mathbb{C}^{n \times n}$ es una matriz normal invertible con autovalores $\lambda_1, \ldots, \lambda_n$, entonces:
-\[
-\|A\|_2 = \max_{k} |\lambda_k|, \quad \|A^{-1}\|_2 = \frac{1}{\min_{k} |\lambda_k|}.
-\]
-\end{corollary}
-
-\begin{proof}
-Como $A$ es normal, por el teorema espectral $A = U\Lambda U^*$ con $U$ unitaria. Los valores singulares de $A$ son los módulos de sus autovalores: $\sigma_k = |\lambda_k|$. En efecto, $A^*A = U\Lambda^*\Lambda U^* = U \operatorname{diag}(|\lambda_k|^2) U^*$. Por lo tanto $\|A\|_2 = \sigma_1 = \max_k |\lambda_k|$.
-
-Para la inversa, $A^{-1} = U\Lambda^{-1}U^*$ es también normal, con autovalores $1/\lambda_k$. Sus valores singulares son $1/|\lambda_k|$, y el mayor de ellos es $1/\min_k |\lambda_k|$.
-\end{proof}
-
-\begin{remark}
-El Corolario~\ref{cor:inv_normal} se aplica en particular a las matrices hermitianas ($A = A^*$) y a las unitarias ($A^*A = I$), que son casos particulares de matrices normales. Para las unitarias, todos los autovalores tienen módulo 1, de modo que $\|A\|_2 = 1$ y $\kappa_2(A) = 1$.
-
-La hipótesis de normalidad es esencial. Por ejemplo, la matriz triangular superior
-\[
-A = \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}
-\]
-tiene $\rho(A) = 0$ (su único autovalor es $\lambda = 0$), pero $\|A\|_2 = 1$ (pues $\sigma_1 = 1$). Este ejemplo muestra que para matrices no normales, la desigualdad $\rho(A) \leq \|A\|_2$ del Teorema~\ref{thm:radio_espectral_norma} puede ser estricta.
-\end{remark}
-
-\subsection{Raíz cuadrada de matrices semidefinidas positivas}
-
-\begin{theorem}[Raíz cuadrada matricial]\label{thm:raiz_cuadrada}
-Toda matriz hermítica semidefinida positiva $B \in \mathbb{C}^{n \times n}$ ($B = B^*$, $B \succeq 0$) admite una única raíz cuadrada hermítica semidefinida positiva, es decir, existe una única matriz $B^{1/2} \succeq 0$ tal que $(B^{1/2})^2 = B$.
-\end{theorem}
-
-\begin{proof}
-Como $B$ es hermítica, por el teorema espectral $B = U \Lambda U^*$ con $U$ unitaria y $\Lambda = \operatorname{diag}(\lambda_1, \ldots, \lambda_n)$ con $\lambda_k \geq 0$ (por ser semidefinida positiva).
-
-Definimos $B^{1/2} = U \Lambda^{1/2} U^*$, donde $\Lambda^{1/2} = \operatorname{diag}(\sqrt{\lambda_1}, \ldots, \sqrt{\lambda_n})$. Entonces:
-\[
-(B^{1/2})^2 = U \Lambda^{1/2} U^* U \Lambda^{1/2} U^* = U \Lambda U^* = B.
-\]
-La matriz $B^{1/2}$ es hermítica (pues $\Lambda^{1/2}$ es real y $U$ unitaria) y semidefinida positiva (pues $\sqrt{\lambda_k} \geq 0$).
-
-Para la unicidad, supongamos que $C \succeq 0$ cumple $C^2 = B$. Como $C$ es hermítica, $C = V D V^*$ con $D = \operatorname{diag}(d_k)$, $d_k \geq 0$. Entonces $C^2 = V D^2 V^* = B$, y $D^2$ y $\Lambda$ son diagonalizaciones de $B$. Si $\lambda_k$ tiene multiplicidad 1, entonces $d_k^2 = \lambda_k$, por lo que $d_k = \sqrt{\lambda_k}$, de forma que $C = B^{1/2}$. El caso general se demuestra tratando cada bloque de autovalores repetidos por separado.
-\end{proof}
-
-\subsection{Diagonal dominancia estricta}
-
-\begin{definition}[Diagonal dominancia estricta por filas]\label{def:dd_estricta}
-Una matriz $A \in \mathbb{C}^{n \times n}$ es \textbf{estrictamente diagonalmente dominante por filas} si:
-\[
-|a_{ii}| > \sum_{j \neq i} |a_{ij}|, \quad \text{para todo } i = 1, \ldots, n.
-\]
-\end{definition}
-
-\begin{theorem}\label{thm:dd_invertible}
-Toda matriz estrictamente diagonalmente dominante es invertible.
-\end{theorem}
-
-\begin{proof}
-Si $A$ no fuera invertible, existiría $x \neq 0$ con $Ax = 0$. Sea $i$ tal que $|x_i| = \max_j |x_j| > 0$. De la $i$-ésima ecuación $\sum_j a_{ij} x_j = 0$:
-\[
-|a_{ii}| |x_i| = \left| \sum_{j \neq i} a_{ij} x_j \right| \leq \sum_{j \neq i} |a_{ij}| |x_j| \leq \left(\sum_{j \neq i} |a_{ij}|\right) |x_i|.
-\]
-Dividiendo por $|x_i| > 0$: $|a_{ii}| \leq \sum_{j \neq i} |a_{ij}|$, lo que contradice la diagonal dominancia estricta.
-\end{proof}
 
 
-\section{Métodos numéricos para problemas de autovalores}
+\section{Métodos iterativos para autovalores}
 
-La estrategia principal de muchos algoritmos para calcular autovalores consiste en transformar la matriz original en una forma más simple (diagonal o triangular) preservando su espectro. Esto se justifica por el hecho de que \textbf{las relaciones de similaridad entre matrices no alteran los autovalores}. Si $B = S^{-1} A S$, entonces $\det(B - \lambda I) = \det(S^{-1}(A - \lambda I)S) = \det(A - \lambda I)$, por lo que $A$ y $B$ comparten los mismos autovalores.
-
-\subsection{Condicionamiento de autovalores}
-
-Antes de estudiar algoritmos para calcular autovalores, es fundamental entender la sensibilidad de estos ante perturbaciones en la matriz. Si $A$ se perturba a $A + E$, ¿cuánto cambian sus autovalores?
-
-\begin{definition}[Condicionamiento de un autovalor simple]
-Sea $\lambda$ un autovalor simple de $A \in \mathbb{C}^{n \times n}$ con autovector derecho $x$ ($Ax = \lambda x$) y autovector izquierdo $y$ ($y^* A = \lambda y^*$), normalizados tal que $\|x\|_2 = \|y\|_2 = 1$. El \textbf{número de condición} del autovalor $\lambda$ es:
-\[
-\kappa(\lambda) = \frac{1}{|y^* x|}.
-\]
-\end{definition}
-
-Si $A$ sufre una perturbación $E$ de norma pequeña $\epsilon = \|E\|_2$, el autovalor perturbado $\lambda(\epsilon)$ satisface:
-\[
-|\lambda(\epsilon) - \lambda| \leq \kappa(\lambda) \epsilon + O(\epsilon^2).
-\]
-Esto muestra que si el autovector izquierdo es casi ortogonal al derecho ($y^* x \approx 0$), el autovalor es muy sensible a perturbaciones.
-
-Para el caso global, tenemos el siguiente teorema fundamental.
-
-\begin{theorem}[Teorema de Bauer-Fike]
-Sea $A \in \mathbb{C}^{n \times n}$ una matriz diagonalizable, $A = V \Lambda V^{-1}$, donde $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_n)$ y $V$ es la matriz de autovectores.
-Si $\mu$ es un autovalor de la matriz perturbada $A + E$, entonces existe un autovalor $\lambda_i$ de $A$ tal que:
-\[
-|\mu - \lambda_i| \leq \kappa_2(V) \|E\|_2,
-\]
-donde $\kappa_2(V) = \|V\|_2 \|V^{-1}\|_2$ es el número de condición de la base de autovectores.
-\end{theorem}
-
-\begin{proof}
-Si $\mu$ es autovalor de $A+E$, entonces $\det(A+E - \mu I) = 0$.
-Si $\mu$ es también autovalor de $A$, la cota se cumple trivialmente (distancia 0).
-Supongamos que $\mu$ no es autovalor de $A$. Entonces $A - \mu I$ es invertible.
-Escribimos:
-\[
-A + E - \mu I = (A - \mu I) + E = (A - \mu I) [I + (A - \mu I)^{-1} E].
-\]
-Como el lado izquierdo es singular y $A - \mu I$ es invertible, necesariamente el factor $[I + (A - \mu I)^{-1} E]$ debe ser singular. Esto implica que $-1$ es un autovalor de $(A - \mu I)^{-1} E$.
-Por lo tanto, el radio espectral satisface $\rho((A - \mu I)^{-1} E) \geq 1$.
-Usando propiedades de la norma matricial:
-\[
-1 \leq \|(A - \mu I)^{-1} E\|_2 \leq \|(A - \mu I)^{-1}\|_2 \|E\|_2.
-\]
-Ahora usamos la diagonalización $A = V \Lambda V^{-1}$:
-\[
-(A - \mu I)^{-1} = (V (\Lambda - \mu I) V^{-1})^{-1} = V (\Lambda - \mu I)^{-1} V^{-1}.
-\]
-Tomando normas:
-\[
-\|(A - \mu I)^{-1}\|_2 \leq \|V\|_2 \|(\Lambda - \mu I)^{-1}\|_2 \|V^{-1}\|_2 = \kappa_2(V) \max_{i} \frac{1}{|\lambda_i - \mu|}.
-\]
-Sustituyendo en la desigualdad anterior:
-\[
-1 \leq \kappa_2(V) \frac{1}{\min_i |\lambda_i - \mu|} \|E\|_2.
-\]
-Reordenando, obtenemos:
-\[
-\min_i |\lambda_i - \mu| \leq \kappa_2(V) \|E\|_2.
-\]
-\end{proof}
-
-\begin{example}
-\textbf{Matrices normales}: Si $A$ es normal, admite una base ortonormal de autovectores. Entonces $V$ puede elegirse unitaria, por lo que $\kappa_2(V) = 1$. El teorema de Bauer-Fike dice que $|\mu - \lambda_i| \leq \|E\|_2$. Los autovalores de matrices normales son perfectamente condicionados.
-\end{example}
-
-\begin{theorem}[Generalización para matrices no diagonalizables]
-Si $A$ no es diagonalizable, podemos usar su forma canónica de Jordan $A = V J V^{-1}$, donde $J$ tiene bloques de Jordan $J_k(\lambda)$ de tamaño $m_k \times m_k$.
-Si $\mu$ es un autovalor de $A+E$, entonces:
-\[
-\min_i \frac{|\mu - \lambda_i|^{p}}{1 + |\mu - \lambda_i|^{p-1}} \leq \kappa_2(V) \|E\|_2,
-\]
-donde $p$ es el tamaño del mayor bloque de Jordan asociado a $\lambda_i$.
-Para perturbaciones pequeñas, esto implica $|\mu - \lambda_i| \approx O(\|E\|_2^{1/p})$, confirmando la sensibilidad observada en el ejemplo anterior ($p=2$).
-\end{theorem}
-
-\subsection{El $\epsilon$-pseudoespectro}
-
-Una herramienta fundamental para analizar la sensibilidad de los autovalores de manera global y geométrica es el \textbf{$\epsilon$-pseudoespectro}. Mientras que el espectro $\sigma(A)$ es un conjunto discreto de puntos, el pseudoespectro es una región del plano complejo que indica dónde pueden "moverse" los autovalores bajo perturbaciones de tamaño $\epsilon$. Es la herramienta que mejor captura la inestabilidad espectral, especialmente en matrices no normales.
-
-\begin{definition}[$\epsilon$-pseudoespectro]
-Para una matriz $A \in \mathbb{C}^{n \times n}$ y $\epsilon > 0$, el $\epsilon$-pseudoespectro $\Lambda_\epsilon(A)$ se define de manera equivalente como:
-\begin{enumerate}
-    \item El conjunto de autovalores de todas las matrices perturbadas $A+E$ con $\|E\|_2 \leq \epsilon$:
-    \[ \Lambda_\epsilon(A) = \{ z \in \mathbb{C} : z \in \sigma(A+E) \text{ para alguna } E \text{ con } \|E\|_2 \leq \epsilon \}. \]
-    \item El conjunto de puntos $z \in \mathbb{C}$ donde la resolvente es grande:
-    \[ \Lambda_\epsilon(A) = \{ z \in \mathbb{C} : \|(zI - A)^{-1}\|_2 \geq \epsilon^{-1} \} \cup \sigma(A). \]
-    \item Usando la descomposición en valores singulares (SVD), el conjunto donde el valor singular mínimo de $zI - A$ es pequeño:
-    \[ \Lambda_\epsilon(A) = \{ z \in \mathbb{C} : \sigma_{\min}(zI - A) \leq \epsilon \}. \]
-\end{enumerate}
-\end{definition}
-
-\begin{proof}[Demostración de las equivalencias]
-    Primero mostramos que $(2) \iff (3)$.
-    Si $z \in \sigma(A)$, entonces $\sigma_{\min}(zI - A) = 0 \leq \epsilon$, y por convención $\|(zI - A)^{-1}\|_2 = \infty \geq \epsilon^{-1}$.
-    Si $z \notin \sigma(A)$, la matriz $zI - A$ es invertible. Sabemos que $\|M^{-1}\|_2 = 1/\sigma_{\min}(M)$.
-    Por lo tanto, $\|(zI - A)^{-1}\|_2 \geq \epsilon^{-1}$ es equivalente a $1/\sigma_{\min}(zI - A) \geq \epsilon^{-1}$, lo que implica $\sigma_{\min}(zI - A) \leq \epsilon$.
-
-    Ahora mostramos que $(1) \iff (2)$.
-    ($\Rightarrow$) Supongamos que $z \in \sigma(A+E)$ con $\|E\|_2 \leq \epsilon$.
-    Si $z \in \sigma(A)$, se cumple trivialmente.
-    Si $z \notin \sigma(A)$, existe un vector $v \neq 0$ tal que $(A+E)v = zv$.
-    Reordenando, $(zI - A)v = Ev$.
-    Como $z \notin \sigma(A)$, $zI - A$ es invertible, así que $v = (zI - A)^{-1} E v$.
-    Tomando normas:
-    \[ \|v\|_2 \leq \|(zI - A)^{-1}\|_2 \|E\|_2 \|v\|_2. \]
-    Dividiendo por $\|v\|_2$ (que es no nulo):
-    \[ 1 \leq \|(zI - A)^{-1}\|_2 \|E\|_2 \leq \|(zI - A)^{-1}\|_2 \epsilon. \]
-    Por lo tanto, $\|(zI - A)^{-1}\|_2 \geq \epsilon^{-1}$.
-
-    ($\Leftarrow$) Supongamos que $\|(zI - A)^{-1}\|_2 \geq \epsilon^{-1}$.
-    Existe un vector unitario $u$ tal que $\|(zI - A)^{-1} u\|_2 = \|(zI - A)^{-1}\|_2 \geq \epsilon^{-1}$.
-    Sea $v = (zI - A)^{-1} u$. Entonces $\|v\|_2 \geq \epsilon^{-1}$ y $(zI - A)v = u$.
-    Queremos encontrar $E$ tal que $(A+E)v = zv$, es decir, $Ev = (zI - A)v = u$.
-    Construimos $E$ como una matriz de rango 1: $E = \frac{1}{\|v\|_2^2} u v^*$.
-    Verificamos que $Ev = \frac{1}{\|v\|_2^2} u (v^* v) = u$.
-    La norma de $E$ es:
-    \[ \|E\|_2 = \frac{\|u\|_2 \|v\|_2}{\|v\|_2^2} = \frac{1}{\|v\|_2} \leq \epsilon. \]
-    Así, hemos construido una perturbación $E$ con $\|E\|_2 \leq \epsilon$ tal que $(A+E)v = zv$, por lo que $z \in \Lambda_\epsilon(A)$.
-\end{proof}
-
-Esta última caracterización conecta la SVD con el problema de autovalores: $z$ está en el pseudoespectro si la matriz $zI - A$ está "cerca" de ser singular (en norma 2).
-
-El tamaño de $\Lambda_\epsilon(A)$ alrededor de los autovalores nos dice cuán sensibles son. Podemos usar el Teorema de Bauer-Fike y su generalización para caracterizar este tamaño:
-
-\begin{itemize}
-    \item \textbf{Matrices Normales:} Si $A$ es normal, $\kappa_2(V)=1$. El Teorema de Bauer-Fike implica que $\Lambda_\epsilon(A)$ es exactamente la unión de discos cerrados de radio $\epsilon$ centrados en los autovalores $\lambda_i$.
-    \[ \Lambda_\epsilon(A) = \bigcup_{i} \{ z : |z - \lambda_i| \leq \epsilon \}. \]
-    La perturbación es lineal y controlada; el pseudoespectro apenas "engorda" los autovalores.
-
-    \item \textbf{Matrices Diagonalizables no normales:} Si $A$ es diagonalizable, $\Lambda_\epsilon(A)$ está contenido en la unión de discos de radio $\kappa_2(V)\epsilon$.
-    \[ \Lambda_\epsilon(A) \subseteq \bigcup_{i} \{ z : |z - \lambda_i| \leq \kappa_2(V)\epsilon \}. \]
-    Si la base de autovectores está mal condicionada ($\kappa_2(V) \gg 1$), el pseudoespectro puede extenderse mucho más allá de $\epsilon$, indicando alta sensibilidad.
-
-    \item \textbf{Matrices no Diagonalizables:} Cerca de un autovalor defectivo con bloque de Jordan de tamaño $p$, la generalización del teorema indica que el radio del pseudoespectro crece como $O(\epsilon^{1/p})$. Para $\epsilon$ pequeño, $\epsilon^{1/p} \gg \epsilon$, por lo que $\Lambda_\epsilon(A)$ es una región significativamente grande. Por ejemplo, si $p=2$ y $\epsilon=10^{-16}$, el autovalor puede moverse $10^{-8}$.
-\end{itemize}
+La estrategia principal de muchos algoritmos para calcular autovalores consiste en transformar la matriz original en una forma más simple (diagonal o triangular) preservando su espectro. Esto se justifica por el hecho de que \textbf{las relaciones de similaridad entre matrices no alteran los autovalores}: si $B = S^{-1} A S$, entonces $\det(B - \lambda I) = \det(A - \lambda I)$.
 
 \subsection{Teorema de los círculos de Gershgorin}
 
-Una herramienta sencilla pero poderosa para localizar autovalores sin calcularlos es el Teorema de Gershgorin. Este teorema proporciona regiones acotadas en el plano complejo donde deben residir los autovalores, basándose únicamente en las entradas de la matriz.
+El Teorema de Gershgorin localiza los autovalores de una matriz a partir de sus entradas, sin calcularlos.
 
-\begin{theorem}[Teorema de los círculos de Gershgorin]
+\begin{theorem}[Teorema de los círculos de Gershgorin]\label{thm:gershgorin}
 Sea $A \in \mathbb{C}^{n \times n}$. Todos los autovalores de $A$ se encuentran en la unión de los $n$ discos de Gershgorin:
 \[
 \sigma(A) \subseteq \bigcup_{i=1}^n D_i,
+\qquad
+D_i = \left\{ z \in \mathbb{C} : |z - a_{ii}| \leq R_i \right\},
+\quad R_i = \sum_{j \neq i} |a_{ij}|.
 \]
-donde cada disco $D_i$ está definido por:
-\[
-D_i = \left\{ z \in \mathbb{C} : |z - a_{ii}| \leq R_i \right\}, \quad \text{con } R_i = \sum_{j \neq i} |a_{ij}|.
-\]
-Es decir, cada autovalor está a una distancia de algún elemento diagonal $a_{ii}$ no mayor que la suma de los módulos de los elementos restantes de esa fila.
 \end{theorem}
 
 \begin{proof}
-Sea $\lambda$ un autovalor de $A$ y $x$ su autovector asociado, $Ax = \lambda x$.
-Sea $x_i$ la componente de mayor módulo de $x$, es decir, $|x_i| \geq |x_j|$ para todo $j$. Como $x \neq 0$, $|x_i| > 0$.
-La $i$-ésima ecuación del sistema $Ax = \lambda x$ es:
-\[
-\sum_{j=1}^n a_{ij} x_j = \lambda x_i.
-\]
-Reordenando para aislar el término diagonal:
+Sea $\lambda$ un autovalor de $A$ con autovector $x$, y sea $x_i$ la componente de mayor módulo ($|x_i| \geq |x_j|$ para todo $j$, con $|x_i|>0$).
+La $i$-ésima ecuación de $Ax = \lambda x$ da:
 \[
 (\lambda - a_{ii}) x_i = \sum_{j \neq i} a_{ij} x_j.
 \]
-Tomando valor absoluto y usando la desigualdad triangular:
-\[
-|\lambda - a_{ii}| |x_i| \leq \sum_{j \neq i} |a_{ij}| |x_j|.
-\]
-Dividiendo por $|x_i|$ (recordando que $|x_j|/|x_i| \leq 1$):
+Tomando valor absoluto y dividiendo por $|x_i|$:
 \[
 |\lambda - a_{ii}| \leq \sum_{j \neq i} |a_{ij}| \frac{|x_j|}{|x_i|} \leq \sum_{j \neq i} |a_{ij}| = R_i.
 \]
-Por lo tanto, $\lambda$ pertenece al disco $D_i$. Como esto vale para cualquier autovalor (eligiendo el $i$ correspondiente a la componente máxima de su autovector), todo autovalor está en la unión de los discos.
 \end{proof}
 
 \begin{remark}
-Como los autovalores de $A$ son los mismos que los de $A^T$, también se puede aplicar el teorema usando sumas por columnas en lugar de filas. La intersección de las regiones obtenidas por filas y por columnas da una localización aún más precisa.
+Como $\sigma(A) = \sigma(A^T)$, también se puede aplicar el teorema usando sumas por columnas. La intersección de las regiones obtenidas por filas y por columnas da una localización más precisa.
 \end{remark}
 
 \subsection{El método de la potencia}
@@ -2280,442 +2137,144 @@ Como los autovalores de $A$ son los mismos que los de $A^T$, también se puede a
 El método de la potencia calcula el autovalor dominante de una matriz.
 
 \textbf{Algoritmo (Método de la potencia):}
-
-Sea $A \in \mathbb{C}^{n \times n}$ y $v_0 \in \mathbb{C}^n$ un vector inicial no nulo. Para $k = 0, 1, 2, \ldots$:
+Sea $A \in \mathbb{C}^{n \times n}$ y $v_0 \in \mathbb{C}^n$ no nulo. Para $k = 0, 1, 2, \ldots$:
 \begin{enumerate}
 \item $w_{k+1} = Av_k$
-\item $v_{k+1} = w_{k+1} / \|w_{k+1}\|_2$ (normalización)
-\item $\lambda_k = v_k^* A v_k$ (cociente de Rayleigh)
+\item $v_{k+1} = w_{k+1} / \|w_{k+1}\|_2$ \quad (normalización)
+\item $\lambda_k = v_k^* A v_k$ \quad (cociente de Rayleigh)
 \end{enumerate}
+
+\begin{definition}[Cociente de Rayleigh]
+Dada $A\in\mathbb{C}^{n\times n}$ y $x\in\mathbb{C}^n$ no nulo, el \textbf{cociente de Rayleigh} de $x$ es
+\[
+\rho(x) = \frac{x^* A x}{x^* x}.
+\]
+Si $x$ es autovector de $A$ con autovalor $\lambda$, entonces $\rho(x)=\lambda$.
+\end{definition}
 
 \begin{theorem}[Convergencia del método de la potencia]\label{thm:power_method}
-Sea $A \in \mathbb{C}^{n \times n}$ diagonalizable con autovalores $\lambda_1, \ldots, \lambda_n$ ordenados por magnitud decreciente: $|\lambda_1| > |\lambda_2| \geq \cdots \geq |\lambda_n|$. Sean $u_1, \ldots, u_n$ los correspondientes autovectores que forman una base de $\mathbb{C}^n$.
+Sea $A \in \mathbb{C}^{n \times n}$ diagonalizable con autovalores $|\lambda_1| > |\lambda_2| \geq \cdots \geq |\lambda_n|$ y autovectores $u_1, \ldots, u_n$ que forman una base.
 
-Si el vector inicial $v_0$ tiene componente no nula en la dirección de $u_1$ (es decir, $v_0 = \sum_{j=1}^n \alpha_j u_j$ con $\alpha_1 \neq 0$), entonces:
-\begin{enumerate}
-\item $v_k \to \pm u_1$ cuando $k \to \infty$,
-\item $\lambda_k \to \lambda_1$ cuando $k \to \infty$,
-\item La tasa de convergencia es $O(|\lambda_2/\lambda_1|^k)$.
-\end{enumerate}
+Si $v_0 = \sum_{j=1}^n \alpha_j u_j$ con $\alpha_1 \neq 0$, entonces $v_k \to \pm u_1$, $\lambda_k \to \lambda_1$, con tasa de convergencia $O(|\lambda_2/\lambda_1|^k)$.
 \end{theorem}
 
-\begin{proof}
-Escribimos $v_0 = \sum_{j=1}^n \alpha_j u_j$ con $\alpha_1 \neq 0$. Después de $k$ iteraciones (antes de la normalización):
-\[
-w_k \propto A^k v_0 = A^k \sum_{j=1}^n \alpha_j u_j = \sum_{j=1}^n \alpha_j A^k u_j = \sum_{j=1}^n \alpha_j \lambda_j^k u_j.
-\]
-
-Factorizando $\lambda_1^k$:
-\[
-w_k \propto \lambda_1^k \left( \alpha_1 u_1 + \sum_{j=2}^n \alpha_j \left(\frac{\lambda_j}{\lambda_1}\right)^k u_j \right).
-\]
-
-Como $|\lambda_j/\lambda_1| < 1$ para $j \geq 2$, los términos con $j \geq 2$ decaen exponencialmente:
-\[
-\left|\left(\frac{\lambda_j}{\lambda_1}\right)^k\right| \leq \left|\frac{\lambda_2}{\lambda_1}\right|^k \to 0 \quad \text{cuando } k \to \infty.
-\]
-
-Por lo tanto:
-\[
-w_k \approx \lambda_1^k \alpha_1 u_1 + O\left(\left|\frac{\lambda_2}{\lambda_1}\right|^k\right),
-\]
-y después de la normalización:
-\[
-v_k = \frac{w_k}{\|w_k\|_2} \to \pm u_1.
-\]
-
-Para el cociente de Rayleigh:
-\[
-\lambda_k = v_k^* A v_k \to u_1^* A u_1 = u_1^* \lambda_1 u_1 = \lambda_1 \|u_1\|^2 = \lambda_1.
-\]
-
-La tasa de convergencia está dominada por el cociente $|\lambda_2/\lambda_1|$, que aparece en el término de error.
-\end{proof}
-
 \begin{remark}
-Si $|\lambda_1|$ está bien separado de $|\lambda_2|$ (es decir, $|\lambda_2/\lambda_1| \ll 1$), el método converge rápidamente. Si $|\lambda_1| \approx |\lambda_2|$, la convergencia es muy lenta. Si hay múltiples autovalores con la misma magnitud máxima, el método puede no converger a un autovector único.
+Si $|\lambda_1|$ está bien separado de $|\lambda_2|$, el método converge rápidamente. Si $|\lambda_1| \approx |\lambda_2|$, la convergencia es lenta. Si hay múltiples autovalores con la misma magnitud máxima, el método puede no converger.
 \end{remark}
 
 
 \subsection{El método QR}
 
-El \textbf{método QR} es un algoritmo iterativo para calcular todos los autovalores (y autovectores) de una matriz. Converge a la \textbf{descomposición de Schur} (Teorema \ref{thm:schur}).
+El \textbf{método QR} es un algoritmo iterativo para calcular \emph{todos} los autovalores de una matriz.
 
 \textbf{Algoritmo (Método QR):}
-
-Sea $A_0 = A$. Para $k = 0, 1, 2, \ldots$:
+Sea $A_0 = A \in \mathbb{C}^{n\times n}$. Para $k = 0, 1, 2, \ldots$:
 \begin{enumerate}
-\item Factorizar $A_k = Q_k R_k$ (QR)
-\item Formar $A_{k+1} = R_k Q_k = Q_k^* A_k Q_k$
+\item Factorizar $A_k = Q_k R_k$ \quad (factorización QR)
+\item Formar $A_{k+1} = R_k Q_k$
 \end{enumerate}
+
+Observemos que $A_{k+1} = R_k Q_k = Q_k^* (Q_k R_k) Q_k = Q_k^* A_k Q_k$, de modo que todas las matrices $A_k$ son unitariamente semejantes y comparten los mismos autovalores.
+
+\begin{definition}[Matrices QR acumuladas]
+Definimos las matrices acumuladas
+\[
+\bar{Q}_k = Q_0 Q_1 \cdots Q_{k-1}, \qquad \bar{R}_k = R_{k-1} \cdots R_1 R_0.
+\]
+\end{definition}
 
 \begin{theorem}[Convergencia del método QR]\label{thm:qr_convergence}
-Si $A$ es diagonalizable con $|\lambda_1| > |\lambda_2| > \cdots > |\lambda_n|$, entonces $A_k$ converge a una matriz triangular superior cuyos elementos diagonales son los autovalores de $A$, ordenados por magnitud decreciente.
+Si $A$ es diagonalizable con $|\lambda_1| > |\lambda_2| > \cdots > |\lambda_n|$, entonces $A_k$ converge a una matriz triangular superior cuyos elementos diagonales son los autovalores de $A$.
 
-La convergencia es similar al método de la potencia: el elemento $(i,j)$ con $i > j$ converge a cero como $O(|\lambda_j/\lambda_i|^k)$.
+La convergencia del elemento $(i,j)$ con $i > j$ es $O(|\lambda_j/\lambda_i|^k)$.
 \end{theorem}
-
-\begin{proof}
-La demostración se basa en la conexión profunda entre el método QR y el método de la potencia aplicado simultáneamente a múltiples vectores.
-
-\textbf{Paso 1: Factorización QR acumulada.}
-
-Sea $A_k = Q_k R_k$ la factorización QR en la iteración $k$. Definimos las matrices acumuladas:
-\[
-\tilde{Q}_k = Q_0 Q_1 \cdots Q_{k-1}, \quad \tilde{R}_k = R_{k-1} \cdots R_1 R_0.
-\]
-
-Entonces:
-\[
-A^k = A_{k-1} A_{k-2} \cdots A_1 A_0 = (R_{k-1} Q_{k-1})(R_{k-2} Q_{k-2}) \cdots (R_1 Q_1)(R_0 Q_0).
-\]
-
-Reordenando y usando que cada $A_j = Q_j R_j$:
-\[
-A^k = \tilde{R}_k \tilde{Q}_k.
-\]
-
-Por otro lado, $A^k$ también admite una factorización QR directa: $A^k = \hat{Q}_k \hat{R}_k$. Por unicidad de la factorización QR (cuando las diagonales de $R$ son positivas), tenemos $\tilde{Q}_k = \hat{Q}_k$ y $\tilde{R}_k = \hat{R}_k$.
-
-\textbf{Paso 2: Conexión con la potencia simultánea.}
-
-La factorización QR de $A^k$ calcula una base ortonormal del espacio generado por $\{A^k e_1, A^k e_2, \ldots, A^k e_n\}$, donde $\{e_j\}$ son los vectores canónicos. Esto es equivalente a aplicar el método de la potencia a cada vector canónico simultáneamente y ortogonalizarlos.
-
-\textbf{Paso 3: Análisis espectral.}
-
-Supongamos que $A$ es diagonalizable: $A = X \Lambda X^{-1}$ donde $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_n)$ y las columnas de $X = [x_1, \ldots, x_n]$ son los autovectores. Entonces:
-\[
-A^k = X \Lambda^k X^{-1}.
-\]
-
-Sea $X = [x_1, \ldots, x_n]$ y $X^{-1} = [y_1^*, \ldots, y_n^*]^T$. La columna $j$-ésima de $A^k$ es:
-\[
-A^k e_j = X \Lambda^k X^{-1} e_j = X \Lambda^k \begin{pmatrix} y_{1j} \\ \vdots \\ y_{nj} \end{pmatrix} = \sum_{i=1}^n \lambda_i^k y_{ij} x_i.
-\]
-
-Factorizando $\lambda_j^k$ (el autovalor con mayor magnitud en la suma):
-\[
-A^k e_j = \lambda_j^k \left( y_{jj} x_j + \sum_{i \neq j} y_{ij} \left(\frac{\lambda_i}{\lambda_j}\right)^k x_i \right).
-\]
-
-Como $|\lambda_j| > |\lambda_{j+1}|$ por hipótesis, el término dominante es $\lambda_j^k y_{jj} x_j$.
-
-\textbf{Paso 4: Convergencia de $A_k$.}
-
-Tenemos $A_k = \tilde{Q}_k^* A \tilde{Q}_k = \hat{Q}_k^* A \hat{Q}_k$, donde $\hat{Q}_k$ contiene las columnas ortonormalizadas de $\{A^k e_1, \ldots, A^k e_n\}$.
-
-Por el análisis anterior, la columna $j$-ésima de $\hat{Q}_k$ converge a una dirección proporcional al autovector $x_j$ (después de ortogonalización con las columnas anteriores). Por lo tanto:
-\[
-\hat{Q}_k \to X \text{ (módulo signos y fases)}.
-\]
-
-Entonces:
-\[
-A_k = \hat{Q}_k^* A \hat{Q}_k \to X^* A X = X^* (X \Lambda X^{-1}) X = X^* X \Lambda (X^{-1} X) = \Lambda,
-\]
-donde usamos que $X$ converge a una base de autovectores ortonormalizados.
-
-Más precisamente, el elemento $(i,j)$ de $A_k$ con $i > j$ tiene error:
-\[
-|(A_k)_{ij}| = O\left(\left|\frac{\lambda_j}{\lambda_i}\right|^k\right),
-\]
-que es exactamente análogo al método de la potencia del Teorema~\ref{thm:power_method}.
-\end{proof}
 
 \begin{remark}
-La similitud con el método de la potencia es profunda: el método QR puede interpretarse como aplicar simultáneamente el método de la potencia a múltiples vectores ortogonales, obteniendo todos los autovalores a la vez mediante ortogonalización continua (proceso QR).
+El método QR puede interpretarse como la aplicación simultánea del método de la potencia a múltiples vectores ortogonales: la factorización QR de $A^k = \bar{Q}_k \bar{R}_k$ ortogonaliza las columnas de $A^k$, que convergen a los autovectores de $A$.
 \end{remark}
 
-\subsection{Forma de Hessenberg y transformaciones de Householder}
 
-El costo de cada iteración del método QR es $O(n^3)$ (factorización QR completa). Este costo se puede reducir dramáticamente llevando primero la matriz a \textbf{forma de Hessenberg}.
+\subsection{Matriz compañera y raíces de polinomios}
 
-\begin{definition}[Reflector de Householder]
-Dado $v \in \mathbb{C}^n$ con $\|v\|_2 = 1$, el \textbf{reflector de Householder} es:
+\begin{definition}[Matriz compañera]
+Dado un polinomio mónico $p(\lambda) = \lambda^n + a_{n-1}\lambda^{n-1} + \cdots + a_0$, su \textbf{matriz compañera} es:
 \[
-H = I - 2vv^*.
+C = \begin{pmatrix}
+0 & 0 & \cdots & 0 & -a_0 \\
+1 & 0 & \cdots & 0 & -a_1 \\
+0 & 1 & \cdots & 0 & -a_2 \\
+\vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & \cdots & 1 & -a_{n-1}
+\end{pmatrix}.
 \]
-Esta matriz es hermítica ($H = H^*$), unitaria ($H^* H = I$), e involuciona ($H^2 = I$).
+El polinomio característico de $C$ es $\det(C - \lambda I) = (-1)^n p(\lambda)$, de modo que los autovalores de $C$ son las raíces de $p$. Esto permite calcular raíces de polinomios aplicando el método QR a $C$.
 \end{definition}
 
-\begin{lemma}
-Para cualquier $x \in \mathbb{C}^n$, existe un reflector de Householder $H$ tal que:
-\[
-Hx = \pm \|x\|_2 e_1,
-\]
-donde $e_1$ es el primer vector canónico. El vector $v$ se elige como:
-\[
-v = \frac{x \mp \|x\|_2 e_1}{\|x \mp \|x\|_2 e_1\|_2}.
-\]
-\end{lemma}
 
-Reducción a forma de Hessenberg
+\section{Métodos iterativos para sistemas lineales}
 
-\begin{definition}[Matriz de Hessenberg]
-Una matriz $H \in \mathbb{C}^{n \times n}$ es de \textbf{Hessenberg superior} si $h_{ij} = 0$ para $i > j+1$. Es decir, es casi triangular superior, con una subdiagonal adicional.
+Cuando el sistema $Ax = b$ es grande y la matriz $A$ es rala (tiene muchos ceros), los métodos directos como LU pueden ser ineficientes. Los \textbf{métodos iterativos} construyen una sucesión $\{x^{(k)}\}$ que converge a la solución.
+
+\subsection{Métodos estacionarios y convergencia}
+
+\begin{definition}[Método iterativo estacionario]
+Un \textbf{método iterativo estacionario} para resolver $Ax = b$ tiene la forma
+\[
+x^{(k+1)} = G x^{(k)} + c,
+\]
+donde $G \in \mathbb{C}^{n \times n}$ es la \textbf{matriz de iteración} (que no depende de $k$) y $c$ es un vector fijo. Si la solución exacta $x^*$ satisface $x^* = Gx^* + c$, el error $e^{(k)} = x^{(k)} - x^*$ cumple
+\[
+e^{(k)} = G^k e^{(0)}.
+\]
 \end{definition}
 
-\begin{theorem}[Reducción a Hessenberg]
-Toda matriz $A \in \mathbb{C}^{n \times n}$ puede reducirse a forma de Hessenberg mediante transformaciones unitarias de Householder:
-\[
-A = QHQ^*,
-\]
-donde $Q$ es unitaria y $H$ es de Hessenberg superior. El costo es $O(n^3)$ operaciones.
-\end{theorem}
-
-\textbf{Algoritmo (Reducción a Hessenberg):}
-
-Para $k = 1, \ldots, n-2$:
-\begin{enumerate}
-\item Sea $x$ la columna $k$ de $A$ desde la fila $k+1$ en adelante
-\item Construir $H_k$ (reflector de Householder) para anular $x$ debajo de la primera posición
-\item Actualizar $A \leftarrow H_k A H_k^*$ (preserva similitud)
-\end{enumerate}
-Resultado: $A$ queda en forma de Hessenberg.
-
-\begin{remark}[Ventajas de la forma de Hessenberg]
-\begin{enumerate}
-\item Una vez que $A$ está en forma de Hessenberg, cada iteración QR cuesta solo $O(n^2)$ en lugar de $O(n^3)$.
-\item Para matrices hermíticas, la forma de Hessenberg es \textbf{tridiagonal}, lo que reduce aún más el costo a $O(n)$ por iteración.
-\item La forma de Hessenberg se preserva bajo iteraciones QR: si $H$ es Hessenberg y $H = QR$, entonces $RQ$ también es Hessenberg.
-\end{enumerate}
+\begin{remark}
+Se puede probar que $G^k \to 0$ (y por lo tanto el método converge para todo $x^{(0)}$) si y solo si $\rho(G) < 1$ (véase la definición de radio espectral en el Teorema~\ref{thm:radio_espectral_norma}). Además, como $\rho(G) \leq \|G\|$ para toda norma inducida, una condición suficiente práctica es $\|G\| < 1$.
 \end{remark}
 
-\subsection{Cálculo de la SVD}
-
-Los métodos para calcular la SVD numéricamente suelen basarse en variantes del método QR aplicado a matrices relacionadas.
-
-\textbf{Algoritmo (SVD mediante QR - Método 1: Diagonalizar $A^*A$):}
-\begin{enumerate}
-\item Formar $B = A^*A$ (matriz hermítica de $n \times n$)
-\item Aplicar el método QR a $B$ para obtener $B = V \Lambda V^*$ con $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_n)$
-\item Los valores singulares son $\sigma_i = \sqrt{\lambda_i}$
-\item Calcular $U = AV\Sigma^{-1}$ (para las columnas correspondientes a $\sigma_i > 0$)
-\end{enumerate}
-
-\textbf{Problema:} Este método eleva al cuadrado el número de condición: $\kappa(A^*A) = \kappa(A)^2$.
-
-Existe un método más estable evita formar $A^*A$ explícitamente:
-
-\textbf{Algoritmo (SVD vía matriz ampliada):}
-\begin{enumerate}
-\item Formar la matriz hermítica ampliada:
+Para definir los métodos concretos, descomponemos $A$ como
 \[
-M = \begin{pmatrix} 0 & A \\ A^* & 0 \end{pmatrix} \in \mathbb{C}^{(m+n) \times (m+n)}
+A = D + L + U,
 \]
-\item Calcular la descomposición espectral $M = W \Lambda W^*$ usando QR
-\item Los autovalores de $M$ vienen en pares $\pm \sigma_i$, donde $\sigma_i$ son los valores singulares de $A$
-\item Extraer $U$ y $V$ de los autovectores de $M$
-\end{enumerate}
+donde $D$ es la diagonal de $A$, $L$ es la parte triangular inferior estricta y $U$ es la parte triangular superior estricta.
 
-El método más eficiente en la práctica usa bidiagonalización:
-
-\begin{theorem}[Bidiagonalización]
-Toda matriz $A \in \mathbb{C}^{m \times n}$ puede reducirse a forma bidiagonal mediante transformaciones de Householder:
+\begin{definition}[Diagonal dominancia estricta]\label{def:diag_dominante}
+Una matriz $A \in \mathbb{C}^{n \times n}$ es \textbf{estrictamente diagonal dominante por filas} si
 \[
-A = UBV^*,
+|a_{ii}| > \sum_{j \neq i} |a_{ij}|, \quad i = 1, \ldots, n.
 \]
-donde $U$ y $V$ son unitarias y $B$ es bidiagonal (solo diagonal y superdiagonal no nulas).
-\end{theorem}
+\end{definition}
 
-\textbf{Algoritmo (SVD mediante bidiagonalización):}
-\begin{enumerate}
-\item Reducir $A$ a forma bidiagonal $B$ usando Householder: $A = U_1 B V_1^*$ (costo $O(mn^2)$)
-\item Aplicar QR iterativo a $B$ (mucho más eficiente por ser bidiagonal)
-\item Obtener $B = U_2 \Sigma V_2^*$
-\item La SVD final es $A = (U_1 U_2) \Sigma (V_1 V_2)^*$
-\end{enumerate}
+\subsection{Método de Jacobi}
 
-\begin{remark}[Matrices normales y tridiagonalización]
-Si $A$ es normal ($AA^* = A^*A$), en particular si es hermítica, la forma de Hessenberg obtenida por transformaciones de Householder es \textbf{tridiagonal}. Esto hace que el método QR sea especialmente eficiente para matrices hermíticas, con costo $O(n)$ por iteración en lugar de $O(n^2)$.
-\end{remark}
+\begin{definition}[Iteración de Jacobi]
+El \textbf{método de Jacobi} para $Ax = b$ (con $a_{ii} \neq 0$ para todo $i$) es el método estacionario con
+\[
+x^{(k+1)} = D^{-1}(b - (L+U)x^{(k)}).
+\]
+La matriz de iteración es $G_J = -D^{-1}(L+U) = I - D^{-1}A$.
+\end{definition}
 
-% \section{Métodos iterativos basados en subespacios de Krylov}
+Componente a componente, cada iteración actualiza:
+\[
+x_i^{(k+1)} = \frac{1}{a_{ii}}\left(b_i - \sum_{j \neq i} a_{ij} x_j^{(k)}\right), \quad i = 1, \ldots, n.
+\]
 
-% \begin{definition}[Subespacio de Krylov]
-% Dados $A \in \mathbb{C}^{n \times n}$ y $v \in \mathbb{C}^n$ no nulo, el \textbf{subespacio de Krylov} de dimensión $k$ es:
-% \[
-% \mathcal{K}_k(A, v) = \text{span}\{v, Av, A^2v, \ldots, A^{k-1}v\}.
-% \]
-% \end{definition}
+\subsection{Método de Gauss-Seidel}
 
-% \begin{remark}
-% El subespacio de Krylov captura la información de cómo la matriz $A$ actúa repetidamente sobre el vector inicial $v$. Para una matriz invertible, existe un $m \leq n$ tal que $\mathcal{K}_m(A, v) = \mathcal{K}_{m+1}(A, v)$, momento en el cual se dice que el método ha alcanzado convergencia exacta.
-% \end{remark}
+\begin{definition}[Iteración de Gauss-Seidel]
+El \textbf{método de Gauss-Seidel} para $Ax = b$ es el método estacionario
+\[
+(D + L) x^{(k+1)} = b - U x^{(k)},
+\]
+es decir, $x^{(k+1)} = (D+L)^{-1}(b - Ux^{(k)})$.
+La matriz de iteración es $G_{GS} = -(D+L)^{-1}U$.
+\end{definition}
 
-% \subsection{Método de Arnoldi}
-
-% El \textbf{método de Arnoldi} es una variante del método QR que aprovecha la estructura de subespacios de Krylov para matrices grandes y dispersas.
-
-% \begin{definition}[Método de Arnoldi]
-% Dado $A \in \mathbb{C}^{n \times n}$ y un vector inicial $q_1$ unitario, el método de Arnoldi construye una base ortonormal $\{q_1, \ldots, q_k\}$ del subespacio de Krylov $\mathcal{K}_k(A, q_1)$ tal que:
-% \[
-% AQ_k = Q_k H_k + h_{k+1,k} q_{k+1} e_k^T,
-% \]
-% donde $Q_k = (q_1 \, | \, \cdots \, | \, q_k)$ y $H_k$ es una matriz de Hessenberg de tamaño $k \times k$.
-% \end{definition}
-
-% \textbf{Algoritmo (Arnoldi):}
-% \begin{enumerate}
-% \item $q_1 = v / \|v\|_2$ (normalizar vector inicial)
-% \item Para $j = 1, \ldots, k$:
-%    \begin{enumerate}
-%    \item $w = Aq_j$
-%    \item Para $i = 1, \ldots, j$ (Gram-Schmidt):
-%       \begin{itemize}
-%       \item $h_{ij} = (w, q_i)$
-%       \item $w \leftarrow w - h_{ij} q_i$
-%       \end{itemize}
-%    \item $h_{j+1,j} = \|w\|_2$
-%    \item $q_{j+1} = w / h_{j+1,j}$
-%    \end{enumerate}
-% \end{enumerate}
-
-% \begin{remark}[Aplicación a autovalores]
-% Los autovalores de la matriz pequeña $H_k$ (llamados \textbf{valores de Ritz}) aproximan los autovalores de $A$. Se puede aplicar el método QR directamente a $H_k \in \mathbb{C}^{k \times k}$ (con $k \ll n$) para obtener aproximaciones de los autovalores de $A$ con mucho menor costo computacional.
-% \end{remark}
-
-
-% \subsection{GMRES}
-
-% El método GMRES (Generalized Minimal RESidual) es un algoritmo iterativo para resolver sistemas lineales $Ax = b$ con $A \in \mathbb{C}^{n \times n}$ no singular. GMRES es particularmente efectivo para matrices grandes y ralas que no necesariamente son hermíticas definidas positivas, donde otros métodos iterativos pueden fallar.
-
-% \begin{definition}[Iteración GMRES]
-% Sea $Ax = b$ un sistema lineal con $A \in \mathbb{C}^{n \times n}$ no singular. Dada una aproximación inicial $x_0 \in \mathbb{C}^n$, sea $r_0 = b - Ax_0$ el residuo inicial. Para cada $k \geq 1$, GMRES define la $k$-ésima iteración como:
-% \[
-% x_k = x_0 + z_k, \quad \text{donde } z_k \in \mathcal{K}_k(A, r_0)
-% \]
-% es el vector que minimiza el residuo:
-% \[
-% \|r_k\|_2 = \|b - Ax_k\|_2 = \|r_0 - Az_k\|_2 = \min_{z \in \mathcal{K}_k(A, r_0)} \|r_0 - Az\|_2.
-% \]
-% \end{definition}
-
-% Esta caracterización de GMRES como un problema de cuadrados mínimos es fundamental: en cada iteración, buscamos la mejor aproximación dentro del subespacio de Krylov que minimiza la norma del residuo.
-
-% La implementación práctica de GMRES se basa en el proceso de Arnoldi, que construye una base ortonormal del subespacio de Krylov mediante ortogonalización de Gram-Schmidt modificada.
-
-% \begin{theorem}[Proceso de Arnoldi]
-% Sea $A \in \mathbb{C}^{n \times n}$ y $v \in \mathbb{C}^n$ con $\|v\|_2 = 1$. El proceso de Arnoldi construye una matriz $Q_k = [q_1, \ldots, q_k] \in \mathbb{C}^{n \times k}$ con columnas ortonormales que forman una base de $\mathcal{K}_k(A, v)$, y una matriz de Hessenberg superior $H_k \in \mathbb{C}^{k \times k}$ tal que:
-% \[
-% AQ_k = Q_k H_k + h_{k+1,k} q_{k+1} e_k^*,
-% \]
-% o equivalentemente, en forma compacta:
-% \[
-% AQ_k = Q_{k+1} \tilde{H}_k,
-% \]
-% donde $Q_{k+1} = [Q_k, q_{k+1}]$ y $\tilde{H}_k \in \mathbb{C}^{(k+1) \times k}$ es una matriz de Hessenberg superior con entradas $h_{ij}$ para $i \leq j+1$.
-% \end{theorem}
-
-% \begin{proof}
-% El proceso es constructivo. Iniciando con $q_1 = v$, para $j = 1, \ldots, k$:
-% \begin{enumerate}
-% \item Calcular $w = Aq_j$.
-% \item Ortogonalizar contra $q_1, \ldots, q_j$: para $i = 1, \ldots, j$,
-% \[
-% h_{ij} = (w, q_i), \quad w \leftarrow w - h_{ij} q_i.
-% \]
-% \item Normalizar: $h_{j+1,j} = \|w\|_2$, $q_{j+1} = w / h_{j+1,j}$.
-% \end{enumerate}
-% Por construcción, $\{q_1, \ldots, q_k\}$ es ortonormal y genera $\mathcal{K}_k(A, v)$. La relación $AQ_k = Q_{k+1}\tilde{H}_k$ se verifica directamente de la construcción.
-% \end{proof}
-
-% \begin{theorem}[Formulación reducida de GMRES]
-% Con la descomposición de Arnoldi $AQ_k = Q_{k+1}\tilde{H}_k$ y $r_0 = \beta q_1$ donde $\beta = \|r_0\|_2$, el problema de minimización de GMRES:
-% \[
-% \min_{z \in \mathcal{K}_k(A, r_0)} \|r_0 - Az\|_2
-% \]
-% es equivalente al problema de cuadrados mínimos de dimensión reducida:
-% \[
-% \min_{y \in \mathbb{C}^k} \|\beta e_1 - \tilde{H}_k y\|_2,
-% \]
-% donde $e_1 \in \mathbb{C}^{k+1}$ es el primer vector canónico. La solución está relacionada por $z_k = Q_k y_k$.
-% \end{theorem}
-
-% \begin{proof}
-% Como $z \in \mathcal{K}_k(A, r_0)$, podemos escribir $z = Q_k y$ para algún $y \in \mathbb{C}^k$. Entonces:
-% \[
-% \|r_0 - Az\|_2 = \|\beta q_1 - AQ_k y\|_2 = \|\beta q_1 - Q_{k+1}\tilde{H}_k y\|_2.
-% \]
-% Multiplicando por $Q_{k+1}^*$ (que preserva la norma pues $Q_{k+1}$ tiene columnas ortonormales):
-% \[
-% \|r_0 - Az\|_2 = \|Q_{k+1}^*(\beta q_1 - Q_{k+1}\tilde{H}_k y)\|_2 = \|\beta e_1 - \tilde{H}_k y\|_2,
-% \]
-% donde usamos que $Q_{k+1}^* q_1 = e_1$. Este problema de tamaño $(k+1) \times k$ se resuelve eficientemente mediante factorización QR de $\tilde{H}_k$.
-% \end{proof}
-
-
-% El costo computacional de GMRES después de $k$ iteraciones es:
-% \begin{itemize}
-% \item \textbf{Productos matriz-vector}: $k$ multiplicaciones $Aq_j$, cada una costando $O(n^2)$ para matrices densas u $O(n)$ para matrices dispersas.
-% \item \textbf{Ortogonalizaciones}: $O(k^2n)$ operaciones para mantener ortogonalidad con todos los vectores previos.
-% \item \textbf{Problema de cuadrados mínimos}: $O(k^2)$ para resolver $\min \|\beta e_1 - \tilde{H}_k y\|_2$.
-% \item \textbf{Memoria}: Almacenar $Q_k$ requiere $O(kn)$ memoria.
-% \end{itemize}
-
-% Para problemas grandes, el crecimiento en memoria y costo de ortogonalización motiva el uso de \textbf{GMRES reiniciado} (GMRES(m)), que reinicia el método cada $m$ iteraciones, sacrificando optimalidad teórica por eficiencia práctica.
-
-% \subsubsection{Análisis de convergencia}
-
-% \begin{theorem}[Cota de convergencia óptima]\label{thm:gmres_optimal}
-% Después de $k$ iteraciones de GMRES, el residuo satisface:
-% \[
-% \frac{\|r_k\|_2}{\|r_0\|_2} = \min_{\substack{p \in \mathcal{P}_k \\ p(0) = 1}} \|p(A)r_0\|_2,
-% \]
-% donde $\mathcal{P}_k$ denota el conjunto de polinomios de grado a lo más $k$.
-% \end{theorem}
-
-% \begin{proof}
-% De $x_k = x_0 + z_k$ con $z_k \in \mathcal{K}_k(A, r_0)$, tenemos:
-% \[
-% r_k = r_0 - Az_k.
-% \]
-% Como $z_k \in \mathcal{K}_k(A, r_0) = \text{span}\{r_0, Ar_0, \ldots, A^{k-1}r_0\}$, existe un polinomio $q$ de grado $\leq k-1$ tal que $z_k = q(A)r_0$. Entonces:
-% \[
-% r_k = r_0 - Aq(A)r_0 = (I - Aq(A))r_0 = p(A)r_0,
-% \]
-% donde $p(z) = 1 - zq(z)$ es un polinomio de grado $\leq k$ con $p(0) = 1$. La minimización en GMRES garantiza que elegimos el mejor polinomio posible.
-% \end{proof}
-
-% \begin{theorem}[Cota espectral para matrices diagonalizables]\label{thm:gmres_diag}
-% Si $A$ es diagonalizable, $A = X\Lambda X^{-1}$ con autovalores $\lambda_1, \ldots, \lambda_n$, entonces:
-% \[
-% \frac{\|r_k\|_2}{\|r_0\|_2} \leq \kappa(X) \min_{\substack{p \in \mathcal{P}_k \\ p(0) = 1}} \max_{i=1,\ldots,n} |p(\lambda_i)|,
-% \]
-% donde $\kappa(X) = \|X\|_2 \|X^{-1}\|_2$ es el número de condición de la matriz de autovectores.
-% \end{theorem}
-
-% \begin{proof}
-% Del Teorema~\ref{thm:gmres_optimal}, $r_k = p(A)r_0$ para algún polinomio $p$ con $p(0) = 1$. Usando la diagonalización:
-% \[
-% p(A) = X p(\Lambda) X^{-1},
-% \]
-% donde $p(\Lambda) = \text{diag}(p(\lambda_1), \ldots, p(\lambda_n))$. Entonces:
-% \[
-% \|r_k\|_2 = \|p(A)r_0\|_2 \leq \|X\|_2 \|p(\Lambda)\|_2 \|X^{-1}\|_2 \|r_0\|_2 = \kappa(X) \max_i |p(\lambda_i)| \|r_0\|_2.
-% \]
-% \end{proof}
-
-% \begin{corollary}[Convergencia para matrices normales]
-% Si $A$ es normal ($A^*A = AA^*$), entonces $X$ es unitaria y $\kappa(X) = 1$. En este caso:
-% \[
-% \frac{\|r_k\|_2}{\|r_0\|_2} \leq \min_{\substack{p \in \mathcal{P}_k \\ p(0) = 1}} \max_{\lambda \in \sigma(A)} |p(\lambda)|,
-% \]
-% donde $\sigma(A)$ denota el espectro de $A$.
-% \end{corollary}
-
-% \begin{theorem}[Convergencia para autovalores agrupados]
-% Si los autovalores de $A$ están agrupados en $m$ clusters distintos con $m \ll n$, entonces GMRES converge en a lo más $m$ iteraciones (ignorando errores de redondeo).
-% \end{theorem}
-
-% \begin{remark}[Interpretación geométrica]
-% La cota del Teorema~\ref{thm:gmres_diag} muestra que GMRES converge rápido cuando:
-% \begin{itemize}
-% \item Los autovalores están bien agrupados (permite polinomios que son pequeños en el espectro).
-% \item La matriz está bien condicionada espectralmente ($\kappa(X) \approx 1$).
-% \item Los autovalores están alejados del origen (facilita la construcción de polinomios pequeños).
-% \end{itemize}
-% \end{remark}
+La diferencia con Jacobi es que Gauss-Seidel usa los valores \emph{ya actualizados} de $x^{(k+1)}$ a medida que están disponibles:
+\[
+x_i^{(k+1)} = \frac{1}{a_{ii}}\left(b_i - \sum_{j < i} a_{ij} x_j^{(k+1)} - \sum_{j > i} a_{ij} x_j^{(k)}\right).
+\]
 
 
 \chapter{Interpolación}
@@ -6568,6 +6127,72 @@ Sea $f: \mathbb{R}^n \to \mathbb{R}$ dos veces diferenciable en $x$. La \textbf{
 Es la Jacobiana del gradiente: $\nabla^2 f(x) = J_{\nabla f}(x)$.
 \end{definition}
 
+\section{Subespacios y dimensiones}
+
+\begin{definition}[Suma e intersección de subespacios]
+Sean $U$ y $V$ subespacios de un espacio vectorial $W$ de dimensión finita. Su \textbf{suma} es
+\[
+U + V := \{u + v : u \in U,\, v \in V\},
+\]
+y su \textbf{intersección} $U \cap V$ es el subespacio de todos los vectores que pertenecen a ambos.
+\end{definition}
+
+\begin{theorem}[Fórmula de Grassmann]\label{thm:grassmann}
+Si $U$ y $V$ son subespacios de dimensión finita, entonces:
+\[
+\dim(U + V) + \dim(U \cap V) = \dim(U) + \dim(V).
+\]
+\end{theorem}
+
+\begin{proof}
+Sea $\{w_1,\ldots,w_k\}$ una base de $U \cap V$. La extendemos a bases de $U$ y $V$ respectivamente:
+\[
+\{w_1,\ldots,w_k,\,u_1,\ldots,u_p\} \text{ base de } U,\qquad
+\{w_1,\ldots,w_k,\,v_1,\ldots,v_q\} \text{ base de } V.
+\]
+Aquí $\dim(U)=k+p$, $\dim(V)=k+q$, $\dim(U\cap V)=k$. El conjunto
+$\mathcal{B}=\{w_1,\ldots,w_k,u_1,\ldots,u_p,v_1,\ldots,v_q\}$ genera $U+V$;
+veamos que es linealmente independiente. Dada una combinación nula
+\[
+\textstyle\sum_i a_i w_i + \sum_j b_j u_j + \sum_l c_l v_l = 0,
+\]
+el vector $s := \sum_l c_l v_l = -\sum_i a_i w_i - \sum_j b_j u_j$ pertenece a $U$, luego
+$s \in U \cap V$ y se escribe $s = \sum_i d_i w_i$. Por independencia de la base de $V$ se concluye que todos los $c_l = 0$ (y los $d_i = 0$); sustituyendo, todos los $a_i,b_j = 0$. Esto prueba que $\mathcal{B}$ es base de $U+V$, por lo que
+\[
+\dim(U+V) = k+p+q = (k+p)+(k+q)-k = \dim(U)+\dim(V)-\dim(U\cap V).
+\]
+\end{proof}
+
+\begin{corollary}[Cota inferior para la intersección]\label{cor:dim_interseccion}
+Sean $U$ y $V$ subespacios de un espacio de dimensión~$n$. Entonces:
+\[
+\dim(U \cap V) \geq \dim(U) + \dim(V) - n.
+\]
+En particular, si $\dim(U)+\dim(V)>n$, la intersección es no trivial.
+\end{corollary}
+
+\begin{proof}
+Como $U+V$ está contenido en el espacio ambiente de dimensión $n$, se tiene $\dim(U+V)\le n$.
+Por la Fórmula de Grassmann (Teorema~\ref{thm:grassmann}),
+\[
+\dim(U\cap V) = \dim(U)+\dim(V)-\dim(U+V) \ge \dim(U)+\dim(V)-n.
+\]
+\end{proof}
+
+\begin{theorem}[Teorema rango-nulidad]\label{thm:rango_nulidad}
+Sea $A\in\mathbb{C}^{m\times n}$. Entonces:
+\[
+\operatorname{rango}(A) + \dim(\ker(A)) = n.
+\]
+\end{theorem}
+
+\begin{proof}
+Sea $r=\operatorname{rango}(A)$ y $\{z_1,\ldots,z_{n-r}\}$ una base de $\ker(A)$. Se extiende a una base $\{z_1,\ldots,z_{n-r},e_1,\ldots,e_r\}$ de $\mathbb{C}^n$. Los vectores $Ae_1,\ldots,Ae_r$ generan $\operatorname{Im}(A)$ y son linealmente independientes (pues si $\sum \lambda_i Ae_i=0$ entonces $\sum\lambda_i e_i\in\ker(A)$, lo que por independencia da $\lambda_i=0$). Luego $\dim(\operatorname{Im}(A))=r=\operatorname{rango}(A)$, y
+\[
+\dim(\ker(A)) = n - r = n - \operatorname{rango}(A).
+\]
+\end{proof}
+
 
 \chapter{Espacios de Pre-Hilbert}
 
@@ -6636,6 +6261,7 @@ Un conjunto $\{e_k\}_{k \in I}$ es \textbf{ortonormal} si es ortogonal y además
 \end{definition}
 
 \begin{theorem}[Teorema de Pitágoras]
+\label{thm:pitagoras_appendix}
 Si $u \perp v$, entonces:
 \[
 \|u + v\|^2 = \|u\|^2 + \|v\|^2.
@@ -6682,7 +6308,7 @@ Todo espacio vectorial de dimensión finita con producto interno posee una base 
 \[ v_k = u_k - \sum_{j=1}^{k-1} (u_k, e_j) e_j, \quad e_k = \frac{v_k}{\|v_k\|}. \]
 \end{theorem}
 
-\begin{theorem}[Identidad de Parseval para bases ortonormales finitas]
+\begin{theorem}[Identidad de Parseval para bases ortonormales finitas]\label{thm:parseval_finito_appendix}
 Sea $\{e_1, \ldots, e_n\}$ una base ortonormal de $V$. Si $u = \sum_{k=1}^n c_k e_k$ con $c_k = (u, e_k)$, entonces:
 \begin{equation}\label{parseval_finito_appendix}
 \|u\|^2 = \sum_{k=1}^n |c_k|^2.
@@ -6736,6 +6362,23 @@ Recíprocamente, si $(u - s_0, s) = 0$ para todo $s \in S$, entonces para cualqu
 \|u - s\|^2 = \|(u - s_0) + (s_0 - s)\|^2 = \|u - s_0\|^2 + \|s_0 - s\|^2 \geq \|u - s_0\|^2,
 \]
 donde usamos que $(u - s_0) \perp (s_0 - s) \in S$.
+\end{proof}
+
+\begin{theorem}[Proyector hermítico es proyección ortogonal]
+\label{prop:proyector_hermitico}
+Sea $V$ un espacio de pre-Hilbert de dimensión finita y sea $P\colon V\to V$ una transformación lineal que satisface $P^2=P$ (idempotente) y $P^*=P$ (autoadjunta). Entonces $P$ es la proyección ortogonal sobre $\operatorname{Im}(P)$.
+\end{theorem}
+
+\begin{proof}
+Como $P^2=P$, todo vector $v\in V$ se descompone como
+\[
+v = Pv + (v - Pv),
+\]
+donde $Pv\in\operatorname{Im}(P)$.  Veamos que $v-Pv\perp\operatorname{Im}(P)$.  Sea $w=Pu\in\operatorname{Im}(P)$ cualquiera.  Entonces, usando $P^*=P$ y $P^2=P$:
+\[
+(v-Pv,\,w) = (v-Pv,\,Pu) = (P^*(v-Pv),\,u) = (P(v-Pv),\,u) = (Pv-P^2v,\,u) = (Pv-Pv,\,u) = 0.
+\]
+Por lo tanto $v-Pv\in\operatorname{Im}(P)^\perp$. Como la descomposición $V=\operatorname{Im}(P)\oplus\operatorname{Im}(P)^\perp$ es única (por el Teorema~\ref{thm:proyeccion_ortogonal}), se sigue que $Pv$ es la proyección ortogonal de $v$ sobre $\operatorname{Im}(P)$.
 \end{proof}
 
 \section{Factorización de Schur y Teorema Espectral}
