@@ -2279,201 +2279,123 @@ x_i^{(k+1)} = \frac{1}{a_{ii}}\left(b_i - \sum_{j < i} a_{ij} x_j^{(k+1)} - \sum
 
 \chapter{Interpolación}
 
-La interpolación polinomial es uno de los problemas centrales del análisis numérico y el álgebra computacional. Su objetivo es reconstruir una función (un polinomio) a partir de información parcial (sus valores en ciertos puntos). Aunque el problema puede plantearse de forma elemental, su estructura matemática es rica y conecta áreas aparentemente dispares como el análisis de Fourier, la integración numérica y la criptografía moderna.
+El objetivo de la interpolación polinomial es reconstruir un polinomio a partir de sus valores en ciertos puntos.  Aunque el problema puede plantearse de forma elemental, su estructura matemática conecta áreas dispares: análisis de Fourier, integración numérica y criptografía moderna.
 
-Desde una perspectiva algebraica, la interpolación se entiende mejor observando la relación entre el espacio de polinomios y el espacio de sus valores. Si consideramos el espacio vectorial $\mathcal{P}_n(\mathbb{F})$ de polinomios de grado $\leq n$ sobre un cuerpo $\mathbb{F}$ (como $\mathbb{R}$, $\mathbb{C}$ o $\mathbb{Z}_p$), la operación de evaluar un polinomio en $n+1$ puntos distintos define una transformación lineal hacia $\mathbb{F}^{n+1}$.
+\section{Existencia y unicidad del interpolante}\label{sec:existencia_unicidad_interpolante}
 
-El resultado fundamental de este capítulo es que esta transformación es invertible (un \textbf{isomorfismo} de espacios vectoriales). Esto garantiza que el problema de interpolación siempre tiene solución única. Más aún, diferentes bases del espacio de polinomios nos dan diferentes algoritmos y perspectivas: la base canónica lleva a sistemas de Vandermonde, mientras que la \textbf{base de Lagrange} diagonaliza el problema, haciendo que la recuperación de los coeficientes sea trivial.
+Sea $\mathbb{F}$ un cuerpo ($\mathbb{R}$, $\mathbb{C}$, $\mathbb{Z}_p$, etc.) y denotemos $\mathcal{P}_n(\mathbb{F})$ al espacio vectorial de polinomios de grado $\leq n$ con coeficientes en $\mathbb{F}$.  Una base es la \textbf{base monomial} $\{1,x,\ldots,x^n\}$, de modo que $\dim\mathcal{P}_n = n+1$.
 
-\section{El problema de interpolación como problema lineal}
-
-Hasta ahora hemos trabajado principalmente con los espacios vectoriales $\mathbb{R}^n$ y $\mathbb{C}^n$. Ahora introducimos otro objeto fundamental: los polinomios.
-
-\subsection{Polinomios sobre un cuerpo}
-
-\begin{definition}[Polinomios sobre un cuerpo]
-Un polinomio en la variable $x$ con coeficientes en un cuerpo $\mathbb{F}$ es una expresión formal:
-\[
-p(x) = a_0 + a_1 x + \cdots + a_n x^n = \sum_{k=0}^n a_k x^k,
-\]
-donde $n \geq 0$ es un entero y $a_k \in \mathbb{F}$. El conjunto de todos los polinomios se denota $\mathbb{F}[x]$.
+\begin{definition}[Problema de interpolación]
+Dados $n+1$ nodos distintos $x_0,\ldots,x_n\in\mathbb{F}$ y valores $y_0,\ldots,y_n\in\mathbb{F}$, buscamos $p\in\mathcal{P}_n$ tal que $p(x_i)=y_i$ para $i=0,\ldots,n$.
 \end{definition}
 
-En $\mathbb{F}[x]$ definimos las siguientes operaciones naturales:
-\begin{itemize}
-\item \textbf{Suma:} Se suman coeficiente a coeficiente.
-\item \textbf{Producto por escalar:} Se multiplica cada coeficiente por el escalar.
-\item \textbf{Multiplicación de polinomios:} Se usa la propiedad distributiva y la regla $x^i \cdot x^j = x^{i+j}$.
-\item \textbf{Evaluación:} Dado $\alpha \in \mathbb{F}$, $p(\alpha)$ es el elemento de $\mathbb{F}$ que resulta de sustituir $x$ por $\alpha$.
-\end{itemize}
-
-Para el problema de interpolación, trabajaremos con un subconjunto de dimensión finita:
-
-\begin{definition}[Espacio $\mathcal{P}_n$]
-Denotamos por $\mathcal{P}_n(\mathbb{F})$ (o simplemente $\mathcal{P}_n$) al conjunto de polinomios de grado a lo sumo $n$:
+El problema admite una lectura lineal inmediata.  Definimos el \textbf{operador de evaluación}
 \[
-\mathcal{P}_n = \{ p \in \mathbb{F}[x] : \deg(p) \leq n \}.
+\Phi\colon\mathcal{P}_n \to \mathbb{F}^{n+1},\qquad \Phi(p) = \bigl(p(x_0),\ldots,p(x_n)\bigr).
 \]
-\end{definition}
+Interpolar equivale a invertir $\Phi$.  Como $\dim\mathcal{P}_n = \dim\mathbb{F}^{n+1} = n+1$, basta probar que $\Phi$ es inyectiva.
 
-\begin{example}[Polinomios en diferentes cuerpos]
-La naturaleza del cuerpo $\mathbb{F}$ determina las propiedades de los polinomios:
-\begin{itemize}
-\item \textbf{Sobre $\mathbb{C}$:} Los coeficientes son números complejos. Por ejemplo, $p(x) = ix^2 + (1-i)x + 3 \in \mathcal{P}_2(\mathbb{C})$. Un caso de especial importancia son los polinomios de la forma $x^n - 1$, cuyas raíces son las \textbf{raíces $n$-ésimas de la unidad}: $1, \omega, \omega^2, \ldots, \omega^{n-1}$ donde $\omega = e^{2\pi i / n}$. Estas juegan un papel central en la Transformada Discreta de Fourier (DFT).
-
-\item \textbf{Sobre $\mathbb{Z}_p$:} Si $\mathbb{F} = \mathbb{Z}_p$ (enteros módulo un primo $p$), la aritmética de los coeficientes es modular. Por ejemplo, en $\mathbb{Z}_5[x]$, el polinomio $p(x) = 2x^2 + 4x + 1$ cumple que $p(3) = 2(3^2) + 4(3) + 1 = 18 + 12 + 1 = 31 \equiv 1 \pmod{5}$.
-\end{itemize}
-\end{example}
-
-\begin{theorem}[Estructura de espacio vectorial]
-$\mathcal{P}_n$ es un espacio vectorial de dimensión $n+1$. La base más simple es la \textbf{base canónica} o \textbf{monomial}: $\{1, x, x^2, \ldots, x^n\}$.
+\begin{theorem}[Existencia y unicidad]\label{thm:existencia_unicidad}
+Si los nodos $x_0,\ldots,x_n$ son distintos, $\Phi$ es un isomorfismo.  En particular, el problema de interpolación tiene solución única.
 \end{theorem}
-
-El siguiente resultado fundamental, que se utiliza repetidamente para demostrar unicidad de la interpolación, acota el número de raíces de un polinomio.
-
-\begin{theorem}[Cota de raíces de un polinomio]\label{thm:raices_polinomio}
-Sea $\mathbb{F}$ un cuerpo. Un polinomio no nulo $p \in \mathcal{P}_n(\mathbb{F})$ (de grado $\leq n$) tiene a lo sumo $n$ raíces en $\mathbb{F}$.
-\end{theorem}
-
 \begin{proof}
-Procedemos por inducción en $n$. Para $n = 0$, un polinomio no nulo es una constante $c \neq 0$, que no tiene raíces.
-
-Supongamos el resultado válido para polinomios de grado $\leq n-1$. Sea $p \in \mathcal{P}_n$ no nulo. Si $p$ no tiene raíces, el resultado es trivial. Si $\alpha \in \mathbb{F}$ es una raíz de $p$, entonces por el algoritmo de división de polinomios existe $q \in \mathcal{P}_{n-1}$ tal que:
-\[
-p(x) = (x - \alpha) q(x).
-\]
-El polinomio $q$ es no nulo (pues $p$ es no nulo y de grado $\leq n$, solo posible si $q$ tiene grado $\leq n-1$ y no es cero). Por hipótesis inductiva, $q$ tiene a lo sumo $n-1$ raíces.
-
-Si $\beta \neq \alpha$ es una raíz de $p$, entonces $0 = p(\beta) = (\beta - \alpha) q(\beta)$. Como $\beta \neq \alpha$ y $\mathbb{F}$ es un cuerpo (sin divisores de cero), se sigue que $q(\beta) = 0$. Por lo tanto, toda raíz de $p$ distinta de $\alpha$ es raíz de $q$. En consecuencia, $p$ tiene a lo sumo $1 + (n-1) = n$ raíces.
+Sea $p\in\ker\Phi$, es decir $p(x_i)=0$ para $i=0,\ldots,n$.  Un polinomio no nulo de grado $\leq n$ tiene a lo sumo $n$ raíces (Teorema~\ref{thm:raices_polinomio}, Apéndice~A), pero $p$ tiene $n+1$ raíces; luego $p\equiv 0$ y $\Phi$ es inyectiva.
 \end{proof}
 
-\subsection{Formulación del problema de interpolación polinomial}
+\subsection{La matriz de Vandermonde}\label{subsec:vandermonde}
 
-\begin{definition}[Problema de interpolación polinomial]
-Dados $n+1$ puntos distintos $(x_0, y_0), (x_1, y_1), \ldots, (x_n, y_n)$ con $x_i \neq x_j$ para $i \neq j$, el problema consiste en encontrar un polinomio $p \in \mathcal{P}_n$ tal que:
+Si escribimos $p(x) = \sum_{k=0}^n a_k x^k$ en la base monomial, las condiciones $p(x_i)=y_i$ se traducen en el sistema $Va = y$ con la \textbf{matriz de Vandermonde}
 \[
-p(x_i) = y_i, \quad i = 0, 1, \ldots, n.
-\]
-\end{definition}
-
-\textbf{Interpretación lineal:} Podemos definir una transformación lineal $\Phi: \mathcal{P}_n \to \mathbb{F}^{n+1}$ que toma un polinomio y devuelve sus valores en los nodos:
-\[
-\Phi(p) = (p(x_0), p(x_1), \ldots, p(x_n)).
-\]
-El problema de interpolación equivale a invertir esta transformación: dado un vector de valores $\mathbf{y} \in \mathbb{F}^{n+1}$, queremos encontrar $p = \Phi^{-1}(\mathbf{y})$. Como ambos espacios tienen la misma dimensión ($n+1$), basta demostrar que $\Phi$ es inyectiva o sobreyectiva para asegurar que es un isomorfismo (invertible).
-
-\begin{theorem}[Existencia y unicidad]
-Existe un único polinomio $p \in \mathcal{P}_n$ que satisface las condiciones de interpolación.
-\end{theorem}
-
-\begin{proof}
-\textbf{Método 1 (Matriz de Vandermonde):} Si escribimos $p(x) = \sum_{k=0}^n a_k x^k$ en la base canónica, las condiciones de interpolación se traducen en el sistema lineal:
-\[
-\begin{pmatrix}
+V = \begin{pmatrix}
 1 & x_0 & x_0^2 & \cdots & x_0^n \\
 1 & x_1 & x_1^2 & \cdots & x_1^n \\
 \vdots & \vdots & \vdots & \ddots & \vdots \\
 1 & x_n & x_n^2 & \cdots & x_n^n
-\end{pmatrix}
-\begin{pmatrix}
-a_0 \\ a_1 \\ \vdots \\ a_n
-\end{pmatrix}
-=
-\begin{pmatrix}
-y_0 \\ y_1 \\ \vdots \\ y_n
-\end{pmatrix}.
+\end{pmatrix}, \qquad
+\det(V) = \prod_{0\le i<j\le n}(x_j - x_i) \neq 0.
 \]
+Así, la existencia y unicidad del interpolante se reducen a la inversibilidad de $V$.
 
-La matriz de Vandermonde $V$ tiene determinante:
-\[
-\det(V) = \prod_{0 \leq i < j \leq n} (x_j - x_i) \neq 0,
-\]
-por lo que el sistema tiene solución única.
+\begin{remark}[Mal condicionamiento de Vandermonde]\label{rmk:vandermonde_cond}
+Resolver el sistema $Va=y$ es, en general, un método numéricamente \emph{inadecuado} para calcular el interpolante: $\kappa_2(V)$ crece exponencialmente con~$n$.
 
-\textbf{Método 2 (Argumento dimensional):} Si existieran dos polinomios $p, q \in \mathcal{P}_n$ que interpolan los mismos datos, entonces $r = p - q \in \mathcal{P}_n$ satisface $r(x_i) = 0$ para $i = 0, \ldots, n$. Un polinomio no nulo de grado $\leq n$ tiene a lo sumo $n$ raíces, pero $r$ tiene $n+1$ raíces. Por lo tanto, $r \equiv 0$.
-\end{proof}
+Para ver esto, usamos la caracterización variacional $\sigma_{\min}(V) = \min_{a\neq 0}\|Va\|_2/\|a\|_2$.  Si los nodos $x_0,\ldots,x_n$ están en $[-1,1]$, la suma $\|Va\|_2^2 = \sum_{i=0}^n p(x_i)^2$ (donde $p$ tiene coeficientes~$a$) se comporta como una suma de Riemann de $\int_{-1}^1 p(x)^2\,dx$ escalada por un factor $O(n)$.  Para el polinomio de prueba $p(x)=(1-x^2)^n$, la integral $\int_{-1}^1 (1-x^2)^{2n}\,dx\to 0$, mientras que, usando la identidad $\sum_{k=0}^n\binom{n}{k}^2 = \binom{2n}{n}$, se verifica que $\|a\|_2^2 \geq 4^n/(2n+1)$.  Esto fuerza que $\sigma_{\min}(V)$ decaiga exponencialmente y, en consecuencia, $\kappa_2(V)$ crezca exponencialmente.
+\end{remark}
 
-\subsection{La base de Lagrange y la forma baricéntrica}
+\subsection{La base de Lagrange}\label{subsec:base_lagrange}
 
-Aunque la base canónica $\{1, x, \ldots, x^n\}$ es natural, genera sistemas mal condicionados (Vandermonde). La \textbf{base de Lagrange} diagonaliza el problema de interpolación:
+El mal condicionamiento de la matriz de Vandermonde no implica que no existan formas estables de calcular el interpolante. En efecto, un método consiste en utilizar la \textbf{base de Lagrange}, que diagonaliza el operador~$\Phi$.
 
 \begin{definition}[Polinomios base de Lagrange]
-Dados nodos $x_0, \ldots, x_n$:
+Dados nodos distintos $x_0,\ldots,x_n\in\mathbb{F}$, definimos
 \[
-\ell_k(x) = \prod_{\substack{j=0 \\ j \neq k}}^n \frac{x - x_j}{x_k - x_j}, \quad k = 0, \ldots, n.
+\ell_k(x) = \prod_{\substack{j=0\\j\neq k}}^n \frac{x-x_j}{x_k-x_j}, \qquad k=0,\ldots,n.
 \]
 \end{definition}
 
-\begin{theorem}[Base de Lagrange]
-Los polinomios $\{\ell_0, \ldots, \ell_n\}$ forman una base de $\mathcal{P}_n$ con:
+\begin{theorem}[Propiedades de la base de Lagrange]\label{thm:base_lagrange}
+Los polinomios $\ell_0,\ldots,\ell_n$ forman una base de $\mathcal{P}_n$ y satisfacen:
 \begin{enumerate}
-\item \textbf{Propiedad de Kronecker}: $\ell_k(x_j) = \delta_{kj}$.
-\item \textbf{Partición de la unidad}: $\sum_{k=0}^n \ell_k(x) = 1$.
+\item \textbf{Propiedad de Kronecker:} $\ell_k(x_j) = \delta_{kj}$.
+\item \textbf{Partición de la unidad:} $\sum_{k=0}^n \ell_k(x) = 1$ para todo $x$.
 \end{enumerate}
-El polinomio interpolante es:
+El polinomio interpolante es $p(x) = \sum_{k=0}^n y_k\,\ell_k(x)$.
+\end{theorem}
+
+\begin{proof}
+La propiedad de Kronecker se verifica directamente de la definición.  En la base de Lagrange, la representación matricial de $\Phi$ es la identidad: $\Phi(\ell_k) = e_k$.  Como $\Phi$ es un isomorfismo (Teorema~\ref{thm:existencia_unicidad}), $\{\ell_0,\ldots,\ell_n\}$ es base de $\mathcal{P}_n$.
+
+Para la partición de la unidad, observamos que $q(x) = \sum_{k=0}^n \ell_k(x)$ pertenece a $\mathcal{P}_n$ y satisface $q(x_j) = \sum_k \delta_{kj} = 1$ para todo $j$.  Como el polinomio constante $1$ también interpola esos datos, la unicidad del interpolante da $q\equiv 1$.
+\end{proof}
+
+\subsection{La forma baricéntrica}\label{subsec:forma_baricentrica}
+
+Definimos los \textbf{pesos baricéntricos}
 \[
-p(x) = \sum_{k=0}^n y_k \ell_k(x).
+w_k = \frac{1}{\prod_{j\neq k}(x_k - x_j)}, \qquad k=0,\ldots,n,
+\]
+de modo que $\ell_k(x) = w_k\,\omega_{n+1}(x)/(x-x_k)$ donde $\omega_{n+1}(x) = \prod_{j=0}^n(x-x_j)$.  Sustituyendo en la fórmula del interpolante y dividiendo por $1 = \sum_k \ell_k(x)$:
+
+\begin{theorem}[Forma baricéntrica]\label{thm:forma_baricentrica}
+Para $x\neq x_k$, el polinomio interpolante se escribe
+\[
+p(x) = \frac{\displaystyle\sum_{k=0}^n \frac{w_k}{x-x_k}\,y_k}{\displaystyle\sum_{k=0}^n \frac{w_k}{x-x_k}}.
 \]
 \end{theorem}
 
-\textit{Interpretación geométrica:} En la base de Lagrange, la matriz de evaluación es la identidad. Esto convierte el problema de interpolación en trivial: los "coeficientes" son directamente los valores $y_k$.
-
-Para estabilidad numérica y eficiencia, se usa la forma baricéntrica. Definiendo los \textbf{pesos baricéntricos}:
-\[
-w_k = \frac{1}{\prod_{j \neq k} (x_k - x_j)},
-\]
-el interpolante se escribe:
-\[
-p(x) = \frac{\sum_{k=0}^n \frac{w_k y_k}{x - x_k}}{\sum_{k=0}^n \frac{w_k}{x - x_k}}.
-\]
-
-\textbf{Ventajas:} (1) Los pesos se calculan una vez ($O(n^2)$). (2) Cada evaluación cuesta $O(n)$. (3) Agregar nodos es simple: $w_k^{\text{nuevo}} = w_k^{\text{viejo}} / (x_k - x_{n+1})$.
-
-
 \section{Interpolación sobre $\mathbb{R}$}\label{sec:interpolacion_R}
 
-Cuando los nodos y los datos son reales, la interpolación polinomial adquiere una faceta analítica que no está presente en el marco algebraico general: podemos estimar cuánto difiere el interpolante de la función original.  El resultado fundamental es el \textbf{teorema del error de interpolación}, que expresa la diferencia $f(x) - p_n(x)$ en términos de la derivada de orden $n+1$ de $f$.
+Cuando los nodos y los datos son reales, podemos estimar cuánto difiere el interpolante de la función original.  El resultado fundamental es el \textbf{teorema del error de interpolación}, que expresa $f(x)-p_n(x)$ en términos de la derivada de orden $n+1$ de~$f$.
 
-Un estudio más profundo del error ---que requiere las herramientas de la teoría de aproximación (series de Fourier, polinomios ortogonales, convergencia espectral)--- se realizará en el Capítulo~4.  En esta sección nos limitamos al resultado clásico y a su primera aplicación: la deducción de fórmulas de \textbf{cuadratura interpolatoria} (reglas del trapecio y de Simpson) con cotas de error explícitas.
+Un estudio más profundo del error ---que requiere las herramientas de la teoría de aproximación--- se realizará en el Capítulo~4.
 
 \subsection{Teorema del error de interpolación}\label{subsec:error_interpolacion}
 
 \begin{theorem}[Error de interpolación polinomial]\label{thm:error_interpolacion}
-Sea $f \in C^{n+1}([a,b])$ y sea $p_n \in \mathcal{P}_n$ el polinomio que interpola a $f$ en $n+1$ nodos distintos $x_0, x_1, \ldots, x_n \in [a,b]$.  Entonces, para todo $x \in [a,b]$ existe $\xi = \xi(x) \in (a,b)$ tal que
+Sea $f\in C^{n+1}([a,b])$ y $p_n\in\mathcal{P}_n$ el polinomio que interpola a $f$ en $n+1$ nodos distintos $x_0,\ldots,x_n\in[a,b]$.  Entonces, para todo $x\in[a,b]$ existe $\xi=\xi(x)\in(a,b)$ tal que
 \begin{equation}\label{eq:error_interpolacion}
-f(x) - p_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}\,\omega_{n+1}(x), \qquad \omega_{n+1}(x) = \prod_{i=0}^n (x - x_i).
+f(x)-p_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}\,\omega_{n+1}(x), \qquad \omega_{n+1}(x)=\prod_{i=0}^n(x-x_i).
 \end{equation}
-En particular, $\displaystyle\|f - p_n\|_\infty \leq \frac{\|f^{(n+1)}\|_\infty}{(n+1)!}\,\|\omega_{n+1}\|_\infty$.
+En particular, $\displaystyle\|f-p_n\|_\infty \le \frac{\|f^{(n+1)}\|_\infty}{(n+1)!}\,\|\omega_{n+1}\|_\infty$.
 \end{theorem}
 
 \begin{proof}
-Si $x$ coincide con algún nodo $x_j$, ambos lados de~\eqref{eq:error_interpolacion} valen cero y la igualdad es trivial.
-
-Fijemos $x \neq x_j$ para todo $j$.  Definimos la función auxiliar
+Si $x$ coincide con algún nodo, ambos lados de~\eqref{eq:error_interpolacion} valen cero.  Fijemos $x\neq x_j$ para todo $j$ y definamos
 \[
-g(t) = f(t) - p_n(t) - \frac{f(x) - p_n(x)}{\omega_{n+1}(x)}\,\omega_{n+1}(t),
+g(t) = f(t) - p_n(t) - \frac{f(x)-p_n(x)}{\omega_{n+1}(x)}\,\omega_{n+1}(t).
 \]
-que satisface $g \in C^{n+1}([a,b])$.  Observemos que $g$ tiene \emph{al menos $n+2$ ceros} en $[a,b]$: los $n+1$ nodos $x_0, \ldots, x_n$ (pues $f(x_j) - p_n(x_j) = 0$ y $\omega_{n+1}(x_j) = 0$), y también el punto~$x$ (pues $g(x) = f(x) - p_n(x) - [f(x) - p_n(x)] = 0$).
-
-Por el teorema de Rolle aplicado sucesivamente:
-\begin{itemize}
-\item $g$ tiene $\geq n+2$ ceros $\;\Rightarrow\;$ $g'$ tiene $\geq n+1$ ceros,
-\item $g'$ tiene $\geq n+1$ ceros $\;\Rightarrow\;$ $g''$ tiene $\geq n$ ceros,
-\item[] \hspace{1cm} $\vdots$
-\item $g^{(n)}$ tiene $\geq 2$ ceros $\;\Rightarrow\;$ $g^{(n+1)}$ tiene $\geq 1$ cero.
-\end{itemize}
-Sea $\xi \in (a,b)$ un cero de $g^{(n+1)}$.  Como $p_n^{(n+1)} \equiv 0$ (pues $\deg p_n \leq n$) y $\omega_{n+1}^{(n+1)} = (n+1)!$ (pues $\omega_{n+1}$ es mónico de grado $n+1$):
+La función $g\in C^{n+1}([a,b])$ tiene al menos $n+2$ ceros: los $n+1$ nodos $x_0,\ldots,x_n$ y el punto~$x$.  Por el teorema de Rolle aplicado sucesivamente, $g^{(n+1)}$ tiene al menos un cero~$\xi\in(a,b)$.  Como $p_n^{(n+1)}\equiv 0$ y $\omega_{n+1}^{(n+1)}=(n+1)!$:
 \[
-0 = g^{(n+1)}(\xi) = f^{(n+1)}(\xi) - \frac{f(x) - p_n(x)}{\omega_{n+1}(x)}\,(n+1)!.
+0 = g^{(n+1)}(\xi) = f^{(n+1)}(\xi) - \frac{f(x)-p_n(x)}{\omega_{n+1}(x)}\,(n+1)!.
 \]
-Despejando $f(x) - p_n(x)$ se obtiene~\eqref{eq:error_interpolacion}.
+Despejando se obtiene~\eqref{eq:error_interpolacion}.
 \end{proof}
 
 \begin{remark}[Rol del polinomio nodal $\omega_{n+1}$]
 La fórmula~\eqref{eq:error_interpolacion} separa dos contribuciones al error:
 \begin{enumerate}
-\item $f^{(n+1)}(\xi)/(n+1)!$: depende de la \textbf{suavidad} de $f$ (cuanto más suave es $f$, menor es la derivada de orden alto).
-\item $\omega_{n+1}(x) = \prod(x - x_i)$: depende de la \textbf{distribución de los nodos}.  La elección de nodos que minimiza $\|\omega_{n+1}\|_\infty$ en $[-1,1]$ son los \textbf{nodos de Chebyshev} $x_j = \cos\!\big(\frac{(2j+1)\pi}{2(n+1)}\big)$, que estudiaremos en detalle en el Capítulo~4.
+\item $f^{(n+1)}(\xi)/(n+1)!$: depende de la \textbf{suavidad} de $f$.
+\item $\omega_{n+1}(x) = \prod(x-x_i)$: depende de la \textbf{distribución de los nodos}.  Los nodos que minimizan $\|\omega_{n+1}\|_\infty$ en $[-1,1]$ son los \textbf{nodos de Chebyshev} $x_j=\cos\!\bigl(\frac{(2j+1)\pi}{2(n+1)}\bigr)$, que estudiaremos en el Capítulo~4.
 \end{enumerate}
 Para nodos \emph{equiespaciados}, $\|\omega_{n+1}\|_\infty$ crece factorialmente con $n$, lo que explica el \textbf{fenómeno de Runge}: la interpolación equiespaciada puede diverger aunque $f$ sea analítica.
 \end{remark}
@@ -2640,7 +2562,7 @@ La regla de Simpson es notablemente más precisa que la del trapecio: donde el t
 \end{remark}
 
 
-\section{Interpolación en el plano complejo: La DFT}
+\section{Interpolación en $\mathbb{C}$ y la DFT}\label{sec:interpolacion_C}
 
 Un caso particularmente importante de interpolación ocurre cuando trabajamos sobre el cuerpo de los números complejos $\mathbb{C}$ y elegimos como nodos las \textbf{raíces $n$-ésimas de la unidad}.
 
@@ -2655,7 +2577,6 @@ Sea $n \geq 1$ un entero. Las \textbf{raíces $n$-ésimas de la unidad} son las 
 \[
 \omega_n^k = e^{2\pi i k / n}, \quad k = 0, 1, \ldots, n-1.
 \]
-El conjunto $\mu_n = \{1, \omega_n, \omega_n^2, \ldots, \omega_n^{n-1}\}$ forma un grupo cíclico bajo multiplicación.
 \end{definition}
 
 \textbf{Notación:} Cuando $n$ está claro del contexto, escribimos simplemente $\omega = \omega_n = e^{2\pi i/n}$.
@@ -2671,7 +2592,15 @@ Las raíces $n$-ésimas de la unidad satisfacen:
 \end{theorem}
 
 \begin{proof}
-(1)-(3) son inmediatas de la definición exponencial.
+(1) es inmediata de la definición exponencial.
+
+(2) Para todo $k \in \mathbb{Z}$,
+\[
+\omega^{n+k} = \omega^n\,\omega^k = 1\cdot \omega^k = \omega^k,
+\]
+ya que $\omega^n = 1$.
+
+(3) es inmediata de la definición exponencial.
 
 (4) Si $k \equiv 0 \pmod{n}$, entonces $\omega^k = 1$ y la suma es $n \cdot 1 = n$. Si $k \not\equiv 0 \pmod{n}$, entonces $\omega^k \neq 1$ y usando la suma geométrica:
 \[
@@ -2699,7 +2628,8 @@ F_n =
 Elemento $(j,k)$: $[F_n]_{jk} = \omega^{jk}$ para $j, k = 0, 1, \ldots, n-1$.
 \end{definition}
 
-\textbf{Observación clave:} Esta es **exactamente** la matriz de la Transformada Discreta de Fourier (salvo convenciones de normalización).
+\begin{remark}Esta es exactamente la matriz de la Transformada Discreta de Fourier (salvo, según el caso, posibles convenciones de normalización.
+\end{remark}
 
 \begin{theorem}[DFT como interpolación en raíces de la unidad]\label{thm:dft_vandermonde}
 Sea $\mathbf{p} = (p_0, p_1, \ldots, p_{n-1})^T$ el vector de coeficientes de un polinomio $p(x) = \sum_{k=0}^{n-1} p_k x^k$. Sus evaluaciones en las raíces $n$-ésimas de la unidad son:
@@ -2757,12 +2687,6 @@ F_n^{-1} = \frac{1}{n} F_n^*.
 Explícitamente, $[F_n^{-1}]_{jk} = \frac{1}{n} \omega^{-jk}$.
 \end{corollary}
 
-\textbf{Interpretación geométrica:} Las columnas de $F_n$ son \textbf{vectores ortogonales} en $\mathbb{C}^n$ (con norma $\sqrt{n}$). Estas columnas son los \textbf{modos de Fourier}:
-\[
-\mathbf{v}_k = (\omega^{0 \cdot k}, \omega^{1 \cdot k}, \omega^{2 \cdot k}, \ldots, \omega^{(n-1) \cdot k})^T, \quad k = 0, \ldots, n-1.
-\]
-La ortogonalidad $\langle \mathbf{v}_k, \mathbf{v}_\ell \rangle = n \delta_{k\ell}$ es consecuencia directa de la propiedad de ortogonalidad discreta de las raíces de la unidad (Teorema anterior, propiedad 4).
-
 \subsection{Transformada Discreta de Fourier (DFT)}
 
 \begin{definition}[DFT y su inversa]
@@ -2777,13 +2701,6 @@ La \textbf{DFT inversa (IDFT)} es:
 \]
 \end{definition}
 
-\textbf{Conexión con interpolación:}
-\begin{itemize}
-\item \textbf{DFT directa} $\mathbf{X} = F_n \mathbf{x}$: Evalúa el polinomio $p(z) = \sum_{j=0}^{n-1} x_j z^j$ (coeficientes $\mathbf{x}$) en las raíces de la unidad $\{\omega^k\}$. Resultado: evaluaciones $\mathbf{X}$.
-
-\item \textbf{IDFT} $\mathbf{x} = F_n^{-1} \mathbf{X}$: Interpola las evaluaciones $\mathbf{X}$ en las raíces de la unidad para recuperar los coeficientes $\mathbf{x}$ del polinomio.
-\end{itemize}
-
 \begin{remark}[Convenciones de normalización]
 Diferentes textos usan distintas convenciones:
 \begin{itemize}
@@ -2792,6 +2709,48 @@ Diferentes textos usan distintas convenciones:
 \item \textbf{Convención de ingeniería}: A veces se usa $\omega = e^{-2\pi i/n}$ (signo opuesto).
 \end{itemize}
 Lo importante es la relación $F_n^{-1} = \frac{1}{n} F_n^*$, que es invariante.
+\end{remark}
+
+\begin{lemma}[Modos de Fourier discretos y cambio de base ortonormal]
+Sea
+\[
+\mathbf{v}_k = (\omega^{0k},\omega^{1k},\ldots,\omega^{(n-1)k})^T \in \mathbb{C}^n, \qquad k=0,\ldots,n-1,
+\]
+es decir, la $k$-ésima columna de $F_n$. Entonces:
+\begin{enumerate}
+\item $\langle \mathbf{v}_k,\mathbf{v}_\ell\rangle = n\,\delta_{k\ell}$.
+\item $\|\mathbf{v}_k\| = \sqrt{n}$ para todo $k$.
+\item Los vectores normalizados $\mathbf{u}_k = \frac{1}{\sqrt{n}}\mathbf{v}_k$ forman una BON de $\mathbb{C}^n$.
+\end{enumerate}
+En consecuencia, la matriz
+\[
+U := \frac{1}{\sqrt{n}}F_n = (\mathbf{u}_0\,\mathbf{u}_1\,\cdots\,\mathbf{u}_{n-1})
+\]
+es unitaria y el operador $U^*$ da las coordenadas de un vector en la base ortonormal de modos de Fourier.
+\end{lemma}
+
+\begin{proof}
+Para $k,\ell \in \{0,\ldots,n-1\}$,
+\[
+\langle \mathbf{v}_k,\mathbf{v}_\ell\rangle
+= \sum_{j=0}^{n-1}\overline{\omega^{jk}}\,\omega^{j\ell}
+= \sum_{j=0}^{n-1}\omega^{j(\ell-k)}.
+\]
+Por la ortogonalidad discreta de las raíces de la unidad, esta suma vale $n$ si $k=\ell$ y vale $0$ si $k\neq \ell$. Esto prueba (1). Tomando $k=\ell$ se obtiene
+\[
+\|\mathbf{v}_k\|^2 = \langle \mathbf{v}_k,\mathbf{v}_k\rangle = n,
+\]
+y por tanto $\|\mathbf{v}_k\|=\sqrt{n}$, que es (2).
+
+Finalmente, (1) y (2) implican que los vectores $\mathbf{u}_k=\mathbf{v}_k/\sqrt{n}$ son ortonormales. Como hay $n$ vectores ortonormales en $\mathbb{C}^n$, forman una base ortonormal, probando (3). Equivalentemente, $U^*U=I_n$, luego $U$ es unitaria. Para cualquier $\mathbf{x}\in\mathbb{C}^n$, el vector $U^*\mathbf{x}$ contiene sus coeficientes en la base ortonormal $\{\mathbf{u}_k\}_{k=0}^{n-1}$.
+\end{proof}
+
+\begin{remark}[Lectura en términos de DFT]
+Con la convención asimétrica usada aquí ($\mathbf{X}=F_n\mathbf{x}$), la DFT difiere del operador de cambio a coordenadas ortonormales por normalización (y conjugación de fase, según convención de signo). En particular, la versión unitaria
+\[
+\widetilde{\mathbf{X}} := \frac{1}{\sqrt{n}}F_n^*\mathbf{x}=U^*\mathbf{x}
+\]
+es exactamente el cambio de base de la base canónica a la BON de modos de Fourier.
 \end{remark}
 
 \subsection{Transformada Rápida de Fourier (FFT)}
@@ -6193,6 +6152,17 @@ Sea $r=\operatorname{rango}(A)$ y $\{z_1,\ldots,z_{n-r}\}$ una base de $\ker(A)$
 \]
 \end{proof}
 
+\section{Polinomios sobre un cuerpo}
+
+\begin{theorem}[Cota de raíces de un polinomio]\label{thm:raices_polinomio}
+Sea $\mathbb{F}$ un cuerpo.  Un polinomio no nulo de grado $\leq n$ con coeficientes en $\mathbb{F}$ tiene a lo sumo $n$ raíces en $\mathbb{F}$.
+\end{theorem}
+
+\begin{proof}
+Inducción en $n$.  Para $n=0$ un polinomio no nulo es una constante $c\neq 0$, sin raíces.
+
+Paso inductivo: sea $p$ no nulo de grado $\leq n$.  Si $p$ no tiene raíces, no hay nada que probar.  Si $\alpha\in\mathbb{F}$ es una raíz, el algoritmo de división da $p(x)=(x-\alpha)\,q(x)$ con $q$ no nulo de grado $\leq n-1$.  Para toda raíz $\beta\neq\alpha$ de $p$ se tiene $0=p(\beta)=(\beta-\alpha)\,q(\beta)$; como $\mathbb{F}$ no tiene divisores de cero, $q(\beta)=0$.  Por hipótesis inductiva $q$ tiene a lo sumo $n-1$ raíces, luego $p$ tiene a lo sumo $1+(n-1)=n$.
+\end{proof}
 
 \chapter{Espacios de Pre-Hilbert}
 
