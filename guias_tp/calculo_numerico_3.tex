@@ -4,6 +4,7 @@
 \usepackage[utf8x]{inputenc}
 
 \newtheorem{exercise}{Ejercicio}
+\newtheorem{nota}{Nota}
 \newcommand{\bej}{\begin{exercise}\rm}
 \newcommand{\fej}{\end{exercise}}
 
@@ -106,10 +107,58 @@ Además, si $f\in C^2([a,b])$, demuestre que el error puede escribirse como
 \[
 \int_a^b f(x) dx \approx \frac{b-a}{6}\left(f(a) + 4f\left(\frac{a+b}{2}\right) + f(b)\right).
 \]
-Además, si $f\in C^4([a,b])$, demuestre que el error puede escribirse como
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Cuadratura compuesta]
+Sea $f\in C^k([a,b])$ con $k$ suficientemente grande. Divida el intervalo $[a,b]$ en $n$ subintervalos de tamaño $h = (b-a)/n$ con nodos $x_j = a + jh$, $j = 0, \ldots, n$, y aplique la regla del trapecio en cada subintervalo $[x_j, x_{j+1}]$ y sume. Demuestre que se obtiene la fórmula:
 \[
-\int_a^b f(x)\,dx-\frac{b-a}{6}\left(f(a)+4f\left(\frac{a+b}{2}\right)+f(b)\right)=-\frac{(b-a)^5}{2880}f^{(4)}(\xi), \qquad \text{para algún } \xi\in(a,b).
+T_n(f) = h\left(\frac{f(x_0)}{2} + \sum_{j=1}^{n-1} f(x_j) + \frac{f(x_n)}{2}\right).
 \]
+Usando el error del trapecio simple en cada subintervalo, demuestre que si $f\in C^2([a,b])$:
+\[
+\left|\int_a^b f(x)\,dx - T_n(f)\right| \leq \frac{(b-a)}{12}\,h^2 \max_{\xi\in[a,b]}|f''(\xi)|.
+\]
+Es decir, la regla del trapecio compuesta tiene orden de convergencia $O(h^2)$.
+\end{exercise}
+
+\begin{exercise}[Extracción de singularidades]
+Considere la integral
+\[
+I = \int_0^1 \frac{\cos(x)}{\sqrt{x}}\, dx.
+\]
+El integrando $g(x) = \cos(x)/\sqrt{x}$ tiene una singularidad integrable en $x = 0$.
+\begin{enumerate}[(a)]
+\item Verifique que $g \notin C^0([0,1])$ y, en particular, que $g$ no es acotada cerca de $x = 0$. ¿Qué orden de convergencia se esperaría al aplicar la regla del trapecio compuesta directamente a $\int_0^1 g(x)\,dx$?
+\item Escriba $\cos(x) = 1 + (\cos(x) - 1)$ y descomponga la integral como
+\[
+I = \int_0^1 \frac{1}{\sqrt{x}}\, dx + \int_0^1 \frac{\cos(x) - 1}{\sqrt{x}}\, dx.
+\]
+Calcule la primera integral de forma exacta. Para la segunda integral, defina $\varphi(x) = (\cos(x) - 1)/\sqrt{x}$. Demuestre que $\varphi$ se extiende de forma continua a $[0, 1]$ con $\varphi(0) = 0$.
+\item Estudie la regularidad de $\varphi$: ¿pertenece a $C^1([0,1])$? \textbf{Sugerencia}: Calcule $\varphi'(x)$ para $x > 0$ y analice su comportamiento cuando $x \to 0^+$.
+\item ¿Qué orden de convergencia se obtiene al aplicar la regla del trapecio compuesta a $\int_0^1 \varphi(x)\,dx$? Compare con el resultado del inciso (a). ¿Qué se ganó al extraer la singularidad?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Cuadratura interpolatoria con pesos]
+Se desea aproximar integrales de la forma
+\[
+I(f) = \int_0^1 \sqrt{x}\, f(x)\, dx,
+\]
+donde $\sqrt{x}$ actúa como \emph{peso} y $f$ es una función suave. La idea es construir una regla de cuadratura
+\[
+Q(f) = \sum_{i=0}^{2} w_i\, f(x_i),
+\]
+con nodos fijos $x_0 = 0$, $x_1 = 1/2$, $x_2 = 1$.
+\begin{enumerate}[(a)]
+\item Determine los pesos $w_0, w_1, w_2$ imponiendo que la regla sea exacta para $f(x) = 1, x, x^2$. Es decir, resuelva el sistema:
+\[
+\sum_{i=0}^{2} w_i\, x_i^k = \int_0^1 \sqrt{x}\, x^k\, dx, \qquad k = 0, 1, 2.
+\]
+\item Determine el grado de precisión de la regla obtenida: ¿es exacta también para $f(x) = x^3$?
+\item Obtenga una fórmula para el error $E(f) = I(f) - Q(f)$. \textbf{Sugerencia}: Escriba $f(x) = p_2(x) + e(x)$ donde $p_2$ es el polinomio interpolante de $f$ en los nodos $\{0, 1/2, 1\}$ y $e(x) = f(x) - p_2(x)$ es el error de interpolación. Exprese $E(f)$ como una integral que involucra $e(x)$.
+\item Considere ahora una regla compuesta: divida $[0, 1]$ en $n$ subintervalos de tamaño $h = 1/n$ y aplique la regla de cuadratura con pesos en cada subintervalo (adaptando los nodos y el peso a cada subintervalo). ¿Cuál es el orden de convergencia en función de $h$?
+\item ¿Qué sucedería si se aplicara una regla de cuadratura estándar (sin extraer el peso $\sqrt{x}$) para aproximar $\int_0^1 \sqrt{x}\, f(x)\, dx$? \textbf{Sugerencia}: Observe que el integrando $g(x) = \sqrt{x}\, f(x)$ satisface $g'(x) \to \infty$ cuando $x \to 0^+$, por lo que $g \notin C^1([0,1])$. ¿Cómo afecta esta falta de regularidad al orden de convergencia de trapecios o Simpson compuesta?
 \end{enumerate}
 \end{exercise}
 
@@ -141,17 +190,15 @@ Sea $Q_n(f) = \sum_{i=0}^n w_i f(x_i)$ una regla de cuadratura interpolatoria ba
 \begin{exercise}[Diferenciación numérica]
 Muchas fórmulas de diferenciación numérica se pueden obtener derivando polinomios que interpolan los datos.
 \begin{enumerate}[(a)]
-\item Interpole $f(x)$ en $x_0, x_0 + h$ con el polinomio $p_1(x)$ de Lagrange.
-\item Derive $p_1(x)$ para obtener la aproximación de diferencias finitas:
+\item Interpole $f(x)$ en $x_0, x_0 + h$ con el polinomio $p_1(x)$ de Lagrange, derive $p_1(x)$ para obtener la aproximación de diferencias finitas:
 \[
-f'(x_0) = \frac{f(x_0 + h) - f(x_0)}{h} + O(h).
+f'(x_0) = \frac{f(x_0 + h) - f(x_0)}{h}.
 \]
-\item Interpole $f(x)$ en $x_0 - h, x_0, x_0 + h$ con el polinomio $p_2(x)$.
-\item Derive $p_2(x)$ y evalúe en $x_0$ para obtener la fórmula centrada:
+\item Interpole $f(x)$ en $x_0 - h, x_0, x_0 + h$ con el polinomio $p_2(x)$, derive $p_2(x)$ y evalúe en $x_0$ para obtener la fórmula centrada:
 \[
-f'(x_0) = \frac{f(x_0 + h) - f(x_0 - h)}{2h} + O(h^2).
+f'(x_0) = \frac{f(x_0 + h) - f(x_0 - h)}{2h}.
 \]
-\item Justifique los órdenes $O(h)$ y $O(h^2)$ utilizando desarrollos de Taylor de $f$ alrededor de $x_0$.
+\item Justifique los órdenes $O(h)$ y $O(h^2)$ de la primer y segunda regla respectivamente utilizando desarrollos de Taylor de $f$ alrededor de $x_0$. ¿Qué grado de regularidad de $f$ se requiere para cada caso?
 \end{enumerate}
 \end{exercise} 
 
@@ -187,14 +234,6 @@ Una red de difracción tiene $N$ rendijas equiespaciadas con separación $d$. La
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Teorema de Parseval discreto]
-Usando que $\frac{1}{\sqrt{N}}F$ es unitaria, demuestre la identidad de Parseval:
-\[
-\sum_{k=0}^{N-1} |\hat{x}_k|^2 = N \sum_{j=0}^{N-1} |x_j|^2.
-\]
-Interprete: la energía en el dominio del tiempo es proporcional a la energía en frecuencia.
-\end{exercise}
-
 \begin{exercise}[Convolución Discreta]
 Una de las propiedades más importantes de la DFT es su relación con la convolución.
 \begin{enumerate}[(a)]
@@ -210,23 +249,6 @@ w_k = \sum_{j=0}^{N-1} u_j v_{(k-j) \pmod N}, \quad k=0, \ldots, N-1.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Superposición e invariancia traslacional]
-Considere $N$ fuentes equiespaciadas en un intervalo $[0, L)$ con condiciones de contorno periódicas, ubicadas en $x_j = jh$ con $h = L/N$ ($j = 0, \ldots, N-1$). La fuente en $x_j$ tiene amplitud $\rho_j \in \mathbb{C}$. Cada fuente unitaria genera un potencial dado por una función $g$ que depende solo de la distancia: el potencial en $x$ debido a una fuente unitaria en $x'$ es $g(x - x')$.
-\begin{enumerate}[(a)]
-\item (\textbf{Invariancia traslacional}) Defina $f_m = g(mh)$ para $m = 0, \ldots, N-1$. Demuestre que el potencial en $x_n$ debido a una fuente unitaria en $x_j$ es $f_{(n-j) \bmod N}$, es decir, depende solo de $n - j$.
-\item (\textbf{Linealidad}) Usando que el potencial total es la suma de las contribuciones individuales ponderadas por las amplitudes, demuestre que el potencial total en $x_n$ es $\phi_n = \sum_{j=0}^{N-1} \rho_j\, f_{(n-j) \bmod N}$. Concluya que $\phi = \rho * f$ (convolución circular).
-\item Use el Teorema de la Convolución para concluir que $\phi$ se puede calcular en $O(N \log N)$ operaciones en vez de $O(N^2)$.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Óptica de Fourier: filtrado espacial]
-En un sistema óptico \emph{4f}, una lente transforma el campo de entrada $u\in\mathbb{C}^N$ en su DFT $\hat{u}$ en el plano focal (llamado \emph{plano de Fourier}).  Allí se coloca una máscara de transmitancia $H\in\mathbb{C}^N$ que multiplica componente a componente: $\hat{v}_k = H_k\,\hat{u}_k$.  Una segunda lente aplica la DFT inversa para obtener el campo de salida $v$.
-\begin{enumerate}[(a)]
-\item Demuestre que $v = h * u$ (convolución circular), donde $h$ es la DFT inversa de $H$.  La función $h$ se llama \emph{respuesta al impulso} del sistema.
-\item Filtro pasa-bajos. Sea $N$ par y defina $H_k = 1$ si la frecuencia reindexada satisface $|k|\le k_c$ y $H_k = 0$ en caso contrario (usando la convención $k\in\{-N/2,\ldots,N/2-1\}$).  Explique por qué este filtro suaviza la señal y elimina detalles finos.
-\item \textbf{Conservación de energía.}  Usando Parseval, demuestre que si $|H_k|\le 1$ para todo $k$, entonces $\|v\|^2 \le \|u\|^2$.  ¿Qué ocurre si $|H_k|=1$ para todo $k$ (máscara de fase pura)?
-\end{enumerate}
-\end{exercise}
 
 \begin{exercise}[Multiplicación rápida de polinomios]
 Sean $P(x) = \sum_{j=0}^{n-1} a_j x^j$ y $Q(x) = \sum_{k=0}^{n-1} b_k x^k$ dos polinomios de grado menor que $n$. Queremos calcular su producto $R(x) = P(x)Q(x)$.
@@ -244,7 +266,7 @@ Defina vectores extendidos $A, B \in \mathbb{C}^N$ con $N \ge 2n-1$ completando 
    \item Multiplicar punto a punto.
    \item Calcular $\text{IFFT}$ del resultado.
    \end{enumerate}
-\item Compare la complejidad asintótica de este método con la multiplicación clásica "todos con todos" ($O(n^2)$). ¿A partir de qué grado $n$ aproximado cree que vale la pena usar FFT?
+\item Compare la complejidad asintótica de este método con la multiplicación clásica.
 \end{enumerate}
 \end{exercise}
 
