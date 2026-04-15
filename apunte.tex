@@ -2427,10 +2427,10 @@ Cuando los nodos y los datos son reales, podemos estimar cuánto difiere el inte
 
 Un estudio más profundo del error ---que requiere las herramientas de la teoría de aproximación--- se realizará en el Capítulo~4.
 
-\subsection{Teorema del error de interpolación}\label{subsec:error_interpolacion}
+\subsection{Error de interpolación}\label{subsec:error_interpolacion}
 
 \begin{theorem}[Error de interpolación polinomial]\label{thm:error_interpolacion}
-Sea $f\in C^{n+1}([a,b])$ y $p_n\in\mathcal{P}_n$ el polinomio que interpola a $f$ en $n+1$ nodos distintos $x_0,\ldots,x_n\in[a,b]$.  Entonces, para todo $x\in[a,b]$ existe $\xi=\xi(x)\in(a,b)$ tal que
+Sea $f\in C^{(n+1)}([a,b])$ y $p_n\in\mathcal{P}_n$ el polinomio que interpola a $f$ en $n+1$ nodos distintos $x_0,\ldots,x_n\in[a,b]$.  Entonces, para todo $x\in[a,b]$ existe $\xi=\xi(x)\in(a,b)$ tal que
 \begin{equation}\label{eq:error_interpolacion}
 f(x)-p_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}\,\omega_{n+1}(x), \qquad \omega_{n+1}(x)=\prod_{i=0}^n(x-x_i).
 \end{equation}
@@ -2442,7 +2442,7 @@ Si $x$ coincide con algún nodo, ambos lados de~\eqref{eq:error_interpolacion} v
 \[
 g(t) = f(t) - p_n(t) - \frac{f(x)-p_n(x)}{\omega_{n+1}(x)}\,\omega_{n+1}(t).
 \]
-La función $g\in C^{n+1}([a,b])$ tiene al menos $n+2$ ceros: los $n+1$ nodos $x_0,\ldots,x_n$ y el punto~$x$.  Por el teorema de Rolle aplicado sucesivamente, $g^{(n+1)}$ tiene al menos un cero~$\xi\in(a,b)$.  Como $p_n^{(n+1)}\equiv 0$ y $\omega_{n+1}^{(n+1)}=(n+1)!$:
+La función $g\in C^{(n+1)}([a,b])$ tiene al menos $n+2$ ceros: los $n+1$ nodos $x_0,\ldots,x_n$ y el punto~$x$.  Por el teorema de Rolle aplicado sucesivamente, $g^{(n+1)}$ tiene al menos un cero~$\xi\in(a,b)$.  Como $p_n^{(n+1)}\equiv 0$ y $\omega_{n+1}^{(n+1)}=(n+1)!$:
 \[
 0 = g^{(n+1)}(\xi) = f^{(n+1)}(\xi) - \frac{f(x)-p_n(x)}{\omega_{n+1}(x)}\,(n+1)!.
 \]
@@ -2458,6 +2458,40 @@ La fórmula~\eqref{eq:error_interpolacion} separa dos contribuciones al error:
 Para nodos \emph{equiespaciados}, $\|\omega_{n+1}\|_\infty$ crece factorialmente con $n$, lo que explica el \textbf{fenómeno de Runge}: la interpolación equiespaciada puede diverger aunque $f$ sea analítica.
 \end{remark}
 
+\begin{example}[Error de la interpolación lineal]\label{ex:error_interpolacion_lineal}
+Sea $f\in C^2([a,a+h])$ y $p_1\in\mathcal{P}_1$ el polinomio que interpola $f$ en los extremos $x_0=a$ y $x_1=a+h$.  Aplicamos el Teorema~\ref{thm:error_interpolacion} con $n=1$: para todo $x\in[a,a+h]$ existe $\xi\in(a,a+h)$ tal que
+\[
+f(x)-p_1(x)=\frac{f''(\xi)}{2}(x-a)(x-(a+h)).
+\]
+Para acotar $|\omega_2(x)|=|(x-a)(x-(a+h))|$ en $[a,a+h]$, hacemos $t=x-a\in[0,h]$:
+\[
+|t(t-h)|=t(h-t)\le\frac{h^2}{4},
+\]
+pues el máximo de $t(h-t)$ se alcanza en $t=h/2$.  Por lo tanto
+\[
+\|f-p_1\|_{\infty,[a,a+h]}\le\frac{h^2}{8}\|f''\|_{\infty,[a,a+h]}.
+\]
+El error de la interpolación lineal es $O(h^2)$, con constante proporcional a~$\|f''\|_\infty$.
+\end{example}
+
+\begin{example}[Error de la derivada del interpolante lineal]\label{ex:error_derivada_interpolacion_lineal}
+Con las mismas hipótesis del Ejemplo~\ref{ex:error_interpolacion_lineal}, estimamos el error al aproximar $f'$ por $p_1'$.  Como $p_1$ es afín, $p_1'(x)=\frac{f(a+h)-f(a)}{h}$ es constante (el cociente incremental o \emph{diferencia finita}).
+
+Por el teorema de Taylor con resto integral,
+\[
+p_1'=\frac{f(a+h)-f(a)}{h}=f'(a)+\frac{1}{h}\int_a^{a+h}(a+h-t)\,f''(t)\,dt.
+\]
+Para todo $x\in[a,a+h]$, el teorema fundamental del cálculo da $f'(x)=f'(a)+\int_a^x f''(t)\,dt$.  Restando:
+\[
+f'(x)-p_1'=\int_a^x f''(t)\,dt-\frac{1}{h}\int_a^{a+h}(a+h-t)\,f''(t)\,dt.
+\]
+Acotando: $\bigl|\int_a^x f''\bigr|\le(x-a)\|f''\|_\infty\le h\|f''\|_\infty$ y $\frac{1}{h}\int_a^{a+h}(a+h-t)\,dt=\frac{h}{2}$, luego
+\[
+\|f'-p_1'\|_{\infty,[a,a+h]}\;\le\; h\,\|f''\|_{\infty,[a,a+h]}.
+\]
+El error de la derivada del interpolante lineal es $O(h)$: se pierde un orden respecto de la aproximación de la función.
+\end{example}
+
 \subsection{Cuadratura interpolatoria}\label{sec:cuadratura_interpolatoria}
 
 La interpolación polinomial tiene una aplicación directa e importante: la integración numérica (o \textbf{cuadratura}).  La idea es sencilla: si queremos aproximar la integral $\int_a^b f(x)\,dx$ y no conocemos una primitiva de $f$, podemos reemplazar $f$ por su polinomio interpolante $p$ (que sí sabemos integrar explícitamente) y aproximar:
@@ -2468,138 +2502,32 @@ Eligiendo distintos grados de interpolación y distintos nodos se obtienen las c
 
 \subsubsection{La regla del trapecio}\label{subsec:regla_trapecio}
 
-Dados dos puntos $a$ y $b$, interpolamos $f$ linealmente (grado 1) usando los extremos del intervalo como nodos.  El polinomio de Lagrange de grado 1 que pasa por $(a, f(a))$ y $(b, f(b))$ es:
-\[
-p_1(x) = f(a)\,\frac{x - b}{a - b} + f(b)\,\frac{x - a}{b - a} = f(a)\,\frac{b-x}{b-a} + f(b)\,\frac{x-a}{b-a}.
-\]
-Geométricamente, la gráfica de $p_1$ es el segmento de recta que une los puntos $(a, f(a))$ y $(b, f(b))$, formando un trapecio con el eje $x$.  Integrando:
-\[
-\int_a^b p_1(x)\,dx = \frac{f(a)}{b-a}\int_a^b (b-x)\,dx + \frac{f(b)}{b-a}\int_a^b (x-a)\,dx = \frac{f(a)}{b-a}\cdot\frac{(b-a)^2}{2} + \frac{f(b)}{b-a}\cdot\frac{(b-a)^2}{2}.
-\]
-Obtenemos así la \textbf{regla del trapecio}:
+Interpolando $f$ linealmente en los extremos $a$ y $b$ e integrando el interpolante se obtiene la \textbf{regla del trapecio}.
 
-\begin{theorem}[Regla del trapecio]\label{thm:regla_trapecio}
+\begin{definition}[Regla del trapecio]\label{def:regla_trapecio}
+La \textbf{regla del trapecio} (simple) es
 \[
-\int_a^b f(x)\,dx \approx T(f) := \frac{b-a}{2}\big(f(a) + f(b)\big).
+T(f;a,b) := \frac{b-a}{2}\bigl(f(a)+f(b)\bigr).
 \]
-\end{theorem}
-
-\subsubsection{Error de la regla del trapecio}\label{subsec:error_trapecio}
-
-Para estimar el error de cuadratura usamos el Teorema~\ref{thm:error_interpolacion}.  Con $n = 1$ y nodos $x_0 = a$, $x_1 = b$:
-\[
-f(x) - p_1(x) = \frac{f''(\xi(x))}{2}(x-a)(x-b).
-\]
-El error de cuadratura es entonces:
-\[
-\int_a^b f(x)\,dx - T(f) = \int_a^b \big(f(x) - p_1(x)\big)\,dx = \int_a^b \frac{f''(\xi(x))}{2}(x-a)(x-b)\,dx.
-\]
-
-Para obtener una fórmula cerrada, observamos que $(x-a)(x-b) \leq 0$ en todo $[a,b]$ (ya que $a \leq x \leq b$), de modo que la función $(x-a)(x-b)$ no cambia de signo.  Por el teorema del valor medio para integrales (segunda forma), existe $\eta \in (a,b)$ tal que:
-\[
-\int_a^b \frac{f''(\xi(x))}{2}(x-a)(x-b)\,dx = \frac{f''(\eta)}{2}\int_a^b (x-a)(x-b)\,dx.
-\]
-
-Calculamos la integral restante.  Haciendo el cambio $t = x - a$ con $b - a = h$:
-\[
-\int_a^b (x-a)(x-b)\,dx = \int_0^h t(t-h)\,dt = \int_0^h (t^2 - ht)\,dt = \frac{h^3}{3} - \frac{h^3}{2} = -\frac{h^3}{6}.
-\]
+\end{definition}
 
 \begin{theorem}[Error de la regla del trapecio]\label{thm:error_trapecio}
-Si $f \in C^2([a,b])$, existe $\eta \in (a,b)$ tal que:
+Si $f\in C^2([a,b])$, existe $\eta\in(a,b)$ tal que
 \[
-\int_a^b f(x)\,dx - \frac{b-a}{2}\big(f(a) + f(b)\big) = -\frac{(b-a)^3}{12}\,f''(\eta).
+\int_a^b f(x)\,dx - T(f;a,b) = -\frac{(b-a)^3}{12}\,f''(\eta).
 \]
 \end{theorem}
-
-\begin{example}[Aplicación de la fórmula del error]\label{ex:error_trapecio}
-Estimemos el error al aproximar $\int_0^1 e^x\,dx$ con la regla del trapecio.
-
-\textbf{Valor exacto:} $\int_0^1 e^x\,dx = e - 1 \approx 1.71828$.
-
-\textbf{Regla del trapecio:} $T(e^x) = \frac{1-0}{2}(e^0 + e^1) = \frac{1+e}{2} \approx 1.85914$.
-
-\textbf{Error real:} $|T(e^x) - (e-1)| = \frac{1+e}{2} - (e-1) = \frac{3-e}{2} \approx 0.14086$.
-
-\textbf{Cota del error:} Por el Teorema~\ref{thm:error_trapecio}, el error es $\frac{(b-a)^3}{12}|f''(\eta)|$ para algún $\eta \in (0,1)$.  Como $f''(x) = e^x$ es creciente, $\max_{x \in [0,1]} |f''(x)| = e$, y por lo tanto:
+\begin{proof}
+Sea $p_1$ el interpolante lineal de $f$ en $\{a,b\}$.  Como $\int_a^b p_1 = T(f;a,b)$, el error de cuadratura es $\int_a^b (f-p_1)$.  Por el Teorema~\ref{thm:error_interpolacion} con $n=1$:
 \[
-\left|\int_0^1 e^x\,dx - T(e^x)\right| \leq \frac{1}{12}\cdot e \approx 0.22694.
+f(x)-p_1(x)=\frac{f''(\xi(x))}{2}(x-a)(x-b).
 \]
-La cota es conservadora (sobreestima el error por un factor $\approx 1.6$) porque $f''(\eta)$ no necesariamente alcanza su máximo.  Pero el orden de magnitud es correcto: ambos valores son del orden de $\sim 0.1$, consistente con un error $O(h^3)$ con $h = b - a = 1$.
-
-Para dividir el intervalo en dos mitades y obtener una estimación más precisa, necesitamos la \textbf{regla del trapecio compuesta}.
-\end{example}
-
-\subsubsection{Regla del trapecio compuesta}\label{subsec:trapecio_compuesto}
-
-La regla del trapecio simple aplica una única aproximación lineal en todo $[a,b]$. Para funciones que varían significativamente, esto produce errores grandes. La estrategia natural es dividir $[a,b]$ en subintervalos y aplicar la regla del trapecio en cada uno.
-
-Subdivimos $[a,b]$ en $M$ subintervalos iguales de longitud $h = (b-a)/M$, con nodos:
+Como $(x-a)(x-b)\le 0$ en $[a,b]$, el teorema del valor medio para integrales (Teorema~\ref{thm:valor_medio_integral_2}, con $g=f''\circ\xi$ y $\varphi(x)=(x-a)(x-b)/2$) da un $\eta\in(a,b)$ con
 \[
-x_j = a + jh, \quad j = 0, 1, \ldots, M.
+\int_a^b \frac{f''(\xi(x))}{2}(x-a)(x-b)\,dx = \frac{f''(\eta)}{2}\int_a^b(x-a)(x-b)\,dx.
 \]
-En cada subintervalo $[x_j, x_{j+1}]$, la regla del trapecio da:
-\[
-\int_{x_j}^{x_{j+1}} f(x)\,dx \approx \frac{h}{2}\big(f(x_j) + f(x_{j+1})\big).
-\]
-Sumando sobre todos los subintervalos:
-\begin{align*}
-\int_a^b f(x)\,dx &= \sum_{j=0}^{M-1} \int_{x_j}^{x_{j+1}} f(x)\,dx \approx \sum_{j=0}^{M-1} \frac{h}{2}\big(f(x_j) + f(x_{j+1})\big) \\
-&= \frac{h}{2}\big[f(x_0) + f(x_1) + f(x_1) + f(x_2) + \cdots + f(x_{M-1}) + f(x_M)\big].
-\end{align*}
-Los valores en los nodos interiores aparecen duplicados.  Agrupando:
-
-\begin{theorem}[Regla del trapecio compuesta]\label{thm:trapecio_compuesto}
-Sea $h = (b-a)/M$ y $x_j = a + jh$.  Entonces:
-\[
-\int_a^b f(x)\,dx \approx T_M(f) := \frac{h}{2}\left[f(a) + 2\sum_{j=1}^{M-1} f(x_j) + f(b)\right].
-\]
-\end{theorem}
-
-\begin{remark}
-La fórmula $T_M(f)$ es la suma ponderada $T_M(f) = h\left[\frac{1}{2}f(a) + \sum_{j=1}^{M-1} f(x_j) + \frac{1}{2}f(b)\right]$, es decir, los nodos interiores tienen peso $h$ y los extremos tienen peso $h/2$.  Para funciones periódicas donde $f(a) = f(b)$, los dos medios extremos se combinan en un nodo completo y la fórmula se simplifica a $T_M(f) = h\sum_{j=0}^{M-1} f(x_j)$, que es la regla del trapecio periódica estudiada en el Capítulo~4 (Teorema~\ref{thm:trap_espectral}).
-\end{remark}
-
-El error de la regla compuesta se obtiene sumando los errores en cada subintervalo.  En $[x_j, x_{j+1}]$, el Teorema~\ref{thm:error_trapecio} da:
-\[
-\int_{x_j}^{x_{j+1}} f(x)\,dx - \frac{h}{2}\big(f(x_j)+f(x_{j+1})\big) = -\frac{h^3}{12}f''(\eta_j), \quad \eta_j \in (x_j, x_{j+1}).
-\]
-Sumando:
-\[
-\int_a^b f(x)\,dx - T_M(f) = -\frac{h^3}{12}\sum_{j=0}^{M-1} f''(\eta_j) = -\frac{h^3}{12}\cdot M \cdot \frac{1}{M}\sum_{j=0}^{M-1}f''(\eta_j).
-\]
-Usando que $Mh = b - a$ y que $\frac{1}{M}\sum f''(\eta_j)$ es un promedio de valores de $f''$ en $[a,b]$ (que por el teorema del valor intermedio para funciones continuas equivale a $f''(\eta)$ para algún $\eta \in (a,b)$):
-
-\begin{theorem}[Error de la regla del trapecio compuesta]\label{thm:error_trapecio_compuesto}
-Si $f \in C^2([a,b])$, existe $\eta \in (a,b)$ tal que:
-\[
-\int_a^b f(x)\,dx - T_M(f) = -\frac{(b-a)\,h^2}{12}\,f''(\eta), \quad h = \frac{b-a}{M}.
-\]
-En particular, el error es $O(h^2) = O(1/M^2)$ cuando $M \to \infty$.
-\end{theorem}
-
-\begin{example}[Continuación del Ejemplo~\ref{ex:error_trapecio}]
-Retomemos $\int_0^1 e^x\,dx$ y apliquemos la regla del trapecio compuesta con $M = 4$ subintervalos ($h = 0.25$):
-\begin{align*}
-T_4(e^x) &= \frac{0.25}{2}\left[e^0 + 2(e^{0.25} + e^{0.5} + e^{0.75}) + e^1\right] \\
-&= 0.125\left[1 + 2(1.28403 + 1.64872 + 2.11700) + 2.71828\right] \\
-&= 0.125 \times 13.81778 \approx 1.72722.
-\end{align*}
-El error real es $|1.72722 - 1.71828| = 0.00894$.  La cota teórica del Teorema~\ref{thm:error_trapecio_compuesto} da:
-\[
-\frac{(b-a)h^2}{12}\max|f''| = \frac{1 \cdot 0.25^2}{12}\cdot e \approx 0.01415.
-\]
-Comparemos la mejora respecto de la regla simple:
-\begin{center}
-\begin{tabular}{c c c c}
-$M$ & $h$ & Error real & Cota $\frac{(b-a)h^2}{12}e$ \\
-\hline
-1 & 1 & 0.14086 & 0.22694 \\
-4 & 0.25 & 0.00894 & 0.01415 \\
-\end{tabular}
-\end{center}
-Al pasar de $M=1$ a $M=4$ (reducir $h$ por factor 4), el error se reduce por un factor $\approx 15.8 \approx 4^2$, confirmando la convergencia $O(h^2)$.
-\end{example}
+El cambio $t=x-a$ da $\int_0^h t(t-h)\,dt = -h^3/6$ con $h=b-a$, de donde el resultado.
+\end{proof}
 
 \subsubsection{Regla de Simpson}\label{subsec:regla_simpson}
 
@@ -2618,6 +2546,139 @@ El error satisface: si $f \in C^4([a,b])$, existe $\eta \in (a,b)$ tal que
 \begin{remark}
 La regla de Simpson es notablemente más precisa que la del trapecio: donde el trapecio tiene error $O(h^3)$ con $h = b-a$, Simpson tiene error $O(h^5)$.  Además, aunque se construye interpolando con un polinomio de grado 2, es exacta para polinomios de grado $\leq 3$ (no solo $\leq 2$).  Este ``grado extra'' de precisión se debe a la simetría de los nodos respecto del punto medio del intervalo.
 \end{remark}
+
+
+\subsection{Regla del trapecio compuesta}\label{subsec:trapecio_compuesto}
+
+Para aproximar mejor la integral, dividimos $[a,b]$ en $M$ subintervalos iguales de longitud $h=(b-a)/M$ con nodos $x_j=a+jh$, $j=0,\ldots,M$, y aplicamos la regla simple en cada uno.
+
+\begin{definition}[Regla del trapecio compuesta]\label{def:trapecio_compuesto}
+La \textbf{regla del trapecio compuesta} con $M$ subintervalos es
+\[
+T_M(f) := \sum_{j=0}^{M-1} T(f;\,x_j,x_{j+1})
+= \frac{h}{2}\!\left[f(a)+2\!\sum_{j=1}^{M-1}f(x_j)+f(b)\right]
+= h\!\left[\frac{f(a)}{2}+\sum_{j=1}^{M-1}f(x_j)+\frac{f(b)}{2}\right].
+\]
+\end{definition}
+
+\begin{remark}
+Para funciones periódicas con $f(a)=f(b)$, los dos medios extremos se combinan en un nodo completo y la fórmula se reduce a $T_M(f)=h\sum_{j=0}^{M-1}f(x_j)$, la regla del trapecio periódica del Capítulo~4 (Teorema~\ref{thm:trap_espectral}).
+\end{remark}
+
+\begin{theorem}[Error de la regla del trapecio compuesta]\label{thm:error_trapecio_compuesto}
+Si $f\in C^2([a,b])$, existe $\eta\in(a,b)$ tal que
+\[
+\int_a^b f(x)\,dx - T_M(f) = -\frac{(b-a)\,h^2}{12}\,f''(\eta), \qquad h=\frac{b-a}{M}.
+\]
+En particular, el error es $O(h^2)$ cuando $h\to 0$.
+\end{theorem}
+\begin{proof}
+Aplicando el Teorema~\ref{thm:error_trapecio} en cada subintervalo:
+\[
+\int_a^b f\,dx - T_M(f)=\sum_{j=0}^{M-1}\biggl[\int_{x_j}^{x_{j+1}}f\,dx - T(f;x_j,x_{j+1})\biggr]
+=-\frac{h^3}{12}\sum_{j=0}^{M-1}f''(\eta_j),
+\]
+con $\eta_j\in(x_j,x_{j+1})$.  Reescribimos la suma como $M\cdot\frac{1}{M}\sum f''(\eta_j)$.  Como $f''$ es continua y cada $\eta_j\in[a,b]$, el teorema del valor medio para integrales (Teorema~\ref{thm:valor_medio_integral}) aplicado a la medida discreta uniforme ---o, equivalentemente, el teorema del valor intermedio--- garantiza un $\eta\in(a,b)$ con $\frac{1}{M}\sum f''(\eta_j)=f''(\eta)$.  Usando $Mh=b-a$ se concluye.
+\end{proof}
+
+El Teorema~\ref{thm:error_trapecio_compuesto} exige $f\in C^2$.  Cuando la función tiene menos regularidad, la regla del trapecio compuesta sigue convergiendo, pero a una velocidad menor que se cuantifica con el \textbf{módulo de continuidad}.
+
+\begin{definition}[Módulo de continuidad]\label{def:modulo_continuidad}
+Para $f\in C([a,b])$ y $\delta\ge 0$,
+\[
+\omega(f,\delta):=\sup_{\substack{x,y\in[a,b]\\|x-y|\le\delta}}|f(x)-f(y)|.
+\]
+Si $f$ es uniformemente continua (en particular, si $[a,b]$ es compacto), $\omega(f,\delta)\to 0$ cuando $\delta\to 0$.
+\end{definition}
+
+\begin{theorem}[Error del trapecio compuesto para funciones continuas]\label{thm:error_trapecio_continuo}
+Si $f\in C([a,b])$, entonces
+\[
+\left|\int_a^b f(x)\,dx - T_M(f)\right|\;\le\;(b-a)\,\omega(f,h),\qquad h=\frac{b-a}{M}.
+\]
+En particular, $T_M(f)\to\int_a^b f$ para toda $f$ continua.
+\end{theorem}
+\begin{proof}
+En cada $[x_j,x_{j+1}]$, sea $L_j$ la función afín que interpola $f$ en los extremos.  La regla del trapecio integra $L_j$ exactamente, así que
+\[
+E_j:=\int_{x_j}^{x_{j+1}}(f-L_j)\,dx.
+\]
+Como $L_j(x)=\frac{x_{j+1}-x}{h}f(x_j)+\frac{x-x_j}{h}f(x_{j+1})$ es combinación convexa de los valores en los extremos:
+\[
+f(x)-L_j(x)=\frac{x_{j+1}-x}{h}\bigl[f(x)-f(x_j)\bigr]+\frac{x-x_j}{h}\bigl[f(x)-f(x_{j+1})\bigr].
+\]
+Para $x\in[x_j,x_{j+1}]$ ambas diferencias están acotadas por $\omega(f,h)$ y los coeficientes suman~$1$, luego $|f(x)-L_j(x)|\le\omega(f,h)$.  Integrando: $|E_j|\le h\,\omega(f,h)$.  Sumando los $M$ subintervalos:
+\[
+\left|\int_a^b f - T_M(f)\right|\le Mh\,\omega(f,h)=(b-a)\,\omega(f,h).\qedhere
+\]
+\end{proof}
+
+\begin{example}[Convergencia para funciones Hölder]\label{ex:trapecio_holder}
+Si $f$ satisface $|f(x)-f(y)|\le C|x-y|^\alpha$ con $\alpha\in(0,1]$ (\textbf{condición de Hölder}), entonces $\omega(f,h)\le Ch^\alpha$ y el Teorema~\ref{thm:error_trapecio_continuo} da
+\[
+\left|\int_a^b f - T_M(f)\right|\le C(b-a)\,h^\alpha = C(b-a)^{1+\alpha}M^{-\alpha}.
+\]
+Por ejemplo, la función $f(x)=\sqrt{x}$ en $[0,1]$ es Hölder de exponente $\alpha=\frac{1}{2}$ ya que
+\[
+|\sqrt{x}-\sqrt{y}|=\frac{|x-y|}{\sqrt{x}+\sqrt{y}}\le\frac{|x-y|}{\sqrt{|x-y|}}=\sqrt{|x-y|},
+\]
+luego $\omega(\sqrt{\cdot},h)\le\sqrt{h}$ y la cota es
+\[
+\left|\int_0^1\sqrt{x}\,dx - T_M(\sqrt{\cdot})\right|\le\frac{1}{\sqrt{M}}.
+\]
+En contraste, para una función Lipschitz ($\alpha=1$) la convergencia es $O(1/M)$, y para $f\in C^2$ se recupera $O(1/M^2)$ por el Teorema~\ref{thm:error_trapecio_compuesto}.
+\end{example}
+
+Sin embargo, la cota $O(h^{1/2})$ para $\sqrt{x}$ es muy pesimista: $\sqrt{x}$ es $C^2$ en $(0,1]$ y la singularidad de $f''$ está confinada a un entorno del origen.  Combinando la cota para funciones continuas en el subintervalo singular con la cota $C^2$ en los restantes se obtiene un orden mucho mejor.
+
+\begin{proposition}[Cota mejorada para singularidad aislada]\label{prop:trapecio_singularidad}
+Sea $f\in C([a,b])$ Hölder de exponente $\alpha>0$, y supongamos que $f\in C^2((a,b])$ con
+\[
+|f''(x)|\;\le\; C_0\,(x-a)^{-\beta},\qquad x\in(a,b],
+\]
+para constantes $C_0>0$ y $\beta\in(1,3)$.  Entonces el error de la regla del trapecio compuesta con paso $h=(b-a)/M$ satisface
+\[
+\left|\int_a^b f\,dx - T_M(f)\right| \;=\; O\!\bigl(h^{\min(1+\alpha,\,3-\beta)}\bigr).
+\]
+\end{proposition}
+
+\begin{proof}
+Separamos el error en el primer subintervalo $[a,a+h]$ (que contiene la singularidad) y los restantes $M-1$ subintervalos.
+
+\textbf{Primer subintervalo.}  Aplicando el Teorema~\ref{thm:error_trapecio_continuo} localmente:
+\[
+|E_0|\;\le\; h\,\omega(f,h)\;\le\; h\cdot C_1h^\alpha = C_1 h^{1+\alpha},
+\]
+donde $C_1$ es la constante de Hölder de~$f$.
+
+\textbf{Subintervalos $j=1,\ldots,M-1$.}  En $[x_j,x_{j+1}]$ con $x_j=a+jh$ la función $f$ es $C^2$, y el Teorema~\ref{thm:error_trapecio} da
+\[
+|E_j|\;\le\;\frac{h^3}{12}\sup_{[x_j,x_{j+1}]}|f''|
+\;\le\;\frac{h^3}{12}\,C_0\,(jh)^{-\beta}
+= \frac{C_0\,h^{3-\beta}}{12}\,j^{-\beta}.
+\]
+Sumando y usando que $\sum_{j=1}^{\infty}j^{-\beta}<\infty$ para $\beta>1$:
+\[
+\sum_{j=1}^{M-1}|E_j|\;\le\;\frac{C_0\,h^{3-\beta}}{12}\sum_{j=1}^{\infty}j^{-\beta}
+= C_2\,h^{3-\beta}.
+\]
+
+\textbf{Conclusión.}  El error total es $|E_0|+\sum_{j\ge 1}|E_j|=O(h^{1+\alpha})+O(h^{3-\beta})=O(h^{\min(1+\alpha,\,3-\beta)})$.
+\end{proof}
+
+\begin{example}[Cota mejorada para $\sqrt{x}$]\label{ex:trapecio_sqrt_mejorado}
+Para $f(x)=\sqrt{x}$ en $[0,1]$:
+\begin{itemize}
+\item $f$ es Hölder de exponente $\alpha=\tfrac{1}{2}$ (Ejemplo~\ref{ex:trapecio_holder}).
+\item $f''(x)=-\tfrac{1}{4}x^{-3/2}$, así que $\beta=\tfrac{3}{2}$ y $C_0=\tfrac{1}{4}$.
+\end{itemize}
+Las dos contribuciones dan el mismo exponente: $1+\alpha=\tfrac{3}{2}$ y $3-\beta=\tfrac{3}{2}$.  La Proposición~\ref{prop:trapecio_singularidad} da
+\[
+\left|\int_0^1\sqrt{x}\,dx - T_M(\sqrt{\cdot})\right|=O(h^{3/2})=O(M^{-3/2}),
+\]
+lo que mejora en un factor $1/M$ la cota $O(M^{-1/2})$ obtenida usando únicamente la regularidad Hölder global.
+\end{example}
+
 
 
 \section{Interpolación en $\mathbb{C}$ y la DFT}\label{sec:interpolacion_C}
@@ -5961,10 +6022,40 @@ f(c) = \lim_{n \to \infty} f(a_n), \quad f(c) = \lim_{n \to \infty} f(b_n).
 Como $f(a_n) f(b_n) \leq 0$ para todo $n$, tomando límite obtenemos $f(c)^2 \leq 0$, es decir, $f(c) = 0$.
 \end{proof}
 
+\section{Teorema del valor medio para integrales}
+
+\begin{theorem}[Teorema del valor medio para integrales --- primera forma]\label{thm:valor_medio_integral}
+Sea $g\in C([a,b])$.  Entonces existe $\eta\in(a,b)$ tal que
+\[
+\int_a^b g(x)\,dx = g(\eta)\,(b-a).
+\]
+\end{theorem}
+\begin{proof}
+Como $g$ es continua en $[a,b]$, alcanza su mínimo $m$ y su máximo $M$.  Luego
+\[
+m(b-a)\le\int_a^b g(x)\,dx\le M(b-a),
+\]
+y el valor $\frac{1}{b-a}\int_a^b g$ está entre $m$ y $M$.  Por el teorema del valor intermedio, ese valor es $g(\eta)$ para algún $\eta\in(a,b)$.
+\end{proof}
+
+\begin{theorem}[Teorema del valor medio para integrales --- segunda forma]\label{thm:valor_medio_integral_2}
+Sean $g\in C([a,b])$ y $\varphi$ integrable en $[a,b]$ con $\varphi$ de signo constante (es decir, $\varphi\ge 0$ o $\varphi\le 0$ en $[a,b]$).  Entonces existe $\eta\in(a,b)$ tal que
+\[
+\int_a^b g(x)\,\varphi(x)\,dx = g(\eta)\int_a^b \varphi(x)\,dx.
+\]
+\end{theorem}
+\begin{proof}
+Supongamos $\varphi\ge 0$ (el caso $\varphi\le 0$ es análogo).  Sean $m=\min_{[a,b]}g$ y $M=\max_{[a,b]}g$.  Entonces $m\,\varphi(x)\le g(x)\,\varphi(x)\le M\,\varphi(x)$ para todo $x$, e integrando:
+\[
+m\int_a^b\varphi\;\le\;\int_a^b g\,\varphi\;\le\; M\int_a^b\varphi.
+\]
+Si $\int_a^b\varphi=0$, las tres cantidades son cero y cualquier $\eta$ sirve.  Si $\int_a^b\varphi>0$, el cociente $\int g\varphi\big/\int\varphi$ está entre $m$ y $M$; por el teorema del valor intermedio, es igual a $g(\eta)$ para algún $\eta\in(a,b)$.
+\end{proof}
+
 \section{Desarrollo de Taylor}
 
 \begin{theorem}[Teorema de Taylor con resto integral]\label{thm:taylor}
-Sea $f: I \to \mathbb{R}$ una función de clase $C^{n+1}$ en un intervalo abierto $I$, y sea $a \in I$. Entonces, para todo $x \in I$:
+Sea $f: I \to \mathbb{R}$ una función de clase $C^{(n+1)}$ en un intervalo abierto $I$, y sea $a \in I$. Entonces, para todo $x \in I$:
 \[
 f(x) = \sum_{k=0}^{n} \frac{f^{(k)}(a)}{k!}(x-a)^k + R_{n+1}(x),
 \]
