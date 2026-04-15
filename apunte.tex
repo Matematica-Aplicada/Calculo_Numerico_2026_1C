@@ -11,6 +11,7 @@
 \newtheorem{lemma}[theorem]{Lema}
 \newtheorem{corollary}[theorem]{Corolario}
 \newtheorem{definition}[theorem]{Definición}
+\newtheorem{proposition}[theorem]{Proposición}
 \newtheorem{exercise}[theorem]{Ejercicio}
 \newtheorem{example}[theorem]{Ejemplo}
 \newtheorem{remark}[theorem]{Observación}
@@ -1851,19 +1852,27 @@ Así, para todo $y\neq 0$, se cumple $\frac{\|\Sigma y\|_2^2}{\|y\|_2^2}\le \sig
 Luego el máximo es $\sigma_1^2$. Tomando raíz cuadrada, obtenemos $\|A\|_2 = \sigma_1$.
 \end{proof}
 
-Para calcular $\|A^{-1}\|_2$, usemos directamente la SVD. Si
+\begin{lemma}[Norma de la inversa y valor singular mínimo]\label{lem:norma_inversa_sigma_min}
+Sea $A\in\mathbb{C}^{n\times n}$ inversible con valores singulares $\sigma_1\ge\cdots\ge\sigma_n>0$. Entonces
 \[
-A=U\Sigma V^*,\qquad \Sigma=\operatorname{diag}(\sigma_1,\ldots,\sigma_n),\ \sigma_n>0,
+\|A^{-1}\|_2 = \frac{1}{\sigma_n},
 \]
-entonces
+y en particular
+\[
+\sigma_n = \min_{x\neq 0}\frac{\|Ax\|_2}{\|x\|_2}.
+\]
+\end{lemma}
+\begin{proof}
+Sea $A=U\Sigma V^*$ la SVD, con $\Sigma=\operatorname{diag}(\sigma_1,\ldots,\sigma_n)$ y $\sigma_n>0$.  Entonces
 \[
 A^{-1}=(U\Sigma V^*)^{-1}=V\Sigma^{-1}U^*=V\operatorname{diag}(1/\sigma_1,\ldots,1/\sigma_n)U^*.
 \]
-Así, los valores singulares de $A^{-1}$ son $1/\sigma_1,\ldots,1/\sigma_n$, y ordenados quedan
-$1/\sigma_n\ge\cdots\ge 1/\sigma_1$. Aplicando el teorema anterior,
-$\|A^{-1}\|_2=1/\sigma_n$. Por lo tanto:
+Los valores singulares de $A^{-1}$ son $1/\sigma_n\ge\cdots\ge 1/\sigma_1>0$; aplicando el teorema anterior a $A^{-1}$ se obtiene $\|A^{-1}\|_2=1/\sigma_n$.  La fórmula variacional para $\sigma_n$ se deduce del mismo argumento: el mínimo de $\|\Sigma y\|_2/\|y\|_2$ se alcanza en $y=e_n$ y vale $\sigma_n$.
+\end{proof}
+
+Combinando el teorema anterior con el lema se obtiene la fórmula definitiva para el número de condición:
 \[
-\kappa_2(A) = \frac{\sigma_1}{\sigma_n}.
+\kappa_2(A) = \|A\|_2\|A^{-1}\|_2 = \frac{\sigma_1}{\sigma_n}.
 \]
 
 \begin{remark}
@@ -2289,17 +2298,22 @@ Sea $\mathbb{F}$ un cuerpo ($\mathbb{R}$, $\mathbb{C}$, $\mathbb{Z}_p$, etc.) y 
 Dados $n+1$ nodos distintos $x_0,\ldots,x_n\in\mathbb{F}$ y valores $y_0,\ldots,y_n\in\mathbb{F}$, buscamos $p\in\mathcal{P}_n$ tal que $p(x_i)=y_i$ para $i=0,\ldots,n$.
 \end{definition}
 
-El problema admite una lectura lineal inmediata.  Definimos el \textbf{operador de evaluación}
+\begin{definition}[Operador de evaluación]
+Dados $n+1$ nodos distintos $x_0,\ldots,x_n\in\mathbb{F}$, el \textbf{operador de evaluación} es la transformación lineal
 \[
-\Phi\colon\mathcal{P}_n \to \mathbb{F}^{n+1},\qquad \Phi(p) = \bigl(p(x_0),\ldots,p(x_n)\bigr).
+\Phi\colon\mathcal{P}_n \;\longrightarrow\; \mathbb{F}^{n+1},\qquad \Phi(p) = \bigl(p(x_0),\ldots,p(x_n)\bigr).
 \]
-Interpolar equivale a invertir $\Phi$.  Como $\dim\mathcal{P}_n = \dim\mathbb{F}^{n+1} = n+1$, basta probar que $\Phi$ es inyectiva.
+\end{definition}
+
+La linealidad de $\Phi$ es inmediata: evaluar una combinación lineal de polinomios en un punto da la misma combinación lineal de los valores.  El problema de interpolación es, precisamente, resolver la ecuación $\Phi(p) = y$ dado $y=(y_0,\ldots,y_n)\in\mathbb{F}^{n+1}$; dicho de otro modo, interpolar equivale a calcular $\Phi^{-1}(y)$.
 
 \begin{theorem}[Existencia y unicidad]\label{thm:existencia_unicidad}
-Si los nodos $x_0,\ldots,x_n$ son distintos, $\Phi$ es un isomorfismo.  En particular, el problema de interpolación tiene solución única.
+Si los nodos $x_0,\ldots,x_n$ son distintos, $\Phi$ es un isomorfismo.  En particular, para cualquier vector de valores $y\in\mathbb{F}^{n+1}$ existe un único $p\in\mathcal{P}_n$ tal que $p(x_i)=y_i$ para $i=0,\ldots,n$.
 \end{theorem}
 \begin{proof}
-Sea $p\in\ker\Phi$, es decir $p(x_i)=0$ para $i=0,\ldots,n$.  Un polinomio no nulo de grado $\leq n$ tiene a lo sumo $n$ raíces (Teorema~\ref{thm:raices_polinomio}, Apéndice~A), pero $p$ tiene $n+1$ raíces; luego $p\equiv 0$ y $\Phi$ es inyectiva.
+Puesto que $\dim\mathcal{P}_n = n+1 = \dim\mathbb{F}^{n+1}$, el teorema rango-nulidad garantiza que $\Phi$ es inyectiva si y solo si es sobreyectiva, por lo que basta verificar $\ker\Phi = \{0\}$.
+
+Sea $p\in\ker\Phi$, es decir, $p(x_i)=0$ para $i=0,\ldots,n$.  Un polinomio no nulo de grado $\leq n$ tiene a lo sumo $n$ raíces (Teorema~\ref{thm:raices_polinomio}, Apéndice~A); como $p$ posee $n+1$ raíces distintas, se concluye $p\equiv 0$.  Por tanto $\ker\Phi=\{0\}$ y $\Phi$ es un isomorfismo.
 \end{proof}
 
 \subsection{La matriz de Vandermonde}\label{subsec:vandermonde}
@@ -2316,11 +2330,55 @@ V = \begin{pmatrix}
 \]
 Así, la existencia y unicidad del interpolante se reducen a la inversibilidad de $V$.
 
-\begin{remark}[Mal condicionamiento de Vandermonde]\label{rmk:vandermonde_cond}
-Resolver el sistema $Va=y$ es, en general, un método numéricamente \emph{inadecuado} para calcular el interpolante: $\kappa_2(V)$ crece exponencialmente con~$n$.
+\begin{proposition}[Mal condicionamiento de Vandermonde]\label{prop:vandermonde_cond}
+Para cualquier elección de $n+1$ nodos distintos $x_0,\ldots,x_n\in[-1,1]$, la matriz de Vandermonde~$V$ satisface
+\[
+\kappa_2(V) \;\ge\; \frac{2^{\lfloor n/2\rfloor}}{\sqrt{n+1}}.
+\]
+En particular, $\kappa_2(V)$ crece al menos exponencialmente con~$n$, lo que hace que resolver el sistema $Va=y$ sea un método numéricamente \emph{inadecuado} para calcular el interpolante.
+\end{proposition}
 
-Para ver esto, usamos la caracterización variacional $\sigma_{\min}(V) = \min_{a\neq 0}\|Va\|_2/\|a\|_2$.  Si los nodos $x_0,\ldots,x_n$ están en $[-1,1]$, la suma $\|Va\|_2^2 = \sum_{i=0}^n p(x_i)^2$ (donde $p$ tiene coeficientes~$a$) se comporta como una suma de Riemann de $\int_{-1}^1 p(x)^2\,dx$ escalada por un factor $O(n)$.  Para el polinomio de prueba $p(x)=(1-x^2)^n$, la integral $\int_{-1}^1 (1-x^2)^{2n}\,dx\to 0$, mientras que, usando la identidad $\sum_{k=0}^n\binom{n}{k}^2 = \binom{2n}{n}$, se verifica que $\|a\|_2^2 \geq 4^n/(2n+1)$.  Esto fuerza que $\sigma_{\min}(V)$ decaiga exponencialmente y, en consecuencia, $\kappa_2(V)$ crezca exponencialmente.
-\end{remark}
+\begin{proof}
+Sea $m=\lfloor n/2\rfloor$ y consideremos el polinomio de prueba
+\[
+p(x)=(1-x^2)^m = \sum_{k=0}^{m}(-1)^k\binom{m}{k}x^{2k}\;\in\;\mathcal{P}_n,
+\]
+que tiene grado $2m\le n$.  Su vector de coeficientes en la base monomial es $a\in\mathbb{R}^{n+1}$ con $a_{2k}=(-1)^k\binom{m}{k}$ para $k=0,\ldots,m$ y las restantes componentes nulas.
+
+\textbf{Cota inferior de $\|a\|_2$.}  Por la identidad de Vandermonde--Chu,
+\[
+\|a\|_2^2=\sum_{k=0}^m \binom{m}{k}^2=\binom{2m}{m}.
+\]
+Como $\binom{2m}{m}$ es el mayor de los $2m+1$ sumandos de $\sum_{k=0}^{2m}\binom{2m}{k}=4^m$,
+\[
+\binom{2m}{m}\;\ge\;\frac{4^m}{2m+1}.
+\]
+
+\textbf{Cota superior de $\|Va\|_2$.}  Para todo $x\in[-1,1]$ se tiene $0\le 1-x^2\le 1$, de modo que $(1-x_i^2)^{2m}\le 1$.  Sumando sobre los $n+1$ nodos:
+\[
+\|Va\|_2^2=\sum_{i=0}^n \bigl(1-x_i^2\bigr)^{2m}\;\le\; n+1.
+\]
+
+\textbf{Cota de $\sigma_{\min}(V)$.}  Aplicando la caracterización variacional del Lema~\ref{lem:norma_inversa_sigma_min}:
+\[
+\sigma_{\min}^2(V)\;\le\;\frac{\|Va\|_2^2}{\|a\|_2^2}
+\;\le\;\frac{n+1}{\binom{2m}{m}}
+\;\le\;\frac{(n+1)(2m+1)}{4^m}.
+\]
+
+\textbf{Cota inferior de $\sigma_{\max}(V)$.}  La primera columna de $V$ es el vector $(1,\ldots,1)^T\in\mathbb{R}^{n+1}$, así que
+\[
+\sigma_{\max}(V)\;\ge\;\|Ve_1\|_2=\sqrt{n+1}.
+\]
+
+\textbf{Conclusión.}  Combinando ambas cotas y usando $2m+1\le n+1$:
+\[
+\kappa_2(V)=\frac{\sigma_{\max}(V)}{\sigma_{\min}(V)}
+\;\ge\;\frac{\sqrt{n+1}\cdot 2^m}{\sqrt{(n+1)(2m+1)}}
+= \frac{2^m}{\sqrt{2m+1}}
+\;\ge\;\frac{2^{\lfloor n/2\rfloor}}{\sqrt{n+1}}.\qedhere
+\]
+\end{proof}
 
 \subsection{La base de Lagrange}\label{subsec:base_lagrange}
 
