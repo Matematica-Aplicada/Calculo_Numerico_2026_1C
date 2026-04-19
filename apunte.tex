@@ -2475,21 +2475,40 @@ El error de la interpolación lineal es $O(h^2)$, con constante proporcional a~$
 \end{example}
 
 \begin{example}[Error de la derivada del interpolante lineal]\label{ex:error_derivada_interpolacion_lineal}
-Con las mismas hipótesis del Ejemplo~\ref{ex:error_interpolacion_lineal}, estimamos el error al aproximar $f'$ por $p_1'$.  Como $p_1$ es afín, $p_1'(x)=\frac{f(a+h)-f(a)}{h}$ es constante (el cociente incremental o \emph{diferencia finita}).
+Con las mismas hipótesis del Ejemplo~\ref{ex:error_interpolacion_lineal}, queremos aproximar derivadas a partir de $p_1$.  Como $p_1$ es afín,
+\[
+p_1'(x)=\frac{f(a+h)-f(a)}{h}\qquad(\text{constante en }[a,a+h]).
+\]
+Es decir, la derivada del interpolante coincide con la \textbf{diferencia finita progresiva}
+\[
+D_h^+f(a):=\frac{f(a+h)-f(a)}{h}.
+\]
 
-Por el teorema de Taylor con resto integral,
+Demostramos ahora una cota del error usando Taylor.  Si $f\in C^2([a,a+h])$, por Taylor de orden $1$ en $a$ con resto de Lagrange existe $\xi\in(a,a+h)$ tal que
 \[
-p_1'=\frac{f(a+h)-f(a)}{h}=f'(a)+\frac{1}{h}\int_a^{a+h}(a+h-t)\,f''(t)\,dt.
+f(a+h)=f(a)+h f'(a)+\frac{h^2}{2}f''(\xi).
 \]
-Para todo $x\in[a,a+h]$, el teorema fundamental del cálculo da $f'(x)=f'(a)+\int_a^x f''(t)\,dt$.  Restando:
+Dividiendo por $h$ y restando $f'(a)$:
 \[
-f'(x)-p_1'=\int_a^x f''(t)\,dt-\frac{1}{h}\int_a^{a+h}(a+h-t)\,f''(t)\,dt.
+D_h^+f(a)-f'(a)=\frac{h}{2}f''(\xi).
 \]
-Acotando: $\bigl|\int_a^x f''\bigr|\le(x-a)\|f''\|_\infty\le h\|f''\|_\infty$ y $\frac{1}{h}\int_a^{a+h}(a+h-t)\,dt=\frac{h}{2}$, luego
+Por lo tanto,
 \[
-\|f'-p_1'\|_{\infty,[a,a+h]}\;\le\; h\,\|f''\|_{\infty,[a,a+h]}.
+\bigl|f'(a)-p_1'\bigr|=\bigl|f'(a)-D_h^+f(a)\bigr|\le \frac{h}{2}\,\|f''\|_{\infty,[a,a+h]}.
 \]
-El error de la derivada del interpolante lineal es $O(h)$: se pierde un orden respecto de la aproximación de la función.
+Esta es una cota del error de la diferencia finita progresiva en $x=a$: error $O(h)$.
+
+Para obtener una cota para cualquier $x\in[a,a+h]$,
+\[
+|f'(x)-p_1'|\le |f'(x)-f'(a)|+|f'(a)-p_1'|
+\le (x-a)\|f''\|_\infty+\frac{h}{2}\|f''\|_\infty
+\le \frac{3}{2}h\,\|f''\|_\infty,
+\]
+y en consecuencia
+\[
+\|f'-p_1'\|_{\infty,[a,a+h]}\le \frac{3}{2}h\,\|f''\|_{\infty,[a,a+h]}=O(h).
+\]
+Se ve así que, al derivar el interpolante lineal, se pierde un orden respecto del error $O(h^2)$ de la interpolación de $f$.
 \end{example}
 
 \subsection{Cuadratura interpolatoria}\label{sec:cuadratura_interpolatoria}
@@ -2500,9 +2519,55 @@ La interpolación polinomial tiene una aplicación directa e importante: la inte
 \]
 Eligiendo distintos grados de interpolación y distintos nodos se obtienen las clásicas \textbf{fórmulas de Newton-Cotes}.  En esta sección desarrollamos las dos más fundamentales ---la regla del trapecio y la regla de Simpson--- y analizamos sus errores.
 
+Antes de deducir fórmulas particulares, escribimos la cuadratura interpolatoria en forma general.
+
+\begin{proposition}[Pesos de la cuadratura interpolatoria]\label{prop:pesos_cuadratura_interpolatoria}
+Sean $a=x_0<\cdots<x_k=b$ nodos en $[a,b]$, y sea
+\[
+p_k(x)=\sum_{i=0}^k f(x_i)\,\ell_i(x)
+\]
+el interpolante de Lagrange de grado $k$, donde $\ell_i$ son los polinomios de la base de Lagrange.  Entonces
+\[
+Q_k(f):=\int_a^b p_k(x)\,dx=\sum_{i=0}^k w_i\,f(x_i),
+\qquad
+w_i:=\int_a^b \ell_i(x)\,dx.
+\]
+Es decir, los \textbf{pesos} de la cuadratura interpolatoria son las integrales de los polinomios base de Lagrange.
+\end{proposition}
+\begin{proof}
+Por linealidad de la integral,
+\[
+\int_a^b p_k(x)\,dx
+=\int_a^b\sum_{i=0}^k f(x_i)\ell_i(x)\,dx
+=\sum_{i=0}^k f(x_i)\int_a^b\ell_i(x)\,dx
+=\sum_{i=0}^k w_i f(x_i).
+\]
+\end{proof}
+
 \subsubsection{La regla del trapecio}\label{subsec:regla_trapecio}
 
-Interpolando $f$ linealmente en los extremos $a$ y $b$ e integrando el interpolante se obtiene la \textbf{regla del trapecio}.
+Aplicamos la Proposición~\ref{prop:pesos_cuadratura_interpolatoria} al caso $k=1$ con nodos $x_0=a$, $x_1=b$.  Los polinomios base son
+\[
+\ell_0(x)=\frac{x-b}{a-b}=\frac{b-x}{b-a},
+\qquad
+\ell_1(x)=\frac{x-a}{b-a}.
+\]
+Sus pesos resultan
+\[
+w_0=\int_a^b \ell_0(x)\,dx
+=\frac{1}{b-a}\int_a^b (b-x)\,dx
+=\frac{b-a}{2},
+\]
+\[
+w_1=\int_a^b \ell_1(x)\,dx
+=\frac{1}{b-a}\int_a^b (x-a)\,dx
+=\frac{b-a}{2}.
+\]
+Por lo tanto,
+\[
+Q_1(f)=w_0f(a)+w_1f(b)=\frac{b-a}{2}\bigl(f(a)+f(b)\bigr),
+\]
+que es la \textbf{regla del trapecio}.
 
 \begin{definition}[Regla del trapecio]\label{def:regla_trapecio}
 La \textbf{regla del trapecio} (simple) es
@@ -2573,12 +2638,43 @@ Si $f\in C^2([a,b])$, existe $\eta\in(a,b)$ tal que
 En particular, el error es $O(h^2)$ cuando $h\to 0$.
 \end{theorem}
 \begin{proof}
-Aplicando el Teorema~\ref{thm:error_trapecio} en cada subintervalo:
+Aplicamos el Teorema~\ref{thm:error_trapecio} en cada subintervalo $[x_j,x_{j+1}]$ (todos de longitud $h$).  Para cada $j=0,\dots,M-1$ existe $\eta_j\in(x_j,x_{j+1})$ tal que
 \[
-\int_a^b f\,dx - T_M(f)=\sum_{j=0}^{M-1}\biggl[\int_{x_j}^{x_{j+1}}f\,dx - T(f;x_j,x_{j+1})\biggr]
-=-\frac{h^3}{12}\sum_{j=0}^{M-1}f''(\eta_j),
+E_j:=\int_{x_j}^{x_{j+1}}f(x)\,dx-T(f;x_j,x_{j+1})=-\frac{h^3}{12}\,f''(\eta_j).
 \]
-con $\eta_j\in(x_j,x_{j+1})$.  Reescribimos la suma como $M\cdot\frac{1}{M}\sum f''(\eta_j)$.  Como $f''$ es continua y cada $\eta_j\in[a,b]$, el teorema del valor medio para integrales (Teorema~\ref{thm:valor_medio_integral}) aplicado a la medida discreta uniforme ---o, equivalentemente, el teorema del valor intermedio--- garantiza un $\eta\in(a,b)$ con $\frac{1}{M}\sum f''(\eta_j)=f''(\eta)$.  Usando $Mh=b-a$ se concluye.
+Sumando los errores locales:
+\[
+E:=\int_a^b f(x)\,dx-T_M(f)=\sum_{j=0}^{M-1}E_j
+=-\frac{h^3}{12}\sum_{j=0}^{M-1}f''(\eta_j).
+\]
+
+\textbf{Paso clave ("se come un orden"):}
+cada término local es de tamaño $O(h^3)$, pero hay $M=(b-a)/h$ términos. Por lo tanto, en magnitud total
+\[
+|E|\le \frac{h^3}{12}\sum_{j=0}^{M-1}|f''(\eta_j)|
+\le \frac{h^3}{12}\,M\,\|f''\|_{\infty,[a,b]}
+=\frac{b-a}{12}\,h^2\,\|f''\|_{\infty,[a,b]}.
+\]
+Aquí se ve explícitamente la pérdida de un orden: \(M\sim h^{-1}\), entonces
+\[
+M\cdot h^3 \sim h^{-1}\cdot h^3 = h^2.
+\]
+
+Para obtener la forma exacta con un único punto, escribimos
+\[
+\sum_{j=0}^{M-1}f''(\eta_j)=M\,\overline s,
+\qquad
+\overline s:=\frac1M\sum_{j=0}^{M-1}f''(\eta_j).
+\]
+Si
+\[
+m:=\min_{x\in[a,b]}f''(x),\qquad M_2:=\max_{x\in[a,b]}f''(x),
+\]
+entonces $m\le f''(\eta_j)\le M_2$ para todo $j$, y por promediar también $m\le\overline s\le M_2$.  Como $f''$ es continua en $[a,b]$, por el teorema del valor intermedio existe $\eta\in[a,b]$ tal que $f''(\eta)=\overline s$. Sustituyendo:
+\[
+E=-\frac{h^3}{12}\,M\,f''(\eta)=-\frac{(b-a)h^2}{12}\,f''(\eta).
+\]
+Como el error es no trivial salvo casos degenerados, podemos tomar $\eta\in(a,b)$.
 \end{proof}
 
 El Teorema~\ref{thm:error_trapecio_compuesto} exige $f\in C^2$.  Cuando la función tiene menos regularidad, la regla del trapecio compuesta sigue convergiendo, pero a una velocidad menor que se cuantifica con el \textbf{módulo de continuidad}.
@@ -2599,18 +2695,62 @@ Si $f\in C([a,b])$, entonces
 En particular, $T_M(f)\to\int_a^b f$ para toda $f$ continua.
 \end{theorem}
 \begin{proof}
-En cada $[x_j,x_{j+1}]$, sea $L_j$ la función afín que interpola $f$ en los extremos.  La regla del trapecio integra $L_j$ exactamente, así que
+Particionamos $[a,b]$ en $x_j=a+jh$, $j=0,\dots,M$, con $h=(b-a)/M$.
+
+\textbf{Paso 1: error local como integral de interpolación.}
+En cada subintervalo $I_j=[x_j,x_{j+1}]$, sea $p_{1,j}$ el interpolante lineal de $f$ en los extremos:
 \[
-E_j:=\int_{x_j}^{x_{j+1}}(f-L_j)\,dx.
+p_{1,j}(x)=f(x_j)\,\ell_{j,0}(x)+f(x_{j+1})\,\ell_{j,1}(x),
 \]
-Como $L_j(x)=\frac{x_{j+1}-x}{h}f(x_j)+\frac{x-x_j}{h}f(x_{j+1})$ es combinación convexa de los valores en los extremos:
+con bases de Lagrange
 \[
-f(x)-L_j(x)=\frac{x_{j+1}-x}{h}\bigl[f(x)-f(x_j)\bigr]+\frac{x-x_j}{h}\bigl[f(x)-f(x_{j+1})\bigr].
+\ell_{j,0}(x)=\frac{x_{j+1}-x}{h},\qquad
+\ell_{j,1}(x)=\frac{x-x_j}{h},\qquad
+\ell_{j,0}(x)+\ell_{j,1}(x)=1.
 \]
-Para $x\in[x_j,x_{j+1}]$ ambas diferencias están acotadas por $\omega(f,h)$ y los coeficientes suman~$1$, luego $|f(x)-L_j(x)|\le\omega(f,h)$.  Integrando: $|E_j|\le h\,\omega(f,h)$.  Sumando los $M$ subintervalos:
+La regla del trapecio simple en $I_j$ es exactamente $\int_{x_j}^{x_{j+1}} p_{1,j}(x)\,dx$, luego
 \[
-\left|\int_a^b f - T_M(f)\right|\le Mh\,\omega(f,h)=(b-a)\,\omega(f,h).\qedhere
+E_j:=\int_{x_j}^{x_{j+1}} f(x)\,dx-T(f;x_j,x_{j+1})
+=\int_{x_j}^{x_{j+1}}\bigl(f(x)-p_{1,j}(x)\bigr)\,dx.
 \]
+
+\textbf{Paso 2: ``intercalar'' $f(x)$ en la combinación convexa.}
+Para $x\in I_j$:
+\[
+\begin{aligned}
+f(x)-p_{1,j}(x)
+&=f(x)-\ell_{j,0}(x)f(x_j)-\ell_{j,1}(x)f(x_{j+1})\\
+&=\ell_{j,0}(x)\bigl(f(x)-f(x_j)\bigr)+\ell_{j,1}(x)\bigl(f(x)-f(x_{j+1})\bigr),
+\end{aligned}
+\]
+donde usamos $\ell_{j,0}+\ell_{j,1}=1$ para escribir
+$f(x)=\ell_{j,0}(x)f(x)+\ell_{j,1}(x)f(x)$ y restar término a término.
+
+\textbf{Paso 3: cota por módulo de continuidad.}
+Como $x,x_j,x_{j+1}\in I_j$ y $\operatorname{diam}(I_j)=h$,
+\[
+|f(x)-f(x_j)|\le\omega(f,h),\qquad |f(x)-f(x_{j+1})|\le\omega(f,h).
+\]
+Además $\ell_{j,0}(x),\ell_{j,1}(x)\ge 0$ en $I_j$. Entonces
+\[
+|f(x)-p_{1,j}(x)|
+\le \ell_{j,0}(x)\omega(f,h)+\ell_{j,1}(x)\omega(f,h)
+=\omega(f,h).
+\]
+Integrando en $I_j$:
+\[
+|E_j|\le\int_{x_j}^{x_{j+1}}\omega(f,h)\,dx=h\,\omega(f,h).
+\]
+
+\textbf{Paso 4: suma global.}
+\[
+\left|\int_a^b f(x)\,dx-T_M(f)\right|
+=\left|\sum_{j=0}^{M-1}E_j\right|
+\le\sum_{j=0}^{M-1}|E_j|
+\le M h\,\omega(f,h)
+=(b-a)\,\omega(f,h).
+\]
+Como $f$ es continua en $[a,b]$, es uniformemente continua, y por tanto $\omega(f,h)\to 0$ cuando $h\to 0$; se concluye $T_M(f)\to\int_a^b f$.
 \end{proof}
 
 \begin{example}[Convergencia para funciones Hölder]\label{ex:trapecio_holder}
@@ -2631,7 +2771,7 @@ En contraste, para una función Lipschitz ($\alpha=1$) la convergencia es $O(1/M
 
 Sin embargo, la cota $O(h^{1/2})$ para $\sqrt{x}$ es muy pesimista: $\sqrt{x}$ es $C^2$ en $(0,1]$ y la singularidad de $f''$ está confinada a un entorno del origen.  Combinando la cota para funciones continuas en el subintervalo singular con la cota $C^2$ en los restantes se obtiene un orden mucho mejor.
 
-\begin{proposition}[Cota mejorada para singularidad aislada]\label{prop:trapecio_singularidad}
+\begin{theorem}[Cota mejorada para singularidad aislada]\label{prop:trapecio_singularidad}
 Sea $f\in C([a,b])$ Hölder de exponente $\alpha>0$, y supongamos que $f\in C^2((a,b])$ con
 \[
 |f''(x)|\;\le\; C_0\,(x-a)^{-\beta},\qquad x\in(a,b],
@@ -2640,7 +2780,7 @@ para constantes $C_0>0$ y $\beta\in(1,3)$.  Entonces el error de la regla del tr
 \[
 \left|\int_a^b f\,dx - T_M(f)\right| \;=\; O\!\bigl(h^{\min(1+\alpha,\,3-\beta)}\bigr).
 \]
-\end{proposition}
+\end{theorem}
 
 \begin{proof}
 Separamos el error en el primer subintervalo $[a,a+h]$ (que contiene la singularidad) y los restantes $M-1$ subintervalos.
@@ -3289,9 +3429,9 @@ Por lo tanto, las evaluaciones de $m_1$ y $m_2$ difieren en al menos $n - (k-1) 
 
 
 
-\chapter{Teoría de Aproximación}
+\chapter{Teoría de Aproximación}\label{cap:teoria_aproximacion}
 
-\section{Series de Fourier de funciones suaves periódicas}
+\section{Series de Fourier de funciones suaves periódicas}\label{sec:series_fourier_suaves}
 
 En el capítulo 2 estudiamos la teoría general de espacios con producto interno y vimos cómo representar vectores en bases ortogonales mediante proyecciones. Ahora aplicaremos estos conceptos a espacios de funciones periódicas.
 
@@ -6008,7 +6148,7 @@ En este apéndice recopilamos resultados fundamentales de análisis matemático 
 
 \section{Teorema del valor intermedio}
 
-\begin{theorem}[Teorema del valor intermedio (Bolzano)]\label{thm:bolzano}
+\begin{theorem}[Teorema de Bolzano]\label{thm:bolzano}
 Sea $f: [a,b] \to \mathbb{R}$ continua con $f(a) \cdot f(b) < 0$. Entonces existe $c \in (a,b)$ tal que $f(c) = 0$.
 \end{theorem}
 
@@ -6022,6 +6162,42 @@ f(c) = \lim_{n \to \infty} f(a_n), \quad f(c) = \lim_{n \to \infty} f(b_n).
 Como $f(a_n) f(b_n) \leq 0$ para todo $n$, tomando límite obtenemos $f(c)^2 \leq 0$, es decir, $f(c) = 0$.
 \end{proof}
 
+\section{Teorema de Rolle}
+
+\begin{theorem}[Teorema de Rolle]\label{thm:rolle}
+Sea $f:[a,b]\to\mathbb{R}$ continua en $[a,b]$, derivable en $(a,b)$ y tal que $f(a)=f(b)$. Entonces existe $c\in(a,b)$ con $f'(c)=0$.
+\end{theorem}
+
+\begin{proof}
+Por continuidad en el compacto $[a,b]$, $f$ alcanza máximo y mínimo. Si ambos extremos se alcanzan en los extremos $a,b$, como $f(a)=f(b)$, la función es constante y entonces $f'\equiv 0$ en $(a,b)$. Si no, al menos uno de esos extremos se alcanza en un punto interior $c\in(a,b)$; por el teorema de Fermat, $f'(c)=0$.
+\end{proof}
+
+\section{Teorema del valor medio para derivadas}
+
+\begin{theorem}[Teorema del valor medio para derivadas]\label{thm:valor_medio_derivadas}
+Sea $f:[a,b]\to\mathbb{R}$ continua en $[a,b]$ y derivable en $(a,b)$. Entonces existe $c\in(a,b)$ tal que
+\[
+f'(c)=\frac{f(b)-f(a)}{b-a}.
+\]
+\end{theorem}
+
+\begin{proof}
+Consideramos
+\[
+\ell(x)=f(a)+\frac{f(b)-f(a)}{b-a}(x-a),
+\qquad
+h(x)=f(x)-\ell(x).
+\]
+Entonces $h$ es continua en $[a,b]$, derivable en $(a,b)$ y cumple $h(a)=h(b)=0$. Por el Teorema~\ref{thm:rolle}, existe $c\in(a,b)$ tal que $h'(c)=0$. Como
+\[
+h'(x)=f'(x)-\frac{f(b)-f(a)}{b-a},
+\]
+se concluye
+\[
+f'(c)=\frac{f(b)-f(a)}{b-a}.
+\]
+\end{proof}
+
 \section{Teorema del valor medio para integrales}
 
 \begin{theorem}[Teorema del valor medio para integrales --- primera forma]\label{thm:valor_medio_integral}
@@ -6031,25 +6207,47 @@ Sea $g\in C([a,b])$.  Entonces existe $\eta\in(a,b)$ tal que
 \]
 \end{theorem}
 \begin{proof}
-Como $g$ es continua en $[a,b]$, alcanza su mínimo $m$ y su máximo $M$.  Luego
+Definimos
 \[
-m(b-a)\le\int_a^b g(x)\,dx\le M(b-a),
+G(x):=\int_a^x g(t)\,dt.
 \]
-y el valor $\frac{1}{b-a}\int_a^b g$ está entre $m$ y $M$.  Por el teorema del valor intermedio, ese valor es $g(\eta)$ para algún $\eta\in(a,b)$.
+Entonces $G$ es continua en $[a,b]$, derivable en $(a,b)$ y $G'(x)=g(x)$ (teorema fundamental del cálculo). Aplicando el Teorema~\ref{thm:valor_medio_derivadas} a $G$, existe $\eta\in(a,b)$ tal que
+\[
+G'(\eta)=\frac{G(b)-G(a)}{b-a}.
+\]
+Como $G'(\eta)=g(\eta)$, $G(b)=\int_a^b g(x)\,dx$ y $G(a)=0$, resulta
+\[
+\int_a^b g(x)\,dx=g(\eta)(b-a).
+\]
 \end{proof}
 
 \begin{theorem}[Teorema del valor medio para integrales --- segunda forma]\label{thm:valor_medio_integral_2}
-Sean $g\in C([a,b])$ y $\varphi$ integrable en $[a,b]$ con $\varphi$ de signo constante (es decir, $\varphi\ge 0$ o $\varphi\le 0$ en $[a,b]$).  Entonces existe $\eta\in(a,b)$ tal que
+Sean $g,\varphi\in C([a,b])$, con $\varphi$ de signo constante y $\varphi(x)\neq 0$ para todo $x\in(a,b)$.  Entonces existe $\eta\in(a,b)$ tal que
 \[
 \int_a^b g(x)\,\varphi(x)\,dx = g(\eta)\int_a^b \varphi(x)\,dx.
 \]
 \end{theorem}
 \begin{proof}
-Supongamos $\varphi\ge 0$ (el caso $\varphi\le 0$ es análogo).  Sean $m=\min_{[a,b]}g$ y $M=\max_{[a,b]}g$.  Entonces $m\,\varphi(x)\le g(x)\,\varphi(x)\le M\,\varphi(x)$ para todo $x$, e integrando:
+Sea
 \[
-m\int_a^b\varphi\;\le\;\int_a^b g\,\varphi\;\le\; M\int_a^b\varphi.
+c:=\frac{\int_a^b g(x)\,\varphi(x)\,dx}{\int_a^b \varphi(x)\,dx},
+\qquad
+H(x):=\int_a^x (g(t)-c)\,\varphi(t)\,dt.
 \]
-Si $\int_a^b\varphi=0$, las tres cantidades son cero y cualquier $\eta$ sirve.  Si $\int_a^b\varphi>0$, el cociente $\int g\varphi\big/\int\varphi$ está entre $m$ y $M$; por el teorema del valor intermedio, es igual a $g(\eta)$ para algún $\eta\in(a,b)$.
+Como $\varphi$ tiene signo constante y no se anula en $(a,b)$, se tiene $\int_a^b\varphi\neq 0$, luego $c$ está bien definido. Además,
+\[
+H(a)=0,
+\qquad
+H(b)=\int_a^b (g-c)\varphi=\int_a^b g\varphi-c\int_a^b\varphi=0.
+\]
+Por el Teorema~\ref{thm:valor_medio_derivadas} aplicado a $H$ (equivalentemente, por Rolle), existe $\eta\in(a,b)$ tal que $H'(\eta)=0$. Por el teorema fundamental del cálculo,
+\[
+H'(\eta)=(g(\eta)-c)\varphi(\eta)=0.
+\]
+Como $\varphi(\eta)\neq 0$, se concluye $g(\eta)=c$, es decir,
+\[
+\int_a^b g(x)\,\varphi(x)\,dx = g(\eta)\int_a^b \varphi(x)\,dx.
+\]
 \end{proof}
 
 \section{Desarrollo de Taylor}
@@ -6772,127 +6970,133 @@ Como $z \perp M$, tenemos $(w, z) = 0$.
 Despejando $L(v)$, obtenemos $L(v) = (v, u)$ con $u = \overline{L(z)}z$.
 \end{proof}
 
-\chapter{Espacios de Sobolev}
+% \chapter{Espacios de Sobolev}
 
-\section{Los espacios de Sobolev periódicos $H_{\mathrm{per}}^s$}
+% \section{Los espacios de Sobolev periódicos $H_{\mathrm{per}}^s$}
 
-En el capítulo anterior vimos cómo la regularidad de una función (ser $C^n$) se traduce en una cierta velocidad de decaimiento de sus coeficientes de Fourier. Ahora invertimos esta idea: usaremos el decaimiento de los coeficientes para \emph{definir} una nueva noción de regularidad, que es más general y poderosa. Esto nos lleva a los espacios de Sobolev.
+% En el capítulo de series de Fourier (Capítulo~\ref{cap:teoria_aproximacion}, Sección~\ref{sec:series_fourier_suaves}) vimos que la regularidad clásica de una función (por ejemplo, ser $C^n$) implica decaimiento de sus coeficientes de Fourier (Teorema~\ref{thm:decaimiento_fourier}).
 
-En las secciones anteriores definimos coeficientes de Fourier y calculamos su tasa de decaimiento para funciones suaves y periódicas. Sin embargo, las funciones suaves $C^k$ no forman un espacio completo con el producto interno. En esta sección veremos una construcción muy simple de un espacio de funciones completo.
+% Ahora recorremos la implicación inversa: usaremos ese decaimiento para \emph{definir} regularidad. Esta idea conduce a los espacios de Sobolev periódicos $H_{\mathrm{per}}^s$, que forman una escala natural de espacios de Hilbert y son fundamentales en análisis y en métodos espectrales.
 
-La idea central es que, en lugar de caracterizar funciones por su regularidad clásica (derivadas continuas), podemos caracterizarlas mediante el decaimiento de sus coeficientes de Fourier. Esta perspectiva conduce naturalmente a los \textbf{espacios de Sobolev periódicos} $H_{\mathrm{per}}^s$, que son completos y muy útiles tanto en análisis como en cálculo numérico.
+% El punto técnico importante es el siguiente: cuando $s\ge 0$, normalmente pensamos en funciones $L^2$ periódicas; pero para $s<0$ aparecen objetos más singulares, y conviene trabajar en el marco de \textbf{distribuciones periódicas}.
 
-Motivados por el teorema de decaimiento de coeficientes, definimos los espacios de Sobolev periódicos mediante condiciones sobre el decaimiento de los coeficientes de Fourier (definidos en la Ecuación~\eqref{coef_fourier_complex}).
+% Recordemos brevemente la notación. Denotamos por $\mathcal D_{\mathrm{per}}'\,$ el espacio de distribuciones periódicas de período $2\pi$, es decir, funcionales lineales continuos sobre $C_{\mathrm{per}}^{\infty}([0,2\pi])$. Si $T\in\mathcal D_{\mathrm{per}}'$, sus coeficientes de Fourier se definen por dualidad:
+% \[
+% \widehat T_k:=\frac{1}{2\pi}\langle T,e^{-ikx}\rangle,\qquad k\in\mathbb Z.
+% \]
+% Para una función $f\in L^1_{\mathrm{per}}$, esta definición coincide con la fórmula integral~\eqref{coef_fourier_complex}.
 
-\begin{definition}[Espacios de Sobolev periódicos]
-Sea $s \in \mathbb{R}$. El \textbf{espacio de Sobolev periódico} $H_{\mathrm{per}}^s$ se define como el conjunto de todas las funciones (distribuciones periódicas) $f$ con coeficientes de Fourier $\hat{f}_k$ tales que:
-\begin{equation}\label{def_Hpers}
-\sum_{k=-\infty}^{\infty} (1 + k^2)^s |\hat{f}_k|^2 < \infty.
-\end{equation}
-Es decir,
-\[
-H_{\mathrm{per}}^s = \left\{ f : [0,2\pi] \to \mathbb{C} \text{ periódica} \,\bigg|\, \sum_{k=-\infty}^{\infty} (1 + k^2)^s |\hat{f}_k|^2 < \infty \right\}.
-\]
-\end{definition}
+% \begin{definition}[Espacios de Sobolev periódicos]
+% Sea $s \in \mathbb{R}$. El \textbf{espacio de Sobolev periódico} $H_{\mathrm{per}}^s$ se define por
+% \begin{equation}\label{def_Hpers}
+% H_{\mathrm{per}}^s
+% :=\left\{f\in\mathcal D_{\mathrm{per}}' : \sum_{k=-\infty}^{\infty}(1+k^2)^s|\widehat f_k|^2<\infty\right\}.
+% \end{equation}
+% En particular, para $s\ge 0$ puede interpretarse como
+% \[
+% H_{\mathrm{per}}^s=\left\{f\in L^2_{\mathrm{per}}(0,2\pi):\sum_{k\in\mathbb Z}(1+k^2)^s|\widehat f_k|^2<\infty\right\},
+% \]
+% mientras que para $s<0$ es esencial permitir distribuciones periódicas.
+% \end{definition}
 
-El espacio $H_{\mathrm{per}}^s$ se dota del \textbf{producto interno}:
-\begin{equation}\label{prod_Hpers}
-(f,g)_{H^s} = \sum_{k=-\infty}^{\infty} (1 + k^2)^s \hat{f}_k \overline{\hat{g}_k},
-\end{equation}
-y la \textbf{norma} correspondiente:
-\begin{equation}\label{norma_Hpers}
-\|f\|_{H^s} = \left( \sum_{k=-\infty}^{\infty} (1 + k^2)^s |\hat{f}_k|^2 \right)^{1/2}.
-\end{equation}
+% El espacio $H_{\mathrm{per}}^s$ se dota del \textbf{producto interno}:
+% \begin{equation}\label{prod_Hpers}
+% (f,g)_{H^s} = \sum_{k=-\infty}^{\infty} (1 + k^2)^s \hat{f}_k \overline{\hat{g}_k},
+% \end{equation}
+% y la \textbf{norma} correspondiente:
+% \begin{equation}\label{norma_Hpers}
+% \|f\|_{H^s} = \left( \sum_{k=-\infty}^{\infty} (1 + k^2)^s |\hat{f}_k|^2 \right)^{1/2}.
+% \end{equation}
 
-\begin{remark}
-El factor $(1 + k^2)^s$ en lugar de $k^{2s}$ evita problemas con el término $k=0$ cuando $s > 0$. Algunas referencias usan $(1 + |k|)^{2s}$ o simplemente $\langle k \rangle^{2s}$ donde $\langle k \rangle = \sqrt{1 + k^2}$.
-\end{remark}
+% \begin{remark}
+% El factor $(1 + k^2)^s$ en lugar de $k^{2s}$ evita problemas con el término $k=0$ cuando $s > 0$. Algunas referencias usan $(1 + |k|)^{2s}$ o simplemente $\langle k \rangle^{2s}$ donde $\langle k \rangle = \sqrt{1 + k^2}$.
+% \end{remark}
 
-\begin{theorem}[Completitud de $H_{\mathrm{per}}^s$]
-Para cada $s \in \mathbb{R}$, el espacio $(H_{\mathrm{per}}^s, \|\cdot\|_{H^s})$ es un \textbf{espacio de Hilbert}, es decir, un espacio vectorial completo con producto interno.
-\end{theorem}
+% \begin{theorem}[Completitud de $H_{\mathrm{per}}^s$]
+% Para cada $s \in \mathbb{R}$, el espacio $(H_{\mathrm{per}}^s, \|\cdot\|_{H^s})$ es un \textbf{espacio de Hilbert}, es decir, un espacio vectorial completo con producto interno.
+% \end{theorem}
 
-\begin{proof}
-La demostración se basa en la identificación de $H_{\mathrm{per}}^s$ con el espacio de sucesiones $\ell^2$ con peso. Sea $\{f_n\}$ una sucesión de Cauchy en $H_{\mathrm{per}}^s$. Entonces, para cada $k \in \mathbb{Z}$, la sucesión de coeficientes $\{\widehat{f_n}_k\}$ es de Cauchy en $\mathbb{C}$, ya que:
-\[
-|\widehat{f_n}_k - \widehat{f_m}_k|^2 \leq \frac{1}{(1+k^2)^s} \sum_{j=-\infty}^{\infty} (1+j^2)^s |\widehat{f_n}_j - \widehat{f_m}_j|^2 = \frac{\|f_n - f_m\|_{H^s}^2}{(1+k^2)^s}.
-\]
-Por completitud de $\mathbb{C}$, existe $c_k \in \mathbb{C}$ tal que $\widehat{f_n}_k \to c_k$ para cada $k$. 
+% \begin{proof}
+% La demostración se basa en la identificación de $H_{\mathrm{per}}^s$ con el espacio de sucesiones $\ell^2$ con peso. Sea $\{f_n\}$ una sucesión de Cauchy en $H_{\mathrm{per}}^s$. Entonces, para cada $k \in \mathbb{Z}$, la sucesión de coeficientes $\{\widehat{f_n}_k\}$ es de Cauchy en $\mathbb{C}$, ya que:
+% \[
+% |\widehat{f_n}_k - \widehat{f_m}_k|^2 \leq \frac{1}{(1+k^2)^s} \sum_{j=-\infty}^{\infty} (1+j^2)^s |\widehat{f_n}_j - \widehat{f_m}_j|^2 = \frac{\|f_n - f_m\|_{H^s}^2}{(1+k^2)^s}.
+% \]
+% Por completitud de $\mathbb{C}$, existe $c_k \in \mathbb{C}$ tal que $\widehat{f_n}_k \to c_k$ para cada $k$. 
 
-Falta verificar que la función $f$ definida por $\hat{f}_k = c_k$ pertenece a $H_{\mathrm{per}}^s$ y que $f_n \to f$ en $H_{\mathrm{per}}^s$. Esto se sigue de la convergencia dominada en $\ell^2$ con peso. Los detalles técnicos se omiten, pero la idea es estándar en teoría de espacios de sucesiones.
-\end{proof}
+% Falta verificar que la función $f$ definida por $\hat{f}_k = c_k$ pertenece a $H_{\mathrm{per}}^s$ y que $f_n \to f$ en $H_{\mathrm{per}}^s$. Esto se sigue de la convergencia dominada en $\ell^2$ con peso. Los detalles técnicos se omiten, pero la idea es estándar en teoría de espacios de sucesiones.
+% \end{proof}
 
-\begin{theorem}[Caracterización por derivadas débiles]
-Para $s = m \in \mathbb{N}$, el espacio $H_{\mathrm{per}}^m$ coincide (con normas equivalentes) con el espacio de funciones $f \in L^2([0,2\pi])$ cuyas derivadas débiles hasta orden $m$ pertenecen a $L^2([0,2\pi])$. Es decir:
-\[
-H_{\mathrm{per}}^m \cong \left\{ f \in L^2([0,2\pi]) : f^{(j)} \in L^2([0,2\pi]) \text{ para } 0 \leq j \leq m \right\}.
-\]
-Además, la norma $\|f\|_{H^m}$ es equivalente a:
-\[
-\|f\|_{H^m}^2 \sim \sum_{j=0}^{m} \|f^{(j)}\|_{L^2}^2.
-\]
-\end{theorem}
+% \begin{theorem}[Caracterización por derivadas débiles]
+% Para $s = m \in \mathbb{N}$, el espacio $H_{\mathrm{per}}^m$ coincide (con normas equivalentes) con el espacio de funciones $f \in L^2([0,2\pi])$ cuyas derivadas débiles hasta orden $m$ pertenecen a $L^2([0,2\pi])$. Es decir:
+% \[
+% H_{\mathrm{per}}^m \cong \left\{ f \in L^2([0,2\pi]) : f^{(j)} \in L^2([0,2\pi]) \text{ para } 0 \leq j \leq m \right\}.
+% \]
+% Además, la norma $\|f\|_{H^m}$ es equivalente a:
+% \[
+% \|f\|_{H^m}^2 \sim \sum_{j=0}^{m} \|f^{(j)}\|_{L^2}^2.
+% \]
+% \end{theorem}
 
-\begin{proof}[Idea de la demostración]
-La derivación en el espacio de Fourier corresponde a multiplicar los coeficientes por $ik$, como vimos en la Ecuación~\eqref{fourier_deriv}:
-\[
-\widehat{f^{(j)}}_k = (ik)^j \hat{f}_k.
-\]
-Por lo tanto,
-\[
-\sum_{k=-\infty}^{\infty} |\widehat{f^{(j)}}_k|^2 = \sum_{k=-\infty}^{\infty} k^{2j} |\hat{f}_k|^2.
-\]
-Sumando sobre $j = 0, \ldots, m$, obtenemos una cantidad equivalente a $\sum_{k} (1+k^2)^m |\hat{f}_k|^2$, que es precisamente $\|f\|_{H^m}^2$.
-\end{proof}
+% \begin{proof}[Idea de la demostración]
+% La derivación en el espacio de Fourier corresponde a multiplicar los coeficientes por $ik$, como vimos en la Ecuación~\eqref{fourier_deriv}:
+% \[
+% \widehat{f^{(j)}}_k = (ik)^j \hat{f}_k.
+% \]
+% Por lo tanto,
+% \[
+% \sum_{k=-\infty}^{\infty} |\widehat{f^{(j)}}_k|^2 = \sum_{k=-\infty}^{\infty} k^{2j} |\hat{f}_k|^2.
+% \]
+% Sumando sobre $j = 0, \ldots, m$, obtenemos una cantidad equivalente a $\sum_{k} (1+k^2)^m |\hat{f}_k|^2$, que es precisamente $\|f\|_{H^m}^2$.
+% \end{proof}
 
-\begin{theorem}[Inmersiones de Sobolev periódicas]
-Sean $s_1, s_2 \in \mathbb{R}$ con $s_1 > s_2$. Entonces:
-\begin{enumerate}
-\item $H_{\mathrm{per}}^{s_1} \subset H_{\mathrm{per}}^{s_2}$ (inmersión continua).
-\item Si $s > 1/2$, entonces $H_{\mathrm{per}}^s \subset C_{\mathrm{per}}([0,2\pi])$ (funciones continuas), y la inmersión es compacta.
-\item Más precisamente, si $s > k + 1/2$ con $k \in \mathbb{N}$, entonces $H_{\mathrm{per}}^s \subset C_{\mathrm{per}}^k([0,2\pi])$.
-\end{enumerate}
-\end{theorem}
+% \begin{theorem}[Inmersiones de Sobolev periódicas]
+% Sean $s_1, s_2 \in \mathbb{R}$ con $s_1 > s_2$. Entonces:
+% \begin{enumerate}
+% \item $H_{\mathrm{per}}^{s_1} \subset H_{\mathrm{per}}^{s_2}$ (inmersión continua).
+% \item Si $s > 1/2$, entonces $H_{\mathrm{per}}^s \subset C_{\mathrm{per}}([0,2\pi])$ (funciones continuas), y la inmersión es compacta.
+% \item Más precisamente, si $s > k + 1/2$ con $k \in \mathbb{N}$, entonces $H_{\mathrm{per}}^s \subset C_{\mathrm{per}}^k([0,2\pi])$.
+% \end{enumerate}
+% \end{theorem}
 
-\begin{proof}[Idea de la demostración]
-(1) Es inmediato de la definición, ya que $(1+k^2)^{s_2} \leq (1+k^2)^{s_1}$ para $|k|$ grande.
+% \begin{proof}[Idea de la demostración]
+% (1) Es inmediato de la definición, ya que $(1+k^2)^{s_2} \leq (1+k^2)^{s_1}$ para $|k|$ grande.
 
-(2) Para $s > 1/2$, la serie $\sum_{k} \hat{f}_k e^{ikx}$ converge absolutamente y uniformemente. En efecto, por Cauchy-Schwarz:
-\[
-\sum_{k=-\infty}^{\infty} |\hat{f}_k| = \sum_{k} (1+k^2)^{s/2} |\hat{f}_k| \cdot (1+k^2)^{-s/2} \leq \|f\|_{H^s} \left( \sum_{k} (1+k^2)^{-s} \right)^{1/2}.
-\]
-La última serie converge si $s > 1/2$. Por lo tanto, $f$ es continua.
+% (2) Para $s > 1/2$, la serie $\sum_{k} \hat{f}_k e^{ikx}$ converge absolutamente y uniformemente. En efecto, por Cauchy-Schwarz:
+% \[
+% \sum_{k=-\infty}^{\infty} |\hat{f}_k| = \sum_{k} (1+k^2)^{s/2} |\hat{f}_k| \cdot (1+k^2)^{-s/2} \leq \|f\|_{H^s} \left( \sum_{k} (1+k^2)^{-s} \right)^{1/2}.
+% \]
+% La última serie converge si $s > 1/2$. Por lo tanto, $f$ es continua.
 
-(3) Derivando término a término, si $f \in H_{\mathrm{per}}^s$ con $s > k + 1/2$, entonces $f^{(k)} \in H_{\mathrm{per}}^{s-k} \subset C_{\mathrm{per}}$ (usando el caso anterior).
-\end{proof}
+% (3) Derivando término a término, si $f \in H_{\mathrm{per}}^s$ con $s > k + 1/2$, entonces $f^{(k)} \in H_{\mathrm{per}}^{s-k} \subset C_{\mathrm{per}}$ (usando el caso anterior).
+% \end{proof}
 
-\begin{example}
-Consideremos $f(x) = \sum_{k=1}^{\infty} \frac{1}{k^2} \cos(kx)$. Sus coeficientes de Fourier son $\hat{f}_k = \hat{f}_{-k} = \frac{1}{2k^2}$ para $k \geq 1$, y $\hat{f}_0 = 0$. Entonces:
-\[
-\|f\|_{H^s}^2 = \sum_{k=1}^{\infty} (1+k^2)^s \cdot \frac{2}{k^4} \sim \sum_{k=1}^{\infty} \frac{k^{2s}}{k^4} = \sum_{k=1}^{\infty} k^{2s-4}.
-\]
-Esta serie converge si y solo si $2s - 4 < -1$, es decir, $s < 3/2$. Por lo tanto, $f \in H_{\mathrm{per}}^s$ para todo $s < 3/2$. Como $s < 3/2$ no alcanza $s = 2$, concluimos que $f \notin H_{\mathrm{per}}^2$, aunque $f$ es continua (ya que $0 < 1/2$, tenemos $f \in C_{\mathrm{per}}$).
-\end{example}
+% \begin{example}
+% Consideremos $f(x) = \sum_{k=1}^{\infty} \frac{1}{k^2} \cos(kx)$. Sus coeficientes de Fourier son $\hat{f}_k = \hat{f}_{-k} = \frac{1}{2k^2}$ para $k \geq 1$, y $\hat{f}_0 = 0$. Entonces:
+% \[
+% \|f\|_{H^s}^2 = \sum_{k=1}^{\infty} (1+k^2)^s \cdot \frac{2}{k^4} \sim \sum_{k=1}^{\infty} \frac{k^{2s}}{k^4} = \sum_{k=1}^{\infty} k^{2s-4}.
+% \]
+% Esta serie converge si y solo si $2s - 4 < -1$, es decir, $s < 3/2$. Por lo tanto, $f \in H_{\mathrm{per}}^s$ para todo $s < 3/2$. Como $s < 3/2$ no alcanza $s = 2$, concluimos que $f \notin H_{\mathrm{per}}^2$, aunque $f$ es continua (ya que $0 < 1/2$, tenemos $f \in C_{\mathrm{per}}$).
+% \end{example}
 
-El siguiente teorema conecta los espacios clásicos $C^n_{\mathrm{per}}$ con los espacios de Sobolev.
+% El siguiente teorema conecta los espacios clásicos $C^n_{\mathrm{per}}$ con los espacios de Sobolev.
 
-\begin{theorem}
-Para todo $n \in \mathbb{N}$, se tiene:
-\[
-C^n_{\mathrm{per}}([0,2\pi]) \subset H_{\mathrm{per}}^s \quad \text{para todo } s \leq n.
-\]
-Más aún, si $f \in C^n_{\mathrm{per}}([0,2\pi])$, entonces $|\hat{f}_k| \leq C/k^n$ para alguna constante $C > 0$, y por lo tanto:
-\[
-\|f\|_{H^s} < \infty \quad \text{para todo } s < n - 1/2.
-\]
-\end{theorem}
+% \begin{theorem}
+% Para todo $n \in \mathbb{N}$, se tiene:
+% \[
+% C^n_{\mathrm{per}}([0,2\pi]) \subset H_{\mathrm{per}}^s \quad \text{para todo } s \leq n.
+% \]
+% Más aún, si $f \in C^n_{\mathrm{per}}([0,2\pi])$, entonces $|\hat{f}_k| \leq C/k^n$ para alguna constante $C > 0$, y por lo tanto:
+% \[
+% \|f\|_{H^s} < \infty \quad \text{para todo } s < n - 1/2.
+% \]
+% \end{theorem}
 
-Por otro lado, la unión de todos los espacios de Sobolev recupera las funciones suaves:
-\[
-C^\infty_{\mathrm{per}}([0,2\pi]) = \bigcap_{s \in \mathbb{R}} H_{\mathrm{per}}^s.
-\]
+% Por otro lado, la unión de todos los espacios de Sobolev recupera las funciones suaves:
+% \[
+% C^\infty_{\mathrm{per}}([0,2\pi]) = \bigcap_{s \in \mathbb{R}} H_{\mathrm{per}}^s.
+% \]
 
-En resumen, los espacios $H_{\mathrm{per}}^s$ proporcionan una escala completa de espacios de funciones que interpolan entre distribuciones muy singulares ($s \ll 0$) y funciones infinitamente diferenciables ($s \to \infty$). Esta construcción es fundamental tanto para el análisis de ecuaciones diferenciales como para métodos numéricos basados en Fourier.
+% En resumen, los espacios $H_{\mathrm{per}}^s$ proporcionan una escala completa de espacios de funciones que interpolan entre distribuciones muy singulares ($s \ll 0$) y funciones infinitamente diferenciables ($s \to \infty$). Esta construcción es fundamental tanto para el análisis de ecuaciones diferenciales como para métodos numéricos basados en Fourier.
 
 
 \end{document}
