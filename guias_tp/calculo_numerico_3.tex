@@ -129,7 +129,7 @@ I = \int_0^1 \frac{\cos(x)}{\sqrt{x}}\, dx.
 \]
 El integrando $g(x) = \cos(x)/\sqrt{x}$ tiene una singularidad integrable en $x = 0$.
 \begin{enumerate}[(a)]
-\item Verifique que $g \notin C^0([0,1])$ y, en particular, que $g$ no es acotada cerca de $x = 0$. ¿Qué orden de convergencia se esperaría al aplicar la regla del trapecio compuesta directamente a $\int_0^1 g(x)\,dx$?
+\item Verifique que $g \notin C([0,1])$ y, en particular, que $g$ no es acotada cerca de $x = 0$. ¿Qué ocurre al aplicar la regla del trapecio compuesta directamente a $\int_0^1 g(x)\,dx$?
 \item Escriba $\cos(x) = 1 + (\cos(x) - 1)$ y descomponga la integral como
 \[
 I = \int_0^1 \frac{1}{\sqrt{x}}\, dx + \int_0^1 \frac{\cos(x) - 1}{\sqrt{x}}\, dx.
@@ -138,6 +138,22 @@ Calcule la primera integral de forma exacta. Para la segunda integral, defina $\
 \item Estudie la regularidad de $\varphi$: ¿pertenece a $C^1([0,1])$? \textbf{Sugerencia}: Calcule $\varphi'(x)$ para $x > 0$ y analice su comportamiento cuando $x \to 0^+$.
 \item ¿Qué orden de convergencia se obtiene al aplicar la regla del trapecio compuesta a $\int_0^1 \varphi(x)\,dx$? Compare con el resultado del inciso (a). ¿Qué se ganó al extraer la singularidad?
 \end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Exactitud de una regla de cuadratura interpolatoria]
+Sea $a<b$ y sean $x_0,\ldots,x_n\in[a,b]$ nodos distintos. Considere la regla de cuadratura interpolatoria
+\[
+Q_n(f):=\sum_{i=0}^{n} w_i f(x_i),
+\]
+donde los pesos $w_i$ se definen integrando los polinomios base de Lagrange:
+\[
+w_i:=\int_a^b \ell_i(x)\,dx, \qquad i=0,\ldots,n.
+\]
+Demuestre que $Q_n$ es exacta para todo polinomio de grado menor o igual que $n$, es decir:
+\[
+Q_n(p)=\int_a^b p(x)\,dx \qquad \forall p\in\mathcal P_n.
+\]
+\textbf{Sugerencia}: Desarrolle $p\in\mathcal P_n$ en la base de Lagrange $\{\ell_i\}$ y luego integre en $[a,b]$.
 \end{exercise}
 
 \begin{exercise}[Cuadratura interpolatoria con pesos]
@@ -160,23 +176,6 @@ con nodos fijos $x_0 = 0$, $x_1 = 1/2$, $x_2 = 1$.
 \item Considere ahora una regla compuesta: divida $[0, 1]$ en $n$ subintervalos de tamaño $h = 1/n$ y aplique la regla de cuadratura con pesos en cada subintervalo (adaptando los nodos y el peso a cada subintervalo). ¿Cuál es el orden de convergencia en función de $h$?
 \item ¿Qué sucedería si se aplicara una regla de cuadratura estándar (sin extraer el peso $\sqrt{x}$) para aproximar $\int_0^1 \sqrt{x}\, f(x)\, dx$? \textbf{Sugerencia}: Observe que el integrando $g(x) = \sqrt{x}\, f(x)$ satisface $g'(x) \to \infty$ cuando $x \to 0^+$, por lo que $g \notin C^1([0,1])$. ¿Cómo afecta esta falta de regularidad al orden de convergencia de trapecios o Simpson compuesta?
 \end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Exactitud de una regla de cuadratura interpolatoria]
-Sea $a<b$ y sean $x_0,\ldots,x_n\in[a,b]$ nodos distintos. Considere la regla de cuadratura interpolatoria
-\[
-Q_n(f):=\sum_{i=0}^{n} w_i f(x_i),
-\]
-donde los pesos $w_i$ se definen integrando los polinomios base de Lagrange:
-\[
-w_i:=\int_a^b \ell_i(x)\,dx, \qquad i=0,\ldots,n.
-\]
-Demuestre formalmente que $Q_n$ es exacta para todo polinomio de grado menor o igual que $n$, es decir:
-\[
-Q_n(p)=\int_a^b p(x)\,dx \qquad \forall p\in\mathcal P_n.
-\]
-
-\textbf{Sugerencia}: Desarrolle $p\in\mathcal P_n$ en la base de Lagrange $\{\ell_i\}$ y luego integre en $[a,b]$.
 \end{exercise}
 
 \begin{exercise}[Límite de precisión de las reglas de cuadratura]
