@@ -2829,7 +2829,7 @@ Esta elección no es arbitraria: la geometría regular de estos puntos sobre el 
 
 Este caso específico de interpolación es lo que conocemos como la \textbf{Transformada Discreta de Fourier (DFT)}.
 
-\subsection{Raíces de la unidad y su estructura algebraica}
+\subsection{Las raíces de la unidad como nodos de interpolación}
 
 \begin{definition}[Raíces $n$-ésimas de la unidad]
 Sea $n \geq 1$ un entero. Las \textbf{raíces $n$-ésimas de la unidad} son las soluciones de la ecuación $z^n = 1$ en $\mathbb{C}$:
@@ -2837,40 +2837,47 @@ Sea $n \geq 1$ un entero. Las \textbf{raíces $n$-ésimas de la unidad} son las 
 \omega_n^k = e^{2\pi i k / n}, \quad k = 0, 1, \ldots, n-1.
 \]
 \end{definition}
+\textbf{Notación:} Cuando $n$ está claro del contexto, escribimos simplemente $\omega = \omega_n = e^{2\pi i/n}$. Con esta notación, las raíces $n$-ésimas de la unidad son: $\{1, \omega, \omega^2, \ldots, \omega^{n-1}\}$.
 
-\textbf{Notación:} Cuando $n$ está claro del contexto, escribimos simplemente $\omega = \omega_n = e^{2\pi i/n}$.
+Ahora consideremos un polinomio sobre los complejos cualquiera 
+\begin{equation} 
+    p(z) = \sum_{k=0}^{n-1} c_k z^k
+\end{equation} 
 
-\begin{theorem}[Propiedades de las raíces de la unidad]
-Las raíces $n$-ésimas de la unidad satisfacen:
+Cuando tratamos el problema de interpolación, empezamos evaluando un polinomio en los nodos de interpolación, que en este caso son las raíces de la unidad. La evaluación de $p$ en la raíz $\omega^j$ se expresa como:
+
+\begin{equation} 
+p(\omega^j) = \sum_{k=0}^{n-1} c_k (\omega^j)^k = \sum_{k=0}^{n-1} c_k \omega^{jk} = \sum_{k=0}^{n-1} c_k e^{2\pi i jk / n}.
+\end{equation} 
+
+A partir de aquí, podemos definir la \textbf{Transformada Discreta de Fourier (DFT)} como la evaluación de un polinomio en las raíces de la unidad. La definición usual de la DFT se presenta a continuación, pero es importante destacar que esta definición es una instancia particular de la interpolación polinomial en $\mathbb{C}$ con nodos en las raíces de la unidad.
+
+\begin{definition}[Transformada Discreta de Fourier (DFT)]
+Dado $x \in \mathbb{C}^N$, definimos su DFT como $\hat{x} \in \mathbb{C}^N$ con
+\[
+\hat{x}_j = \sum_{k=0}^{N-1} x_k\, \omega_N^{jk}, \quad j = 0, \ldots, N-1, \qquad \text{donde } \omega_N = e^{2\pi i/N}.
+\]    
+\end{definition}
+
+\subsection{Matriz de Vandermonde y la transformada inversa (IDFT)}
+
+Como la DFT es evaluar un polinomio en las raíces de la unidad, podemos representarla mediante una matriz de Vandermonde.
+
+\begin{remark}[Propiedades básicas de las raíces de la unidad]
+Sea $\omega = e^{2\pi i/n}$ una raíz $n$-ésima primitiva de la unidad. Vale la pena recordar:
 \begin{enumerate}
-\item \textbf{Ecuación polinomial}: Son las $n$ raíces (distintas) de $z^n - 1 = 0$.
-\item \textbf{Periodicidad}: $\omega^{n+k} = \omega^k$ para todo $k \in \mathbb{Z}$.
-\item \textbf{Conjugación}: $\overline{\omega^k} = \omega^{-k} = \omega^{n-k}$.
-\item \textbf{Ortogonalidad discreta}: $\sum_{j=0}^{n-1} (\omega^k)^j = \begin{cases} n & \text{si } k \equiv 0 \pmod{n}, \\ 0 & \text{si } k \not\equiv 0 \pmod{n}. \end{cases}$
+\item $\omega^n = 1$ (por definición, $\omega$ es raíz $n$-ésima de la unidad).
+\item $\omega^{jk} = (\omega^j)^k = (\omega^k)^j$ (exponentes conmutan).
+\item Suma geométrica de raíces: Para cualquier $\ell \in \mathbb{Z}$,
+\[
+\sum_{j=0}^{n-1} \omega^{j\ell} = \begin{cases}
+n & \text{si } \ell \equiv 0 \pmod{n}, \\
+0 & \text{si } \ell \not\equiv 0 \pmod{n}.
+\end{cases}
+\]
+En el segundo caso, la suma es una serie geométrica con razón $r = \omega^\ell \neq 1$: $\sum_{j=0}^{n-1} r^j = \frac{r^n - 1}{r - 1} = \frac{\omega^{n\ell} - 1}{\omega^\ell - 1} = \frac{1 - 1}{\omega^\ell - 1} = 0$.
 \end{enumerate}
-\end{theorem}
-
-\begin{proof}
-(1) es inmediata de la definición exponencial.
-
-(2) Para todo $k \in \mathbb{Z}$,
-\[
-\omega^{n+k} = \omega^n\,\omega^k = 1\cdot \omega^k = \omega^k,
-\]
-ya que $\omega^n = 1$.
-
-(3) es inmediata de la definición exponencial.
-
-(4) Si $k \equiv 0 \pmod{n}$, entonces $\omega^k = 1$ y la suma es $n \cdot 1 = n$. Si $k \not\equiv 0 \pmod{n}$, entonces $\omega^k \neq 1$ y usando la suma geométrica:
-\[
-\sum_{j=0}^{n-1} (\omega^k)^j = \frac{1 - (\omega^k)^n}{1 - \omega^k} = \frac{1 - \omega^{kn}}{1 - \omega^k} = \frac{1 - 1}{1 - \omega^k} = 0,
-\]
-donde usamos $\omega^{kn} = (\omega^n)^k = 1^k = 1$.
-\end{proof}
-
-\subsection{Matriz de Vandermonde en raíces de la unidad}
-
-Consideremos el problema de interpolación con nodos en las raíces $n$-ésimas de la unidad: $\{1, \omega, \omega^2, \ldots, \omega^{n-1}\}$.
+\end{remark}
 
 \begin{definition}[Matriz DFT como Vandermonde]
 La matriz de Vandermonde evaluada en las raíces $n$-ésimas de la unidad es:
@@ -2887,55 +2894,42 @@ F_n =
 Elemento $(j,k)$: $[F_n]_{jk} = \omega^{jk}$ para $j, k = 0, 1, \ldots, n-1$.
 \end{definition}
 
-\begin{remark}Esta es exactamente la matriz de la Transformada Discreta de Fourier (salvo, según el caso, posibles convenciones de normalización.
-\end{remark}
+Una propiedad extraordinaria de $F_n$ es que sus columnas son los \textbf{modos de Fourier discretos} y son mutuamente ortogonales.
 
-\begin{theorem}[DFT como interpolación en raíces de la unidad]\label{thm:dft_vandermonde}
-Sea $\mathbf{p} = (p_0, p_1, \ldots, p_{n-1})^T$ el vector de coeficientes de un polinomio $p(x) = \sum_{k=0}^{n-1} p_k x^k$. Sus evaluaciones en las raíces $n$-ésimas de la unidad son:
+\begin{lemma}[Ortogonalidad de las columnas de $F_n$]\label{lem:modos_fourier}
+La $k$-ésima columna de $F_n$ es el modo de Fourier discreto
 \[
-\mathbf{y} = F_n \mathbf{p},
+\mathbf{v}_k = (1,\, \omega^k,\, \omega^{2k},\, \ldots,\, \omega^{(n-1)k})^T \in \mathbb{C}^n, \qquad k = 0, \ldots, n-1.
 \]
-donde $y_j = p(\omega^j)$ para $j = 0, 1, \ldots, n-1$.
-
-Inversamente, dados valores $\mathbf{y}$ en las raíces de la unidad, los coeficientes se recuperan mediante:
+Estos vectores son mutuamente ortogonales:
 \[
-\mathbf{p} = F_n^{-1} \mathbf{y}.
+\langle \mathbf{v}_k,\, \mathbf{v}_\ell \rangle = n\,\delta_{k\ell}.
 \]
-\end{theorem}
+En particular, $\|\mathbf{v}_k\| = \sqrt{n}$, y los vectores normalizados $\mathbf{u}_k = \frac{1}{\sqrt{n}}\mathbf{v}_k$ forman una base ortonormal (BON) de $\mathbb{C}^n$.
+\end{lemma}
 
 \begin{proof}
-Evaluando $p(x)$ en $x = \omega^j$:
+Calculamos el producto interior:
 \[
-y_j = p(\omega^j) = \sum_{k=0}^{n-1} p_k (\omega^j)^k = \sum_{k=0}^{n-1} p_k \omega^{jk} = [F_n \mathbf{p}]_j.
+\langle \mathbf{v}_k,\, \mathbf{v}_\ell \rangle
+= \sum_{j=0}^{n-1} \omega^{jk}\,\overline{\omega^{j\ell}}
+= \sum_{j=0}^{n-1} \omega^{jk}\,\omega^{-j\ell}
+= \sum_{j=0}^{n-1} \omega^{j(k - \ell)}.
 \]
-Como $F_n$ es invertible (Vandermonde con nodos distintos), la interpolación inversa es $\mathbf{p} = F_n^{-1} \mathbf{y}$.
+Si $k = \ell$, cada término vale $1$, luego la suma es $n$. Si $k \neq \ell$, sea $r = \omega^{k-\ell} \neq 1$; como $r$ es una raíz $n$-ésima de la unidad ($r^n = 1$), la fórmula de la suma geométrica da
+\[
+\sum_{j=0}^{n-1} r^j = \frac{r^n - 1}{r - 1} = \frac{1 - 1}{r - 1} = 0.
+\]
+Por tanto $\langle \mathbf{v}_k, \mathbf{v}_\ell \rangle = n\,\delta_{k\ell}$.
+Como hay $n$ vectores no nulos ortogonales entre sí en $\mathbb{C}^n$, son linealmente independientes y forman una base; normalizados, $\{\mathbf{u}_k\}$ es una BON.
 \end{proof}
 
-\subsection{Unitariedad de la matriz DFT}
-
-Una propiedad extraordinaria de $F_n$ es que es \textbf{unitaria} salvo un factor de escala.
-
 \begin{theorem}[Unitariedad de $F_n$]\label{thm:dft_unitary}
-La matriz $F_n$ satisface:
-\[
-F_n^* F_n = n I_n,
-\]
-donde $F_n^*$ es la adjunta (transpuesta conjugada). Equivalentemente, $\frac{1}{\sqrt{n}} F_n$ es unitaria.
+La matriz $F_n$ satisface $F_n^* F_n = n I_n$. Equivalentemente, $\frac{1}{\sqrt{n}} F_n$ es unitaria.
 \end{theorem}
 
 \begin{proof}
-Calculamos el elemento $(k, \ell)$ de $F_n^* F_n$:
-\begin{align*}
-[F_n^* F_n]_{k\ell} &= \sum_{j=0}^{n-1} \overline{[F_n]_{jk}} [F_n]_{j\ell} \\
-&= \sum_{j=0}^{n-1} \overline{\omega^{jk}} \omega^{j\ell} \\
-&= \sum_{j=0}^{n-1} \omega^{-jk} \omega^{j\ell} \\
-&= \sum_{j=0}^{n-1} \omega^{j(\ell - k)} \\
-&= \begin{cases}
-n & \text{si } \ell = k \quad \text{(por ortogonalidad, caso } k \equiv 0), \\
-0 & \text{si } \ell \neq k \quad \text{(por ortogonalidad, caso } k \not\equiv 0).
-\end{cases}
-\end{align*}
-Por lo tanto, $F_n^* F_n = n I_n$.
+El elemento $(k,\ell)$ de $F_n^* F_n$ es $\langle \mathbf{v}_k, \mathbf{v}_\ell \rangle$, donde $\mathbf{v}_k$ es la $k$-ésima columna de $F_n$. Por el Lema~\ref{lem:modos_fourier}, $[F_n^* F_n]_{k\ell} = n\,\delta_{k\ell}$, es decir, $F_n^* F_n = n I_n$.
 \end{proof}
 
 \begin{corollary}[Inversa de la DFT]
@@ -2946,19 +2940,10 @@ F_n^{-1} = \frac{1}{n} F_n^*.
 Explícitamente, $[F_n^{-1}]_{jk} = \frac{1}{n} \omega^{-jk}$.
 \end{corollary}
 
-\subsection{Transformada Discreta de Fourier (DFT)}
-
-\begin{definition}[DFT y su inversa]
-Dada una secuencia $\mathbf{x} = (x_0, x_1, \ldots, x_{n-1})^T \in \mathbb{C}^n$, su \textbf{Transformada Discreta de Fourier (DFT)} es:
+Con lo cual, la \textbf{DFT inversa (IDFT)} es:
 \[
-\mathbf{X} = F_n \mathbf{x}, \quad \text{es decir, } X_k = \sum_{j=0}^{n-1} x_j \omega^{jk}, \quad k = 0, 1, \ldots, n-1.
+\mathbf{x} = F_n^{-1} \mathbf{X} = \frac{1}{n} F_n^* \mathbf{X}, \quad \text{es decir, } x_j = \frac{1}{n} \sum_{k=0}^{n-1} \hat{x}_k \omega^{-jk}.
 \]
-
-La \textbf{DFT inversa (IDFT)} es:
-\[
-\mathbf{x} = F_n^{-1} \mathbf{X} = \frac{1}{n} F_n^* \mathbf{X}, \quad \text{es decir, } x_j = \frac{1}{n} \sum_{k=0}^{n-1} X_k \omega^{-jk}.
-\]
-\end{definition}
 
 \begin{remark}[Convenciones de normalización]
 Diferentes textos usan distintas convenciones:
@@ -2969,40 +2954,6 @@ Diferentes textos usan distintas convenciones:
 \end{itemize}
 Lo importante es la relación $F_n^{-1} = \frac{1}{n} F_n^*$, que es invariante.
 \end{remark}
-
-\begin{lemma}[Modos de Fourier discretos y cambio de base ortonormal]
-Sea
-\[
-\mathbf{v}_k = (\omega^{0k},\omega^{1k},\ldots,\omega^{(n-1)k})^T \in \mathbb{C}^n, \qquad k=0,\ldots,n-1,
-\]
-es decir, la $k$-ésima columna de $F_n$. Entonces:
-\begin{enumerate}
-\item $\langle \mathbf{v}_k,\mathbf{v}_\ell\rangle = n\,\delta_{k\ell}$.
-\item $\|\mathbf{v}_k\| = \sqrt{n}$ para todo $k$.
-\item Los vectores normalizados $\mathbf{u}_k = \frac{1}{\sqrt{n}}\mathbf{v}_k$ forman una BON de $\mathbb{C}^n$.
-\end{enumerate}
-En consecuencia, la matriz
-\[
-U := \frac{1}{\sqrt{n}}F_n = (\mathbf{u}_0\,\mathbf{u}_1\,\cdots\,\mathbf{u}_{n-1})
-\]
-es unitaria y el operador $U^*$ da las coordenadas de un vector en la base ortonormal de modos de Fourier.
-\end{lemma}
-
-\begin{proof}
-Para $k,\ell \in \{0,\ldots,n-1\}$,
-\[
-\langle \mathbf{v}_k,\mathbf{v}_\ell\rangle
-= \sum_{j=0}^{n-1}\overline{\omega^{jk}}\,\omega^{j\ell}
-= \sum_{j=0}^{n-1}\omega^{j(\ell-k)}.
-\]
-Por la ortogonalidad discreta de las raíces de la unidad, esta suma vale $n$ si $k=\ell$ y vale $0$ si $k\neq \ell$. Esto prueba (1). Tomando $k=\ell$ se obtiene
-\[
-\|\mathbf{v}_k\|^2 = \langle \mathbf{v}_k,\mathbf{v}_k\rangle = n,
-\]
-y por tanto $\|\mathbf{v}_k\|=\sqrt{n}$, que es (2).
-
-Finalmente, (1) y (2) implican que los vectores $\mathbf{u}_k=\mathbf{v}_k/\sqrt{n}$ son ortonormales. Como hay $n$ vectores ortonormales en $\mathbb{C}^n$, forman una base ortonormal, probando (3). Equivalentemente, $U^*U=I_n$, luego $U$ es unitaria. Para cualquier $\mathbf{x}\in\mathbb{C}^n$, el vector $U^*\mathbf{x}$ contiene sus coeficientes en la base ortonormal $\{\mathbf{u}_k\}_{k=0}^{n-1}$.
-\end{proof}
 
 \begin{remark}[Lectura en términos de DFT]
 Con la convención asimétrica usada aquí ($\mathbf{X}=F_n\mathbf{x}$), la DFT difiere del operador de cambio a coordenadas ortonormales por normalización (y conjugación de fase, según convención de signo). En particular, la versión unitaria
@@ -3040,13 +2991,40 @@ donde:
 \item $O_k = \sum_{j=0}^{m-1} x_{2j+1} \omega_m^{jk}$ es la DFT de tamaño $m$ de $\mathbf{x}_{\text{impar}}$.
 \end{itemize}
 
-Usando la simetría $E_{k+m} = E_k$ y $\omega_n^{k+m} = -\omega_n^k$:
+Para completar los $n$ coeficientes, no alcanza con $k=0,\ldots,m-1$: también necesitamos $X_{k+m}$. La clave es que $E_k$ y $O_k$ son DFTs de tamaño $m$, por lo que son periódicas módulo $m$:
+\[
+E_{k+m} = \sum_{j=0}^{m-1} x_{2j}\,\omega_m^{j(k+m)}
+= \sum_{j=0}^{m-1} x_{2j}\,\omega_m^{jk}(\omega_m^m)^j
+= \sum_{j=0}^{m-1} x_{2j}\,\omega_m^{jk}
+= E_k,
+\]
+y análogamente $O_{k+m}=O_k$, porque $\omega_m^m = e^{2\pi i}=1$.
+
+Además,
+\[
+\omega_n^{k+m} = \omega_n^k\,\omega_n^m = \omega_n^k e^{\pi i} = -\omega_n^k,
+\]
+ya que $n=2m$.
+
+Entonces, para $k=0,\ldots,m-1$:
 \[
 \begin{cases}
 X_k = E_k + \omega_n^k O_k, & k = 0, \ldots, m-1, \\
 X_{k+m} = E_k - \omega_n^k O_k, & k = 0, \ldots, m-1.
 \end{cases}
 \]
+Este es el paso de \textbf{combinación} (butterfly): cada par $(E_k,O_k)$ produce dos salidas $(X_k,X_{k+m})$.
+
+En forma algorítmica, la FFT radix-2 termina así:
+\begin{enumerate}
+\item Si $n=1$, devolver el único valor (caso base).
+\item Si $n>1$, calcular recursivamente las DFT de tamaño $m=n/2$ de las partes par e impar para obtener $E_k$ y $O_k$.
+\item Para $k=0,\ldots,m-1$, formar
+\[
+X_k = E_k + \omega_n^k O_k, \qquad X_{k+m} = E_k - \omega_n^k O_k.
+\]
+\item Devolver el vector completo $\mathbf{X}=(X_0,\ldots,X_{n-1})$.
+\end{enumerate}
 \end{theorem}
 
 \textbf{Análisis de complejidad:} Sea $T(n)$ el tiempo para calcular una DFT de tamaño $n$. El algoritmo FFT satisface:
