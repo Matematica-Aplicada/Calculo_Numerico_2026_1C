@@ -310,7 +310,75 @@ y denotamos $s = |S|$, $t = |T|$. El objetivo es demostrar que $s\,t \geq N$.
 \|x\|_2^2 \leq \frac{s\,t}{N^2}\,\|\hat{x}\|_2^2.
 \]
 \item Emplee la relación de Parseval para la convención asimétrica ($\|\hat{x}\|_2^2 = N \|x\|_2^2$) y concluya que $s\,t \geq N$.
-\item Interprete el resultado: ¿qué implica para una señal que tiene muy pocas frecuencias activas (t pequeño)? ¿Y para una que solo es no nula en muy pocos instantes (s pequeño)?
+\item Interprete el resultado en clave óptica: piense en $s$ como el tamaño del soporte espacial de una señal (por ejemplo, el ancho de la apertura de un sistema óptico) y en $t$ como su ancho de banda (número de frecuencias espaciales activas). La desigualdad $s\,t \geq N$ establece un \emph{límite de resolución}: para localizar una señal en pocos puntos del espacio ($s$ pequeño, alta resolución espacial) es necesario disponer de un ancho de banda amplio ($t$ grande). A la inversa, un sistema de banda estrecha ($t$ pequeño, por ejemplo luz casi monocromática o una apertura muy limitada en el espacio de frecuencias) forzosamente produce una respuesta espacial extendida ($s$ grande), es decir, baja resolución. 
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Difracción de Fraunhofer como DFT y límite de resolución de Rayleigh]
+Considere una apertura unidimensional formada por $N$ ranuras equiespaciadas con separación $\Delta x$,
+con función de transmitancia discreta $a = (a_0, \ldots, a_{N-1}) \in \mathbb{C}^N$ (longitud total de la grilla $L = N\Delta x$).
+En la aproximación de Fraunhofer (campo lejano, distancia $z \gg D^2/\lambda$), la amplitud compleja difractada en la dirección $\theta$ es proporcional a
+\[
+U(\theta) \propto \sum_{j=0}^{N-1} a_j\, e^{\,2\pi i j \Delta x \sin\theta / \lambda}.
+\]
+\begin{enumerate}[(a)]
+\item \textbf{Difracción = DFT.}
+Muestre que al evaluar $U$ en las $N$ direcciones discretas definidas por
+\[
+\sin\theta_k = \frac{k\,\lambda}{N\,\Delta x}, \qquad k = 0, \ldots, N-1,
+\]
+se obtiene exactamente la DFT de $a$ (con la convención del curso):
+\[
+U(\theta_k) \propto \hat{a}_k.
+\]
+Concluya que calcular el patrón de difracción completo en estas $N$ direcciones requiere $O(N \log N)$ operaciones mediante FFT.
+
+\item \textbf{Apertura rectangular y ancho del lóbulo central.}
+Suponga que exactamente $s$ ranuras consecutivas están abiertas con igual transmitancia:
+$a_j = 1$ para $j = 0, \ldots, s-1$ y $a_j = 0$ en el resto, modelando una apertura de tamaño físico $D = s\,\Delta x$.
+\begin{enumerate}[i.]
+\item Usando la suma geométrica, calcule
+\[
+\hat{a}_k = \sum_{j=0}^{s-1} \omega_N^{jk}
+\]
+y deduzca que
+\[
+|\hat{a}_k| = \frac{|\sin(\pi s k / N)|}{|\sin(\pi k / N)|}.
+\]
+\item Muestre que el lóbulo central de $|\hat{a}_k|$ tiene ancho $\approx N/s$ \emph{bins}: el primer cero ocurre en $k = N/s$ (suponga que $s \mid N$).
+\end{enumerate}
+
+\item \textbf{Criterio de Rayleigh discreto.}
+Cada bin de la DFT corresponde a un incremento angular $\delta(\sin\theta) = \lambda/(N\Delta x)$.
+El criterio de Rayleigh establece que dos fuentes puntuales son justamente resolvibles cuando sus patrones de difracción están separados en aproximadamente un ancho de lóbulo central.
+Use el inciso anterior para deducir que la resolución mínima es:
+\[
+\delta\theta_{\min} \approx \frac{\lambda}{D}.
+\]
+Interprete: un sistema con apertura más grande tiene más \emph{bins} activos y puede resolver detalles angulares más finos.
+
+\item \textbf{Apertura como ancho de banda.}
+En el plano de frecuencias espaciales (plano de Fourier del sistema óptico), la apertura de tamaño $D$ actúa como un filtro pasa-bajos que admite frecuencias espaciales $|\nu| \lesssim D/\lambda$, es decir, un ancho de banda proporcional a $s = D/\Delta x$.
+Muestre que el paso de ``apertura'' a ``ancho de banda'' es exactamente la dualidad de Fourier: la señal $a$ tiene soporte espacial $s$ y su DFT $\hat{a}$ tiene ancho de banda $\approx s$ (en el sentido de que el lóbulo central contiene la fracción dominante de la energía en $s$ bins alrededor de $k = 0$).
+
+\textbf{Sugerencia}: Verifique, usando la identidad de Parseval, que la fracción de energía contenida en los $s$ bins centrales de $\hat{a}$ es al menos una constante independiente de $N$.
+
+\item \textbf{Límite fundamental vía Donoho-Stark.}
+Sea $s = |\operatorname{supp}(a)|$ y $t = |\operatorname{supp}(\hat{a})|$.
+Usando el principio de incertidumbre de Donoho-Stark, deduzca que el patrón de difracción no puede concentrarse en menos de $N/s$ bins:
+\[
+t \geq \frac{N}{s}.
+\]
+Concluya que la resolución angular satisface la cota \emph{fundamental}:
+\[
+\delta\theta \;\geq\; \frac{N/s \cdot \lambda}{N\,\Delta x} \;=\; \frac{\lambda}{D},
+\]
+es decir, ningún sistema con apertura $D$ puede resolver un ángulo menor que $\lambda/D$, con independencia de la forma de la función de transmitancia $a$.
+Identifique el rol de $D = s\,\Delta x$ como el \emph{ancho de banda espacial} del sistema, y reescriba la cota de Donoho-Stark como
+\[
+\text{(resolución angular)} \times \text{(ancho de banda espacial)} \;\geq\; \lambda,
+\]
+el análogo discreto exacto del criterio de Rayleigh $\delta\theta \cdot D \sim \lambda$.
 \end{enumerate}
 \end{exercise}
 
