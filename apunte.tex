@@ -11,6 +11,7 @@
 \newtheorem{lemma}[theorem]{Lema}
 \newtheorem{corollary}[theorem]{Corolario}
 \newtheorem{definition}[theorem]{Definición}
+\newtheorem{proposition}[theorem]{Proposición}
 \newtheorem{exercise}[theorem]{Ejercicio}
 \newtheorem{example}[theorem]{Ejemplo}
 \newtheorem{remark}[theorem]{Observación}
@@ -1851,19 +1852,27 @@ Así, para todo $y\neq 0$, se cumple $\frac{\|\Sigma y\|_2^2}{\|y\|_2^2}\le \sig
 Luego el máximo es $\sigma_1^2$. Tomando raíz cuadrada, obtenemos $\|A\|_2 = \sigma_1$.
 \end{proof}
 
-Para calcular $\|A^{-1}\|_2$, usemos directamente la SVD. Si
+\begin{lemma}[Norma de la inversa y valor singular mínimo]\label{lem:norma_inversa_sigma_min}
+Sea $A\in\mathbb{C}^{n\times n}$ inversible con valores singulares $\sigma_1\ge\cdots\ge\sigma_n>0$. Entonces
 \[
-A=U\Sigma V^*,\qquad \Sigma=\operatorname{diag}(\sigma_1,\ldots,\sigma_n),\ \sigma_n>0,
+\|A^{-1}\|_2 = \frac{1}{\sigma_n},
 \]
-entonces
+y en particular
+\[
+\sigma_n = \min_{x\neq 0}\frac{\|Ax\|_2}{\|x\|_2}.
+\]
+\end{lemma}
+\begin{proof}
+Sea $A=U\Sigma V^*$ la SVD, con $\Sigma=\operatorname{diag}(\sigma_1,\ldots,\sigma_n)$ y $\sigma_n>0$.  Entonces
 \[
 A^{-1}=(U\Sigma V^*)^{-1}=V\Sigma^{-1}U^*=V\operatorname{diag}(1/\sigma_1,\ldots,1/\sigma_n)U^*.
 \]
-Así, los valores singulares de $A^{-1}$ son $1/\sigma_1,\ldots,1/\sigma_n$, y ordenados quedan
-$1/\sigma_n\ge\cdots\ge 1/\sigma_1$. Aplicando el teorema anterior,
-$\|A^{-1}\|_2=1/\sigma_n$. Por lo tanto:
+Los valores singulares de $A^{-1}$ son $1/\sigma_n\ge\cdots\ge 1/\sigma_1>0$; aplicando el teorema anterior a $A^{-1}$ se obtiene $\|A^{-1}\|_2=1/\sigma_n$.  La fórmula variacional para $\sigma_n$ se deduce del mismo argumento: el mínimo de $\|\Sigma y\|_2/\|y\|_2$ se alcanza en $y=e_n$ y vale $\sigma_n$.
+\end{proof}
+
+Combinando el teorema anterior con el lema se obtiene la fórmula definitiva para el número de condición:
 \[
-\kappa_2(A) = \frac{\sigma_1}{\sigma_n}.
+\kappa_2(A) = \|A\|_2\|A^{-1}\|_2 = \frac{\sigma_1}{\sigma_n}.
 \]
 
 \begin{remark}
@@ -2289,17 +2298,22 @@ Sea $\mathbb{F}$ un cuerpo ($\mathbb{R}$, $\mathbb{C}$, $\mathbb{Z}_p$, etc.) y 
 Dados $n+1$ nodos distintos $x_0,\ldots,x_n\in\mathbb{F}$ y valores $y_0,\ldots,y_n\in\mathbb{F}$, buscamos $p\in\mathcal{P}_n$ tal que $p(x_i)=y_i$ para $i=0,\ldots,n$.
 \end{definition}
 
-El problema admite una lectura lineal inmediata.  Definimos el \textbf{operador de evaluación}
+\begin{definition}[Operador de evaluación]
+Dados $n+1$ nodos distintos $x_0,\ldots,x_n\in\mathbb{F}$, el \textbf{operador de evaluación} es la transformación lineal
 \[
-\Phi\colon\mathcal{P}_n \to \mathbb{F}^{n+1},\qquad \Phi(p) = \bigl(p(x_0),\ldots,p(x_n)\bigr).
+\Phi\colon\mathcal{P}_n \;\longrightarrow\; \mathbb{F}^{n+1},\qquad \Phi(p) = \bigl(p(x_0),\ldots,p(x_n)\bigr).
 \]
-Interpolar equivale a invertir $\Phi$.  Como $\dim\mathcal{P}_n = \dim\mathbb{F}^{n+1} = n+1$, basta probar que $\Phi$ es inyectiva.
+\end{definition}
+
+La linealidad de $\Phi$ es inmediata: evaluar una combinación lineal de polinomios en un punto da la misma combinación lineal de los valores.  El problema de interpolación es, precisamente, resolver la ecuación $\Phi(p) = y$ dado $y=(y_0,\ldots,y_n)\in\mathbb{F}^{n+1}$; dicho de otro modo, interpolar equivale a calcular $\Phi^{-1}(y)$.
 
 \begin{theorem}[Existencia y unicidad]\label{thm:existencia_unicidad}
-Si los nodos $x_0,\ldots,x_n$ son distintos, $\Phi$ es un isomorfismo.  En particular, el problema de interpolación tiene solución única.
+Si los nodos $x_0,\ldots,x_n$ son distintos, $\Phi$ es un isomorfismo.  En particular, para cualquier vector de valores $y\in\mathbb{F}^{n+1}$ existe un único $p\in\mathcal{P}_n$ tal que $p(x_i)=y_i$ para $i=0,\ldots,n$.
 \end{theorem}
 \begin{proof}
-Sea $p\in\ker\Phi$, es decir $p(x_i)=0$ para $i=0,\ldots,n$.  Un polinomio no nulo de grado $\leq n$ tiene a lo sumo $n$ raíces (Teorema~\ref{thm:raices_polinomio}, Apéndice~A), pero $p$ tiene $n+1$ raíces; luego $p\equiv 0$ y $\Phi$ es inyectiva.
+Puesto que $\dim\mathcal{P}_n = n+1 = \dim\mathbb{F}^{n+1}$, el teorema rango-nulidad garantiza que $\Phi$ es inyectiva si y solo si es sobreyectiva, por lo que basta verificar $\ker\Phi = \{0\}$.
+
+Sea $p\in\ker\Phi$, es decir, $p(x_i)=0$ para $i=0,\ldots,n$.  Un polinomio no nulo de grado $\leq n$ tiene a lo sumo $n$ raíces (Teorema~\ref{thm:raices_polinomio}, Apéndice~A); como $p$ posee $n+1$ raíces distintas, se concluye $p\equiv 0$.  Por tanto $\ker\Phi=\{0\}$ y $\Phi$ es un isomorfismo.
 \end{proof}
 
 \subsection{La matriz de Vandermonde}\label{subsec:vandermonde}
@@ -2316,11 +2330,55 @@ V = \begin{pmatrix}
 \]
 Así, la existencia y unicidad del interpolante se reducen a la inversibilidad de $V$.
 
-\begin{remark}[Mal condicionamiento de Vandermonde]\label{rmk:vandermonde_cond}
-Resolver el sistema $Va=y$ es, en general, un método numéricamente \emph{inadecuado} para calcular el interpolante: $\kappa_2(V)$ crece exponencialmente con~$n$.
+\begin{proposition}[Mal condicionamiento de Vandermonde]\label{prop:vandermonde_cond}
+Para cualquier elección de $n+1$ nodos distintos $x_0,\ldots,x_n\in[-1,1]$, la matriz de Vandermonde~$V$ satisface
+\[
+\kappa_2(V) \;\ge\; \frac{2^{\lfloor n/2\rfloor}}{\sqrt{n+1}}.
+\]
+En particular, $\kappa_2(V)$ crece al menos exponencialmente con~$n$, lo que hace que resolver el sistema $Va=y$ sea un método numéricamente \emph{inadecuado} para calcular el interpolante.
+\end{proposition}
 
-Para ver esto, usamos la caracterización variacional $\sigma_{\min}(V) = \min_{a\neq 0}\|Va\|_2/\|a\|_2$.  Si los nodos $x_0,\ldots,x_n$ están en $[-1,1]$, la suma $\|Va\|_2^2 = \sum_{i=0}^n p(x_i)^2$ (donde $p$ tiene coeficientes~$a$) se comporta como una suma de Riemann de $\int_{-1}^1 p(x)^2\,dx$ escalada por un factor $O(n)$.  Para el polinomio de prueba $p(x)=(1-x^2)^n$, la integral $\int_{-1}^1 (1-x^2)^{2n}\,dx\to 0$, mientras que, usando la identidad $\sum_{k=0}^n\binom{n}{k}^2 = \binom{2n}{n}$, se verifica que $\|a\|_2^2 \geq 4^n/(2n+1)$.  Esto fuerza que $\sigma_{\min}(V)$ decaiga exponencialmente y, en consecuencia, $\kappa_2(V)$ crezca exponencialmente.
-\end{remark}
+\begin{proof}
+Sea $m=\lfloor n/2\rfloor$ y consideremos el polinomio de prueba
+\[
+p(x)=(1-x^2)^m = \sum_{k=0}^{m}(-1)^k\binom{m}{k}x^{2k}\;\in\;\mathcal{P}_n,
+\]
+que tiene grado $2m\le n$.  Su vector de coeficientes en la base monomial es $a\in\mathbb{R}^{n+1}$ con $a_{2k}=(-1)^k\binom{m}{k}$ para $k=0,\ldots,m$ y las restantes componentes nulas.
+
+\textbf{Cota inferior de $\|a\|_2$.}  Por la identidad de Vandermonde--Chu,
+\[
+\|a\|_2^2=\sum_{k=0}^m \binom{m}{k}^2=\binom{2m}{m}.
+\]
+Como $\binom{2m}{m}$ es el mayor de los $2m+1$ sumandos de $\sum_{k=0}^{2m}\binom{2m}{k}=4^m$,
+\[
+\binom{2m}{m}\;\ge\;\frac{4^m}{2m+1}.
+\]
+
+\textbf{Cota superior de $\|Va\|_2$.}  Para todo $x\in[-1,1]$ se tiene $0\le 1-x^2\le 1$, de modo que $(1-x_i^2)^{2m}\le 1$.  Sumando sobre los $n+1$ nodos:
+\[
+\|Va\|_2^2=\sum_{i=0}^n \bigl(1-x_i^2\bigr)^{2m}\;\le\; n+1.
+\]
+
+\textbf{Cota de $\sigma_{\min}(V)$.}  Aplicando la caracterización variacional del Lema~\ref{lem:norma_inversa_sigma_min}:
+\[
+\sigma_{\min}^2(V)\;\le\;\frac{\|Va\|_2^2}{\|a\|_2^2}
+\;\le\;\frac{n+1}{\binom{2m}{m}}
+\;\le\;\frac{(n+1)(2m+1)}{4^m}.
+\]
+
+\textbf{Cota inferior de $\sigma_{\max}(V)$.}  La primera columna de $V$ es el vector $(1,\ldots,1)^T\in\mathbb{R}^{n+1}$, así que
+\[
+\sigma_{\max}(V)\;\ge\;\|Ve_1\|_2=\sqrt{n+1}.
+\]
+
+\textbf{Conclusión.}  Combinando ambas cotas y usando $2m+1\le n+1$:
+\[
+\kappa_2(V)=\frac{\sigma_{\max}(V)}{\sigma_{\min}(V)}
+\;\ge\;\frac{\sqrt{n+1}\cdot 2^m}{\sqrt{(n+1)(2m+1)}}
+= \frac{2^m}{\sqrt{2m+1}}
+\;\ge\;\frac{2^{\lfloor n/2\rfloor}}{\sqrt{n+1}}.\qedhere
+\]
+\end{proof}
 
 \subsection{La base de Lagrange}\label{subsec:base_lagrange}
 
@@ -2369,10 +2427,10 @@ Cuando los nodos y los datos son reales, podemos estimar cuánto difiere el inte
 
 Un estudio más profundo del error ---que requiere las herramientas de la teoría de aproximación--- se realizará en el Capítulo~4.
 
-\subsection{Teorema del error de interpolación}\label{subsec:error_interpolacion}
+\subsection{Error de interpolación}\label{subsec:error_interpolacion}
 
 \begin{theorem}[Error de interpolación polinomial]\label{thm:error_interpolacion}
-Sea $f\in C^{n+1}([a,b])$ y $p_n\in\mathcal{P}_n$ el polinomio que interpola a $f$ en $n+1$ nodos distintos $x_0,\ldots,x_n\in[a,b]$.  Entonces, para todo $x\in[a,b]$ existe $\xi=\xi(x)\in(a,b)$ tal que
+Sea $f\in C^{(n+1)}([a,b])$ y $p_n\in\mathcal{P}_n$ el polinomio que interpola a $f$ en $n+1$ nodos distintos $x_0,\ldots,x_n\in[a,b]$.  Entonces, para todo $x\in[a,b]$ existe $\xi=\xi(x)\in(a,b)$ tal que
 \begin{equation}\label{eq:error_interpolacion}
 f(x)-p_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}\,\omega_{n+1}(x), \qquad \omega_{n+1}(x)=\prod_{i=0}^n(x-x_i).
 \end{equation}
@@ -2384,7 +2442,7 @@ Si $x$ coincide con algún nodo, ambos lados de~\eqref{eq:error_interpolacion} v
 \[
 g(t) = f(t) - p_n(t) - \frac{f(x)-p_n(x)}{\omega_{n+1}(x)}\,\omega_{n+1}(t).
 \]
-La función $g\in C^{n+1}([a,b])$ tiene al menos $n+2$ ceros: los $n+1$ nodos $x_0,\ldots,x_n$ y el punto~$x$.  Por el teorema de Rolle aplicado sucesivamente, $g^{(n+1)}$ tiene al menos un cero~$\xi\in(a,b)$.  Como $p_n^{(n+1)}\equiv 0$ y $\omega_{n+1}^{(n+1)}=(n+1)!$:
+La función $g\in C^{(n+1)}([a,b])$ tiene al menos $n+2$ ceros: los $n+1$ nodos $x_0,\ldots,x_n$ y el punto~$x$.  Por el teorema de Rolle aplicado sucesivamente, $g^{(n+1)}$ tiene al menos un cero~$\xi\in(a,b)$.  Como $p_n^{(n+1)}\equiv 0$ y $\omega_{n+1}^{(n+1)}=(n+1)!$:
 \[
 0 = g^{(n+1)}(\xi) = f^{(n+1)}(\xi) - \frac{f(x)-p_n(x)}{\omega_{n+1}(x)}\,(n+1)!.
 \]
@@ -2400,6 +2458,59 @@ La fórmula~\eqref{eq:error_interpolacion} separa dos contribuciones al error:
 Para nodos \emph{equiespaciados}, $\|\omega_{n+1}\|_\infty$ crece factorialmente con $n$, lo que explica el \textbf{fenómeno de Runge}: la interpolación equiespaciada puede diverger aunque $f$ sea analítica.
 \end{remark}
 
+\begin{example}[Error de la interpolación lineal]\label{ex:error_interpolacion_lineal}
+Sea $f\in C^2([a,a+h])$ y $p_1\in\mathcal{P}_1$ el polinomio que interpola $f$ en los extremos $x_0=a$ y $x_1=a+h$.  Aplicamos el Teorema~\ref{thm:error_interpolacion} con $n=1$: para todo $x\in[a,a+h]$ existe $\xi\in(a,a+h)$ tal que
+\[
+f(x)-p_1(x)=\frac{f''(\xi)}{2}(x-a)(x-(a+h)).
+\]
+Para acotar $|\omega_2(x)|=|(x-a)(x-(a+h))|$ en $[a,a+h]$, hacemos $t=x-a\in[0,h]$:
+\[
+|t(t-h)|=t(h-t)\le\frac{h^2}{4},
+\]
+pues el máximo de $t(h-t)$ se alcanza en $t=h/2$.  Por lo tanto
+\[
+\|f-p_1\|_{\infty,[a,a+h]}\le\frac{h^2}{8}\|f''\|_{\infty,[a,a+h]}.
+\]
+El error de la interpolación lineal es $O(h^2)$, con constante proporcional a~$\|f''\|_\infty$.
+\end{example}
+
+\begin{example}[Error de la derivada del interpolante lineal]\label{ex:error_derivada_interpolacion_lineal}
+Con las mismas hipótesis del Ejemplo~\ref{ex:error_interpolacion_lineal}, queremos aproximar derivadas a partir de $p_1$.  Como $p_1$ es afín,
+\[
+p_1'(x)=\frac{f(a+h)-f(a)}{h}\qquad(\text{constante en }[a,a+h]).
+\]
+Es decir, la derivada del interpolante coincide con la \textbf{diferencia finita progresiva}
+\[
+D_h^+f(a):=\frac{f(a+h)-f(a)}{h}.
+\]
+
+Demostramos ahora una cota del error usando Taylor.  Si $f\in C^2([a,a+h])$, por Taylor de orden $1$ en $a$ con resto de Lagrange existe $\xi\in(a,a+h)$ tal que
+\[
+f(a+h)=f(a)+h f'(a)+\frac{h^2}{2}f''(\xi).
+\]
+Dividiendo por $h$ y restando $f'(a)$:
+\[
+D_h^+f(a)-f'(a)=\frac{h}{2}f''(\xi).
+\]
+Por lo tanto,
+\[
+\bigl|f'(a)-p_1'\bigr|=\bigl|f'(a)-D_h^+f(a)\bigr|\le \frac{h}{2}\,\|f''\|_{\infty,[a,a+h]}.
+\]
+Esta es una cota del error de la diferencia finita progresiva en $x=a$: error $O(h)$.
+
+Para obtener una cota para cualquier $x\in[a,a+h]$,
+\[
+|f'(x)-p_1'|\le |f'(x)-f'(a)|+|f'(a)-p_1'|
+\le (x-a)\|f''\|_\infty+\frac{h}{2}\|f''\|_\infty
+\le \frac{3}{2}h\,\|f''\|_\infty,
+\]
+y en consecuencia
+\[
+\|f'-p_1'\|_{\infty,[a,a+h]}\le \frac{3}{2}h\,\|f''\|_{\infty,[a,a+h]}=O(h).
+\]
+Se ve así que, al derivar el interpolante lineal, se pierde un orden respecto del error $O(h^2)$ de la interpolación de $f$.
+\end{example}
+
 \subsection{Cuadratura interpolatoria}\label{sec:cuadratura_interpolatoria}
 
 La interpolación polinomial tiene una aplicación directa e importante: la integración numérica (o \textbf{cuadratura}).  La idea es sencilla: si queremos aproximar la integral $\int_a^b f(x)\,dx$ y no conocemos una primitiva de $f$, podemos reemplazar $f$ por su polinomio interpolante $p$ (que sí sabemos integrar explícitamente) y aproximar:
@@ -2408,140 +2519,80 @@ La interpolación polinomial tiene una aplicación directa e importante: la inte
 \]
 Eligiendo distintos grados de interpolación y distintos nodos se obtienen las clásicas \textbf{fórmulas de Newton-Cotes}.  En esta sección desarrollamos las dos más fundamentales ---la regla del trapecio y la regla de Simpson--- y analizamos sus errores.
 
+Antes de deducir fórmulas particulares, escribimos la cuadratura interpolatoria en forma general.
+
+\begin{proposition}[Pesos de la cuadratura interpolatoria]\label{prop:pesos_cuadratura_interpolatoria}
+Sean $a=x_0<\cdots<x_k=b$ nodos en $[a,b]$, y sea
+\[
+p_k(x)=\sum_{i=0}^k f(x_i)\,\ell_i(x)
+\]
+el interpolante de Lagrange de grado $k$, donde $\ell_i$ son los polinomios de la base de Lagrange.  Entonces
+\[
+Q_k(f):=\int_a^b p_k(x)\,dx=\sum_{i=0}^k w_i\,f(x_i),
+\qquad
+w_i:=\int_a^b \ell_i(x)\,dx.
+\]
+Es decir, los \textbf{pesos} de la cuadratura interpolatoria son las integrales de los polinomios base de Lagrange.
+\end{proposition}
+\begin{proof}
+Por linealidad de la integral,
+\[
+\int_a^b p_k(x)\,dx
+=\int_a^b\sum_{i=0}^k f(x_i)\ell_i(x)\,dx
+=\sum_{i=0}^k f(x_i)\int_a^b\ell_i(x)\,dx
+=\sum_{i=0}^k w_i f(x_i).
+\]
+\end{proof}
+
 \subsubsection{La regla del trapecio}\label{subsec:regla_trapecio}
 
-Dados dos puntos $a$ y $b$, interpolamos $f$ linealmente (grado 1) usando los extremos del intervalo como nodos.  El polinomio de Lagrange de grado 1 que pasa por $(a, f(a))$ y $(b, f(b))$ es:
+Aplicamos la Proposición~\ref{prop:pesos_cuadratura_interpolatoria} al caso $k=1$ con nodos $x_0=a$, $x_1=b$.  Los polinomios base son
 \[
-p_1(x) = f(a)\,\frac{x - b}{a - b} + f(b)\,\frac{x - a}{b - a} = f(a)\,\frac{b-x}{b-a} + f(b)\,\frac{x-a}{b-a}.
+\ell_0(x)=\frac{x-b}{a-b}=\frac{b-x}{b-a},
+\qquad
+\ell_1(x)=\frac{x-a}{b-a}.
 \]
-Geométricamente, la gráfica de $p_1$ es el segmento de recta que une los puntos $(a, f(a))$ y $(b, f(b))$, formando un trapecio con el eje $x$.  Integrando:
+Sus pesos resultan
 \[
-\int_a^b p_1(x)\,dx = \frac{f(a)}{b-a}\int_a^b (b-x)\,dx + \frac{f(b)}{b-a}\int_a^b (x-a)\,dx = \frac{f(a)}{b-a}\cdot\frac{(b-a)^2}{2} + \frac{f(b)}{b-a}\cdot\frac{(b-a)^2}{2}.
+w_0=\int_a^b \ell_0(x)\,dx
+=\frac{1}{b-a}\int_a^b (b-x)\,dx
+=\frac{b-a}{2},
 \]
-Obtenemos así la \textbf{regla del trapecio}:
+\[
+w_1=\int_a^b \ell_1(x)\,dx
+=\frac{1}{b-a}\int_a^b (x-a)\,dx
+=\frac{b-a}{2}.
+\]
+Por lo tanto,
+\[
+Q_1(f)=w_0f(a)+w_1f(b)=\frac{b-a}{2}\bigl(f(a)+f(b)\bigr),
+\]
+que es la \textbf{regla del trapecio}.
 
-\begin{theorem}[Regla del trapecio]\label{thm:regla_trapecio}
+\begin{definition}[Regla del trapecio]\label{def:regla_trapecio}
+La \textbf{regla del trapecio} (simple) es
 \[
-\int_a^b f(x)\,dx \approx T(f) := \frac{b-a}{2}\big(f(a) + f(b)\big).
+T(f;a,b) := \frac{b-a}{2}\bigl(f(a)+f(b)\bigr).
 \]
-\end{theorem}
-
-\subsubsection{Error de la regla del trapecio}\label{subsec:error_trapecio}
-
-Para estimar el error de cuadratura usamos el Teorema~\ref{thm:error_interpolacion}.  Con $n = 1$ y nodos $x_0 = a$, $x_1 = b$:
-\[
-f(x) - p_1(x) = \frac{f''(\xi(x))}{2}(x-a)(x-b).
-\]
-El error de cuadratura es entonces:
-\[
-\int_a^b f(x)\,dx - T(f) = \int_a^b \big(f(x) - p_1(x)\big)\,dx = \int_a^b \frac{f''(\xi(x))}{2}(x-a)(x-b)\,dx.
-\]
-
-Para obtener una fórmula cerrada, observamos que $(x-a)(x-b) \leq 0$ en todo $[a,b]$ (ya que $a \leq x \leq b$), de modo que la función $(x-a)(x-b)$ no cambia de signo.  Por el teorema del valor medio para integrales (segunda forma), existe $\eta \in (a,b)$ tal que:
-\[
-\int_a^b \frac{f''(\xi(x))}{2}(x-a)(x-b)\,dx = \frac{f''(\eta)}{2}\int_a^b (x-a)(x-b)\,dx.
-\]
-
-Calculamos la integral restante.  Haciendo el cambio $t = x - a$ con $b - a = h$:
-\[
-\int_a^b (x-a)(x-b)\,dx = \int_0^h t(t-h)\,dt = \int_0^h (t^2 - ht)\,dt = \frac{h^3}{3} - \frac{h^3}{2} = -\frac{h^3}{6}.
-\]
+\end{definition}
 
 \begin{theorem}[Error de la regla del trapecio]\label{thm:error_trapecio}
-Si $f \in C^2([a,b])$, existe $\eta \in (a,b)$ tal que:
+Si $f\in C^2([a,b])$, existe $\eta\in(a,b)$ tal que
 \[
-\int_a^b f(x)\,dx - \frac{b-a}{2}\big(f(a) + f(b)\big) = -\frac{(b-a)^3}{12}\,f''(\eta).
+\int_a^b f(x)\,dx - T(f;a,b) = -\frac{(b-a)^3}{12}\,f''(\eta).
 \]
 \end{theorem}
-
-\begin{example}[Aplicación de la fórmula del error]\label{ex:error_trapecio}
-Estimemos el error al aproximar $\int_0^1 e^x\,dx$ con la regla del trapecio.
-
-\textbf{Valor exacto:} $\int_0^1 e^x\,dx = e - 1 \approx 1.71828$.
-
-\textbf{Regla del trapecio:} $T(e^x) = \frac{1-0}{2}(e^0 + e^1) = \frac{1+e}{2} \approx 1.85914$.
-
-\textbf{Error real:} $|T(e^x) - (e-1)| = \frac{1+e}{2} - (e-1) = \frac{3-e}{2} \approx 0.14086$.
-
-\textbf{Cota del error:} Por el Teorema~\ref{thm:error_trapecio}, el error es $\frac{(b-a)^3}{12}|f''(\eta)|$ para algún $\eta \in (0,1)$.  Como $f''(x) = e^x$ es creciente, $\max_{x \in [0,1]} |f''(x)| = e$, y por lo tanto:
+\begin{proof}
+Sea $p_1$ el interpolante lineal de $f$ en $\{a,b\}$.  Como $\int_a^b p_1 = T(f;a,b)$, el error de cuadratura es $\int_a^b (f-p_1)$.  Por el Teorema~\ref{thm:error_interpolacion} con $n=1$:
 \[
-\left|\int_0^1 e^x\,dx - T(e^x)\right| \leq \frac{1}{12}\cdot e \approx 0.22694.
+f(x)-p_1(x)=\frac{f''(\xi(x))}{2}(x-a)(x-b).
 \]
-La cota es conservadora (sobreestima el error por un factor $\approx 1.6$) porque $f''(\eta)$ no necesariamente alcanza su máximo.  Pero el orden de magnitud es correcto: ambos valores son del orden de $\sim 0.1$, consistente con un error $O(h^3)$ con $h = b - a = 1$.
-
-Para dividir el intervalo en dos mitades y obtener una estimación más precisa, necesitamos la \textbf{regla del trapecio compuesta}.
-\end{example}
-
-\subsubsection{Regla del trapecio compuesta}\label{subsec:trapecio_compuesto}
-
-La regla del trapecio simple aplica una única aproximación lineal en todo $[a,b]$. Para funciones que varían significativamente, esto produce errores grandes. La estrategia natural es dividir $[a,b]$ en subintervalos y aplicar la regla del trapecio en cada uno.
-
-Subdivimos $[a,b]$ en $M$ subintervalos iguales de longitud $h = (b-a)/M$, con nodos:
+Como $(x-a)(x-b)\le 0$ en $[a,b]$, el teorema del valor medio para integrales (Teorema~\ref{thm:valor_medio_integral_2}, con $g=f''\circ\xi$ y $\varphi(x)=(x-a)(x-b)/2$) da un $\eta\in(a,b)$ con
 \[
-x_j = a + jh, \quad j = 0, 1, \ldots, M.
+\int_a^b \frac{f''(\xi(x))}{2}(x-a)(x-b)\,dx = \frac{f''(\eta)}{2}\int_a^b(x-a)(x-b)\,dx.
 \]
-En cada subintervalo $[x_j, x_{j+1}]$, la regla del trapecio da:
-\[
-\int_{x_j}^{x_{j+1}} f(x)\,dx \approx \frac{h}{2}\big(f(x_j) + f(x_{j+1})\big).
-\]
-Sumando sobre todos los subintervalos:
-\begin{align*}
-\int_a^b f(x)\,dx &= \sum_{j=0}^{M-1} \int_{x_j}^{x_{j+1}} f(x)\,dx \approx \sum_{j=0}^{M-1} \frac{h}{2}\big(f(x_j) + f(x_{j+1})\big) \\
-&= \frac{h}{2}\big[f(x_0) + f(x_1) + f(x_1) + f(x_2) + \cdots + f(x_{M-1}) + f(x_M)\big].
-\end{align*}
-Los valores en los nodos interiores aparecen duplicados.  Agrupando:
-
-\begin{theorem}[Regla del trapecio compuesta]\label{thm:trapecio_compuesto}
-Sea $h = (b-a)/M$ y $x_j = a + jh$.  Entonces:
-\[
-\int_a^b f(x)\,dx \approx T_M(f) := \frac{h}{2}\left[f(a) + 2\sum_{j=1}^{M-1} f(x_j) + f(b)\right].
-\]
-\end{theorem}
-
-\begin{remark}
-La fórmula $T_M(f)$ es la suma ponderada $T_M(f) = h\left[\frac{1}{2}f(a) + \sum_{j=1}^{M-1} f(x_j) + \frac{1}{2}f(b)\right]$, es decir, los nodos interiores tienen peso $h$ y los extremos tienen peso $h/2$.  Para funciones periódicas donde $f(a) = f(b)$, los dos medios extremos se combinan en un nodo completo y la fórmula se simplifica a $T_M(f) = h\sum_{j=0}^{M-1} f(x_j)$, que es la regla del trapecio periódica estudiada en el Capítulo~4 (Teorema~\ref{thm:trap_espectral}).
-\end{remark}
-
-El error de la regla compuesta se obtiene sumando los errores en cada subintervalo.  En $[x_j, x_{j+1}]$, el Teorema~\ref{thm:error_trapecio} da:
-\[
-\int_{x_j}^{x_{j+1}} f(x)\,dx - \frac{h}{2}\big(f(x_j)+f(x_{j+1})\big) = -\frac{h^3}{12}f''(\eta_j), \quad \eta_j \in (x_j, x_{j+1}).
-\]
-Sumando:
-\[
-\int_a^b f(x)\,dx - T_M(f) = -\frac{h^3}{12}\sum_{j=0}^{M-1} f''(\eta_j) = -\frac{h^3}{12}\cdot M \cdot \frac{1}{M}\sum_{j=0}^{M-1}f''(\eta_j).
-\]
-Usando que $Mh = b - a$ y que $\frac{1}{M}\sum f''(\eta_j)$ es un promedio de valores de $f''$ en $[a,b]$ (que por el teorema del valor intermedio para funciones continuas equivale a $f''(\eta)$ para algún $\eta \in (a,b)$):
-
-\begin{theorem}[Error de la regla del trapecio compuesta]\label{thm:error_trapecio_compuesto}
-Si $f \in C^2([a,b])$, existe $\eta \in (a,b)$ tal que:
-\[
-\int_a^b f(x)\,dx - T_M(f) = -\frac{(b-a)\,h^2}{12}\,f''(\eta), \quad h = \frac{b-a}{M}.
-\]
-En particular, el error es $O(h^2) = O(1/M^2)$ cuando $M \to \infty$.
-\end{theorem}
-
-\begin{example}[Continuación del Ejemplo~\ref{ex:error_trapecio}]
-Retomemos $\int_0^1 e^x\,dx$ y apliquemos la regla del trapecio compuesta con $M = 4$ subintervalos ($h = 0.25$):
-\begin{align*}
-T_4(e^x) &= \frac{0.25}{2}\left[e^0 + 2(e^{0.25} + e^{0.5} + e^{0.75}) + e^1\right] \\
-&= 0.125\left[1 + 2(1.28403 + 1.64872 + 2.11700) + 2.71828\right] \\
-&= 0.125 \times 13.81778 \approx 1.72722.
-\end{align*}
-El error real es $|1.72722 - 1.71828| = 0.00894$.  La cota teórica del Teorema~\ref{thm:error_trapecio_compuesto} da:
-\[
-\frac{(b-a)h^2}{12}\max|f''| = \frac{1 \cdot 0.25^2}{12}\cdot e \approx 0.01415.
-\]
-Comparemos la mejora respecto de la regla simple:
-\begin{center}
-\begin{tabular}{c c c c}
-$M$ & $h$ & Error real & Cota $\frac{(b-a)h^2}{12}e$ \\
-\hline
-1 & 1 & 0.14086 & 0.22694 \\
-4 & 0.25 & 0.00894 & 0.01415 \\
-\end{tabular}
-\end{center}
-Al pasar de $M=1$ a $M=4$ (reducir $h$ por factor 4), el error se reduce por un factor $\approx 15.8 \approx 4^2$, confirmando la convergencia $O(h^2)$.
-\end{example}
+El cambio $t=x-a$ da $\int_0^h t(t-h)\,dt = -h^3/6$ con $h=b-a$, de donde el resultado.
+\end{proof}
 
 \subsubsection{Regla de Simpson}\label{subsec:regla_simpson}
 
@@ -2562,6 +2613,214 @@ La regla de Simpson es notablemente más precisa que la del trapecio: donde el t
 \end{remark}
 
 
+\subsection{Regla del trapecio compuesta}\label{subsec:trapecio_compuesto}
+
+Para aproximar mejor la integral, dividimos $[a,b]$ en $M$ subintervalos iguales de longitud $h=(b-a)/M$ con nodos $x_j=a+jh$, $j=0,\ldots,M$, y aplicamos la regla simple en cada uno.
+
+\begin{definition}[Regla del trapecio compuesta]\label{def:trapecio_compuesto}
+La \textbf{regla del trapecio compuesta} con $M$ subintervalos es
+\[
+T_M(f) := \sum_{j=0}^{M-1} T(f;\,x_j,x_{j+1})
+= \frac{h}{2}\!\left[f(a)+2\!\sum_{j=1}^{M-1}f(x_j)+f(b)\right]
+= h\!\left[\frac{f(a)}{2}+\sum_{j=1}^{M-1}f(x_j)+\frac{f(b)}{2}\right].
+\]
+\end{definition}
+
+\begin{remark}
+Para funciones periódicas con $f(a)=f(b)$, los dos medios extremos se combinan en un nodo completo y la fórmula se reduce a $T_M(f)=h\sum_{j=0}^{M-1}f(x_j)$, la regla del trapecio periódica del Capítulo~4 (Teorema~\ref{thm:trap_espectral}).
+\end{remark}
+
+\begin{theorem}[Error de la regla del trapecio compuesta]\label{thm:error_trapecio_compuesto}
+Si $f\in C^2([a,b])$, existe $\eta\in(a,b)$ tal que
+\[
+\int_a^b f(x)\,dx - T_M(f) = -\frac{(b-a)\,h^2}{12}\,f''(\eta), \qquad h=\frac{b-a}{M}.
+\]
+En particular, el error es $O(h^2)$ cuando $h\to 0$.
+\end{theorem}
+\begin{proof}
+Aplicamos el Teorema~\ref{thm:error_trapecio} en cada subintervalo $[x_j,x_{j+1}]$ (todos de longitud $h$).  Para cada $j=0,\dots,M-1$ existe $\eta_j\in(x_j,x_{j+1})$ tal que
+\[
+E_j:=\int_{x_j}^{x_{j+1}}f(x)\,dx-T(f;x_j,x_{j+1})=-\frac{h^3}{12}\,f''(\eta_j).
+\]
+Sumando los errores locales:
+\[
+E:=\int_a^b f(x)\,dx-T_M(f)=\sum_{j=0}^{M-1}E_j
+=-\frac{h^3}{12}\sum_{j=0}^{M-1}f''(\eta_j).
+\]
+
+\textbf{Paso clave ("se come un orden"):}
+cada término local es de tamaño $O(h^3)$, pero hay $M=(b-a)/h$ términos. Por lo tanto, en magnitud total
+\[
+|E|\le \frac{h^3}{12}\sum_{j=0}^{M-1}|f''(\eta_j)|
+\le \frac{h^3}{12}\,M\,\|f''\|_{\infty,[a,b]}
+=\frac{b-a}{12}\,h^2\,\|f''\|_{\infty,[a,b]}.
+\]
+Aquí se ve explícitamente la pérdida de un orden: \(M\sim h^{-1}\), entonces
+\[
+M\cdot h^3 \sim h^{-1}\cdot h^3 = h^2.
+\]
+
+Para obtener la forma exacta con un único punto, escribimos
+\[
+\sum_{j=0}^{M-1}f''(\eta_j)=M\,\overline s,
+\qquad
+\overline s:=\frac1M\sum_{j=0}^{M-1}f''(\eta_j).
+\]
+Si
+\[
+m:=\min_{x\in[a,b]}f''(x),\qquad M_2:=\max_{x\in[a,b]}f''(x),
+\]
+entonces $m\le f''(\eta_j)\le M_2$ para todo $j$, y por promediar también $m\le\overline s\le M_2$.  Como $f''$ es continua en $[a,b]$, por el teorema del valor intermedio existe $\eta\in[a,b]$ tal que $f''(\eta)=\overline s$. Sustituyendo:
+\[
+E=-\frac{h^3}{12}\,M\,f''(\eta)=-\frac{(b-a)h^2}{12}\,f''(\eta).
+\]
+Como el error es no trivial salvo casos degenerados, podemos tomar $\eta\in(a,b)$.
+\end{proof}
+
+El Teorema~\ref{thm:error_trapecio_compuesto} exige $f\in C^2$.  Cuando la función tiene menos regularidad, la regla del trapecio compuesta sigue convergiendo, pero a una velocidad menor que se cuantifica con el \textbf{módulo de continuidad}.
+
+\begin{definition}[Módulo de continuidad]\label{def:modulo_continuidad}
+Para $f\in C([a,b])$ y $\delta\ge 0$,
+\[
+\omega(f,\delta):=\sup_{\substack{x,y\in[a,b]\\|x-y|\le\delta}}|f(x)-f(y)|.
+\]
+Si $f$ es uniformemente continua (en particular, si $[a,b]$ es compacto), $\omega(f,\delta)\to 0$ cuando $\delta\to 0$.
+\end{definition}
+
+\begin{theorem}[Error del trapecio compuesto para funciones continuas]\label{thm:error_trapecio_continuo}
+Si $f\in C([a,b])$, entonces
+\[
+\left|\int_a^b f(x)\,dx - T_M(f)\right|\;\le\;(b-a)\,\omega(f,h),\qquad h=\frac{b-a}{M}.
+\]
+En particular, $T_M(f)\to\int_a^b f$ para toda $f$ continua.
+\end{theorem}
+\begin{proof}
+Particionamos $[a,b]$ en $x_j=a+jh$, $j=0,\dots,M$, con $h=(b-a)/M$.
+
+\textbf{Paso 1: error local como integral de interpolación.}
+En cada subintervalo $I_j=[x_j,x_{j+1}]$, sea $p_{1,j}$ el interpolante lineal de $f$ en los extremos:
+\[
+p_{1,j}(x)=f(x_j)\,\ell_{j,0}(x)+f(x_{j+1})\,\ell_{j,1}(x),
+\]
+con bases de Lagrange
+\[
+\ell_{j,0}(x)=\frac{x_{j+1}-x}{h},\qquad
+\ell_{j,1}(x)=\frac{x-x_j}{h},\qquad
+\ell_{j,0}(x)+\ell_{j,1}(x)=1.
+\]
+La regla del trapecio simple en $I_j$ es exactamente $\int_{x_j}^{x_{j+1}} p_{1,j}(x)\,dx$, luego
+\[
+E_j:=\int_{x_j}^{x_{j+1}} f(x)\,dx-T(f;x_j,x_{j+1})
+=\int_{x_j}^{x_{j+1}}\bigl(f(x)-p_{1,j}(x)\bigr)\,dx.
+\]
+
+\textbf{Paso 2: ``intercalar'' $f(x)$ en la combinación convexa.}
+Para $x\in I_j$:
+\[
+\begin{aligned}
+f(x)-p_{1,j}(x)
+&=f(x)-\ell_{j,0}(x)f(x_j)-\ell_{j,1}(x)f(x_{j+1})\\
+&=\ell_{j,0}(x)\bigl(f(x)-f(x_j)\bigr)+\ell_{j,1}(x)\bigl(f(x)-f(x_{j+1})\bigr),
+\end{aligned}
+\]
+donde usamos $\ell_{j,0}+\ell_{j,1}=1$ para escribir
+$f(x)=\ell_{j,0}(x)f(x)+\ell_{j,1}(x)f(x)$ y restar término a término.
+
+\textbf{Paso 3: cota por módulo de continuidad.}
+Como $x,x_j,x_{j+1}\in I_j$ y $\operatorname{diam}(I_j)=h$,
+\[
+|f(x)-f(x_j)|\le\omega(f,h),\qquad |f(x)-f(x_{j+1})|\le\omega(f,h).
+\]
+Además $\ell_{j,0}(x),\ell_{j,1}(x)\ge 0$ en $I_j$. Entonces
+\[
+|f(x)-p_{1,j}(x)|
+\le \ell_{j,0}(x)\omega(f,h)+\ell_{j,1}(x)\omega(f,h)
+=\omega(f,h).
+\]
+Integrando en $I_j$:
+\[
+|E_j|\le\int_{x_j}^{x_{j+1}}\omega(f,h)\,dx=h\,\omega(f,h).
+\]
+
+\textbf{Paso 4: suma global.}
+\[
+\left|\int_a^b f(x)\,dx-T_M(f)\right|
+=\left|\sum_{j=0}^{M-1}E_j\right|
+\le\sum_{j=0}^{M-1}|E_j|
+\le M h\,\omega(f,h)
+=(b-a)\,\omega(f,h).
+\]
+Como $f$ es continua en $[a,b]$, es uniformemente continua, y por tanto $\omega(f,h)\to 0$ cuando $h\to 0$; se concluye $T_M(f)\to\int_a^b f$.
+\end{proof}
+
+\begin{example}[Convergencia para funciones Hölder]\label{ex:trapecio_holder}
+Si $f$ satisface $|f(x)-f(y)|\le C|x-y|^\alpha$ con $\alpha\in(0,1]$ (\textbf{condición de Hölder}), entonces $\omega(f,h)\le Ch^\alpha$ y el Teorema~\ref{thm:error_trapecio_continuo} da
+\[
+\left|\int_a^b f - T_M(f)\right|\le C(b-a)\,h^\alpha = C(b-a)^{1+\alpha}M^{-\alpha}.
+\]
+Por ejemplo, la función $f(x)=\sqrt{x}$ en $[0,1]$ es Hölder de exponente $\alpha=\frac{1}{2}$ ya que
+\[
+|\sqrt{x}-\sqrt{y}|=\frac{|x-y|}{\sqrt{x}+\sqrt{y}}\le\frac{|x-y|}{\sqrt{|x-y|}}=\sqrt{|x-y|},
+\]
+luego $\omega(\sqrt{\cdot},h)\le\sqrt{h}$ y la cota es
+\[
+\left|\int_0^1\sqrt{x}\,dx - T_M(\sqrt{\cdot})\right|\le\frac{1}{\sqrt{M}}.
+\]
+En contraste, para una función Lipschitz ($\alpha=1$) la convergencia es $O(1/M)$, y para $f\in C^2$ se recupera $O(1/M^2)$ por el Teorema~\ref{thm:error_trapecio_compuesto}.
+\end{example}
+
+Sin embargo, la cota $O(h^{1/2})$ para $\sqrt{x}$ es muy pesimista: $\sqrt{x}$ es $C^2$ en $(0,1]$ y la singularidad de $f''$ está confinada a un entorno del origen.  Combinando la cota para funciones continuas en el subintervalo singular con la cota $C^2$ en los restantes se obtiene un orden mucho mejor.
+
+\begin{theorem}[Cota mejorada para singularidad aislada]\label{prop:trapecio_singularidad}
+Sea $f\in C([a,b])$ Hölder de exponente $\alpha>0$, y supongamos que $f\in C^2((a,b])$ con
+\[
+|f''(x)|\;\le\; C_0\,(x-a)^{-\beta},\qquad x\in(a,b],
+\]
+para constantes $C_0>0$ y $\beta\in(1,3)$.  Entonces el error de la regla del trapecio compuesta con paso $h=(b-a)/M$ satisface
+\[
+\left|\int_a^b f\,dx - T_M(f)\right| \;=\; O\!\bigl(h^{\min(1+\alpha,\,3-\beta)}\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+Separamos el error en el primer subintervalo $[a,a+h]$ (que contiene la singularidad) y los restantes $M-1$ subintervalos.
+
+\textbf{Primer subintervalo.}  Aplicando el Teorema~\ref{thm:error_trapecio_continuo} localmente:
+\[
+|E_0|\;\le\; h\,\omega(f,h)\;\le\; h\cdot C_1h^\alpha = C_1 h^{1+\alpha},
+\]
+donde $C_1$ es la constante de Hölder de~$f$.
+
+\textbf{Subintervalos $j=1,\ldots,M-1$.}  En $[x_j,x_{j+1}]$ con $x_j=a+jh$ la función $f$ es $C^2$, y el Teorema~\ref{thm:error_trapecio} da
+\[
+|E_j|\;\le\;\frac{h^3}{12}\sup_{[x_j,x_{j+1}]}|f''|
+\;\le\;\frac{h^3}{12}\,C_0\,(jh)^{-\beta}
+= \frac{C_0\,h^{3-\beta}}{12}\,j^{-\beta}.
+\]
+Sumando y usando que $\sum_{j=1}^{\infty}j^{-\beta}<\infty$ para $\beta>1$:
+\[
+\sum_{j=1}^{M-1}|E_j|\;\le\;\frac{C_0\,h^{3-\beta}}{12}\sum_{j=1}^{\infty}j^{-\beta}
+= C_2\,h^{3-\beta}.
+\]
+
+\textbf{Conclusión.}  El error total es $|E_0|+\sum_{j\ge 1}|E_j|=O(h^{1+\alpha})+O(h^{3-\beta})=O(h^{\min(1+\alpha,\,3-\beta)})$.
+\end{proof}
+
+\begin{example}[Cota mejorada para $\sqrt{x}$]\label{ex:trapecio_sqrt_mejorado}
+Para $f(x)=\sqrt{x}$ en $[0,1]$:
+\begin{itemize}
+\item $f$ es Hölder de exponente $\alpha=\tfrac{1}{2}$ (Ejemplo~\ref{ex:trapecio_holder}).
+\item $f''(x)=-\tfrac{1}{4}x^{-3/2}$, así que $\beta=\tfrac{3}{2}$ y $C_0=\tfrac{1}{4}$.
+\end{itemize}
+Las dos contribuciones dan el mismo exponente: $1+\alpha=\tfrac{3}{2}$ y $3-\beta=\tfrac{3}{2}$.  La Proposición~\ref{prop:trapecio_singularidad} da
+\[
+\left|\int_0^1\sqrt{x}\,dx - T_M(\sqrt{\cdot})\right|=O(h^{3/2})=O(M^{-3/2}),
+\]
+lo que mejora en un factor $1/M$ la cota $O(M^{-1/2})$ obtenida usando únicamente la regularidad Hölder global.
+\end{example}
+
+
+
 \section{Interpolación en $\mathbb{C}$ y la DFT}\label{sec:interpolacion_C}
 
 Un caso particularmente importante de interpolación ocurre cuando trabajamos sobre el cuerpo de los números complejos $\mathbb{C}$ y elegimos como nodos las \textbf{raíces $n$-ésimas de la unidad}.
@@ -2570,7 +2829,7 @@ Esta elección no es arbitraria: la geometría regular de estos puntos sobre el 
 
 Este caso específico de interpolación es lo que conocemos como la \textbf{Transformada Discreta de Fourier (DFT)}.
 
-\subsection{Raíces de la unidad y su estructura algebraica}
+\subsection{Las raíces de la unidad como nodos de interpolación}
 
 \begin{definition}[Raíces $n$-ésimas de la unidad]
 Sea $n \geq 1$ un entero. Las \textbf{raíces $n$-ésimas de la unidad} son las soluciones de la ecuación $z^n = 1$ en $\mathbb{C}$:
@@ -2578,40 +2837,47 @@ Sea $n \geq 1$ un entero. Las \textbf{raíces $n$-ésimas de la unidad} son las 
 \omega_n^k = e^{2\pi i k / n}, \quad k = 0, 1, \ldots, n-1.
 \]
 \end{definition}
+\textbf{Notación:} Cuando $n$ está claro del contexto, escribimos simplemente $\omega = \omega_n = e^{2\pi i/n}$. Con esta notación, las raíces $n$-ésimas de la unidad son: $\{1, \omega, \omega^2, \ldots, \omega^{n-1}\}$.
 
-\textbf{Notación:} Cuando $n$ está claro del contexto, escribimos simplemente $\omega = \omega_n = e^{2\pi i/n}$.
+Ahora consideremos un polinomio sobre los complejos cualquiera 
+\begin{equation} 
+    p(z) = \sum_{k=0}^{n-1} c_k z^k
+\end{equation} 
 
-\begin{theorem}[Propiedades de las raíces de la unidad]
-Las raíces $n$-ésimas de la unidad satisfacen:
+Cuando tratamos el problema de interpolación, empezamos evaluando un polinomio en los nodos de interpolación, que en este caso son las raíces de la unidad. La evaluación de $p$ en la raíz $\omega^j$ se expresa como:
+
+\begin{equation} 
+p(\omega^j) = \sum_{k=0}^{n-1} c_k (\omega^j)^k = \sum_{k=0}^{n-1} c_k \omega^{jk} = \sum_{k=0}^{n-1} c_k e^{2\pi i jk / n}.
+\end{equation} 
+
+A partir de aquí, podemos definir la \textbf{Transformada Discreta de Fourier (DFT)} como la evaluación de un polinomio en las raíces de la unidad. La definición usual de la DFT se presenta a continuación, pero es importante destacar que esta definición es una instancia particular de la interpolación polinomial en $\mathbb{C}$ con nodos en las raíces de la unidad.
+
+\begin{definition}[Transformada Discreta de Fourier (DFT)]
+Dado $x \in \mathbb{C}^N$, definimos su DFT como $\hat{x} \in \mathbb{C}^N$ con
+\[
+\hat{x}_j = \sum_{k=0}^{N-1} x_k\, \omega_N^{jk}, \quad j = 0, \ldots, N-1, \qquad \text{donde } \omega_N = e^{2\pi i/N}.
+\]    
+\end{definition}
+
+\subsection{Matriz de Vandermonde y la transformada inversa (IDFT)}
+
+Como la DFT es evaluar un polinomio en las raíces de la unidad, podemos representarla mediante una matriz de Vandermonde.
+
+\begin{remark}[Propiedades básicas de las raíces de la unidad]
+Sea $\omega = e^{2\pi i/n}$ una raíz $n$-ésima primitiva de la unidad. Vale la pena recordar:
 \begin{enumerate}
-\item \textbf{Ecuación polinomial}: Son las $n$ raíces (distintas) de $z^n - 1 = 0$.
-\item \textbf{Periodicidad}: $\omega^{n+k} = \omega^k$ para todo $k \in \mathbb{Z}$.
-\item \textbf{Conjugación}: $\overline{\omega^k} = \omega^{-k} = \omega^{n-k}$.
-\item \textbf{Ortogonalidad discreta}: $\sum_{j=0}^{n-1} (\omega^k)^j = \begin{cases} n & \text{si } k \equiv 0 \pmod{n}, \\ 0 & \text{si } k \not\equiv 0 \pmod{n}. \end{cases}$
+\item $\omega^n = 1$ (por definición, $\omega$ es raíz $n$-ésima de la unidad).
+\item $\omega^{jk} = (\omega^j)^k = (\omega^k)^j$ (exponentes conmutan).
+\item Suma geométrica de raíces: Para cualquier $\ell \in \mathbb{Z}$,
+\[
+\sum_{j=0}^{n-1} \omega^{j\ell} = \begin{cases}
+n & \text{si } \ell \equiv 0 \pmod{n}, \\
+0 & \text{si } \ell \not\equiv 0 \pmod{n}.
+\end{cases}
+\]
+En el segundo caso, la suma es una serie geométrica con razón $r = \omega^\ell \neq 1$: $\sum_{j=0}^{n-1} r^j = \frac{r^n - 1}{r - 1} = \frac{\omega^{n\ell} - 1}{\omega^\ell - 1} = \frac{1 - 1}{\omega^\ell - 1} = 0$.
 \end{enumerate}
-\end{theorem}
-
-\begin{proof}
-(1) es inmediata de la definición exponencial.
-
-(2) Para todo $k \in \mathbb{Z}$,
-\[
-\omega^{n+k} = \omega^n\,\omega^k = 1\cdot \omega^k = \omega^k,
-\]
-ya que $\omega^n = 1$.
-
-(3) es inmediata de la definición exponencial.
-
-(4) Si $k \equiv 0 \pmod{n}$, entonces $\omega^k = 1$ y la suma es $n \cdot 1 = n$. Si $k \not\equiv 0 \pmod{n}$, entonces $\omega^k \neq 1$ y usando la suma geométrica:
-\[
-\sum_{j=0}^{n-1} (\omega^k)^j = \frac{1 - (\omega^k)^n}{1 - \omega^k} = \frac{1 - \omega^{kn}}{1 - \omega^k} = \frac{1 - 1}{1 - \omega^k} = 0,
-\]
-donde usamos $\omega^{kn} = (\omega^n)^k = 1^k = 1$.
-\end{proof}
-
-\subsection{Matriz de Vandermonde en raíces de la unidad}
-
-Consideremos el problema de interpolación con nodos en las raíces $n$-ésimas de la unidad: $\{1, \omega, \omega^2, \ldots, \omega^{n-1}\}$.
+\end{remark}
 
 \begin{definition}[Matriz DFT como Vandermonde]
 La matriz de Vandermonde evaluada en las raíces $n$-ésimas de la unidad es:
@@ -2628,55 +2894,42 @@ F_n =
 Elemento $(j,k)$: $[F_n]_{jk} = \omega^{jk}$ para $j, k = 0, 1, \ldots, n-1$.
 \end{definition}
 
-\begin{remark}Esta es exactamente la matriz de la Transformada Discreta de Fourier (salvo, según el caso, posibles convenciones de normalización.
-\end{remark}
+Una propiedad extraordinaria de $F_n$ es que sus columnas son los \textbf{modos de Fourier discretos} y son mutuamente ortogonales.
 
-\begin{theorem}[DFT como interpolación en raíces de la unidad]\label{thm:dft_vandermonde}
-Sea $\mathbf{p} = (p_0, p_1, \ldots, p_{n-1})^T$ el vector de coeficientes de un polinomio $p(x) = \sum_{k=0}^{n-1} p_k x^k$. Sus evaluaciones en las raíces $n$-ésimas de la unidad son:
+\begin{lemma}[Ortogonalidad de las columnas de $F_n$]\label{lem:modos_fourier}
+La $k$-ésima columna de $F_n$ es el modo de Fourier discreto
 \[
-\mathbf{y} = F_n \mathbf{p},
+\mathbf{v}_k = (1,\, \omega^k,\, \omega^{2k},\, \ldots,\, \omega^{(n-1)k})^T \in \mathbb{C}^n, \qquad k = 0, \ldots, n-1.
 \]
-donde $y_j = p(\omega^j)$ para $j = 0, 1, \ldots, n-1$.
-
-Inversamente, dados valores $\mathbf{y}$ en las raíces de la unidad, los coeficientes se recuperan mediante:
+Estos vectores son mutuamente ortogonales:
 \[
-\mathbf{p} = F_n^{-1} \mathbf{y}.
+\langle \mathbf{v}_k,\, \mathbf{v}_\ell \rangle = n\,\delta_{k\ell}.
 \]
-\end{theorem}
+En particular, $\|\mathbf{v}_k\| = \sqrt{n}$, y los vectores normalizados $\mathbf{u}_k = \frac{1}{\sqrt{n}}\mathbf{v}_k$ forman una base ortonormal (BON) de $\mathbb{C}^n$.
+\end{lemma}
 
 \begin{proof}
-Evaluando $p(x)$ en $x = \omega^j$:
+Calculamos el producto interior:
 \[
-y_j = p(\omega^j) = \sum_{k=0}^{n-1} p_k (\omega^j)^k = \sum_{k=0}^{n-1} p_k \omega^{jk} = [F_n \mathbf{p}]_j.
+\langle \mathbf{v}_k,\, \mathbf{v}_\ell \rangle
+= \sum_{j=0}^{n-1} \omega^{jk}\,\overline{\omega^{j\ell}}
+= \sum_{j=0}^{n-1} \omega^{jk}\,\omega^{-j\ell}
+= \sum_{j=0}^{n-1} \omega^{j(k - \ell)}.
 \]
-Como $F_n$ es invertible (Vandermonde con nodos distintos), la interpolación inversa es $\mathbf{p} = F_n^{-1} \mathbf{y}$.
+Si $k = \ell$, cada término vale $1$, luego la suma es $n$. Si $k \neq \ell$, sea $r = \omega^{k-\ell} \neq 1$; como $r$ es una raíz $n$-ésima de la unidad ($r^n = 1$), la fórmula de la suma geométrica da
+\[
+\sum_{j=0}^{n-1} r^j = \frac{r^n - 1}{r - 1} = \frac{1 - 1}{r - 1} = 0.
+\]
+Por tanto $\langle \mathbf{v}_k, \mathbf{v}_\ell \rangle = n\,\delta_{k\ell}$.
+Como hay $n$ vectores no nulos ortogonales entre sí en $\mathbb{C}^n$, son linealmente independientes y forman una base; normalizados, $\{\mathbf{u}_k\}$ es una BON.
 \end{proof}
 
-\subsection{Unitariedad de la matriz DFT}
-
-Una propiedad extraordinaria de $F_n$ es que es \textbf{unitaria} salvo un factor de escala.
-
 \begin{theorem}[Unitariedad de $F_n$]\label{thm:dft_unitary}
-La matriz $F_n$ satisface:
-\[
-F_n^* F_n = n I_n,
-\]
-donde $F_n^*$ es la adjunta (transpuesta conjugada). Equivalentemente, $\frac{1}{\sqrt{n}} F_n$ es unitaria.
+La matriz $F_n$ satisface $F_n^* F_n = n I_n$. Equivalentemente, $\frac{1}{\sqrt{n}} F_n$ es unitaria.
 \end{theorem}
 
 \begin{proof}
-Calculamos el elemento $(k, \ell)$ de $F_n^* F_n$:
-\begin{align*}
-[F_n^* F_n]_{k\ell} &= \sum_{j=0}^{n-1} \overline{[F_n]_{jk}} [F_n]_{j\ell} \\
-&= \sum_{j=0}^{n-1} \overline{\omega^{jk}} \omega^{j\ell} \\
-&= \sum_{j=0}^{n-1} \omega^{-jk} \omega^{j\ell} \\
-&= \sum_{j=0}^{n-1} \omega^{j(\ell - k)} \\
-&= \begin{cases}
-n & \text{si } \ell = k \quad \text{(por ortogonalidad, caso } k \equiv 0), \\
-0 & \text{si } \ell \neq k \quad \text{(por ortogonalidad, caso } k \not\equiv 0).
-\end{cases}
-\end{align*}
-Por lo tanto, $F_n^* F_n = n I_n$.
+El elemento $(k,\ell)$ de $F_n^* F_n$ es $\langle \mathbf{v}_k, \mathbf{v}_\ell \rangle$, donde $\mathbf{v}_k$ es la $k$-ésima columna de $F_n$. Por el Lema~\ref{lem:modos_fourier}, $[F_n^* F_n]_{k\ell} = n\,\delta_{k\ell}$, es decir, $F_n^* F_n = n I_n$.
 \end{proof}
 
 \begin{corollary}[Inversa de la DFT]
@@ -2687,19 +2940,10 @@ F_n^{-1} = \frac{1}{n} F_n^*.
 Explícitamente, $[F_n^{-1}]_{jk} = \frac{1}{n} \omega^{-jk}$.
 \end{corollary}
 
-\subsection{Transformada Discreta de Fourier (DFT)}
-
-\begin{definition}[DFT y su inversa]
-Dada una secuencia $\mathbf{x} = (x_0, x_1, \ldots, x_{n-1})^T \in \mathbb{C}^n$, su \textbf{Transformada Discreta de Fourier (DFT)} es:
+Con lo cual, la \textbf{DFT inversa (IDFT)} es:
 \[
-\mathbf{X} = F_n \mathbf{x}, \quad \text{es decir, } X_k = \sum_{j=0}^{n-1} x_j \omega^{jk}, \quad k = 0, 1, \ldots, n-1.
+\mathbf{x} = F_n^{-1} \mathbf{X} = \frac{1}{n} F_n^* \mathbf{X}, \quad \text{es decir, } x_j = \frac{1}{n} \sum_{k=0}^{n-1} \hat{x}_k \omega^{-jk}.
 \]
-
-La \textbf{DFT inversa (IDFT)} es:
-\[
-\mathbf{x} = F_n^{-1} \mathbf{X} = \frac{1}{n} F_n^* \mathbf{X}, \quad \text{es decir, } x_j = \frac{1}{n} \sum_{k=0}^{n-1} X_k \omega^{-jk}.
-\]
-\end{definition}
 
 \begin{remark}[Convenciones de normalización]
 Diferentes textos usan distintas convenciones:
@@ -2710,40 +2954,6 @@ Diferentes textos usan distintas convenciones:
 \end{itemize}
 Lo importante es la relación $F_n^{-1} = \frac{1}{n} F_n^*$, que es invariante.
 \end{remark}
-
-\begin{lemma}[Modos de Fourier discretos y cambio de base ortonormal]
-Sea
-\[
-\mathbf{v}_k = (\omega^{0k},\omega^{1k},\ldots,\omega^{(n-1)k})^T \in \mathbb{C}^n, \qquad k=0,\ldots,n-1,
-\]
-es decir, la $k$-ésima columna de $F_n$. Entonces:
-\begin{enumerate}
-\item $\langle \mathbf{v}_k,\mathbf{v}_\ell\rangle = n\,\delta_{k\ell}$.
-\item $\|\mathbf{v}_k\| = \sqrt{n}$ para todo $k$.
-\item Los vectores normalizados $\mathbf{u}_k = \frac{1}{\sqrt{n}}\mathbf{v}_k$ forman una BON de $\mathbb{C}^n$.
-\end{enumerate}
-En consecuencia, la matriz
-\[
-U := \frac{1}{\sqrt{n}}F_n = (\mathbf{u}_0\,\mathbf{u}_1\,\cdots\,\mathbf{u}_{n-1})
-\]
-es unitaria y el operador $U^*$ da las coordenadas de un vector en la base ortonormal de modos de Fourier.
-\end{lemma}
-
-\begin{proof}
-Para $k,\ell \in \{0,\ldots,n-1\}$,
-\[
-\langle \mathbf{v}_k,\mathbf{v}_\ell\rangle
-= \sum_{j=0}^{n-1}\overline{\omega^{jk}}\,\omega^{j\ell}
-= \sum_{j=0}^{n-1}\omega^{j(\ell-k)}.
-\]
-Por la ortogonalidad discreta de las raíces de la unidad, esta suma vale $n$ si $k=\ell$ y vale $0$ si $k\neq \ell$. Esto prueba (1). Tomando $k=\ell$ se obtiene
-\[
-\|\mathbf{v}_k\|^2 = \langle \mathbf{v}_k,\mathbf{v}_k\rangle = n,
-\]
-y por tanto $\|\mathbf{v}_k\|=\sqrt{n}$, que es (2).
-
-Finalmente, (1) y (2) implican que los vectores $\mathbf{u}_k=\mathbf{v}_k/\sqrt{n}$ son ortonormales. Como hay $n$ vectores ortonormales en $\mathbb{C}^n$, forman una base ortonormal, probando (3). Equivalentemente, $U^*U=I_n$, luego $U$ es unitaria. Para cualquier $\mathbf{x}\in\mathbb{C}^n$, el vector $U^*\mathbf{x}$ contiene sus coeficientes en la base ortonormal $\{\mathbf{u}_k\}_{k=0}^{n-1}$.
-\end{proof}
 
 \begin{remark}[Lectura en términos de DFT]
 Con la convención asimétrica usada aquí ($\mathbf{X}=F_n\mathbf{x}$), la DFT difiere del operador de cambio a coordenadas ortonormales por normalización (y conjugación de fase, según convención de signo). En particular, la versión unitaria
@@ -2781,13 +2991,40 @@ donde:
 \item $O_k = \sum_{j=0}^{m-1} x_{2j+1} \omega_m^{jk}$ es la DFT de tamaño $m$ de $\mathbf{x}_{\text{impar}}$.
 \end{itemize}
 
-Usando la simetría $E_{k+m} = E_k$ y $\omega_n^{k+m} = -\omega_n^k$:
+Para completar los $n$ coeficientes, no alcanza con $k=0,\ldots,m-1$: también necesitamos $X_{k+m}$. La clave es que $E_k$ y $O_k$ son DFTs de tamaño $m$, por lo que son periódicas módulo $m$:
+\[
+E_{k+m} = \sum_{j=0}^{m-1} x_{2j}\,\omega_m^{j(k+m)}
+= \sum_{j=0}^{m-1} x_{2j}\,\omega_m^{jk}(\omega_m^m)^j
+= \sum_{j=0}^{m-1} x_{2j}\,\omega_m^{jk}
+= E_k,
+\]
+y análogamente $O_{k+m}=O_k$, porque $\omega_m^m = e^{2\pi i}=1$.
+
+Además,
+\[
+\omega_n^{k+m} = \omega_n^k\,\omega_n^m = \omega_n^k e^{\pi i} = -\omega_n^k,
+\]
+ya que $n=2m$.
+
+Entonces, para $k=0,\ldots,m-1$:
 \[
 \begin{cases}
 X_k = E_k + \omega_n^k O_k, & k = 0, \ldots, m-1, \\
 X_{k+m} = E_k - \omega_n^k O_k, & k = 0, \ldots, m-1.
 \end{cases}
 \]
+Este es el paso de \textbf{combinación} (butterfly): cada par $(E_k,O_k)$ produce dos salidas $(X_k,X_{k+m})$.
+
+En forma algorítmica, la FFT radix-2 termina así:
+\begin{enumerate}
+\item Si $n=1$, devolver el único valor (caso base).
+\item Si $n>1$, calcular recursivamente las DFT de tamaño $m=n/2$ de las partes par e impar para obtener $E_k$ y $O_k$.
+\item Para $k=0,\ldots,m-1$, formar
+\[
+X_k = E_k + \omega_n^k O_k, \qquad X_{k+m} = E_k - \omega_n^k O_k.
+\]
+\item Devolver el vector completo $\mathbf{X}=(X_0,\ldots,X_{n-1})$.
+\end{enumerate}
 \end{theorem}
 
 \textbf{Análisis de complejidad:} Sea $T(n)$ el tiempo para calcular una DFT de tamaño $n$. El algoritmo FFT satisface:
@@ -2905,6 +3142,69 @@ Observemos que los coeficientes $r_k$ son precisamente la \textbf{convolución l
 \end{enumerate}
 
 La complejidad es $O(M \log M) = O(N \log N)$, frente a $O(N^2)$ del método directo (multiplicación término a término).
+
+
+\subsection{Principio de incertidumbre de Donoho-Stark para la DFT}
+
+Una manifestación fundamental del principio de incertidumbre en el contexto discreto es: una señal no nula no puede estar simultáneamente muy concentrada en tiempo (índices) y en frecuencia (coeficientes de Fourier).
+
+\begin{theorem}[Donoho-Stark para la DFT]
+Sea $\mathbf{x}\in\mathbb{C}^n$, $\mathbf{x}\neq 0$, y sea $\widehat{\mathbf{x}}=F_n\mathbf{x}$ su DFT (convención asimétrica del apunte). Definimos
+\[
+\operatorname{supp}(\mathbf{x})=\{j:\ x_j\neq 0\},\qquad
+\operatorname{supp}(\widehat{\mathbf{x}})=\{k:\ \widehat{x}_k\neq 0\}.
+\]
+Si $s:=|\operatorname{supp}(\mathbf{x})|$ y $t:=|\operatorname{supp}(\widehat{\mathbf{x}})|$, entonces
+\[
+s\,t\ge n.
+\]
+\end{theorem}
+
+\begin{proof}
+Sea $T=\operatorname{supp}(\widehat{\mathbf{x}})$, con $|T|=t$. Por la fórmula de la IDFT,
+\[
+x_j=\frac1n\sum_{k=0}^{n-1}\widehat{x}_k\,\omega^{-jk}
+=\frac1n\sum_{k\in T}\widehat{x}_k\,\omega^{-jk}.
+\]
+Tomando módulo y usando $|\omega^{-jk}|=1$:
+\[
+|x_j|\le \frac1n\sum_{k\in T}|\widehat{x}_k|.
+\]
+Aplicando Cauchy-Schwarz a la suma del lado derecho:
+\[
+\sum_{k\in T}|\widehat{x}_k|
+\le \sqrt{t}\,\|\widehat{\mathbf{x}}\|_2,
+\]
+de donde
+\[
+|x_j|\le \frac{\sqrt{t}}{n}\,\|\widehat{\mathbf{x}}\|_2
+\qquad \text{para todo } j.
+\]
+Si $S=\operatorname{supp}(\mathbf{x})$ y $|S|=s$, entonces
+\[
+\|\mathbf{x}\|_2^2
+=\sum_{j\in S}|x_j|^2
+\le s\left(\frac{\sqrt{t}}{n}\|\widehat{\mathbf{x}}\|_2\right)^2
+=\frac{st}{n^2}\,\|\widehat{\mathbf{x}}\|_2^2.
+\]
+Por la unitariedad en nuestra convención ($F_n^*F_n=nI$), vale
+\[
+\|\widehat{\mathbf{x}}\|_2^2=n\,\|\mathbf{x}\|_2^2.
+\]
+Sustituyendo:
+\[
+\|\mathbf{x}\|_2^2\le \frac{st}{n}\,\|\mathbf{x}\|_2^2.
+\]
+Como $\mathbf{x}\neq 0$, tenemos $\|\mathbf{x}\|_2^2>0$, y por tanto $st\ge n$.
+\end{proof}
+
+\begin{remark}
+Este resultado implica que no puede ocurrir simultáneamente que $s\ll n$ y $t\ll n$. En forma equivalente,
+\[
+|\operatorname{supp}(\mathbf{x})|\,|\operatorname{supp}(\widehat{\mathbf{x}})|\ge n,
+\]
+que es la versión discreta (para DFT) del principio de incertidumbre de Donoho-Stark.
+\end{remark}
 
 
 
@@ -3170,9 +3470,9 @@ Por lo tanto, las evaluaciones de $m_1$ y $m_2$ difieren en al menos $n - (k-1) 
 
 
 
-\chapter{Teoría de Aproximación}
+\chapter{Teoría de Aproximación}\label{cap:teoria_aproximacion}
 
-\section{Series de Fourier de funciones suaves periódicas}
+\section{Series de Fourier de funciones suaves periódicas}\label{sec:series_fourier_suaves}
 
 En el capítulo 2 estudiamos la teoría general de espacios con producto interno y vimos cómo representar vectores en bases ortogonales mediante proyecciones. Ahora aplicaremos estos conceptos a espacios de funciones periódicas.
 
@@ -5889,7 +6189,7 @@ En este apéndice recopilamos resultados fundamentales de análisis matemático 
 
 \section{Teorema del valor intermedio}
 
-\begin{theorem}[Teorema del valor intermedio (Bolzano)]\label{thm:bolzano}
+\begin{theorem}[Teorema de Bolzano]\label{thm:bolzano}
 Sea $f: [a,b] \to \mathbb{R}$ continua con $f(a) \cdot f(b) < 0$. Entonces existe $c \in (a,b)$ tal que $f(c) = 0$.
 \end{theorem}
 
@@ -5903,10 +6203,98 @@ f(c) = \lim_{n \to \infty} f(a_n), \quad f(c) = \lim_{n \to \infty} f(b_n).
 Como $f(a_n) f(b_n) \leq 0$ para todo $n$, tomando límite obtenemos $f(c)^2 \leq 0$, es decir, $f(c) = 0$.
 \end{proof}
 
+\section{Teorema de Rolle}
+
+\begin{theorem}[Teorema de Rolle]\label{thm:rolle}
+Sea $f:[a,b]\to\mathbb{R}$ continua en $[a,b]$, derivable en $(a,b)$ y tal que $f(a)=f(b)$. Entonces existe $c\in(a,b)$ con $f'(c)=0$.
+\end{theorem}
+
+\begin{proof}
+Por continuidad en el compacto $[a,b]$, $f$ alcanza máximo y mínimo. Si ambos extremos se alcanzan en los extremos $a,b$, como $f(a)=f(b)$, la función es constante y entonces $f'\equiv 0$ en $(a,b)$. Si no, al menos uno de esos extremos se alcanza en un punto interior $c\in(a,b)$; por el teorema de Fermat, $f'(c)=0$.
+\end{proof}
+
+\section{Teorema del valor medio para derivadas}
+
+\begin{theorem}[Teorema del valor medio para derivadas]\label{thm:valor_medio_derivadas}
+Sea $f:[a,b]\to\mathbb{R}$ continua en $[a,b]$ y derivable en $(a,b)$. Entonces existe $c\in(a,b)$ tal que
+\[
+f'(c)=\frac{f(b)-f(a)}{b-a}.
+\]
+\end{theorem}
+
+\begin{proof}
+Consideramos
+\[
+\ell(x)=f(a)+\frac{f(b)-f(a)}{b-a}(x-a),
+\qquad
+h(x)=f(x)-\ell(x).
+\]
+Entonces $h$ es continua en $[a,b]$, derivable en $(a,b)$ y cumple $h(a)=h(b)=0$. Por el Teorema~\ref{thm:rolle}, existe $c\in(a,b)$ tal que $h'(c)=0$. Como
+\[
+h'(x)=f'(x)-\frac{f(b)-f(a)}{b-a},
+\]
+se concluye
+\[
+f'(c)=\frac{f(b)-f(a)}{b-a}.
+\]
+\end{proof}
+
+\section{Teorema del valor medio para integrales}
+
+\begin{theorem}[Teorema del valor medio para integrales --- primera forma]\label{thm:valor_medio_integral}
+Sea $g\in C([a,b])$.  Entonces existe $\eta\in(a,b)$ tal que
+\[
+\int_a^b g(x)\,dx = g(\eta)\,(b-a).
+\]
+\end{theorem}
+\begin{proof}
+Definimos
+\[
+G(x):=\int_a^x g(t)\,dt.
+\]
+Entonces $G$ es continua en $[a,b]$, derivable en $(a,b)$ y $G'(x)=g(x)$ (teorema fundamental del cálculo). Aplicando el Teorema~\ref{thm:valor_medio_derivadas} a $G$, existe $\eta\in(a,b)$ tal que
+\[
+G'(\eta)=\frac{G(b)-G(a)}{b-a}.
+\]
+Como $G'(\eta)=g(\eta)$, $G(b)=\int_a^b g(x)\,dx$ y $G(a)=0$, resulta
+\[
+\int_a^b g(x)\,dx=g(\eta)(b-a).
+\]
+\end{proof}
+
+\begin{theorem}[Teorema del valor medio para integrales --- segunda forma]\label{thm:valor_medio_integral_2}
+Sean $g,\varphi\in C([a,b])$, con $\varphi$ de signo constante y $\varphi(x)\neq 0$ para todo $x\in(a,b)$.  Entonces existe $\eta\in(a,b)$ tal que
+\[
+\int_a^b g(x)\,\varphi(x)\,dx = g(\eta)\int_a^b \varphi(x)\,dx.
+\]
+\end{theorem}
+\begin{proof}
+Sea
+\[
+c:=\frac{\int_a^b g(x)\,\varphi(x)\,dx}{\int_a^b \varphi(x)\,dx},
+\qquad
+H(x):=\int_a^x (g(t)-c)\,\varphi(t)\,dt.
+\]
+Como $\varphi$ tiene signo constante y no se anula en $(a,b)$, se tiene $\int_a^b\varphi\neq 0$, luego $c$ está bien definido. Además,
+\[
+H(a)=0,
+\qquad
+H(b)=\int_a^b (g-c)\varphi=\int_a^b g\varphi-c\int_a^b\varphi=0.
+\]
+Por el Teorema~\ref{thm:valor_medio_derivadas} aplicado a $H$ (equivalentemente, por Rolle), existe $\eta\in(a,b)$ tal que $H'(\eta)=0$. Por el teorema fundamental del cálculo,
+\[
+H'(\eta)=(g(\eta)-c)\varphi(\eta)=0.
+\]
+Como $\varphi(\eta)\neq 0$, se concluye $g(\eta)=c$, es decir,
+\[
+\int_a^b g(x)\,\varphi(x)\,dx = g(\eta)\int_a^b \varphi(x)\,dx.
+\]
+\end{proof}
+
 \section{Desarrollo de Taylor}
 
 \begin{theorem}[Teorema de Taylor con resto integral]\label{thm:taylor}
-Sea $f: I \to \mathbb{R}$ una función de clase $C^{n+1}$ en un intervalo abierto $I$, y sea $a \in I$. Entonces, para todo $x \in I$:
+Sea $f: I \to \mathbb{R}$ una función de clase $C^{(n+1)}$ en un intervalo abierto $I$, y sea $a \in I$. Entonces, para todo $x \in I$:
 \[
 f(x) = \sum_{k=0}^{n} \frac{f^{(k)}(a)}{k!}(x-a)^k + R_{n+1}(x),
 \]
@@ -6623,127 +7011,133 @@ Como $z \perp M$, tenemos $(w, z) = 0$.
 Despejando $L(v)$, obtenemos $L(v) = (v, u)$ con $u = \overline{L(z)}z$.
 \end{proof}
 
-\chapter{Espacios de Sobolev}
+% \chapter{Espacios de Sobolev}
 
-\section{Los espacios de Sobolev periódicos $H_{\mathrm{per}}^s$}
+% \section{Los espacios de Sobolev periódicos $H_{\mathrm{per}}^s$}
 
-En el capítulo anterior vimos cómo la regularidad de una función (ser $C^n$) se traduce en una cierta velocidad de decaimiento de sus coeficientes de Fourier. Ahora invertimos esta idea: usaremos el decaimiento de los coeficientes para \emph{definir} una nueva noción de regularidad, que es más general y poderosa. Esto nos lleva a los espacios de Sobolev.
+% En el capítulo de series de Fourier (Capítulo~\ref{cap:teoria_aproximacion}, Sección~\ref{sec:series_fourier_suaves}) vimos que la regularidad clásica de una función (por ejemplo, ser $C^n$) implica decaimiento de sus coeficientes de Fourier (Teorema~\ref{thm:decaimiento_fourier}).
 
-En las secciones anteriores definimos coeficientes de Fourier y calculamos su tasa de decaimiento para funciones suaves y periódicas. Sin embargo, las funciones suaves $C^k$ no forman un espacio completo con el producto interno. En esta sección veremos una construcción muy simple de un espacio de funciones completo.
+% Ahora recorremos la implicación inversa: usaremos ese decaimiento para \emph{definir} regularidad. Esta idea conduce a los espacios de Sobolev periódicos $H_{\mathrm{per}}^s$, que forman una escala natural de espacios de Hilbert y son fundamentales en análisis y en métodos espectrales.
 
-La idea central es que, en lugar de caracterizar funciones por su regularidad clásica (derivadas continuas), podemos caracterizarlas mediante el decaimiento de sus coeficientes de Fourier. Esta perspectiva conduce naturalmente a los \textbf{espacios de Sobolev periódicos} $H_{\mathrm{per}}^s$, que son completos y muy útiles tanto en análisis como en cálculo numérico.
+% El punto técnico importante es el siguiente: cuando $s\ge 0$, normalmente pensamos en funciones $L^2$ periódicas; pero para $s<0$ aparecen objetos más singulares, y conviene trabajar en el marco de \textbf{distribuciones periódicas}.
 
-Motivados por el teorema de decaimiento de coeficientes, definimos los espacios de Sobolev periódicos mediante condiciones sobre el decaimiento de los coeficientes de Fourier (definidos en la Ecuación~\eqref{coef_fourier_complex}).
+% Recordemos brevemente la notación. Denotamos por $\mathcal D_{\mathrm{per}}'\,$ el espacio de distribuciones periódicas de período $2\pi$, es decir, funcionales lineales continuos sobre $C_{\mathrm{per}}^{\infty}([0,2\pi])$. Si $T\in\mathcal D_{\mathrm{per}}'$, sus coeficientes de Fourier se definen por dualidad:
+% \[
+% \widehat T_k:=\frac{1}{2\pi}\langle T,e^{-ikx}\rangle,\qquad k\in\mathbb Z.
+% \]
+% Para una función $f\in L^1_{\mathrm{per}}$, esta definición coincide con la fórmula integral~\eqref{coef_fourier_complex}.
 
-\begin{definition}[Espacios de Sobolev periódicos]
-Sea $s \in \mathbb{R}$. El \textbf{espacio de Sobolev periódico} $H_{\mathrm{per}}^s$ se define como el conjunto de todas las funciones (distribuciones periódicas) $f$ con coeficientes de Fourier $\hat{f}_k$ tales que:
-\begin{equation}\label{def_Hpers}
-\sum_{k=-\infty}^{\infty} (1 + k^2)^s |\hat{f}_k|^2 < \infty.
-\end{equation}
-Es decir,
-\[
-H_{\mathrm{per}}^s = \left\{ f : [0,2\pi] \to \mathbb{C} \text{ periódica} \,\bigg|\, \sum_{k=-\infty}^{\infty} (1 + k^2)^s |\hat{f}_k|^2 < \infty \right\}.
-\]
-\end{definition}
+% \begin{definition}[Espacios de Sobolev periódicos]
+% Sea $s \in \mathbb{R}$. El \textbf{espacio de Sobolev periódico} $H_{\mathrm{per}}^s$ se define por
+% \begin{equation}\label{def_Hpers}
+% H_{\mathrm{per}}^s
+% :=\left\{f\in\mathcal D_{\mathrm{per}}' : \sum_{k=-\infty}^{\infty}(1+k^2)^s|\widehat f_k|^2<\infty\right\}.
+% \end{equation}
+% En particular, para $s\ge 0$ puede interpretarse como
+% \[
+% H_{\mathrm{per}}^s=\left\{f\in L^2_{\mathrm{per}}(0,2\pi):\sum_{k\in\mathbb Z}(1+k^2)^s|\widehat f_k|^2<\infty\right\},
+% \]
+% mientras que para $s<0$ es esencial permitir distribuciones periódicas.
+% \end{definition}
 
-El espacio $H_{\mathrm{per}}^s$ se dota del \textbf{producto interno}:
-\begin{equation}\label{prod_Hpers}
-(f,g)_{H^s} = \sum_{k=-\infty}^{\infty} (1 + k^2)^s \hat{f}_k \overline{\hat{g}_k},
-\end{equation}
-y la \textbf{norma} correspondiente:
-\begin{equation}\label{norma_Hpers}
-\|f\|_{H^s} = \left( \sum_{k=-\infty}^{\infty} (1 + k^2)^s |\hat{f}_k|^2 \right)^{1/2}.
-\end{equation}
+% El espacio $H_{\mathrm{per}}^s$ se dota del \textbf{producto interno}:
+% \begin{equation}\label{prod_Hpers}
+% (f,g)_{H^s} = \sum_{k=-\infty}^{\infty} (1 + k^2)^s \hat{f}_k \overline{\hat{g}_k},
+% \end{equation}
+% y la \textbf{norma} correspondiente:
+% \begin{equation}\label{norma_Hpers}
+% \|f\|_{H^s} = \left( \sum_{k=-\infty}^{\infty} (1 + k^2)^s |\hat{f}_k|^2 \right)^{1/2}.
+% \end{equation}
 
-\begin{remark}
-El factor $(1 + k^2)^s$ en lugar de $k^{2s}$ evita problemas con el término $k=0$ cuando $s > 0$. Algunas referencias usan $(1 + |k|)^{2s}$ o simplemente $\langle k \rangle^{2s}$ donde $\langle k \rangle = \sqrt{1 + k^2}$.
-\end{remark}
+% \begin{remark}
+% El factor $(1 + k^2)^s$ en lugar de $k^{2s}$ evita problemas con el término $k=0$ cuando $s > 0$. Algunas referencias usan $(1 + |k|)^{2s}$ o simplemente $\langle k \rangle^{2s}$ donde $\langle k \rangle = \sqrt{1 + k^2}$.
+% \end{remark}
 
-\begin{theorem}[Completitud de $H_{\mathrm{per}}^s$]
-Para cada $s \in \mathbb{R}$, el espacio $(H_{\mathrm{per}}^s, \|\cdot\|_{H^s})$ es un \textbf{espacio de Hilbert}, es decir, un espacio vectorial completo con producto interno.
-\end{theorem}
+% \begin{theorem}[Completitud de $H_{\mathrm{per}}^s$]
+% Para cada $s \in \mathbb{R}$, el espacio $(H_{\mathrm{per}}^s, \|\cdot\|_{H^s})$ es un \textbf{espacio de Hilbert}, es decir, un espacio vectorial completo con producto interno.
+% \end{theorem}
 
-\begin{proof}
-La demostración se basa en la identificación de $H_{\mathrm{per}}^s$ con el espacio de sucesiones $\ell^2$ con peso. Sea $\{f_n\}$ una sucesión de Cauchy en $H_{\mathrm{per}}^s$. Entonces, para cada $k \in \mathbb{Z}$, la sucesión de coeficientes $\{\widehat{f_n}_k\}$ es de Cauchy en $\mathbb{C}$, ya que:
-\[
-|\widehat{f_n}_k - \widehat{f_m}_k|^2 \leq \frac{1}{(1+k^2)^s} \sum_{j=-\infty}^{\infty} (1+j^2)^s |\widehat{f_n}_j - \widehat{f_m}_j|^2 = \frac{\|f_n - f_m\|_{H^s}^2}{(1+k^2)^s}.
-\]
-Por completitud de $\mathbb{C}$, existe $c_k \in \mathbb{C}$ tal que $\widehat{f_n}_k \to c_k$ para cada $k$. 
+% \begin{proof}
+% La demostración se basa en la identificación de $H_{\mathrm{per}}^s$ con el espacio de sucesiones $\ell^2$ con peso. Sea $\{f_n\}$ una sucesión de Cauchy en $H_{\mathrm{per}}^s$. Entonces, para cada $k \in \mathbb{Z}$, la sucesión de coeficientes $\{\widehat{f_n}_k\}$ es de Cauchy en $\mathbb{C}$, ya que:
+% \[
+% |\widehat{f_n}_k - \widehat{f_m}_k|^2 \leq \frac{1}{(1+k^2)^s} \sum_{j=-\infty}^{\infty} (1+j^2)^s |\widehat{f_n}_j - \widehat{f_m}_j|^2 = \frac{\|f_n - f_m\|_{H^s}^2}{(1+k^2)^s}.
+% \]
+% Por completitud de $\mathbb{C}$, existe $c_k \in \mathbb{C}$ tal que $\widehat{f_n}_k \to c_k$ para cada $k$. 
 
-Falta verificar que la función $f$ definida por $\hat{f}_k = c_k$ pertenece a $H_{\mathrm{per}}^s$ y que $f_n \to f$ en $H_{\mathrm{per}}^s$. Esto se sigue de la convergencia dominada en $\ell^2$ con peso. Los detalles técnicos se omiten, pero la idea es estándar en teoría de espacios de sucesiones.
-\end{proof}
+% Falta verificar que la función $f$ definida por $\hat{f}_k = c_k$ pertenece a $H_{\mathrm{per}}^s$ y que $f_n \to f$ en $H_{\mathrm{per}}^s$. Esto se sigue de la convergencia dominada en $\ell^2$ con peso. Los detalles técnicos se omiten, pero la idea es estándar en teoría de espacios de sucesiones.
+% \end{proof}
 
-\begin{theorem}[Caracterización por derivadas débiles]
-Para $s = m \in \mathbb{N}$, el espacio $H_{\mathrm{per}}^m$ coincide (con normas equivalentes) con el espacio de funciones $f \in L^2([0,2\pi])$ cuyas derivadas débiles hasta orden $m$ pertenecen a $L^2([0,2\pi])$. Es decir:
-\[
-H_{\mathrm{per}}^m \cong \left\{ f \in L^2([0,2\pi]) : f^{(j)} \in L^2([0,2\pi]) \text{ para } 0 \leq j \leq m \right\}.
-\]
-Además, la norma $\|f\|_{H^m}$ es equivalente a:
-\[
-\|f\|_{H^m}^2 \sim \sum_{j=0}^{m} \|f^{(j)}\|_{L^2}^2.
-\]
-\end{theorem}
+% \begin{theorem}[Caracterización por derivadas débiles]
+% Para $s = m \in \mathbb{N}$, el espacio $H_{\mathrm{per}}^m$ coincide (con normas equivalentes) con el espacio de funciones $f \in L^2([0,2\pi])$ cuyas derivadas débiles hasta orden $m$ pertenecen a $L^2([0,2\pi])$. Es decir:
+% \[
+% H_{\mathrm{per}}^m \cong \left\{ f \in L^2([0,2\pi]) : f^{(j)} \in L^2([0,2\pi]) \text{ para } 0 \leq j \leq m \right\}.
+% \]
+% Además, la norma $\|f\|_{H^m}$ es equivalente a:
+% \[
+% \|f\|_{H^m}^2 \sim \sum_{j=0}^{m} \|f^{(j)}\|_{L^2}^2.
+% \]
+% \end{theorem}
 
-\begin{proof}[Idea de la demostración]
-La derivación en el espacio de Fourier corresponde a multiplicar los coeficientes por $ik$, como vimos en la Ecuación~\eqref{fourier_deriv}:
-\[
-\widehat{f^{(j)}}_k = (ik)^j \hat{f}_k.
-\]
-Por lo tanto,
-\[
-\sum_{k=-\infty}^{\infty} |\widehat{f^{(j)}}_k|^2 = \sum_{k=-\infty}^{\infty} k^{2j} |\hat{f}_k|^2.
-\]
-Sumando sobre $j = 0, \ldots, m$, obtenemos una cantidad equivalente a $\sum_{k} (1+k^2)^m |\hat{f}_k|^2$, que es precisamente $\|f\|_{H^m}^2$.
-\end{proof}
+% \begin{proof}[Idea de la demostración]
+% La derivación en el espacio de Fourier corresponde a multiplicar los coeficientes por $ik$, como vimos en la Ecuación~\eqref{fourier_deriv}:
+% \[
+% \widehat{f^{(j)}}_k = (ik)^j \hat{f}_k.
+% \]
+% Por lo tanto,
+% \[
+% \sum_{k=-\infty}^{\infty} |\widehat{f^{(j)}}_k|^2 = \sum_{k=-\infty}^{\infty} k^{2j} |\hat{f}_k|^2.
+% \]
+% Sumando sobre $j = 0, \ldots, m$, obtenemos una cantidad equivalente a $\sum_{k} (1+k^2)^m |\hat{f}_k|^2$, que es precisamente $\|f\|_{H^m}^2$.
+% \end{proof}
 
-\begin{theorem}[Inmersiones de Sobolev periódicas]
-Sean $s_1, s_2 \in \mathbb{R}$ con $s_1 > s_2$. Entonces:
-\begin{enumerate}
-\item $H_{\mathrm{per}}^{s_1} \subset H_{\mathrm{per}}^{s_2}$ (inmersión continua).
-\item Si $s > 1/2$, entonces $H_{\mathrm{per}}^s \subset C_{\mathrm{per}}([0,2\pi])$ (funciones continuas), y la inmersión es compacta.
-\item Más precisamente, si $s > k + 1/2$ con $k \in \mathbb{N}$, entonces $H_{\mathrm{per}}^s \subset C_{\mathrm{per}}^k([0,2\pi])$.
-\end{enumerate}
-\end{theorem}
+% \begin{theorem}[Inmersiones de Sobolev periódicas]
+% Sean $s_1, s_2 \in \mathbb{R}$ con $s_1 > s_2$. Entonces:
+% \begin{enumerate}
+% \item $H_{\mathrm{per}}^{s_1} \subset H_{\mathrm{per}}^{s_2}$ (inmersión continua).
+% \item Si $s > 1/2$, entonces $H_{\mathrm{per}}^s \subset C_{\mathrm{per}}([0,2\pi])$ (funciones continuas), y la inmersión es compacta.
+% \item Más precisamente, si $s > k + 1/2$ con $k \in \mathbb{N}$, entonces $H_{\mathrm{per}}^s \subset C_{\mathrm{per}}^k([0,2\pi])$.
+% \end{enumerate}
+% \end{theorem}
 
-\begin{proof}[Idea de la demostración]
-(1) Es inmediato de la definición, ya que $(1+k^2)^{s_2} \leq (1+k^2)^{s_1}$ para $|k|$ grande.
+% \begin{proof}[Idea de la demostración]
+% (1) Es inmediato de la definición, ya que $(1+k^2)^{s_2} \leq (1+k^2)^{s_1}$ para $|k|$ grande.
 
-(2) Para $s > 1/2$, la serie $\sum_{k} \hat{f}_k e^{ikx}$ converge absolutamente y uniformemente. En efecto, por Cauchy-Schwarz:
-\[
-\sum_{k=-\infty}^{\infty} |\hat{f}_k| = \sum_{k} (1+k^2)^{s/2} |\hat{f}_k| \cdot (1+k^2)^{-s/2} \leq \|f\|_{H^s} \left( \sum_{k} (1+k^2)^{-s} \right)^{1/2}.
-\]
-La última serie converge si $s > 1/2$. Por lo tanto, $f$ es continua.
+% (2) Para $s > 1/2$, la serie $\sum_{k} \hat{f}_k e^{ikx}$ converge absolutamente y uniformemente. En efecto, por Cauchy-Schwarz:
+% \[
+% \sum_{k=-\infty}^{\infty} |\hat{f}_k| = \sum_{k} (1+k^2)^{s/2} |\hat{f}_k| \cdot (1+k^2)^{-s/2} \leq \|f\|_{H^s} \left( \sum_{k} (1+k^2)^{-s} \right)^{1/2}.
+% \]
+% La última serie converge si $s > 1/2$. Por lo tanto, $f$ es continua.
 
-(3) Derivando término a término, si $f \in H_{\mathrm{per}}^s$ con $s > k + 1/2$, entonces $f^{(k)} \in H_{\mathrm{per}}^{s-k} \subset C_{\mathrm{per}}$ (usando el caso anterior).
-\end{proof}
+% (3) Derivando término a término, si $f \in H_{\mathrm{per}}^s$ con $s > k + 1/2$, entonces $f^{(k)} \in H_{\mathrm{per}}^{s-k} \subset C_{\mathrm{per}}$ (usando el caso anterior).
+% \end{proof}
 
-\begin{example}
-Consideremos $f(x) = \sum_{k=1}^{\infty} \frac{1}{k^2} \cos(kx)$. Sus coeficientes de Fourier son $\hat{f}_k = \hat{f}_{-k} = \frac{1}{2k^2}$ para $k \geq 1$, y $\hat{f}_0 = 0$. Entonces:
-\[
-\|f\|_{H^s}^2 = \sum_{k=1}^{\infty} (1+k^2)^s \cdot \frac{2}{k^4} \sim \sum_{k=1}^{\infty} \frac{k^{2s}}{k^4} = \sum_{k=1}^{\infty} k^{2s-4}.
-\]
-Esta serie converge si y solo si $2s - 4 < -1$, es decir, $s < 3/2$. Por lo tanto, $f \in H_{\mathrm{per}}^s$ para todo $s < 3/2$. Como $s < 3/2$ no alcanza $s = 2$, concluimos que $f \notin H_{\mathrm{per}}^2$, aunque $f$ es continua (ya que $0 < 1/2$, tenemos $f \in C_{\mathrm{per}}$).
-\end{example}
+% \begin{example}
+% Consideremos $f(x) = \sum_{k=1}^{\infty} \frac{1}{k^2} \cos(kx)$. Sus coeficientes de Fourier son $\hat{f}_k = \hat{f}_{-k} = \frac{1}{2k^2}$ para $k \geq 1$, y $\hat{f}_0 = 0$. Entonces:
+% \[
+% \|f\|_{H^s}^2 = \sum_{k=1}^{\infty} (1+k^2)^s \cdot \frac{2}{k^4} \sim \sum_{k=1}^{\infty} \frac{k^{2s}}{k^4} = \sum_{k=1}^{\infty} k^{2s-4}.
+% \]
+% Esta serie converge si y solo si $2s - 4 < -1$, es decir, $s < 3/2$. Por lo tanto, $f \in H_{\mathrm{per}}^s$ para todo $s < 3/2$. Como $s < 3/2$ no alcanza $s = 2$, concluimos que $f \notin H_{\mathrm{per}}^2$, aunque $f$ es continua (ya que $0 < 1/2$, tenemos $f \in C_{\mathrm{per}}$).
+% \end{example}
 
-El siguiente teorema conecta los espacios clásicos $C^n_{\mathrm{per}}$ con los espacios de Sobolev.
+% El siguiente teorema conecta los espacios clásicos $C^n_{\mathrm{per}}$ con los espacios de Sobolev.
 
-\begin{theorem}
-Para todo $n \in \mathbb{N}$, se tiene:
-\[
-C^n_{\mathrm{per}}([0,2\pi]) \subset H_{\mathrm{per}}^s \quad \text{para todo } s \leq n.
-\]
-Más aún, si $f \in C^n_{\mathrm{per}}([0,2\pi])$, entonces $|\hat{f}_k| \leq C/k^n$ para alguna constante $C > 0$, y por lo tanto:
-\[
-\|f\|_{H^s} < \infty \quad \text{para todo } s < n - 1/2.
-\]
-\end{theorem}
+% \begin{theorem}
+% Para todo $n \in \mathbb{N}$, se tiene:
+% \[
+% C^n_{\mathrm{per}}([0,2\pi]) \subset H_{\mathrm{per}}^s \quad \text{para todo } s \leq n.
+% \]
+% Más aún, si $f \in C^n_{\mathrm{per}}([0,2\pi])$, entonces $|\hat{f}_k| \leq C/k^n$ para alguna constante $C > 0$, y por lo tanto:
+% \[
+% \|f\|_{H^s} < \infty \quad \text{para todo } s < n - 1/2.
+% \]
+% \end{theorem}
 
-Por otro lado, la unión de todos los espacios de Sobolev recupera las funciones suaves:
-\[
-C^\infty_{\mathrm{per}}([0,2\pi]) = \bigcap_{s \in \mathbb{R}} H_{\mathrm{per}}^s.
-\]
+% Por otro lado, la unión de todos los espacios de Sobolev recupera las funciones suaves:
+% \[
+% C^\infty_{\mathrm{per}}([0,2\pi]) = \bigcap_{s \in \mathbb{R}} H_{\mathrm{per}}^s.
+% \]
 
-En resumen, los espacios $H_{\mathrm{per}}^s$ proporcionan una escala completa de espacios de funciones que interpolan entre distribuciones muy singulares ($s \ll 0$) y funciones infinitamente diferenciables ($s \to \infty$). Esta construcción es fundamental tanto para el análisis de ecuaciones diferenciales como para métodos numéricos basados en Fourier.
+% En resumen, los espacios $H_{\mathrm{per}}^s$ proporcionan una escala completa de espacios de funciones que interpolan entre distribuciones muy singulares ($s \ll 0$) y funciones infinitamente diferenciables ($s \to \infty$). Esta construcción es fundamental tanto para el análisis de ecuaciones diferenciales como para métodos numéricos basados en Fourier.
 
 
 \end{document}
