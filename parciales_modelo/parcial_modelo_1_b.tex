@@ -1,0 +1,129 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Ejercicios tipo parcial -- Guías 1 a 3}
+ \bigskip
+
+\begin{exercise}[Ajuste racional por cuadrados m\'inimos y SVD]
+Dados datos $(x_i,f_i)$, se propone ajustar el modelo racional
+\[
+r(x)=\frac{a+bx}{1+cx}
+\]
+por cuadrados m\'inimos.
+
+\begin{enumerate}[(a)]
+\item Muestre que, partiendo de la relaci\'on aproximada $f_i\approx r(x_i)$ y multiplicando por $(1+cx_i)$, el problema puede escribirse como un problema lineal de cuadrados m\'inimos para los par\'ametros $a,b,c$.
+
+\item Escriba el sistema correspondiente en forma matricial $A\theta\approx b$ con $\theta=(a,b,c)^T$, indicando expl\'icitamente las filas de $A$ y el vector de datos del segundo miembro.
+
+\item Proponga un algoritmo num\'ericamente estable para resolverlo usando la SVD de $A$, y describa c\'omo recuperar luego la funci\'on ajustada $r(x)$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Integral con singularidad algebraica integrable]
+Considere
+\[
+I=\int_0^1 t^{\alpha}f(t)\,dt, \qquad -1<\alpha<0,
+\]
+con $f$ continua en $[0,1]$.
+
+\begin{enumerate}[(a)]
+\item Discuta si es posible aplicar directamente la regla del trapecio compuesta al integrando $t^{\alpha}f(t)$ y justifique su respuesta.
+
+\item Muestre que sumando y restando el valor $f(0)\int_0^1 t^{\alpha}\,dt$, la integral puede descomponerse en un término regularizado y un término singular que se puede calcular explícitamente. A partir de esta descomposición, plantee un esquema numérico basado en la regla de trapecios compuesta para aproximar $I$ y muestre que el orden de convergencia del método es al menos $O(h)$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Transformada de Haar]
+En este ejercicio se introduce la transformada de Haar para vectores de longitud $n=2^m$.
+
+Dado $x\in\mathbb{R}^n$, en un nivel se forman promedios y diferencias por pares:
+\[
+u_j=\frac{x_{2j}+x_{2j+1}}{\sqrt2},
+\qquad
+v_j=\frac{x_{2j}-x_{2j+1}}{\sqrt2},
+\qquad j=0,\ldots,\frac n2-1.
+\]
+La salida de ese nivel es el vector
+\[
+\bigl(u_0,\ldots,u_{n/2-1},v_0,\ldots,v_{n/2-1}\bigr)^T,
+\]
+y luego el mismo procedimiento se aplica recursivamente al bloque de promedios $(u_j)$ hasta llegar a longitud $1$.
+
+\begin{enumerate}[(a)]
+\item Escriba pseudocódigo para aplicar la transformada de Haar a un vector $x\in\mathbb{R}^n$ usando la definición recursiva anterior y calcule la complejidad computacional.
+
+\item Utilizando que los pasos de promedios y diferencias por pares pueden escribirse como la multiplicación por las matrices $A_n$ y $B_n$ respectivamente, dadas por
+\[
+A_n=\frac1{\sqrt2}\begin{pmatrix}I_{n/2} & I_{n/2}\end{pmatrix},
+\qquad
+B_n=\frac1{\sqrt2}\begin{pmatrix}I_{n/2} & -I_{n/2}\end{pmatrix},
+\]
+y que la transformada de Haar total se puede escribir como la multiplicación por la matriz $H_n$ dada por
+\[    
+H_n=\begin{pmatrix}
+H_{n/2}A_n\\
+B_n
+\end{pmatrix}.
+\]
+demuestre por inducción que $H_n^TH_n=I_n$, es decir, que la transformada de Haar es una transformación ortogonal.
+\item Utilizando el resultado anterior, ¿Cuál es el condicionamiento de la matriz $H_n$? ¿Qué nos dice esto sobre la estabilidad numérica de la transformada de Haar? Justifique su respuesta.
+\end{enumerate}
+\end{exercise}
+
+
+\begin{exercise}[Función de Green cuasi-periódica y FFT] En problemas de difracción por estructuras periódicas, la función de Green cuasi-periódica se puede representar mediante una serie espectral. Para fines computacionales, a menudo se utiliza una versión truncada de esta serie:
+\[
+G^{\mathrm{qp}}_M(x,y)=\frac{i}{2d}\sum_{m=-M}^{M}
+\frac{\exp\!\bigl(i\alpha_m x+i\beta_m|y|\bigr)}{\beta_m},
+\qquad
+\alpha_m=\alpha+\frac{2\pi m}{d},
+\]
+donde $\beta_m=\sqrt{k^2-\alpha_m^2}$ (rama con $\operatorname{Im}(\beta_m)\ge 0$), $k>0$ y $\alpha\in\mathbb{R}$ son datos.
+
+Sea una grilla uniforme en $x$ dada por $x_j=j\,d/N$, $j=0,\ldots,N-1$, y suponga $N\ge 2M+1$.
+
+\begin{enumerate}[(a)]
+\item Reescriba $G^{\mathrm{qp}}_M(x_j,y)$ en forma de suma trigonométrica
+\[
+G^{\mathrm{qp}}_M(x_j,y)=e^{i\alpha x_j}\sum_{m=-M}^{M} c_m(y)\,e^{2\pi i mj/N},
+\]
+identificando explícitamente los coeficientes $c_m(y)$.
+
+\item A partir de la expresión anterior, diseñe un algoritmo basado en FFT para calcular simultáneamente los valores $\{G^{\mathrm{qp}}_M(x_j,y)\}_{j=0}^{N-1}$ para un $y$ fijo.
+
+\item Indique cómo extender el procedimiento para varios valores $y_1,\ldots,y_q$. ¿Qué magnitudes puede pre-calcular y reutilizar para obtener un algoritmo lo más eficiente posible?¿Cuál sería la complejidad computacional total del algoritmo para calcular $G^{\mathrm{qp}}_M(x_j,y_k)$ para $j=0,\ldots,N-1$ y $k=1,\ldots,q$? Justifique su respuesta.
+\end{enumerate}
+\end{exercise}
+
+
+\end{document}
