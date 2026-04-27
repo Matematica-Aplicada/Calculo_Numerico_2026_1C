@@ -3144,6 +3144,69 @@ Observemos que los coeficientes $r_k$ son precisamente la \textbf{convolución l
 La complejidad es $O(M \log M) = O(N \log N)$, frente a $O(N^2)$ del método directo (multiplicación término a término).
 
 
+\subsection{Principio de incertidumbre de Donoho-Stark para la DFT}
+
+Una manifestación fundamental del principio de incertidumbre en el contexto discreto es: una señal no nula no puede estar simultáneamente muy concentrada en tiempo (índices) y en frecuencia (coeficientes de Fourier).
+
+\begin{theorem}[Donoho-Stark para la DFT]
+Sea $\mathbf{x}\in\mathbb{C}^n$, $\mathbf{x}\neq 0$, y sea $\widehat{\mathbf{x}}=F_n\mathbf{x}$ su DFT (convención asimétrica del apunte). Definimos
+\[
+\operatorname{supp}(\mathbf{x})=\{j:\ x_j\neq 0\},\qquad
+\operatorname{supp}(\widehat{\mathbf{x}})=\{k:\ \widehat{x}_k\neq 0\}.
+\]
+Si $s:=|\operatorname{supp}(\mathbf{x})|$ y $t:=|\operatorname{supp}(\widehat{\mathbf{x}})|$, entonces
+\[
+s\,t\ge n.
+\]
+\end{theorem}
+
+\begin{proof}
+Sea $T=\operatorname{supp}(\widehat{\mathbf{x}})$, con $|T|=t$. Por la fórmula de la IDFT,
+\[
+x_j=\frac1n\sum_{k=0}^{n-1}\widehat{x}_k\,\omega^{-jk}
+=\frac1n\sum_{k\in T}\widehat{x}_k\,\omega^{-jk}.
+\]
+Tomando módulo y usando $|\omega^{-jk}|=1$:
+\[
+|x_j|\le \frac1n\sum_{k\in T}|\widehat{x}_k|.
+\]
+Aplicando Cauchy-Schwarz a la suma del lado derecho:
+\[
+\sum_{k\in T}|\widehat{x}_k|
+\le \sqrt{t}\,\|\widehat{\mathbf{x}}\|_2,
+\]
+de donde
+\[
+|x_j|\le \frac{\sqrt{t}}{n}\,\|\widehat{\mathbf{x}}\|_2
+\qquad \text{para todo } j.
+\]
+Si $S=\operatorname{supp}(\mathbf{x})$ y $|S|=s$, entonces
+\[
+\|\mathbf{x}\|_2^2
+=\sum_{j\in S}|x_j|^2
+\le s\left(\frac{\sqrt{t}}{n}\|\widehat{\mathbf{x}}\|_2\right)^2
+=\frac{st}{n^2}\,\|\widehat{\mathbf{x}}\|_2^2.
+\]
+Por la unitariedad en nuestra convención ($F_n^*F_n=nI$), vale
+\[
+\|\widehat{\mathbf{x}}\|_2^2=n\,\|\mathbf{x}\|_2^2.
+\]
+Sustituyendo:
+\[
+\|\mathbf{x}\|_2^2\le \frac{st}{n}\,\|\mathbf{x}\|_2^2.
+\]
+Como $\mathbf{x}\neq 0$, tenemos $\|\mathbf{x}\|_2^2>0$, y por tanto $st\ge n$.
+\end{proof}
+
+\begin{remark}
+Este resultado implica que no puede ocurrir simultáneamente que $s\ll n$ y $t\ll n$. En forma equivalente,
+\[
+|\operatorname{supp}(\mathbf{x})|\,|\operatorname{supp}(\widehat{\mathbf{x}})|\ge n,
+\]
+que es la versión discreta (para DFT) del principio de incertidumbre de Donoho-Stark.
+\end{remark}
+
+
 
 
 
