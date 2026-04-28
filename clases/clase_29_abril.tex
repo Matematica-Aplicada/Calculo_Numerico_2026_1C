@@ -1,0 +1,217 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage{amsthm}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{theorem}{Teorema}
+\newtheorem{corollary}[theorem]{Corolario}
+\renewcommand{\proofname}{Demostración}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+
+\vskip 0.2cm
+\hrulefill
+\vskip 0.2cm
+
+\centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+\vskip 0.2cm
+\centerline{\ttfamily Primer Cuatrimestre 2026}
+\hrulefill
+
+\bigskip
+\centerline{\bf Clase del 29 de Abril de 2026: Repaso General}
+\bigskip
+
+\section*{Objetivo de la materia}
+
+En la primera clase se enunció el objetivo de la materia como: \textit{``Algoritmos para resolver problemas matemáticos de forma aproximada.''}  Esta formulación contiene dos componentes que estructuran todo el curso: el componente \emph{algorítmico} ---cómo resolver el problema de manera efectiva y eficiente--- y el componente de \emph{aproximación y control del error} ---qué tan buena es la solución obtenida y cómo se propagan los errores.
+
+\section*{Recorrido por los algoritmos del curso}
+
+\subsection*{Práctica 1}
+
+Se realizó una introducción a la teoría de la computabilidad y las máquinas de Turing. El resultado central que se destacó es que el conjunto de números reales para los cuales existe un algoritmo capaz de aproximarlos es un subconjunto \emph{numerable} de $\R$: casi todos los números reales son, en ese sentido, inaccesibles computacionalmente. Este resultado tiene un carácter fundacional y no forma parte del contenido evaluable de la materia.
+
+Posteriormente se estudiaron pseudocódigo, recursión y análisis de complejidad con el "método heurístico" también conocido como "árbol de recursión". Se discutió la manera formal de demostrar la complejidad de algoritmos recursivos por inducción, pero aclaramos que nos alcanza con que sepan el método del "árbol de recursión". No se abordó el teorema maestro por falta de tiempo.
+
+\subsection*{Práctica 2}
+
+Se estudiaron los siguientes algoritmos de álgebra lineal numérica:
+
+\begin{itemize}
+  \item \textbf{Factorización LU:} costo de precómputo $O(n^3)$ y costo de aplicación (sustitución progresiva-regresiva) $O(n^2)$. Estos costos se reducen sustancialmente cuando la matriz tiene estructura adicional: para matrices \emph{tridiagonales} ambos costos se reducen a $O(n)$, y para matrices \emph{simétricas definidas positivas} la factorización de Cholesky reduce el costo total por un factor de~2 respecto de LU (es decir el orden es el mismo -- mejora la constante)
+  \item \textbf{Factorización QR} y \textbf{descomposición en valores singulares (SVD)}. Estudiamos la factorización QR mediante Gram-Schmidt. En el caso de la SVD, salvo la diagonalización de $AA^*$, el método que vimos es constructivo y permitiría programar un algoritmo, aunque no llegamos a escribir el pseudocódigo correspondiente.
+\end{itemize}
+
+\subsection*{Práctica 3}
+
+Se presentaron los siguientes algoritmos:
+
+\begin{itemize}
+  \item \textbf{Interpolación en forma baricéntrica:} algoritmo de precómputo de los pesos baricéntricos y evaluación del polinomio interpolador en un punto, con costo $O(n)$ por evaluación luego del precómputo.
+  \item \textbf{Transformada discreta de Fourier (DFT)} y su versión rápida \textbf{(FFT)}, con el análisis del salto de complejidad de $O(n^2)$ a $O(n\log n)$ mediante la recursión de Cooley-Tukey.
+\end{itemize}
+
+\section*{Recorrido por los resultados de aproximación y análisis de errores}
+
+\subsection*{Práctica 1}
+
+Se introdujo la aritmética de \emph{punto flotante} y sus limitaciones. Como ejemplo de inestabilidad se consideró el cálculo de la sucesión
+\[
+  I_n = \int_0^1 x^n e^x\, dx
+\]
+mediante la recurrencia $I_n = e - n\, I_{n-1}$, $I_0 = e - 1$. Un error inicial en $I_0$ es amplificado por un factor del orden $n!$ luego de $n$ pasos, destruyendo toda precisión para $n$ moderadamente grande. También se discutieron ejemplos elementales de \emph{cancelación numérica} y cómo evitarla reformulando el cómputo.
+
+\subsection*{Práctica 2}
+
+Los resultados de aproximación en esta práctica giran en torno a dos ejes:
+
+\begin{itemize}
+  \item \textbf{Cuadrados mínimos:} construcción de la mejor combinación lineal de un conjunto finito de funciones dadas, en el sentido de minimizar el error en norma~2. La proyección ortogonal provee la aproximación óptima y su análisis es el fundamento de los métodos de mínimos cuadrados.
+  \item \textbf{Condicionamiento:} cuantificación de cómo los errores en el lado derecho de un sistema lineal $Ax = b$ se amplifican en la solución. El número de condición $\kappa(A)$ mide esta sensibilidad y determina cuántos dígitos de precisión se pierden al resolver el sistema.
+\end{itemize}
+
+\subsection*{Práctica 3}
+
+Se estudió el error de interpolación y el error de cuadratura bajo distintas hipótesis de regularidad sobre la función. La regularidad mínima considerada fue $f \in C[a,b]$, y al incrementar las hipótesis a $C^1$, $C^2$, etc., el orden del error mejora en una unidad con cada derivada adicional que se supone continua. También se trataron técnicas para situaciones en las que la función diverge en algún punto del dominio de integración ---donde la convergencia no está garantizada \emph{a priori}--- mostrando que con técnicas adecuadas, es posible recuperar un buen orden de aproximación.
+
+\section*{Marco de análisis}
+
+Para organizar los contenidos de la materia resulta útil el siguiente esquema. Dado un problema abordable con las herramientas del cálculo numérico ---por ahora: encontrar la mejor combinación lineal de finitas funciones dadas, calcular una integral numéricamente, descomponer una señal en frecuencias--- las preguntas relevantes son:
+
+\begin{enumerate}[(1)]
+  \item \textbf{Formulación algorítmica.} ¿Cómo puede reformularse el problema de modo que sea posible aplicar un algoritmo conocido? Esta pregunta no es la misma que ``aplicar el algoritmo a mano'', sino que se refiere a la reformulación del problema de modo que el algoritmo sea aplicable. 
+  \item \textbf{Costo computacional.} ¿Cuál es la complejidad del algoritmo en función del tamaño $n$ del problema? Por ejemplo: $O(n^3)$, $O(n^2)$, $O(n \log n)$, $O(n)$. 
+  \item \textbf{Orden del error.} ¿Con qué rapidez decrece el error al refinar la discretización? Por ejemplo: $O(h)$, $O(h^2)$, $O(h^{\alpha})$ para algún $\alpha > 0$. No nos interesó demasiado obtener una cota exacta del error incluyendo constantes, sino más bien el orden de crecimiento asintótico.
+  \item \textbf{Estabilidad.} ¿El algoritmo o el problema son sensibles a perturbaciones en los datos? ¿Los errores iniciales se amplifican o se mantienen acotados?
+  \item \textbf{Justificación.} ¿Por qué el algoritmo tiene ese costo, ese orden de error, esa estabilidad? Por ejemplo: los algoritmos rápidos explotan la recursión; las aproximaciones de alto orden explotan la regularidad (cantidad de derivadas continuas) de la función, las matrices ortogonales preservan la norma, etc.
+\end{enumerate}
+
+\section*{Temas que no se alcanzaron a cubrir}
+
+Por razones de tiempo, quedaron fuera del programa efectivo los siguientes temas:
+
+\begin{itemize}
+  \item \textbf{Aplicaciones de la SVD} a la aproximación de matrices por matrices de rango bajo (aproximación de rango $k$ óptima en norma de Frobenius).
+  \item \textbf{Métodos iterativos para sistemas lineales} (Jacobi, Gauss-Seidel, gradiente conjugado). Si bien se contó algo en la práctica, no nos alcanzó el tiempo para ejercitar y profundizar. Algo de este material podría volver en la Práctica~6, donde también estudiaremos métodos iterativos para problemas no-lineales y optimización.
+  \item \textbf{Métodos iterativos para el cálculo de autovalores} y la diagonalización de matrices (por ejemplo, el método QR iterativo). Lamentablemente no hubo tiempo para este tema.
+\end{itemize}
+
+\section*{Más temas sobre DFT / FFT}
+
+A continuación se presentan dos resultados relacionados con la DFT que no se alcanzaron a cubrir en la práctica, pero que son importantes para comprender el marco teórico de esta herramienta fundamental. (Estos resultados no forman parte del programa evaluable de la materia, pero se incluyen aquí para quienes quieran profundizar en el tema y como ejemplo de aplicación de los contenidos del curso.)
+
+\subsection*{Criterio de Nyquist--Shannon}
+
+Consideremos una señal periódica $x : \R \to \C$ de período $T$ que contiene exactamente $M$ modos de Fourier, es decir,
+\[
+  x(t) = \sum_{k=-M}^{M} c_k\, e^{2\pi i k t / T}, \qquad c_k \in \C,
+\]
+de modo que la frecuencia máxima presente en la señal es $f_{\max} = M/T$.
+
+La señal se \emph{muestrea} en $N$ puntos equiespaciados $t_j = j/f_s$, $j = 0, 1, \ldots, N-1$, donde $f_s = N/T$ es la \emph{frecuencia de muestreo}. Los valores muestreados son
+\[
+  x(t_j) = \sum_{k=-M}^{M} c_k\, e^{2\pi i k j / N}, \qquad j = 0, \ldots, N-1.
+\]
+La pregunta es: ¿en qué condición sobre $f_s$ es posible recuperar \emph{unívocamente} los coeficientes $c_k$ a partir de estas $N$ observaciones?
+
+\medskip
+
+\noindent\textbf{El fenómeno de aliasing.}
+Nótese que, para todo $\ell \in \mathbb{Z}$,
+\[
+  e^{2\pi i (k + \ell N) j / N} = e^{2\pi i k j/N} \cdot e^{2\pi i \ell j} = e^{2\pi i k j/N},
+\]
+ya que $e^{2\pi i \ell j} = 1$ para $\ell, j \in \mathbb{Z}$. Por lo tanto, los modos de frecuencia $k$ y $k + \ell N$ producen exactamente los mismos valores en todos los puntos de muestreo: son \emph{indistinguibles} a partir de los datos discretos. Este fenómeno se denomina \textbf{aliasing}.
+
+\medskip
+
+\noindent\textbf{Condición de unicidad.}
+Para que la reconstrucción sea única, es necesario y suficiente que todos los índices $k \in \{-M, \ldots, M\}$ pertenezcan a clases de equivalencia distintas módulo $N$. Dos índices $k, k' \in \{-M, \ldots, M\}$ satisfacen $|k - k'| \leq 2M$; para que se anulen entre sí debería ocurrir $|k - k'| = N$ (el salto mínimo posible entre clases distintas). La condición para que esto no ocurra para ningún par en el rango es $N > 2M$, lo que en términos de frecuencias equivale a
+\[
+  \boxed{f_s > 2\, f_{\max}.}
+\]
+Esta es la condición del \textbf{teorema de muestreo de Nyquist--Shannon}: para reconstruir unívocamente una señal con $M$ modos de Fourier, la frecuencia de muestreo debe superar el \emph{doble} de la frecuencia máxima presente. El valor $f_s/2$ se denomina \textbf{frecuencia de Nyquist}.
+
+\medskip
+
+\noindent\textbf{Observación 1.}  Cuando $f_s \leq 2 f_{\max}$, al menos un par de modos distintos comparte los mismos valores muestreados. En ese caso el sistema lineal que relaciona las muestras con los coeficientes $c_k$ tiene soluciones múltiples y la reconstrucción no es posible sin información adicional sobre la señal. Esto no quiere decir que sea imposible: si se conoce que la señal es de un tipo particular (por ejemplo, que es suave o que tiene soporte compacto), entonces es posible recuperar la señal a partir de las muestras incluso cuando $f_s \leq 2 f_{\max}$, aunque el proceso de reconstrucción será más complejo y no se basará en la DFT. Este tipo de técnicas se conocen como \textbf{muestreo comprimido} o \textbf{súperresolución} y son áreas activas de investigación en la actualidad.
+
+\noindent\textbf{Observación 2.} En la práctica, se utilizan técnicas de filtrado para eliminar los componentes de alta frecuencia antes de muestrear, asegurando que la señal muestreada cumpla con la condición de Nyquist--Shannon. Esto se conoce como \textbf{antialiasing}. Al mismo tiempo, se añade un márgen de seguridad al elegir $f_s$ significativamente mayor que $2 f_{\max}$: por ejemplo en audio digital se suele usar $f_s = 44.1$ kHz para señales con $f_{\max} \approx 20$ kHz.
+
+\subsection*{Principio de incertidumbre de Donoho--Stark}
+
+El principio de incertidumbre establece una tensión fundamental entre la localización de una señal en el dominio original y su localización en el dominio de Fourier. La versión discreta que presentamos a continuación es el resultado de Donoho y Stark (1989), y es un análogo discreto del principio de incertidumbre de Heisenberg.
+
+Sea $\omega_N = e^{2\pi i/N}$ y denotemos la DFT de $x \in \C^N$ por
+\[
+  \hat{x}_k = \sum_{j=0}^{N-1} x_j\, \omega_N^{jk}, \qquad k = 0, \ldots, N-1,
+\]
+con IDFT correspondiente $x_j = \frac{1}{N}\sum_{k=0}^{N-1} \hat{x}_k\, \omega_N^{-jk}$.
+La relación de Parseval (con esta convención asimétrica) es
+\[
+  \|\hat{x}\|_2^2 = N\,\|x\|_2^2.
+\]
+
+\begin{theorem}[Principio de incertidumbre de Donoho--Stark]
+Sea $x \in \C^N$, $x \neq 0$. Sean
+\[
+  s = |\operatorname{supp}(x)| = |\{j : x_j \neq 0\}|, \qquad
+  t = |\operatorname{supp}(\hat{x})| = |\{k : \hat{x}_k \neq 0\}|.
+\]
+Entonces
+\[
+  s\,t \geq N.
+\]
+\end{theorem}
+
+\begin{proof}
+\textbf{Paso 1.} Acotamos $|x_j|$ en términos de $\hat{x}$.
+Partiendo de la fórmula de la IDFT y usando que $|\omega_N^{-jk}| = 1$ para todo $j, k$, se obtiene, para cualquier índice $j$,
+\[
+  |x_j| = \left|\frac{1}{N}\sum_{k=0}^{N-1} \hat{x}_k\, \omega_N^{-jk}\right|
+  \leq \frac{1}{N}\sum_{k=0}^{N-1} |\hat{x}_k|
+  = \frac{1}{N}\sum_{k \in T} |\hat{x}_k|,
+\]
+donde $T = \operatorname{supp}(\hat{x})$ y en el último paso se usó que $\hat{x}_k = 0$ fuera de $T$.
+
+\textbf{Paso 2.} Aplicamos la desigualdad de Cauchy--Schwarz a la suma sobre $T$:
+\[
+  \sum_{k \in T} |\hat{x}_k| \leq \sqrt{|T|}\cdot\|\hat{x}\|_2 = \sqrt{t}\,\|\hat{x}\|_2.
+\]
+Combinando con el Paso~1,
+\[
+  |x_j| \leq \frac{\sqrt{t}}{N}\,\|\hat{x}\|_2 \qquad \text{para todo } j.
+\]
+
+\textbf{Paso 3.} Acotamos $\|x\|_2^2$ usando que $x_j = 0$ fuera de $S = \operatorname{supp}(x)$:
+\[
+  \|x\|_2^2 = \sum_{j \in S} |x_j|^2 \leq \sum_{j \in S} \frac{t}{N^2}\,\|\hat{x}\|_2^2
+  = \frac{s\,t}{N^2}\,\|\hat{x}\|_2^2.
+\]
+
+\textbf{Paso 4.} Sustituimos la relación de Parseval $\|\hat{x}\|_2^2 = N\|x\|_2^2$:
+\[
+  \|x\|_2^2 \leq \frac{s\,t}{N^2} \cdot N\|x\|_2^2 = \frac{s\,t}{N}\,\|x\|_2^2.
+\]
+Como $x \neq 0$, podemos dividir ambos lados por $\|x\|_2^2 > 0$, obteniendo $1 \leq s\,t/N$, es decir, $s\,t \geq N$.
+\end{proof}
+
+\medskip
+
+\noindent\textbf{Interpretación.}  El teorema establece que no es posible que una señal esté simultáneamente concentrada en pocos puntos del dominio original \emph{y} en pocos puntos del dominio de Fourier: el producto de los tamaños de soporte satisface $st \geq N$. En términos de resolución, si se desea localizar una señal en $s$ puntos del espacio (alta resolución espacial, $s$ pequeño), la DFT debe ser no nula en al menos $N/s$ frecuencias (ancho de banda grande). A la inversa, una señal de banda estrecha ($t$ pequeño) forzosamente posee respuesta espacial extendida ($s$ grande).
+
+
+\end{document}
