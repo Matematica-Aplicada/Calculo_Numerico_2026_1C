@@ -225,25 +225,6 @@ La DFT indexa las frecuencias como $k = 0, 1, \ldots, N-1$. Pero usando aliasing
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Criterio de Nyquist]
-Dado un vector de $N$ muestras tomadas con paso $\Delta t$ (frecuencia de muestreo $f_s = 1/\Delta t$), las frecuencias analógicas representadas por los índices de la DFT son $f_k = k/(N\Delta t)$.
-Supongamos que la señal es una superposición de modos de Fourier discretos de la forma
-\[
-x_j = \sum_{k=-N/2}^{N/2-1} c_k\, e^{2\pi i f_k j \Delta t}, \qquad j = 0, \ldots, N-1,
-\]
-y decimos que $x$ está \textbf{limitada en banda} por $f_{\max}$ si $c_k = 0$ para todo $k$ tal que $|f_k| > f_{\max}$.
-\begin{enumerate}[(a)]
-\item Usando el resultado de aliasing, muestre que si $f_s < 2f_{\max}$ entonces existen dos vectores distintos, limitados en banda por $f_{\max}$, que producen exactamente las mismas muestras. Concluya que en ese caso es imposible reconstruir la señal original a partir de las muestras.
-\item Concluya que para poder reconstruir una señal limitada en banda por $f_{\max}$ sin ambigüedad es necesario que
-\[
-f_s \ge 2\,f_{\max}.
-\]
-La cota $2f_{\max}$ se llama \textbf{tasa de Nyquist}.
-
-Ejemplo numérico: una señal de audio tiene componentes de hasta $20\,$kHz. Si bien la tasa de muestreo mínima sería $40\,$kHz, el estándar CD usa $44.1\,$kHz para permitir un margen de seguridad.
-\end{enumerate}
-\end{exercise}
-
 \begin{exercise}[Difracción por rendijas múltiples]
 Una red de difracción tiene $N$ rendijas equiespaciadas con separación $d$. La amplitud compleja en el ángulo $\theta$ es proporcional a la suma $A(\theta) = \sum_{n=0}^{N-1} a_n\, e^{i n q d}$, donde $q = \frac{2\pi \sin\theta}{\lambda}$ y $a_n \in \{0, 1\}$ indica si la rendija $n$-ésima está abierta.
 \begin{enumerate}[(a)]
@@ -285,32 +266,6 @@ Defina vectores extendidos $A, B \in \mathbb{C}^N$ con $N \ge 2n-1$ completando 
    \item Calcular $\text{IFFT}$ del resultado.
    \end{enumerate}
 \item Compare la complejidad asintótica de este método con la multiplicación clásica.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Principio de incertidumbre de Donoho-Stark]
-Sea $x \in \mathbb{C}^N$, $x \neq 0$. Definimos los soportes
-\[
-S = \operatorname{supp}(x) = \{j : x_j \neq 0\}, \qquad
-T = \operatorname{supp}(\hat{x}) = \{k : \hat{x}_k \neq 0\},
-\]
-y denotamos $s = |S|$, $t = |T|$. El objetivo es demostrar que $s\,t \geq N$.
-\begin{enumerate}[(a)]
-\item Usando la fórmula de la IDFT y que $|\omega_N^{-jk}| = 1$, demuestre que para todo índice $j$:
-\[
-|x_j| \leq \frac{1}{N} \sum_{k \in T} |\hat{x}_k|.
-\]
-\textbf{Sugerencia}: los únicos $k$ que contribuyen a la suma son los de $T$.
-\item Aplique la desigualdad de Cauchy-Schwarz a $\sum_{k \in T} |\hat{x}_k|$ para obtener
-\[
-|x_j| \leq \frac{\sqrt{t}}{N}\,\|\hat{x}\|_2.
-\]
-\item Usando que $S = \operatorname{supp}(x)$, deduzca la cota
-\[
-\|x\|_2^2 \leq \frac{s\,t}{N^2}\,\|\hat{x}\|_2^2.
-\]
-\item Emplee la relación de Parseval para la convención asimétrica ($\|\hat{x}\|_2^2 = N \|x\|_2^2$) y concluya que $s\,t \geq N$.
-\item Interprete el resultado en clave óptica: piense en $s$ como el tamaño del soporte espacial de una señal (por ejemplo, el ancho de la apertura de un sistema óptico) y en $t$ como su ancho de banda (número de frecuencias espaciales activas). La desigualdad $s\,t \geq N$ establece un \emph{límite de resolución}: para localizar una señal en pocos puntos del espacio ($s$ pequeño, alta resolución espacial) es necesario disponer de un ancho de banda amplio ($t$ grande). A la inversa, un sistema de banda estrecha ($t$ pequeño, por ejemplo luz casi monocromática o una apertura muy limitada en el espacio de frecuencias) forzosamente produce una respuesta espacial extendida ($s$ grande), es decir, baja resolución. 
 \end{enumerate}
 \end{exercise}
 
@@ -381,6 +336,8 @@ Identifique el rol de $D = s\,\Delta x$ como el \emph{ancho de banda espacial} d
 el análogo discreto exacto del criterio de Rayleigh $\delta\theta \cdot D \sim \lambda$.
 \end{enumerate}
 \end{exercise}
+
+
 
 \subsection*{Interpolación en cuerpos finitos (*)}
 
