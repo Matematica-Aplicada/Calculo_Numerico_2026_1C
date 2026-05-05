@@ -3045,6 +3045,51 @@ Para $n = 2^{10} = 1024$:
 
 \textbf{Implementación:} En Python, usar \texttt{numpy.fft.fft(x)} y \texttt{numpy.fft.ifft(X)}. Ver el archivo \texttt{interpolacion\_algebraica.py} para una implementación didáctica de DFT vía Vandermonde (sin FFT, $O(n^2)$) y comparación con \texttt{numpy.fft}.
 
+\subsection{Criterio de Nyquist-Shannon y aliasing}
+
+Una vez que la señal se representa mediante coeficientes de Fourier, aparece una pregunta central: ¿cuántas muestras hacen falta para reconstruirla de manera unívoca a partir de su DFT?
+
+Sea $x:[0,T]\to\mathbb{C}$ una señal periódica de período $T$ con expansión finita
+\[
+x(t)=\sum_{k=-M}^{M} c_k\,e^{2\pi i k t/T},
+\]
+de modo que la frecuencia máxima presente es $f_{\max}=M/T$.
+
+Si muestreamos en $N$ puntos equiespaciados
+\[
+t_j=\frac{j}{f_s},\qquad j=0,\ldots,N-1,\qquad f_s=\frac{N}{T},
+\]
+entonces
+\[
+x(t_j)=\sum_{k=-M}^{M} c_k\,e^{2\pi i k j/N}.
+\]
+
+La estructura discreta implica periodicidad en frecuencia módulo $N$:
+\[
+e^{2\pi i (k+\ell N)j/N}=e^{2\pi i kj/N}\,e^{2\pi i\ell j}=e^{2\pi i kj/N},
+\]
+para todo $\ell\in\mathbb{Z}$. Por lo tanto, los modos $k$ y $k+\ell N$ son indistinguibles en los datos muestreados. Este fenómeno se llama \textbf{aliasing}.
+
+Para evitar colisiones entre índices en el rango $\{-M,\ldots,M\}$, debe cumplirse
+\[
+N>2M,
+\]
+equivalentemente,
+\[
+\boxed{\,f_s>2f_{\max}.\,}
+\]
+
+Esta es la condición del \textbf{teorema de muestreo de Nyquist-Shannon}. El valor $f_s/2$ se denomina \textbf{frecuencia de Nyquist}.
+
+\begin{remark}[Lectura práctica]
+Si $f_s\le 2f_{\max}$, la reconstrucción espectral por DFT no es unívoca porque distintas señales pueden producir exactamente las mismas muestras. En aplicaciones, esto se evita con dos ideas complementarias:
+\begin{itemize}
+\item filtrar altas frecuencias antes de muestrear (filtro antialiasing),
+\item elegir una tasa de muestreo con margen por encima de $2f_{\max}$.
+\end{itemize}
+Por ejemplo, en audio digital se usa típicamente $44.1$ kHz para señales cuyo contenido útil está por debajo de $20$ kHz.
+\end{remark}
+
 \subsection{Convolución discreta}
 Una de las aplicaciones más poderosas de la DFT y, por extensión, de la FFT, es el \textbf{Teorema de Convolución}. Este teorema establece que la convolución circular de dos secuencias en el dominio del tiempo se convierte en una simple multiplicación punto a punto de sus DFT en el dominio de la frecuencia.
 
@@ -3147,6 +3192,7 @@ La complejidad es $O(M \log M) = O(N \log N)$, frente a $O(N^2)$ del método dir
 \subsection{Principio de incertidumbre de Donoho-Stark para la DFT}
 
 Una manifestación fundamental del principio de incertidumbre en el contexto discreto es: una señal no nula no puede estar simultáneamente muy concentrada en tiempo (índices) y en frecuencia (coeficientes de Fourier).
+Tomamos esta formulación del teorema de Donoho-Stark de \cite{donoho1989uncertainty}.
 
 \begin{theorem}[Donoho-Stark para la DFT]
 Sea $\mathbf{x}\in\mathbb{C}^n$, $\mathbf{x}\neq 0$, y sea $\widehat{\mathbf{x}}=F_n\mathbf{x}$ su DFT (convención asimétrica del apunte). Definimos
@@ -3159,43 +3205,71 @@ Si $s:=|\operatorname{supp}(\mathbf{x})|$ y $t:=|\operatorname{supp}(\widehat{\m
 s\,t\ge n.
 \]
 \end{theorem}
-
 \begin{proof}
-Sea $T=\operatorname{supp}(\widehat{\mathbf{x}})$, con $|T|=t$. Por la fórmula de la IDFT,
+Sean
+\[
+S:=\operatorname{supp}(\mathbf{x}),\qquad T:=\operatorname{supp}(\widehat{\mathbf{x}}),
+\qquad |S|=s,\ |T|=t.
+\]
+
+\textbf{Paso 1 (cota puntual de $x_j$).}
+Por la fórmula de la IDFT,
 \[
 x_j=\frac1n\sum_{k=0}^{n-1}\widehat{x}_k\,\omega^{-jk}
-=\frac1n\sum_{k\in T}\widehat{x}_k\,\omega^{-jk}.
+=\frac1n\sum_{k\in T}\widehat{x}_k\,\omega^{-jk},
 \]
-Tomando módulo y usando $|\omega^{-jk}|=1$:
+ya que $\widehat{x}_k=0$ fuera de $T$. Tomando módulo y usando $|\omega^{-jk}|=1$:
 \[
 |x_j|\le \frac1n\sum_{k\in T}|\widehat{x}_k|.
 \]
-Aplicando Cauchy-Schwarz a la suma del lado derecho:
+
+\textbf{Paso 2 (Cauchy-Schwarz en un producto interno discreto).}
+Consideremos el espacio $\mathbb{C}^T\simeq\mathbb{C}^t$ con el producto interno hermitiano estándar
 \[
-\sum_{k\in T}|\widehat{x}_k|
-\le \sqrt{t}\,\|\widehat{\mathbf{x}}\|_2,
+\langle a,b\rangle_T:=\sum_{k\in T} a_k\overline{b_k}.
 \]
-de donde
+Aplicamos Cauchy-Schwarz (Ap\'endice, Teorema~\ref{thm:cauchy_schwarz_appendix}) a
+\[
+a_k:=\widehat{x}_k,\qquad b_k:=1\ \ (k\in T).
+\]
+Entonces
+\[
+\sum_{k\in T}|\widehat{x}_k|=\langle |\widehat{x}|,\mathbf{1}\rangle_T
+\le \||\widehat{x}|\|_{2,T}\,\|\mathbf{1}\|_{2,T}
+=\Big(\sum_{k\in T}|\widehat{x}_k|^2\Big)^{1/2}\,\sqrt{t}
+\le \sqrt{t}\,\|\widehat{\mathbf{x}}\|_2.
+\]
+Sustituyendo en el Paso 1,
 \[
 |x_j|\le \frac{\sqrt{t}}{n}\,\|\widehat{\mathbf{x}}\|_2
-\qquad \text{para todo } j.
+\qquad \text{para todo } j=0,\ldots,n-1.
 \]
-Si $S=\operatorname{supp}(\mathbf{x})$ y $|S|=s$, entonces
+
+\textbf{Paso 3 (sumar sobre el soporte de $\mathbf{x}$).}
+Como $x_j=0$ si $j\notin S$,
 \[
 \|\mathbf{x}\|_2^2
 =\sum_{j\in S}|x_j|^2
-\le s\left(\frac{\sqrt{t}}{n}\|\widehat{\mathbf{x}}\|_2\right)^2
+\le \sum_{j\in S}\left(\frac{\sqrt{t}}{n}\,\|\widehat{\mathbf{x}}\|_2\right)^2
 =\frac{st}{n^2}\,\|\widehat{\mathbf{x}}\|_2^2.
 \]
-Por la unitariedad en nuestra convención ($F_n^*F_n=nI$), vale
+
+\textbf{Paso 4 (relaci\'on de normas DFT/IDFT).}
+Por la unitariedad de la DFT en nuestra convenci\'on (Teorema~\ref{thm:dft_unitary}),
 \[
 \|\widehat{\mathbf{x}}\|_2^2=n\,\|\mathbf{x}\|_2^2.
 \]
-Sustituyendo:
+Equivalentemente, si $U:=\frac1{\sqrt n}F_n$, entonces $U$ es unitaria y por Parseval en base ortonormal finita (Ap\'endice, Teorema~\ref{thm:parseval_finito_appendix}) se obtiene la misma identidad.
+
+Reemplazando en la desigualdad del Paso 3:
 \[
 \|\mathbf{x}\|_2^2\le \frac{st}{n}\,\|\mathbf{x}\|_2^2.
 \]
-Como $\mathbf{x}\neq 0$, tenemos $\|\mathbf{x}\|_2^2>0$, y por tanto $st\ge n$.
+Como $\mathbf{x}\neq 0$, se tiene $\|\mathbf{x}\|_2^2>0$; al dividir,
+\[
+1\le \frac{st}{n},
+\]
+y por lo tanto $st\ge n$.
 \end{proof}
 
 \begin{remark}
@@ -3206,6 +3280,24 @@ Este resultado implica que no puede ocurrir simultáneamente que $s\ll n$ y $t\l
 que es la versión discreta (para DFT) del principio de incertidumbre de Donoho-Stark.
 \end{remark}
 
+\begin{corollary}[Cota aditiva para los soportes]
+Con la notación del teorema anterior, se cumple
+\[
+s+t\ge 2\sqrt{n}.
+\]
+\end{corollary}
+
+\begin{proof}
+Por el Teorema de Donoho-Stark, $st\ge n$. Además, por la desigualdad aritmético-geométrica,
+\[
+\frac{s+t}{2}\ge \sqrt{st}.
+\]
+Combinando ambas:
+\[
+\frac{s+t}{2}\ge \sqrt{st}\ge \sqrt{n},
+\]
+y por tanto $s+t\ge 2\sqrt{n}$.
+\end{proof}
 
 
 
@@ -6588,7 +6680,7 @@ Esta norma satisface:
 \end{enumerate}
 \end{definition}
 
-\begin{theorem}[Desigualdad de Cauchy-Schwarz]
+\begin{theorem}[Desigualdad de Cauchy-Schwarz]\label{thm:cauchy_schwarz_appendix}
 Para todos $u, v \in V$:
 \[
 |(u,v)| \leq \|u\| \|v\|,
@@ -7139,5 +7231,8 @@ Despejando $L(v)$, obtenemos $L(v) = (v, u)$ con $u = \overline{L(z)}z$.
 
 % En resumen, los espacios $H_{\mathrm{per}}^s$ proporcionan una escala completa de espacios de funciones que interpolan entre distribuciones muy singulares ($s \ll 0$) y funciones infinitamente diferenciables ($s \to \infty$). Esta construcción es fundamental tanto para el análisis de ecuaciones diferenciales como para métodos numéricos basados en Fourier.
 
+
+\bibliographystyle{plain}
+\bibliography{referencias}
 
 \end{document}
