@@ -1,0 +1,66 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Ejercicios tipo parcial -- Guías 3}
+ \bigskip
+
+\begin{exercise}[Interpolación en distintas bases]
+Dado un conjunto de datos $(x_i,y_i), i=0,\dots,n$, se propone hallar el polinomio interpolador de grado a lo sumo $n$. Para ello, se consideran las siguientes bases de polinomios:
+\begin{itemize}
+\item Base monomial: $\{1,x,x^2,\dots,x^n\}$.
+\item Base de Lagrange: $\{L_0(x),L_1(x),\dots,L_n(x)\}$, donde $L_i(x_j)=\delta_{ij}$.
+\item Base de Newton: $\{1,(x-x_0),(x-x_0)(x-x_1),\dots,(x-x_0)(x-x_1)\cdots(x-x_{n-1})\}$.
+\end{itemize}
+
+
+\begin{enumerate}[(a)]
+\item ¿Cuál es el sistema lineal que se debe resolver para hallar el polinomio interpolador en cada una de las bases mencionadas?
+\item En la base de Lagrange, ¿cómo pueden obtenerse los coeficientes del polinomio interpolador directamente a partir de los datos $(x_i,y_i)$, es decir, sin necesidad de resolver numéricamente un sistema lineal?
+\item ¿Cuál es el costo computacional del procedimiento en cada caso?
+\end{enumerate}
+\end{exercise}
+
+
+\begin{exercise}[Interpolación en distintos nodos]
+Considere la función $f(x) = x^7$. Se desea aproximar $f$ mediante un polinomio de grado 3, en el intervalo $[-1,1]$. Para ello, se consideran dos conjuntos de nodos:
+\begin{itemize}
+\item Nodos equiespaciados: $x_i = \lbrace -1, -\frac{1}{3}, \frac{1}{3}, 1\rbrace$.
+\item Nodos $x_i = \lbrace-1, -\frac{1}{\sqrt{5}}, \frac{1}{\sqrt{5}}, 1\rbrace$.
+\end{itemize}
+\begin{enumerate}[(a)]
+\item Utilizando la base de Lagrange, encuentre el polinomio interpolador de grado 3 para cada conjunto de nodos.
+\item Compare las aproximaciones obtenidas en el punto $x=0.1$. ¿Cuál es más precisa?
+\end{enumerate}
+\end{exercise}
+
+
+\end{document}

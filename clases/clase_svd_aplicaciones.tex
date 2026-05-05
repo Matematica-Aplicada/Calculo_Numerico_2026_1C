@@ -1,0 +1,493 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage{amsthm}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Teorema}
+\newtheorem{corollary}[theorem]{Corolario}
+\newtheorem{proposition}[theorem]{Proposición}
+\newtheorem{definition}[theorem]{Definición}
+\newtheorem{example}[theorem]{Ejemplo}
+\newtheorem{remark}[theorem]{Observación}
+\renewcommand{\proofname}{Demostración}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\rank}{\mathrm{rank}}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\newcommand{\tr}{\mathrm{tr}}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto.\ de Matemática}}
+
+\vskip 0.2cm
+\hrulefill
+\vskip 0.2cm
+
+\centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+\vskip 0.2cm
+\centerline{\ttfamily Primer Cuatrimestre 2026}
+\hrulefill
+
+\bigskip
+\centerline{\bf Aplicaciones de la Descomposición en Valores Singulares}
+\bigskip
+
+\noindent Esta clase presenta tres aplicaciones de la SVD. En las dos primeras --- Análisis de Componentes Principales (PCA) y Análisis Semántico Latente (LSA) --- el hilo conductor es que la correlación entre variables es un producto interno, y que la SVD diagonaliza la(s) matriz(ces) de correlación. En la tercera --- matrices de Hankel --- la clave es algebraica: la estructura de Vandermonde implica que los polos de la señal son autovalores de una cierta matriz que se extrae directamente de los vectores singulares de Hankel. Iniciamos estableciendo el puente entre norma, producto interno y varianza/correlación.
+
+% ======================================================================
+\section{Correlación y producto interno}
+% ======================================================================
+
+\subsection{Varianza y covarianza como norma y producto interno}
+
+Supongamos que medimos dos cantidades en $m$ experimentos, obteniendo vectores
+\[
+  x = (x_1, \ldots, x_m)^T \in \R^m, \qquad y = (y_1, \ldots, y_m)^T \in \R^m.
+\]
+Supongamos que ambos vectores están \textbf{centrados}, es decir, $\sum_i x_i = \sum_i y_i = 0$ (esto siempre puede lograrse restando la media). Entonces adoptamos las siguientes definiciones puramente algebraicas:
+
+\begin{definition}
+Dados $x, y \in \R^m$ centrados, se define:
+\begin{itemize}
+  \item La \textbf{varianza} de $x$ es $\|x\|^2 = \sum_{i=1}^m x_i^2$ (norma euclidiana al cuadrado).
+  \item La \textbf{covarianza} de $x$ e $y$ es $\langle x, y \rangle = x^T y = \sum_{i=1}^m x_i y_i$ (producto interno euclidiano).
+  \item El \textbf{coeficiente de correlación} de Pearson es
+  \[
+    \rho(x, y) = \frac{\langle x, y \rangle}{\|x\|\,\|y\|} = \cos\theta,
+  \]
+  donde $\theta$ es el ángulo entre $x$ e $y$ como vectores en $\R^m$.
+\end{itemize}
+\end{definition}
+
+La desigualdad de Cauchy--Schwarz $|\langle x, y \rangle| \leq \|x\|\,\|y\|$ garantiza que $\rho(x,y) \in [-1, 1]$. Los casos extremos tienen una interpretación geométrica precisa:
+\begin{itemize}
+  \item $\rho = 1$: $x$ e $y$ son colineales con la misma orientación, es decir, $y = \lambda x$ para algún $\lambda > 0$.
+  \item $\rho = -1$: $y = \lambda x$ con $\lambda < 0$ (orientaciones opuestas).
+  \item $\rho = 0$: $x \perp y$ (ortogonales, sin covariación lineal).
+\end{itemize}
+En otras palabras, la correlación de Pearson mide precisamente el \emph{coseno del ángulo} entre los dos vectores de observaciones. Variables no correlacionadas son simplemente vectores ortogonales.
+
+\subsection{La matriz de correlación}
+
+Dados $n$ vectores centrados $d_1, \ldots, d_n \in \R^m$ (las $n$ variables, cada una con $m$ observaciones), los organizamos como columnas de la \textbf{matriz de datos}
+\[
+  D = \begin{bmatrix} d_1 & d_2 & \cdots & d_n \end{bmatrix} \in \R^{m \times n}.
+\]
+La \textbf{matriz de correlación} (o de Gram) es
+\[
+  C = D^T D \in \R^{n \times n}, \qquad C_{ij} = \langle d_i, d_j \rangle.
+\]
+En su diagonal están las varianzas: $C_{ii} = \|d_i\|^2$. Fuera de la diagonal están las covarianzas: $C_{ij} = \langle d_i, d_j\rangle$ para $i \neq j$.
+
+\begin{proposition}
+$C = D^TD$ es simétrica semidefinida positiva.
+\end{proposition}
+\begin{proof}
+Simetría: $(D^TD)^T = D^T(D^T)^T = D^TD$. Semidefinida positiva: para todo $v \in \R^n$,
+$v^T C v = v^T D^T D v = \|Dv\|^2 \geq 0.$
+\end{proof}
+
+La positividad tiene una interpretación directa: $Dv = \sum_j v_j d_j$ es una \emph{combinación lineal} de las variables, y $v^TCv = \|Dv\|^2$ es su varianza. Ninguna combinación lineal tiene varianza negativa.
+
+\begin{remark}
+Si las columnas de $D$ están además normalizadas ($\|d_j\| = 1$), entonces $C_{ij} = \rho(d_i, d_j)$ es directamente la matriz de coeficientes de Pearson, con unos en la diagonal.
+\end{remark}
+
+% ======================================================================
+\section{SVD y el teorema de Eckart--Young}
+% ======================================================================
+
+Recordamos los resultados del curso que serán la herramienta central.
+
+\begin{theorem}[Descomposición en Valores Singulares]
+Toda matriz $A \in \R^{m \times n}$ de rango $r$ admite una factorización
+\[
+  A = U \Sigma V^T = \sum_{i=1}^r \sigma_i\, u_i v_i^T,
+\]
+donde $U = [u_1 | \cdots | u_m] \in \R^{m \times m}$ y $V = [v_1 | \cdots | v_n] \in \R^{n \times n}$ son ortogonales, y $\Sigma \in \R^{m \times n}$ tiene entradas diagonales (valores singulares) $\sigma_1 \geq \cdots \geq \sigma_r > 0 = \sigma_{r+1} = \cdots$.
+\end{theorem}
+
+Las columnas $u_i$ y $v_i$ se llaman vectores singulares izquierdos y derechos respectivamente. Satisfacen las relaciones
+\[
+  A v_i = \sigma_i u_i, \qquad A^T u_i = \sigma_i v_i, \qquad i = 1, \ldots, r,
+\]
+de las cuales se sigue que $A^TA \, v_i = \sigma_i^2 v_i$ y $AA^T \, u_i = \sigma_i^2 u_i$. Dicho de otro modo: \emph{los vectores singulares derechos son los autovectores de $A^TA$ y los izquierdos son los autovectores de $AA^T$, ambos con autovalores $\sigma_i^2$}.
+
+La norma de Frobenius admite la expresión
+\[
+  \|A\|_F^2 = \sum_{i,j} A_{ij}^2 = \tr(A^TA) = \sum_{i=1}^r \sigma_i^2.
+\]
+
+\begin{theorem}[Eckart--Young, 1936]
+Sea $A \in \R^{m \times n}$ con SVD $A = U\Sigma V^T$. Para cada $k \leq r$, la aproximación de rango $k$
+\[
+  A_k = \sum_{i=1}^k \sigma_i\, u_i v_i^T
+\]
+satisface
+\[
+  \|A - A_k\|_F = \min_{\substack{B \in \R^{m\times n} \\ \rank(B) \leq k}} \|A - B\|_F = \sqrt{\sigma_{k+1}^2 + \cdots + \sigma_r^2}.
+\]
+Análogamente, $\|A - A_k\|_2 = \sigma_{k+1}$ es el mínimo en norma espectral sobre matrices de rango $\leq k$.
+\end{theorem}
+
+El teorema dice que $A_k$ captura, en el sentido de mínimos cuadrados, la mayor cantidad posible de la norma de $A$ usando sólo rango $k$. La descomposición de la norma es
+\[
+  \|A\|_F^2 = \underbrace{\sigma_1^2 + \cdots + \sigma_k^2}_{\|A_k\|_F^2} + \underbrace{\sigma_{k+1}^2 + \cdots + \sigma_r^2}_{\|A - A_k\|_F^2}.
+\]
+
+\begin{remark}[SVD de matrices simétricas: reducción al teorema espectral]
+Cuando $A$ es simétrica semidefinida positiva, los autovectores de $A$ y de $A^TA = A^2$ coinciden, y los valores propios de $A$ son no negativos. En este caso la SVD se reduce al \textbf{teorema espectral}: $A = V\Lambda V^T$ con $\Lambda = \mathrm{diag}(\lambda_1,\ldots,\lambda_n)$, $\lambda_i \geq 0$, y los valores singulares son $\sigma_i = \lambda_i$. En particular, $U = V$: los vectores singulares izquierdos y derechos coinciden.
+\end{remark}
+
+% ======================================================================
+\section{Análisis de Componentes Principales (PCA)}
+% ======================================================================
+
+\subsection{Diagonalización de la matriz de correlación}
+
+Sea $D \in \R^{m \times n}$ la matriz de datos centrados y $C = D^T D$ su matriz de correlación. Como $C$ es simétrica semidefinida positiva, el teorema espectral le aplica:
+\[
+  C = V \Lambda V^T, \qquad \Lambda = \mathrm{diag}(\lambda_1, \ldots, \lambda_n), \quad \lambda_1 \geq \cdots \geq \lambda_n \geq 0,
+\]
+con $V \in \R^{n \times n}$ ortogonal. Las columnas $v_1, \ldots, v_n$ de $V$ se llaman \textbf{componentes principales}.
+
+La relación con la SVD de $D$ es directa. Si $D = U \Sigma V^T$ (con $V$ el mismo que en la diagonalización de $C$), entonces
+\[
+  C = D^T D = V \Sigma^T U^T U \Sigma V^T = V \Sigma^T \Sigma V^T = V \,\mathrm{diag}(\sigma_1^2, \ldots, \sigma_n^2)\, V^T,
+\]
+de modo que $\lambda_i = \sigma_i^2$. En otras palabras: \emph{los vectores singulares derechos de $D$ son exactamente los autovectores de $C$}, y los valores propios de $C$ son los cuadrados de los valores singulares de $D$.
+
+\subsection{Interpretación de las componentes principales: el cociente de Rayleigh}
+
+Fijada una dirección unitaria $v \in \R^n$, la \emph{varianza de los datos proyectados} sobre $v$ es
+\[
+  \|Dv\|^2 = v^T D^T D v = v^T C v.
+\]
+La pregunta de PCA se puede reformular: ¿qué dirección unitaria $v$ maximiza esta varianza? La herramienta para responderla es el cociente de Rayleigh.
+
+\begin{definition}[Cociente de Rayleigh]
+Sea $C \in \R^{n \times n}$ simétrica semidefinida positiva. El \textbf{cociente de Rayleigh} de un vector $v \neq 0$ respecto de $C$ es
+\[
+  R_C(v) = \frac{v^T C v}{\|v\|^2}.
+\]
+Para vectores unitarios $\|v\| = 1$ se tiene $R_C(v) = v^T C v$, que coincide con la varianza proyectada.
+\end{definition}
+
+\begin{theorem}[Rayleigh--Ritz y Courant--Fischer]
+\label{thm:rayleigh}
+Sea $C \in \R^{n \times n}$ simétrica con autovalores $\lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_n \geq 0$ y autovectores ortonormales asociados $v_1, \ldots, v_n$. Entonces:
+\begin{enumerate}[(i)]
+  \item \textbf{Cota:} $\lambda_n \leq R_C(v) \leq \lambda_1$ para todo $v \neq 0$.
+  \item \textbf{Máximo global:} $\displaystyle\max_{\|v\|=1} R_C(v) = \lambda_1$, alcanzado en $v = v_1$.
+  \item \textbf{Mínimo global:} $\displaystyle\min_{\|v\|=1} R_C(v) = \lambda_n$, alcanzado en $v = v_n$.
+  \item \textbf{Courant--Fischer:} Para $k = 1, \ldots, n$,
+  \[
+    \lambda_k = \max_{\substack{v \neq 0,\; \|v\|=1 \\ v \perp v_1, \ldots, v_{k-1}}} v^T C v.
+  \]
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+Como $\{v_1, \ldots, v_n\}$ es una base ortonormal de $\R^n$, escribimos $v = \sum_{i=1}^n \alpha_i v_i$ con $\|v\|^2 = \sum_i \alpha_i^2$. Usando $Cv_i = \lambda_i v_i$ y la ortonormalidad:
+\[
+  v^T C v = \Bigl(\sum_i \alpha_i v_i\Bigr)^{\!T} C \Bigl(\sum_j \alpha_j v_j\Bigr)
+           = \sum_{i,j} \alpha_i \alpha_j \, v_i^T (\lambda_j v_j)
+           = \sum_i \alpha_i^2 \lambda_i.
+\]
+Luego
+\[
+  R_C(v) = \frac{\sum_i \alpha_i^2 \lambda_i}{\sum_i \alpha_i^2},
+\]
+que es un \emph{promedio ponderado} de los autovalores $\lambda_1, \ldots, \lambda_n$ con pesos no negativos $\alpha_i^2 / \|\alpha\|^2$. De esto se deducen~(i)--(iii) directamente: el promedio ponderado siempre cae entre el mínimo y el máximo de los sumandos, los extremos se alcanzan concentrando todo el peso en $v_1$ (para el máximo) o en $v_n$ (para el mínimo).
+
+Para~(iv): la condición $v \perp v_j$ para $j = 1, \ldots, k-1$ equivale a $\langle v, v_j \rangle = \alpha_j = 0$ para esos índices. Entonces la expresión del cociente se restringe a
+\[
+  R_C(v) = \frac{\sum_{i=k}^n \alpha_i^2 \lambda_i}{\sum_{i=k}^n \alpha_i^2},
+\]
+promedio ponderado de $\lambda_k \geq \lambda_{k+1} \geq \cdots \geq \lambda_n$. El máximo es $\lambda_k$, alcanzado al tomar $\alpha_k = 1$ y $\alpha_i = 0$ para $i \neq k$, es decir $v = v_k$.
+\end{proof}
+
+El Teorema~\ref{thm:rayleigh} tiene una lectura directa en términos de PCA: la primera componente principal $v_1$ maximiza la varianza sin restricción; la $k$-ésima componente $v_k$ maximiza la varianza en el subespacio ortogonal a las anteriores, capturando así la máxima dispersión residual. Así, las componentes principales son las \textbf{direcciones de máxima varianza} en sentido sucesivo, y son exactamente los autovectores de $C = D^T D$.
+
+\subsection{Compresión óptima por Eckart--Young}
+
+La proyección de $D$ sobre las primeras $k$ componentes principales da la aproximación de rango $k$
+\[
+  D_k = \sum_{i=1}^k \sigma_i\, u_i v_i^T.
+\]
+Por Eckart--Young, ésta es la mejor aproximación de rango $k$ de $D$ en norma de Frobenius. La interpretación en términos de varianza es inmediata: dado que $\|D\|_F^2 = \sum_i \sigma_i^2$ es la varianza total,
+\[
+  \|D\|_F^2 = \underbrace{\sigma_1^2 + \cdots + \sigma_k^2}_{\text{varianza capturada}} + \underbrace{\sigma_{k+1}^2 + \cdots + \sigma_r^2}_{\text{varianza descartada}},
+\]
+y ningun otra proyección sobre un subespacio $k$-dimensional captura más varianza que $D_k$. La fracción
+\[
+  \frac{\sigma_1^2 + \cdots + \sigma_k^2}{\|D\|_F^2}
+\]
+se llama \textbf{varianza explicada} por las primeras $k$ componentes.
+
+\begin{example}[Eigenfaces]
+Una imagen en escala de grises de $p \times q$ píxeles se identifica con un vector en $\R^{pq}$. Dadas $m$ imágenes de rostros, se forma $D \in \R^{m \times pq}$ y se calculan los primeros $k$ vectores singulares derechos $v_1, \ldots, v_k$. Cada $v_i \in \R^{pq}$ puede visualizarse como una imagen (los llamados \emph{eigenfaces}). Cualquier nuevo rostro se proyecta sobre el subespacio $\mathrm{span}(v_1,\ldots,v_k)$ y queda representado por $k$ coordenadas reales en lugar de $pq$. La identificación se reduce entonces a comparar vectores en $\R^k$, con $k \ll pq$.
+\end{example}
+
+% ======================================================================
+\section{Análisis Semántico Latente}
+% ======================================================================
+
+\subsection{Matriz término-documento}
+
+Sea una colección de $n$ documentos escritos en un vocabulario de $m$ términos. La \textbf{matriz término-documento} es
+\[
+  A \in \R^{m \times n}, \qquad A_{ij} = \text{frecuencia (o peso tf-idf) del término } i \text{ en el documento } j.
+\]
+Cada columna $a_j \in \R^m$ representa al documento $j$ como un \emph{vector de frecuencias de términos} (la representación ``bolsa de palabras''). Cada fila $a_i^T \in \R^n$ es el vector de apariciones del término $i$ en todos los documentos.
+
+Usando la identificación producto interno $=$ correlación:
+\begin{align*}
+  (A^T A)_{jj'} &= \langle a_j, a_{j'} \rangle = \sum_i A_{ij} A_{ij'} &&\longleftrightarrow \text{ similitud entre documentos } j \text{ y } j',\\
+  (A A^T)_{ii'} &= \langle a_i, a_{i'} \rangle = \sum_j A_{ij} A_{i'j} &&\longleftrightarrow \text{ similitud entre términos } i \text{ e } i'.
+\end{align*}
+Ambas matrices $A^TA \in \R^{n\times n}$ y $AA^T \in \R^{m\times m}$ son simétricas semidefinidas positivas.
+
+\subsection{La SVD diagonaliza ambas matrices simultáneamente}
+
+El resultado central es la siguiente consecuencia directa de la SVD:
+
+\begin{proposition}
+Sea $A = U\Sigma V^T$ la SVD de $A$. Entonces:
+\[
+  A^T A = V (\Sigma^T \Sigma) V^T, \qquad A A^T = U (\Sigma \Sigma^T) U^T.
+\]
+En particular, las columnas de $V$ son los autovectores de $A^TA$, las columnas de $U$ son los autovectores de $AA^T$, y ambas matrices tienen los mismos autovalores no nulos $\sigma_1^2 \geq \cdots \geq \sigma_r^2 > 0$.
+\end{proposition}
+\begin{proof}
+Basta sustituir: $A^TA = (U\Sigma V^T)^T(U\Sigma V^T) = V\Sigma^T U^T U \Sigma V^T = V(\Sigma^T\Sigma)V^T$, y análogamente para $AA^T$.
+\end{proof}
+
+Esta es la propiedad clave: una \emph{única} SVD proporciona \emph{dos} diagonalizaciones ortogonales, una en el espacio de documentos ($\R^n$) y otra en el espacio de términos ($\R^m$). Más aún, los pares $(u_i, v_i)$ están \emph{acoplados}: $Av_i = \sigma_i u_i$ dice que el $i$-ésimo patrón de documentos $v_i$ y el $i$-ésimo patrón de términos $u_i$ corresponden exactamente al mismo modo, con fuerza $\sigma_i$.
+
+\subsection{Tópicos latentes y Eckart--Young}
+
+Cada triplete $(u_i, v_i, \sigma_i)$ se interpreta como un \textbf{tópico latente}: $u_i \in \R^m$ es un ``patrón de co-ocurrencia de términos'' y $v_i \in \R^n$ es un ``patrón de documentos'' que tratan ese tópico. La contribución del tópico $i$ a la matriz $A$ es el término de rango 1 $\sigma_i u_i v_i^T$.
+
+La aproximación de rango $k$
+\[
+  A_k = \sum_{i=1}^k \sigma_i\, u_i v_i^T
+\]
+retiene los $k$ tópicos más fuertes. Por Eckart--Young,
+\[
+  \|A - A_k\|_F^2 = \sigma_{k+1}^2 + \cdots + \sigma_r^2,
+\]
+y $A_k$ es la mejor aproximación de rango $k$ de la matriz de co-ocurrencias. El valor $\sigma_i^2$ mide la ``energía'' (frecuencia ponderada) del $i$-ésimo tópico en la colección.
+
+\begin{example}[Búsqueda semántica]
+Para medir la similitud entre el documento $j$ y una consulta $q \in \R^m$ (codificada como bolsa de palabras), en lugar de usar el producto interno exacto $a_j^T q$, se usa la similitud en el espacio de los $k$ tópicos:
+\[
+  \text{similitud}(j, q) = (\Sigma_k^{-1} U_k^T a_j)^T (\Sigma_k^{-1} U_k^T q) \in \R,
+\]
+donde $U_k = [u_1|\cdots|u_k]$ y $\Sigma_k = \mathrm{diag}(\sigma_1,\ldots,\sigma_k)$. Esta medida captura similitud \emph{semántica}: si ``automóvil'' y ``coche'' co-ocurren frecuentemente con los mismos términos en la colección, entonces $u_i({\rm autom.}) \approx u_i({\rm coche})$ para los tópicos relevantes, y los documentos que los contienen quedan próximos en el espacio de tópicos, aunque no compartan ninguna palabra literal.
+\end{example}
+
+% ======================================================================
+\section{Matrices de Hankel y análisis espectral de señales}
+% ======================================================================
+
+\subsection{Modelo de señal: suma de exponenciales}
+
+Una \textbf{señal} es una sucesión $y_0, y_1, \ldots, y_{N-1} \in \C$ de mediciones igualmente espaciadas. Suponemos que la señal es (exactamente, o aproximadamente) una suma de $p$ exponenciales complejas:
+\[
+  y_k = \sum_{j=1}^p c_j\, z_j^k, \qquad k = 0, 1, \ldots, N-1,
+\]
+donde $c_j \in \C$ son amplitudes complejas y $z_j = e^{(2\pi i f_j + \alpha_j)\Delta t} \in \C$ con $f_j$ frecuencia y $\alpha_j \leq 0$ tasa de amortiguamiento. El problema de \textbf{análisis espectral} consiste en: dada la señal $y$, estimar el orden $p$, las frecuencias $f_j$ y las amplitudes $c_j$.
+
+La DFT provee una solución cuando las frecuencias son múltiplos enteros de $1/(N\Delta t)$ (frecuencia de resolución). El método que presentamos aquí, basado en la SVD, no tiene esta restricción y es efectivo incluso con frecuencias muy próximas o con señales cortas.
+
+\subsection{La matriz de Hankel y su factorización de Vandermonde}
+
+Fijemos $L$ con $p \leq L \leq N - p + 1$, y sea $K = N - L + 1 \geq p$. Definimos la \textbf{matriz de Hankel} de la señal como la matriz cuya $(i,j)$-ésima entrada es $y_{i+j-2}$:
+\[
+  H = \begin{pmatrix}
+    y_0     & y_1     & y_2     & \cdots & y_{K-1}  \\
+    y_1     & y_2     & y_3     & \cdots & y_{K}    \\
+    y_2     & y_3     & y_4     & \cdots & y_{K+1}  \\
+    \vdots  &         &         & \ddots & \vdots   \\
+    y_{L-1} & y_L     & y_{L+1} & \cdots & y_{N-1}
+  \end{pmatrix} \in \C^{L \times K}.
+\]
+Una caracterización estructural: $H$ es de Hankel si y sólo si $H_{ij}$ depende sólo de la suma $i+j$ (las antidiagonales son constantes). Esta es exactamente la estructura que emerge al deslizar una ventana de longitud $L$ sobre la señal.
+
+Sustituyendo $y_k = \sum_\ell c_\ell z_\ell^k$:
+\[
+  H_{ij} = y_{i+j-2} = \sum_{\ell=1}^p c_\ell\, z_\ell^{i+j-2} = \sum_{\ell=1}^p c_\ell\, z_\ell^{i-1}\, z_\ell^{j-1}.
+\]
+Definamos las matrices de \textbf{Vandermonde}
+\[
+  \mathcal{V}_L = \begin{pmatrix}
+    1 & 1 & \cdots & 1 \\
+    z_1 & z_2 & \cdots & z_p \\
+    z_1^2 & z_2^2 & \cdots & z_p^2 \\
+    \vdots & & & \vdots \\
+    z_1^{L-1} & z_2^{L-1} & \cdots & z_p^{L-1}
+  \end{pmatrix} \in \C^{L \times p}, \qquad
+  \mathcal{V}_K = \begin{pmatrix}
+    1 & 1 & \cdots & 1 \\
+    z_1 & z_2 & \cdots & z_p \\
+    \vdots & & & \vdots \\
+    z_1^{K-1} & z_2^{K-1} & \cdots & z_p^{K-1}
+  \end{pmatrix} \in \C^{K \times p}.
+\]
+Entonces
+\[
+  H_{ij} = \sum_{\ell=1}^p (\mathcal{V}_L)_{i\ell}\; c_\ell\; (\mathcal{V}_K)_{j\ell},
+\]
+lo que en forma matricial es la \textbf{factorización de Vandermonde}:
+\[
+  \boxed{H = \mathcal{V}_L\; \mathrm{diag}(c_1, \ldots, c_p)\; \mathcal{V}_K^T.}
+\]
+
+\begin{proposition}
+Si los polos $z_1, \ldots, z_p$ son distintos y $L \geq p$, $K \geq p$, entonces $\rank(H) = p$.
+\end{proposition}
+\begin{proof}
+De la factorización $H = \mathcal{V}_L \,\mathrm{diag}(c)\, \mathcal{V}_K^T$ se tiene $\rank(H) \leq p$. Para la cota inferior: una matriz de Vandermonde $\mathcal{V}$ con nodos distintos $z_1, \ldots, z_p$ tiene rango $p$ (cada submatriz $p \times p$ es una matriz de Vandermonde cuadrada con determinante $\prod_{i < j}(z_j - z_i) \neq 0$). Luego $\mathcal{V}_L$ y $\mathcal{V}_K$ tienen rango $p$, y si además $c_j \neq 0$ para todo $j$, la matriz diagonal del centro es invertible, por lo que $\rank(H) = p$.
+\end{proof}
+
+\begin{remark}[Espacio columna de $H$ y vectores singulares]
+El espacio columna de $H = \mathcal{V}_L \mathrm{diag}(c)\, \mathcal{V}_K^T$ coincide con $\mathrm{col}(\mathcal{V}_L)$, y el espacio fila con $\mathrm{col}(\mathcal{V}_K)$. Por tanto, la base de vectores singulares izquierdos $U_p = [u_1|\cdots|u_p]$ satisface $\mathrm{col}(U_p) = \mathrm{col}(\mathcal{V}_L)$, es decir, existe $T \in \C^{p\times p}$ invertible tal que
+\[
+  U_p = \mathcal{V}_L\, T.
+\]
+Esta relación es la clave para recuperar los polos, como muestra la siguiente sección.
+\end{remark}
+
+\begin{example}[Espectroscopía por resonancia magnética]
+En espectroscopía de RMN (resonancia magnética nuclear), la señal libre de inducción es $y_k = \sum_j c_j e^{(i\omega_j - \alpha_j)k\Delta t}$, exactamente una suma de exponenciales amortiguadas. Cada componente corresponde a un tipo de núcleo atómico; las frecuencias $\omega_j$ identifican los compuestos presentes. Con $N$ del orden de miles y $p$ del orden de decenas, la SVD de la matriz de Hankel resuelve frecuencias que la DFT no distinguiría.
+\end{example}
+
+\subsection{Recuperación de los polos y las amplitudes}
+
+Mostraremos que los polos $z_j$ son autovalores de una matriz calculable directamente a partir de los vectores singulares de $H$, y que una vez conocidos, las amplitudes $c_j$ se obtienen resolviendo un sistema de Vandermonde.
+
+\subsubsection{Propiedad de desplazamiento de la matriz de Vandermonde}
+
+Sean $\mathcal{V}_L^- \in \C^{(L-1)\times p}$ y $\mathcal{V}_L^+ \in \C^{(L-1)\times p}$ las submatrices de $\mathcal{V}_L$ formadas por sus primeras y últimas $L-1$ filas respectivamente. Como $(\mathcal{V}_L)_{j,\ell} = z_\ell^{j-1}$, se tiene:
+\[
+  (\mathcal{V}_L^-)_{j,\ell} = z_\ell^{j-1}, \qquad (\mathcal{V}_L^+)_{j,\ell} = z_\ell^{j} = z_\ell\cdot z_\ell^{j-1} = z_\ell \cdot (\mathcal{V}_L^-)_{j,\ell},
+\]
+de donde
+\[
+  \mathcal{V}_L^+ = \mathcal{V}_L^-\, Z, \qquad Z = \mathrm{diag}(z_1, \ldots, z_p).
+\]
+Esto se lee: cada fila de $\mathcal{V}_L^+$ es la fila correspondiente de $\mathcal{V}_L^-$ multiplicada entrada a entrada por los polos. Esta es la \textbf{propiedad de desplazamiento}.
+
+\subsubsection{Los polos son autovalores: el método ESPRIT}
+
+Sean $H^-$ y $H^+$ las submatrices de $H$ formadas por las primeras y últimas $L-1$ filas. Usando $H = \mathcal{V}_L \mathrm{diag}(c)\, \mathcal{V}_K^T$ y la conmutatividad de matrices diagonales:
+\[
+  H^- = \mathcal{V}_L^-\, \mathrm{diag}(c)\, \mathcal{V}_K^T, \qquad
+  H^+ = \mathcal{V}_L^+\, \mathrm{diag}(c)\, \mathcal{V}_K^T
+      = \mathcal{V}_L^-\, Z\, \mathrm{diag}(c)\, \mathcal{V}_K^T.
+\]
+De la relación $U_p = \mathcal{V}_L T$, se sigue que $U_p^- = \mathcal{V}_L^- T$ y $U_p^+ = \mathcal{V}_L^+ T$, donde $U_p^\pm$ son las submatrices de $U_p$ con las primeras y últimas $L-1$ filas. Entonces:
+\[
+  U_p^+ = \mathcal{V}_L^+ T = \mathcal{V}_L^-\, Z\, T = (\mathcal{V}_L^- T)\, T^{-1} Z T = U_p^-\, (T^{-1} Z T).
+\]
+Definamos $\Phi = T^{-1} Z T$. Esta matriz es semejante a $Z = \mathrm{diag}(z_1,\ldots,z_p)$, por lo que sus \textbf{autovalores son exactamente los polos} $z_1, \ldots, z_p$. La relación encontrada es
+\[
+  \boxed{U_p^+ = U_p^-\, \Phi.}
+\]
+Como $U_p^-$ es $(L-1)\times p$ con $L-1 \geq p$, este sistema en $\Phi$ es sobredeterminado y se resuelve en mínimos cuadrados:
+\[
+  \hat{\Phi} = (U_p^-)^+\, U_p^+ = \bigl((U_p^-)^* U_p^-\bigr)^{-1} (U_p^-)^*\, U_p^+.
+\]
+Los autovalores de $\hat{\Phi}$ son las estimaciones de los polos $z_1, \ldots, z_p$.
+
+\subsubsection{Recuperación de las amplitudes}
+
+Conocidos $\hat{z}_1,\ldots,\hat{z}_p$, las amplitudes $c_j$ se recuperan formando el sistema de Vandermonde con las $N$ muestras:
+\[
+  \begin{pmatrix} y_0 \\ y_1 \\ \vdots \\ y_{N-1} \end{pmatrix}
+  =
+  \underbrace{\begin{pmatrix}
+    1 & 1 & \cdots & 1 \\
+    \hat{z}_1 & \hat{z}_2 & \cdots & \hat{z}_p \\
+    \vdots & & & \vdots \\
+    \hat{z}_1^{N-1} & \hat{z}_2^{N-1} & \cdots & \hat{z}_p^{N-1}
+  \end{pmatrix}}_{\mathcal{V}_N \in \C^{N \times p}}
+  \begin{pmatrix} c_1 \\ c_2 \\ \vdots \\ c_p \end{pmatrix}.
+\]
+Como $N > p$, el sistema es sobredeterminado. Si $\mathcal{V}_N$ tiene rango $p$ (lo que se garantiza cuando los $\hat{z}_j$ son distintos), la solución de mínimos cuadrados $\hat{c} = \mathcal{V}_N^+ y$ minimiza $\|y - \mathcal{V}_N c\|_2$.
+
+\begin{remark}[Resumen del algoritmo]
+El método ESPRIT completo procede así:
+\begin{enumerate}
+  \item Construir $H \in \C^{L\times K}$ con $L = K \approx N/2$.
+  \item Calcular la SVD de $H$; estimar $p$ por el número de valores singulares dominantes (salto en $\sigma_p \gg \sigma_{p+1}$).
+  \item Extraer $U_p^-$ y $U_p^+$; calcular $\hat{\Phi} = (U_p^-)^+\, U_p^+$ en mínimos cuadrados.
+  \item Los autovalores $\hat{z}_j$ de $\hat{\Phi}$ dan: frecuencias $\hat{f}_j = \arg(\hat{z}_j)/(2\pi\Delta t)$ y amortiguamientos $\hat{\alpha}_j = \log|\hat{z}_j|/\Delta t$.
+  \item Resolver $\mathcal{V}_N\, \hat{c} \approx y$ en mínimos cuadrados para las amplitudes.
+\end{enumerate}
+\end{remark}
+
+\subsection{SVD de la matriz de Hankel con ruido}
+
+En la práctica, la señal está perturbada: $\tilde{y}_k = y_k + \varepsilon_k$. La matriz de Hankel ruidosa es
+\[
+  \tilde{H} = H + E,
+\]
+donde $H = \mathcal{V}_L \mathrm{diag}(c)\, \mathcal{V}_K^T$ tiene rango $p$ y $E$ es la perturbación de Hankel debida al ruido. En general $\tilde{H}$ tiene rango completo.
+
+La SVD de $\tilde{H}$ produce valores singulares $\tilde{\sigma}_1 \geq \cdots \geq \tilde{\sigma}_{\min(L,K)}$. Si el ruido $\|E\|_F$ es pequeño respecto a $\sigma_p(H)$ (el menor valor singular no nulo de $H$), los primeros $p$ valores singulares de $\tilde{H}$ serán dominantes y habrá un salto marcado:
+\[
+  \tilde{\sigma}_1 \geq \cdots \geq \tilde{\sigma}_p \gg \tilde{\sigma}_{p+1} \approx \cdots \approx \tilde{\sigma}_{\min(L,K)}.
+\]
+Este salto permite estimar $p$ a partir de los datos. La aproximación de rango $p$ de Eckart--Young,
+\[
+  \tilde{H}_p = \sum_{i=1}^p \tilde{\sigma}_i\, \tilde{u}_i \tilde{v}_i^*,
+\]
+es la mejor matriz de rango $p$ (en norma de Frobenius) que aproxima $\tilde{H}$, y puede interpretarse como la reconstrucción de $H$ eliminando el ruido. La señal limpia se recupera promediando las antidiagonales de $\tilde{H}_p$ (operación de ``anti-diagonalización'').
+
+
+% ======================================================================
+\section*{Conclusión}
+% ======================================================================
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{lllp{6.5cm}}
+\hline
+\textbf{Aplicación} & \textbf{Matriz} & \textbf{Simétrica} & \textbf{Qué revela la SVD} \\
+\hline
+PCA & $D \in \R^{m\times n}$ & $D^TD$: sí & Componentes principales; varianza máxima (Courant--Fischer) \\
+LSA & $A \in \R^{m\times n}$ & No & Tópicos: diagonaliza $AA^T$ y $A^TA$ simultáneamente \\
+Hankel & $H \in \C^{L\times K}$ & No & Rango $= p$ (Vandermonde); polos y amplitudes vía ESPRIT \\
+\hline
+\end{tabular}
+\renewcommand{\arraystretch}{1}
+\end{center}
+
+\medskip
+
+El patrón es el mismo en los tres casos: (1)~identificar la matriz natural del problema; (2)~calcular su SVD; (3)~los valores singulares revelan la dimensión efectiva, y los vectores singulares proveen las bases relevantes; (4)~Eckart--Young garantiza que la aproximación de rango bajo es óptima en norma de Frobenius. En PCA y LSA la correlación es un producto interno, lo que reduce la SVD al teorema espectral. En Hankel la clave es algebraica: la propiedad de desplazamiento de Vandermonde convierte la estimación espectral en un problema de autovalores.
+
+\bigskip
+\hrulefill
+
+\bigskip
+\noindent\textbf{Lecturas sugeridas.}
+\begin{itemize}
+  \item Trefethen \& Bau, \textit{Numerical Linear Algebra} (SIAM, 1997). SVD: Lecciones 4--6; Eckart--Young: Lección 5.
+  \item Jolliffe, \textit{Principal Component Analysis}, 2nd ed.\ (Springer, 2002). Referencia estándar para PCA.
+  \item Deerwester et al., ``Indexing by Latent Semantic Analysis'', \textit{JASIS}, 1990. Artículo original de LSA.
+  \item Roy \& Kailath, ``ESPRIT---Estimation of Signal Parameters via Rotational Invariance Techniques'', \textit{IEEE Trans.~ASSP}, 1989.
+  \item Golub \& Van Loan, \textit{Matrix Computations}, 4th ed.\ (Johns Hopkins, 2013). Capítulo 8 para SVD y sus algoritmos.
+\end{itemize}
+
+\end{document}
