@@ -107,7 +107,7 @@ A = \begin{pmatrix}
 \begin{exercise}[Espacios fundamentales y factorización QR]
 Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y sea $A = QR$ su descomposición QR, donde $Q \in \mathbb{R}^{m \times n}$ tiene columnas ortonormales y $R \in \mathbb{R}^{n \times n}$ es triangular superior.
 \begin{enumerate}[(a)]
-\item \textbf{Espacio columna}: Demuestre que $\text{Col}(A) = \text{Col}(Q)$.
+\item \textbf{Espacio columna}: Suponiendo además que $A$ tiene rango columna completo, demuestre que $\text{Col}(A) = \text{Col}(Q)$.
 \item \textbf{Espacio nulo}: Demuestre que $\text{Nul}(A) = \text{Nul}(R)$.
 \item Use (a) y (b) para explicar por qué $A$ y $Q$ tienen el mismo rango.
 \item Si $r = \text{rank}(A) < n$, explique cómo la estructura de $R$ revela esta deficiencia de rango.
@@ -118,6 +118,8 @@ Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y sea $A = QR$ su descomposic
 Sea $B \in \mathbb{R}^{n \times n}$ una matriz simétrica definida positiva.
 \begin{enumerate}[(a)]
 \item \textbf{Existencia}: Demuestre que $B$ admite una descomposición $B = LL^T$, donde $L$ es triangular inferior.
+
+\textbf{Comentario}: este inciso también puede deducirse usando la descomposición $LDL^T$ para matrices simétricas (Ejercicio 2), junto con la positividad de los pivotes diagonales.
 
 \textbf{Sugerencia}: Escriba $B = B^{1/2} B^{1/2}$ usando la raíz cuadrada matricial y aplique la descomposición QR a $B^{1/2}$.
 \item \textbf{Algoritmo}: Suponiendo que la descomposición $B = LL^T$ existe, derive fórmulas explícitas para las entradas de $L$ y estime el costo del algoritmo.
@@ -264,9 +266,9 @@ entonces $\|A^+b\|_2 = \min_{x \in \mathcal{S}} \|x\|_2$.
 Sea $A \in \mathbb{R}^{m \times n}$ con $m \geq n$ y rango columna completo, con descomposición QR $A = QR$ y SVD $A = U\Sigma V^T$.
 Usando la SVD de $A$, demuestre que:
 \[
-\kappa(A^TA) = \kappa(A)^2 = \kappa(R)^2,
+\kappa(A^TA) = \left(\frac{\sigma_{\max}(A)}{\sigma_{\min}(A)}\right)^2 = \kappa(R)^2,
 \]
-donde $\kappa(\cdot)$ denota el número de condición en norma 2. Concluya que resolver el problema de mínimos cuadrados vía QR es numéricamente más estable que vía las ecuaciones normales cuando $A$ está mal condicionada.
+donde $\kappa(\cdot)$ denota el número de condición en norma 2 para matrices inversibles. Concluya que resolver el problema de mínimos cuadrados vía QR es numéricamente más estable que vía las ecuaciones normales cuando $A$ está mal condicionada.
 \end{exercise}
 
 

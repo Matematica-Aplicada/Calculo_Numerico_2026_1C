@@ -1,0 +1,157 @@
+\documentclass[12pt]{article}%
+\usepackage{graphicx, verbatim}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{enumerate}
+\usepackage[spanish, provide=*]{babel}
+\usepackage{palatino}
+\usepackage[utf8]{inputenc}
+
+
+\setlength{\headsep}{-2cm} \setlength{\oddsidemargin}{-0.9cm}
+\setlength{\evensidemargin}{1.5cm} \setlength{\textheight}{25cm}
+\setlength{\textwidth}{17.7cm} \setlength{\parindent}{0cm}
+\parindent=0mm
+
+\pagestyle{empty}
+
+\def\R{\mathbb{R}}
+\def\Z{\mathbb{Z}}
+\def\C{\mathbb{C}}
+\def\N{\mathbb{N}}
+\def\A{\mathcal{Z}}
+\def\V{\mathcal V}
+\def\W{\mathcal W}
+\def\F{\mathcal F}
+\def\a{\alpha}
+\def\vf{\varphi}
+\def\re{\operatorname{Re}}
+\def\log{\operatorname{Log}}
+\def\adj{\operatorname{adj}}
+\def\img{\operatorname{Im}}
+\def\nu{\operatorname{Nu}}
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+% \renewcommand{\labelenumi}{\bf{(\numb{enumi})}}
+\renewcommand{\labelenumii}{(\alph{enumii})}
+
+\begin{document}
+
+\pagestyle{empty}%
+
+\label{t1}
+
+
+\bigskip
+
+%\hfill\textsc{\textbf{Tema }}
+
+\textsc{Nombre y apellido:}
+
+\vskip0.2cm
+
+\textsc{DNI y Libreta Universitaria:}
+
+\vskip0.2cm
+
+\textsc{Carrera:}
+
+\vskip0.4cm
+
+
+\def\espac{\LARGE$\phantom{\displaystyle\sum\, \,}$}
+
+\begin{tabular}[c]{|c | c | c | c| c|}
+\hline
+1 & 2 & 3 & 4 & Calif. \\
+\hline
+\espac& \espac & \espac & \espac & \espac \\
+\hline
+\end{tabular}
+
+\bigskip
+\medskip
+
+\noindent
+
+\hrulefill\ \vskip8pt
+
+\begin{large}\centerline{{\textbf{Cálculo Numérico / Elementos de Cálculo Numérico}}}\end{large}
+
+\vskip.2cm
+
+\begin{large}\centerline{{\textbf{Primer Parcial - 6 de Mayo de 2026}}}\end{large}
+
+\hrulefill
+
+\vskip 0.5cm
+
+\begin{exercise}[Cuadrados mínimos ponderados]
+Se tienen mediciones con diferente grado de confiabilidad, y se desea ajustar un modelo lineal a los datos. Para esto, se asignan pesos $w_i>0$ a cada medición, y se plantea el problema de cuadrados mínimos ponderados
+\[\min_{x\in\R^n} \sum_{i=1}^m w_i (a_i^Tx - b_i)^2,\]
+donde $a_i^T$ es la $i$-ésima fila de $A\in\R^{m\times n}$ y $b\in\R^m$ es el vector de datos.
+
+\begin{enumerate}[(a)]
+\item Obtenga las ecuaciones normales para este problema. (Sugerencia: verifique que el problema se puede escribir como un problema de cuadrados mínimos estándar $\min_{x\in\R^n} \|\tilde{A}x - \tilde{b}\|_2^2$ con $\tilde{A}\in\R^{m\times n}$ y $\tilde{b}\in\R^m$ definidos en función de $A$, $b$ y $w_i$.)  
+\item Proponga un método numérico para resolver el problema de cuadrados mínimos ponderados basado en la descomposición QR. 
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Integración numérica con peso singular]
+Se desean calcular integrales de la forma 
+\[ \int_0^1 \ln(x) f(x) dx, \]
+donde $f\in C^2([0,1])$ es una función dada. 
+
+\begin{enumerate}[(a)]
+    \item ¿Qué ocurre si se intenta aplicar la regla del trapecio compuesta con nodos equiespaciados en $x$? Aplique el cambio de variables $x=t^n$ con $n\in\mathbb{N}$. ¿A partir de qué valor de $n$ el integrando es una función $C^2$? 
+    \item Para el valor de $n$ hallado, escribir la aproximación de la nueva integral utilizando la regla de trapecios compuesta con nodos equiespaciados en $t$ ¿Cuál es el orden de convergencia de este método?
+\end{enumerate}
+
+\end{exercise}
+
+\begin{exercise}[Interpolación trigonométrica y FFT]
+Dados $n$ valores $f_0,\ldots,f_{n-1}\in\C$, se desea encontrar coeficientes $c_0,\ldots,c_{n-1}\in\C$ tales que el polinomio trigonométrico
+\[
+p(t) = \sum_{j=0}^{n-1} c_j\,(e^{2\pi i t})^j
+\]
+interpole los datos en cierto conjunto de nodos $t_k \in [a,b]$, es decir, $p(t_k) = f_k$ para $k=0,\ldots,n-1$.
+
+\begin{enumerate}[(a)]
+\item Fijados $\{ t_k \}$ cualesquiera, escriba el sistema lineal que hay que resolver para obtener los coeficientes $\{c_j \}$ a partir de $\{ f_k \}$.
+\item Considere ahora el polinomio trigonométrico reescalado en $[a,b]$
+\[
+g(t)=\sum_{j=0}^{n-1} d_j\,e^{2\pi i j\frac{t-a}{b-a}}.
+\]
+Si los nodos son equiespaciados $t_k=a+\frac{b-a}{n}k$, $k=0,\ldots,n-1$, y los datos cumplen $g(t_k)=f_k$, escriba el sistema lineal para los coeficientes $\{d_j\}$ y explique cómo resolverlo usando FFT/IFFT.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Transformada rápida de Hadamard]
+Se define la familia de matrices de Hadamard $H_m\in\R^{2^m\times 2^m}$ de forma recursiva por
+\[
+H_0 = (1), \qquad
+H_m = \begin{pmatrix} H_{m-1} & H_{m-1} \\ H_{m-1} & -H_{m-1} \end{pmatrix}, \quad m\ge 1.
+\]
+Dado $z\in\R^{n}$ con $n=2^m$, se llama \emph{transformada de Hadamard} de $z$ al vector $\hat{z} = H_m z$.
+
+\begin{enumerate}[(a)]
+\item Escribir el pseudocódigo de un método para calcular $\hat{z} = H_m z$ con costo computacional de $O(n \mathrm{log}(n))$.
+
+\item Muestre que $H_m^T = H_m$ y que $H_m^2 = nI$, donde $n = 2^m$ (Sugerencia: puede utilizar inducción y productos de matrices a bloques, o al menos verificar explícitamente para $m=1,2$). 
+
+\item Usando las propiedades de la matriz $H_m$ obtenidas en el item anterior, obtenga que $\mathrm{cond}_2(H_m)=1$. ¿Qué implica este resultado sobre la estabilidad numérica del cálculo de $\hat{z}$ ante perturbaciones en $z$?
+\end{enumerate}
+\end{exercise}
+
+
+\vskip 2.5cm
+\begin{center}
+    \textit{En todos los casos debe justificar sus respuestas.}
+\end{center}
+
+
+\end{document}

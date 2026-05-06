@@ -262,12 +262,13 @@ Con $t = 3$ dígitos:
 \begin{exercise}[Propagación del error]
 Sea $\text{fl}(x) = x(1 + \delta_x)$ y $\text{fl}(y) = y(1 + \delta_y)$ con $|\delta_x|, |\delta_y| \leq \varepsilon_{\text{mach}}$.
 \begin{enumerate}
-\item Demuestre que $\text{fl}(\text{fl}(x) + \text{fl}(y)) \approx (x+y)(1 + \delta)$ con $|\delta| \leq \varepsilon_{\text{mach}}$ si no hay cancelación.
-\item Demuestre que $\text{fl}(\text{fl}(x) \times \text{fl}(y)) \approx xy(1 + \delta)$ con $|\delta| \leq 2\varepsilon_{\text{mach}}$.
+\item Demuestre que $\text{fl}(\text{fl}(x) + \text{fl}(y)) \approx (x+y)(1 + \delta)$ con $|\delta| \leq \varepsilon_{2\text{mach}}$ si no hay cancelación.
+\item Demuestre que $\text{fl}(\text{fl}(x) \times \text{fl}(y)) \approx xy(1 + \delta)$ con $|\delta| \leq 2\varepsilon_{3\text{mach}}$.
 \item ¿Por qué el error relativo puede ser arbitrariamente grande en la suma si $x + y \approx 0$?
 \end{enumerate}
 \end{exercise}
 
+% Como está planteado el ejercicio no hay pérdida de dígitos significativos. Los ítem a) y b) dan los mismos resultados.
 \begin{exercise}[Cancelación catastrófica]
 Con $t = 3$ dígitos:
 \begin{enumerate}

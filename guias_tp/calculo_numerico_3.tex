@@ -74,6 +74,7 @@ Concluya que la actualización completa de los pesos requiere $O(n)$ operaciones
 
 \begin{exercise}[Interpolación a trozos]
 Dados nodos $x_0 < \cdots < x_n$ y valores $y_i$, la interpolación lineal a trozos $s(x)$ conecta los puntos $(x_i, y_i)$ con segmentos de recta.
+Sea además $f \in C^2([x_0,x_n])$ tal que $f(x_i)=y_i$ para $i=0,\ldots,n$.
 \begin{enumerate}[(a)]
 \item Escriba la expresión de $s(x)$ en $[x_i, x_{i+1}]$ y verifique su continuidad en los nodos.
 \item Demuestre la cota de error $\|f - s\|_\infty \leq \frac{h^2}{8} \|f''\|_\infty$, donde $h = \max_i \Delta x_i$.
@@ -172,7 +173,10 @@ con nodos fijos $x_0 = 0$, $x_1 = 1/2$, $x_2 = 1$.
 \sum_{i=0}^{2} w_i\, x_i^k = \int_0^1 \sqrt{x}\, x^k\, dx, \qquad k = 0, 1, 2.
 \]
 \item Determine el grado de precisión de la regla obtenida: ¿es exacta también para $f(x) = x^3$?
-\item Obtenga una fórmula para el error $E(f) = I(f) - Q(f)$. \textbf{Sugerencia}: Escriba $f(x) = p_2(x) + e(x)$ donde $p_2$ es el polinomio interpolante de $f$ en los nodos $\{0, 1/2, 1\}$ y $e(x) = f(x) - p_2(x)$ es el error de interpolación. Exprese $E(f)$ como una integral que involucra $e(x)$.
+\item Defina el error de cuadratura como $E(f)=I(f)-Q(f)$. Obtenga una expresión para $E(f)$ en términos del error de interpolación de grado 2. \textbf{Sugerencia}: Escriba $f(x)=p_2(x)+e(x)$, donde $p_2$ es el polinomio interpolante de $f$ en los nodos $\{0,1/2,1\}$ y $e(x)=f(x)-p_2(x)$. Como $Q$ es exacta sobre polinomios de grado $\le 2$, deduzca que
+\[
+E(f)=\int_0^1 \sqrt{x}\,e(x)\,dx.
+\]
 \item Considere ahora una regla compuesta: divida $[0, 1]$ en $n$ subintervalos de tamaño $h = 1/n$ y aplique la regla de cuadratura con pesos en cada subintervalo (adaptando los nodos y el peso a cada subintervalo). ¿Cuál es el orden de convergencia en función de $h$?
 \item ¿Qué sucedería si se aplicara una regla de cuadratura estándar (sin extraer el peso $\sqrt{x}$) para aproximar $\int_0^1 \sqrt{x}\, f(x)\, dx$? \textbf{Sugerencia}: Observe que el integrando $g(x) = \sqrt{x}\, f(x)$ satisface $g'(x) \to \infty$ cuando $x \to 0^+$, por lo que $g \notin C^1([0,1])$. ¿Cómo afecta esta falta de regularidad al orden de convergencia de trapecios o Simpson compuesta?
 \end{enumerate}

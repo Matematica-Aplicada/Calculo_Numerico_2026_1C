@@ -33,6 +33,9 @@
  \centerline{\bf Práctica N$^\circ$ 4: Teoría de Aproximación}
  \bigskip
 
+\section*{I. Series de Fourier}
+\subsection*{I.1 Aproximación de funciones}
+
 \bej 
 Muestre que el conjunto de funciones 
     \[
@@ -124,18 +127,479 @@ integra exactamente a las funciones base $g(x) = e^{imx}$ para todo entero $m$ q
 
 \bej
 (De Fourier a la DFT)
-Considere los coeficientes de Fourier en forma compleja $c_k = \frac{1}{2\pi} \int_0^{2\pi} f(x) e^{-ikx} \, dx$. Muestre que al aproximar la integral utilizando la regla de los trapecios compuesta con $N$ puntos $Q_N$ se obtiene Transformada Discreta de Fourier (DFT) de la secuencia de valores muestreados $f(x_j)$, salvo factores de normalización.
+Considere los coeficientes de Fourier en forma compleja $c_k = \frac{1}{2\pi} \int_0^{2\pi} f(x) e^{-ikx} \, dx$. Muestre que al aproximar la integral utilizando la regla de los trapecios compuesta con $N$ puntos $T_N$ se obtiene Transformada Discreta de Fourier (DFT) de la secuencia de valores muestreados $f(x_j)$, salvo posibles factores de normalización.
+\fej
+
+\subsection*{I.2 Métodos espectrales para ODEs periódicas}
+
+\bej
+(Modelo modal, error de truncamiento y estabilidad)
+Considere una ecuación lineal periódica cuya solución en Fourier satisface
+\[
+\hat u_k = T_k\,\hat f_k,\qquad k\in\mathbb Z,
+\]
+donde $T_k$ es el \textbf{factor de transferencia} (o multiplicador espectral).
+Defina el truncado
+\[
+u_N(t)=\sum_{|k|\le N}\hat u_k e^{ikt}.
+\]
+\begin{enumerate}[(a)]
+    \item Usando Parseval, pruebe que
+    \[
+    \|u-u_N\|_{L^2(0,2\pi)}^2=2\pi\sum_{|k|>N}|T_k|^2|\hat f_k|^2.
+    \]
+    \item Deduzca la cota
+    \[
+    \|u-u_N\|_{L^2}\le \sqrt{2\pi}\,\sup_{|k|>N}|T_k|\left(\sum_{|k|>N}|\hat f_k|^2\right)^{1/2}.
+    \]
+    \item Defina la constante de estabilidad truncada
+    \[
+    C_{\mathrm{est}}(N):=\sup_{|k|\le N}|T_k|,
+    \]
+    e interprete por qué un modo con denominador muy pequeño (o nulo) vuelve la cota mala (o inválida).
+\end{enumerate}
 \fej
 
 \bej
-Los polinomios de Chebyshev de primera especie se definen en el intervalo $[-1, 1]$ mediante la relación $T_n(x) = \cos(n \arccos x)$. Demuestre que son ortogonales con el producto escalar
-$$ (f,g)_w = \int_{-1}^1 \frac{f(x) g(x)}{\sqrt{1-x^2}} dx $$
-Sugerencia: utilice el cambio de variables $x=\cos(t)$ y la ortogonalidad de las funciones trigonométricas (Ejercicio 1).
+(ODE forzada periódica: orden de convergencia y estabilidad)
+Considere
+\[
+y''(t)+2\gamma y'(t)+\omega_0^2y(t)=f(t),\qquad t\in[0,2\pi],
+\]
+con periodicidad y $f(t)=\sum_{k\in\mathbb Z}\hat f_k e^{ikt}$.
+\begin{enumerate}[(a)]
+    \item Muestre que
+    \[
+    \hat y_k=H_k\hat f_k,\qquad H_k=\frac{1}{\omega_0^2-k^2+2i\gamma k}.
+    \]
+    \item Escriba una cota para $\|y-y_N\|_{L^2}$ en términos de $H_k$ y de los coeficientes truncados de $f$.
+    \item Estudie el comportamiento de $|H_k|$ para $|k|\to\infty$ y concluya cómo cambia el \textbf{orden de convergencia} de $y_N$ respecto del orden de convergencia de la serie de Fourier de $f$.
+    \item Discuta el caso límite en que el denominador se anula para algún modo (resonancia) como situación de estabilidad muy mala.
+\end{enumerate}
 \fej
 
 \bej
-Muestre que el coeficiente $k$-ésimo de una serie de Chebyshev de una función $f:[-1,1]\to\mathbb{R}$ coincide con el coeficiente de Fourier $b_k$ de la función $f(\cos(\theta))$ para $\theta\in [0,2\pi]$.
+(Ejemplo concreto de ganancia de orden)
+Considere
+\[
+-y''(t)+y(t)=f(t),\qquad f(t)=\operatorname{sgn}(\sin t),
+\]
+con periodicidad en $[0,2\pi]$.
+\begin{enumerate}[(a)]
+    \item Calcule (o recuerde) el orden de decaimiento de $|\hat f_k|$.
+    \item Muestre que
+    \[
+    \hat y_k=\frac{\hat f_k}{1+k^2}
+    \]
+    y deduzca el orden de decaimiento de $|\hat y_k|$.
+    \item Determine el \textbf{orden de convergencia} de $\|y-y_N\|_{L^2}$ y compárelo con el orden de $\|f-f_N\|_{L^2}$.
+\end{enumerate}
 \fej
+
+\subsection*{I.3 Ecuaciones integrales e integro-diferenciales (convolución)}
+
+\bej
+(Convolución de primer tipo: pérdida de $r$ órdenes)
+Sea
+\[
+Ku=f,
+\qquad
+(Ku)(x)=\frac{1}{2\pi}\int_0^{2\pi}k(x-t)u(t)\,dt,
+\]
+y suponga que los coeficientes del núcleo verifican
+\[
+|\hat k_n|\asymp |n|^{-r},\qquad r>0,
+\]
+para $|n|$ grande.
+\begin{enumerate}[(a)]
+    \item Muestre que $\hat u_n=\hat f_n/\hat k_n$ y, si $|\hat f_n|\asymp |n|^{-p}$, deduzca
+    \[
+    |\hat u_n|\asymp |n|^{-(p-r)}.
+    \]
+    \item Compare el orden de convergencia de $u_N$ con el de $f_N$ en norma $L^2$ (suponga los exponentes necesarios para que ambas series estén en $L^2$).
+    \item Interprete el resultado: la inversión de primer tipo \textbf{pierde $r$ órdenes} respecto de aproximar el lado derecho.
+\end{enumerate}
+\fej
+
+\bej
+(Convolución de segundo tipo con las mismas hipótesis)
+Considere ahora
+\[
+u+Ku=f,
+\qquad
+(Ku)(x)=\frac{1}{2\pi}\int_0^{2\pi}k(x-t)u(t)\,dt,
+\]
+con el mismo supuesto $|\hat k_n|\asymp |n|^{-r}$.
+\begin{enumerate}[(a)]
+    \item Muestre que
+    \[
+    \hat u_n=T_n\hat f_n,
+    \qquad
+    T_n=\frac{1}{1+\hat k_n}.
+    \]
+    \item Pruebe una cota de truncamiento
+    \[
+    \|u-u_N\|_{L^2}\le \sqrt{2\pi}\,\sup_{|n|>N}|T_n|\left(\sum_{|n|>N}|\hat f_n|^2\right)^{1/2}.
+    \]
+    \item Explique por qué, para $|n|$ grande, $T_n\to 1$ y por lo tanto el método conserva el orden de convergencia de la aproximación de $f$ (salvo modos casi resonantes de baja frecuencia, donde la estabilidad puede degradarse).
+\end{enumerate}
+\fej
+
+\bej
+(Integro-diferencial I: una derivada fuera de la integral)
+Considere
+\[
+u(t)+\frac{d}{dt}\left[\frac{1}{2\pi}\int_0^{2\pi}k(t-s)u(s)\,ds\right]=f(t),
+\]
+y suponga nuevamente $|\hat k_n|\asymp |n|^{-r}$.
+\begin{enumerate}[(a)]
+    \item Muestre que
+    \[
+    \hat u_n=T_n\hat f_n,
+    \qquad
+    T_n=\frac{1}{1+in\hat k_n}.
+    \]
+    \item Escriba la cota de truncamiento para $\|u-u_N\|_{L^2}$ en términos de $T_n$.
+    \item Según el valor de $r$, analice el comportamiento asintótico de $|T_n|$ y concluya si se espera ganancia, pérdida o conservación de orden respecto de la aproximación de $f$.
+\end{enumerate}
+\fej
+
+\bej
+(Integro-diferencial II: operador hypersingular de primer tipo)
+Considere la ecuación de primer tipo
+\[
+\frac{d}{dt}\left[\frac{1}{2\pi}\int_0^{2\pi}k(t-s)u'(s)\,ds\right]=f(t),
+\]
+con periodicidad en $[0,2\pi]$ y suponga $|\hat k_n|\asymp |n|^{-r}$.
+\begin{enumerate}[(a)]
+    \item Muestre que
+    \[
+    -(n^2\hat k_n)\hat u_n=\hat f_n,
+    \qquad
+    \hat u_n=T_n\hat f_n,
+    \qquad
+    T_n=-\frac{1}{n^2\hat k_n}\quad (n\neq 0).
+    \]
+    ¿Qué condición de compatibilidad aparece en el modo $n=0$?
+    \item Defina
+    \[
+    C_{\mathrm{est}}(N)=\sup_{1\le |n|\le N}|T_n|,
+    \]
+    y discuta cuándo esta constante es buena y cuándo puede ser grande (modos con $\hat k_n$ pequeños).
+    \item Escriba una cota para $\|u-u_N\|_{L^2}$ y, usando $|\hat k_n|\asymp |n|^{-r}$, compare el orden esperado de convergencia de $u_N$ con el de la aproximación de $f$.
+    ¿Para qué valores de $r$ hay ganancia de orden, conservación o pérdida?
+\end{enumerate}
+\fej
+
+\bej
+(Núcleo logarítmico periódico: descomposición en modos de Fourier)
+Considere el núcleo periódico
+\[
+K(x,y):=-\log\!\left(2\sin\frac{|x-y|}{2}\right),
+\qquad x,y\in[0,2\pi].
+\]
+Use como \textbf{hecho dado} la identidad (para $t\in(0,2\pi)$):
+\[
+-\log\!\left(2\sin\frac{t}{2}\right)=\sum_{n=1}^{\infty}\frac{\cos(nt)}{n}.
+\]
+\begin{enumerate}[(a)]
+    \item Deduzca que
+    \[
+    K(x,y)=\sum_{n=1}^{\infty}\frac{1}{n}\cos(n(x-y)).
+    \]
+    \item Reescriba la expansión en forma separada:
+    \[
+    K(x,y)=\sum_{n=1}^{\infty}\frac{1}{n}\big(\cos(nx)\cos(ny)+\sin(nx)\sin(ny)\big).
+    \]
+    Identifique los valores espectrales (coeficientes) asociados a cada modo.
+    \item Para el operador integral
+    \[
+    (Ku)(x)=\frac{1}{2\pi}\int_0^{2\pi}K(x,y)u(y)\,dy,
+    \]
+    escriba la relación modal entre $\hat u_n$ y $\widehat{Ku}_n$, y determine el orden de decaimiento del multiplicador.
+    \item Interprete la singularidad logarítmica de $K$ en $x=y$ y discuta por qué sigue siendo integrable.
+\end{enumerate}
+\fej
+
+\section*{II. Tchebyshev}
+
+\subsection*{II.1 Aproximación de funciones}
+
+\bej
+(Ortogonalidad y coeficientes de Chebyshev)
+Los polinomios de Chebyshev de primera especie se definen por $T_n(x)=\cos(n\arccos x)$ en $[-1,1]$.
+\begin{enumerate}[(a)]
+    \item Demuestre que son ortogonales con el peso $(1-x^2)^{-1/2}$:
+    \[
+    \int_{-1}^{1}\frac{T_m(x)T_n(x)}{\sqrt{1-x^2}}\,dx=0\quad (m\neq n).
+    \]
+    \item Muestre que los coeficientes de Chebyshev de $f$ coinciden con coeficientes de Fourier de $f(\cos\theta)$.
+\end{enumerate}
+\fej
+
+\bej
+(Interpolación de Chebyshev y estabilidad)
+\begin{enumerate}[(a)]
+    \item Defina la constante de Lebesgue para interpolación polinomial y compare cualitativamente nodos equiespaciados vs nodos de Chebyshev.
+    \item Explique por qué la elección de nodos de Chebyshev evita el fenómeno de Runge.
+\end{enumerate}
+\fej
+
+\subsection*{II.2 Métodos pseudo-espectrales}
+
+\subsection*{Método espectral de Chebyshev para ODEs con borde}
+
+\bej
+(Problema modelo con Dirichlet: orden de truncamiento)
+Considere
+\[
+-u''(x)+u(x)=f(x),\qquad x\in[-1,1],
+\qquad
+u(-1)=u(1)=0.
+\]
+Suponga que se aproxima con un método espectral de Chebyshev (tau/colocación) usando $N+1$ modos.
+\begin{enumerate}[(a)]
+    \item Escriba la expansión truncada
+    \[
+    u_N(x)=\sum_{n=0}^{N} a_n T_n(x),
+    \qquad
+    f_N(x)=\sum_{n=0}^{N} b_n T_n(x),
+    \]
+    e indique cómo se imponen las condiciones de borde en el sistema lineal.
+    \item Sabiendo (por el apunte) que si $f\in C^r([-1,1])$ entonces sus coeficientes de Chebyshev decaen con orden $r$, estime el orden esperado del error de truncamiento de $u_N$.
+    \item Compare el orden de convergencia de la aproximación de $u$ con el de la aproximación de $f$ y discuta si hay ganancia, pérdida o conservación de orden.
+\end{enumerate}
+\fej
+
+\subsection*{II.3 Cuadratura en nodos de Chebyshev}
+
+\bej
+(Mismo esquema con condiciones de Neumann)
+Considere
+\[
+-u''(x)+u(x)=f(x),\qquad x\in[-1,1],
+\qquad
+u'(-1)=u'(1)=0.
+\]
+\begin{enumerate}[(a)]
+    \item Proponga la formulación espectral de Chebyshev con $N+1$ modos e indique cómo se incorporan las condiciones de Neumann en el sistema.
+    \item Explique qué cambia respecto del caso Dirichlet en términos de estabilidad numérica y condicionamiento al crecer $N$.
+    \item Bajo la hipótesis $f\in C^r([-1,1])$, compare el orden esperado de convergencia con el del ejercicio anterior.
+\end{enumerate}
+\fej
+
+\bej
+(Adaptación del método a otras condiciones de borde)
+Considere
+\[
+\mathcal L u = f \quad \text{en }[-1,1],
+\]
+donde $\mathcal L$ es un operador diferencial lineal de segundo orden.
+\begin{enumerate}[(a)]
+    \item Para condiciones de Robin
+    \[
+    \alpha_-u(-1)+\beta_-u'(-1)=g_-,
+    \qquad
+    \alpha_+u(1)+\beta_+u'(1)=g_+,
+    \]
+    describa dos estrategias para adaptar el método espectral de Chebyshev:
+    \begin{enumerate}[i.]
+        \item imponer las condiciones en el sistema (tau/colocación),
+        \item construir una base que ya satisfaga las condiciones de borde.
+    \end{enumerate}
+    \item Elija una de las estrategias y escriba explícitamente el sistema lineal para los coeficientes truncados.
+    \item Discuta qué parte del análisis de orden de truncamiento se mantiene igual y qué parte depende del tipo de borde.
+\end{enumerate}
+\fej
+
+\bej
+(Nodos de Chebyshev-Gauss-Lobatto y matriz de diferenciación)
+Considere los nodos
+\[
+x_j=\cos\left(\frac{\pi j}{N}\right),\qquad j=0,\ldots,N.
+\]
+Sea
+\[
+\lambda_j=\frac{1}{\prod_{m\ne j}(x_j-x_m)}
+\]
+los pesos baricéntricos asociados a esos nodos.
+Sea $p_N\in\mathcal P_N$ el interpolante en estos nodos y $v_j=p_N(x_j)$.
+\begin{enumerate}[(a)]
+    \item Muestre que existe una matriz $D\in\mathbb R^{(N+1)\times(N+1)}$ tal que
+    \[
+    p_N'(x_i)=\sum_{j=0}^{N}D_{ij}v_j,
+    \qquad i=0,\ldots,N.
+    \]
+    \item Deduzca, en términos de los pesos baricéntricos, que
+    \[
+    D_{ij}=\frac{\lambda_j}{\lambda_i}\frac{1}{x_i-x_j}\quad(i\ne j),
+    \]
+    y exprese los términos diagonales mediante
+    \[
+    D_{ii}=-\sum_{j\ne i}D_{ij}.
+    \]
+    (Opcional: recupere las fórmulas cerradas en nodos de Chebyshev-Gauss-Lobatto.)
+    \item Verifique que $D\mathbf 1=0$ y discuta por qué esto es consistente con la derivada de una constante.
+\end{enumerate}
+\fej
+
+\bej
+(Matriz de segunda derivada y reescalado de intervalo)
+Sea $D$ la matriz de diferenciación del ejercicio anterior y $D^{(2)}:=D^2$.
+\begin{enumerate}[(a)]
+    \item Explique por qué, para una aproximación pseudo-espectral en nodos de Chebyshev, se puede aproximar
+    \[
+    u''(x_i)\approx \sum_{j=0}^{N}D^{(2)}_{ij}u(x_j).
+    \]
+    \item Si el problema está en $[a,b]$ con cambio afín $x=\frac{2t-(a+b)}{b-a}$, deduzca cómo escalan las matrices de derivación para $\frac{d}{dt}$ y $\frac{d^2}{dt^2}$.
+    \item Aplique lo anterior para escribir el sistema lineal de colocación de
+    \[
+    -u''(t)+u(t)=f(t),\qquad t\in[a,b],
+    \]
+    con condiciones de Dirichlet en los extremos.
+\end{enumerate}
+\fej
+
+\bej
+(Transformada de Chebyshev vía FFT/DCT)
+Sea $x_j=\cos(\pi j/N)$ y $v_j=u(x_j)$.
+\begin{enumerate}[(a)]
+    \item Muestre que el cálculo de coeficientes de Chebyshev de $u_N(x)=\sum_{n=0}^{N}a_nT_n(x)$ puede reducirse a una DFT real (equivalentemente, a una DCT), usando la variable angular $x=\cos\theta$.
+    \item Describa un algoritmo $O(N\log N)$ para pasar de valores nodales $\{v_j\}$ a coeficientes $\{a_n\}$ y viceversa.
+    \item Escriba cómo obtener los coeficientes de $u_N'$ a partir de $\{a_n\}$ (recurrencia espectral) y deduzca un algoritmo pseudo-espectral para computar $u'(x_j)$ en costo $O(N\log N)$.
+\end{enumerate}
+\fej
+
+\bej
+(Interpolación baricéntrica de Chebyshev en costo $O(N)$ por evaluación)
+Considere los nodos de Chebyshev-Gauss-Lobatto
+\[
+x_j=\cos\left(\frac{\pi j}{N}\right),\qquad j=0,\ldots,N,
+\]
+y los pesos baricéntricos explícitos
+\[
+\lambda_j=\frac{1}{\prod_{m\ne j}(x_j-x_m)}
+=\frac{2^{N-1}}{N}(-1)^j\delta_j,
+\qquad
+\delta_0=\delta_N=\frac12,\ \delta_j=1\ (1\le j\le N-1).
+\]
+Sea $p_N$ el interpolante de datos $f_j=f(x_j)$.
+\begin{enumerate}[(a)]
+    \item Escriba la fórmula baricéntrica de $p_N(x)$ y el tratamiento del caso $x=x_j$.
+    \item Muestre que, dados $\{f_j\}$ y $\{\lambda_j\}$, evaluar $p_N(x)$ en un punto arbitrario $x\in[-1,1]$ cuesta $O(N)$ operaciones.
+    \item Si se quieren evaluar $M$ puntos, estime el costo total y compare con resolver el sistema de Vandermonde de interpolación.
+    \item \textbf{Pregunta conceptual}: ¿es lo mismo evaluar/interpolar con la fórmula baricéntrica que calcular los coeficientes de la expansión de Chebyshev
+    \[
+    p_N(x)=\sum_{n=0}^{N}a_nT_n(x)?
+    \]
+    Justifique brevemente.
+\end{enumerate}
+\fej
+
+\bej
+(Cuadratura de Fejér a partir de pesos baricéntricos)
+Sea $x_j=\cos\big((2j+1)\pi/(2N)\big)$, $j=0,\ldots,N-1$ (nodos de Fejér de primera especie), y $\lambda_j$ sus pesos baricéntricos.
+\begin{enumerate}[(a)]
+    \item Recuerde que la cuadratura interpolatoria asociada tiene pesos
+    \[
+    w_j=\int_{-1}^{1}\ell_j(x)\,dx,
+    \]
+    donde $\ell_j$ son los polinomios cardinales de Lagrange. Escriba $\ell_j$ en forma baricéntrica usando $\lambda_j$.
+    \item Explique cómo obtener los pesos $w_j$ a partir de los valores de $\ell_j$ en los nodos y una transformada coseno (DCT/FFT), en lugar de integrar simbólicamente cada $\ell_j$.
+    \item Compare costos: método directo $O(N^2)$ vs método basado en transformadas rápidas $O(N\log N)$.
+    \item Verifique en qué grado de polinomios la regla resultante es exacta (grado de precisión de Fejér I).
+\end{enumerate}
+\fej
+
+\bej
+(Cuadratura de Gauss-Chebyshev: nodos abiertos)
+Considere la integral con peso
+\[
+I(f)=\int_{-1}^{1}\frac{f(x)}{\sqrt{1-x^2}}\,dx.
+\]
+\begin{enumerate}[(a)]
+    \item Muestre que, usando los nodos abiertos
+    \[
+    x_j=\cos\left(\frac{2j+1}{2N}\pi\right),\qquad j=0,\ldots,N-1,
+    \]
+    se obtiene la regla
+    \[
+    I(f)\approx Q_N^{\mathrm{GC}}(f):=\frac{\pi}{N}\sum_{j=0}^{N-1}f(x_j).
+    \]
+    \item Verifique el grado de exactitud de la regla (en el espacio de polinomios con el peso dado).
+    \item Aplique la regla para aproximar
+    \[
+    \int_{-1}^{1}\frac{e^x}{\sqrt{1-x^2}}\,dx,
+    \]
+    y discuta la convergencia al aumentar $N$.
+\end{enumerate}
+\fej
+
+\bej
+(Cuadratura de Clenshaw-Curtis: nodos cerrados)
+Considere la integral sin peso
+\[
+J(f)=\int_{-1}^{1}f(x)\,dx,
+\]
+y los nodos cerrados de Chebyshev-Gauss-Lobatto
+\[
+x_j=\cos\left(\frac{\pi j}{N}\right),\qquad j=0,\ldots,N.
+\]
+\begin{enumerate}[(a)]
+    \item Defina la regla de Clenshaw-Curtis
+    \[
+    J(f)\approx Q_N^{\mathrm{CC}}(f)=\sum_{j=0}^{N}w_j f(x_j),
+    \]
+    con $w_j=\int_{-1}^{1}\ell_j(x)\,dx$.
+    \item Explique cómo calcular los pesos $\{w_j\}$ eficientemente a partir de una DCT/FFT (sin integrar cada $\ell_j$ en forma simbólica).
+    \item Compare el costo de preprocesamiento de pesos con un método directo y luego el costo por evaluación de la cuadratura.
+    \item Compare cualitativamente esta regla (nodos cerrados) con Gauss-Chebyshev/Fejér (nodos abiertos): estabilidad cerca de extremos y facilidad para imponer condiciones de borde en métodos pseudo-espectrales.
+\end{enumerate}
+\fej
+
+\bej
+(Relación entre Fejér, Clenshaw-Curtis y transformadas rápidas)
+\begin{enumerate}[(a)]
+    \item Muestre que tanto Fejér como Clenshaw-Curtis pueden interpretarse como: interpolar en nodos de Chebyshev y luego integrar el interpolante.
+    \item Explique por qué ambas reglas admiten implementación $O(N\log N)$ usando FFT/DCT.
+    \item Discuta en qué situaciones conviene usar nodos cerrados (Clenshaw-Curtis) o abiertos (Fejér/Gauss-Chebyshev).
+\end{enumerate}
+\fej
+
+\bej
+(Cálculo de nodos de cuadratura en familias de Chebyshev: costo $O(N^2)$)
+Para cada familia de nodos de Chebyshev (Gauss-Chebyshev, Clenshaw-Curtis/Gauss-Lobatto, Fejér I y Fejér II):
+\begin{enumerate}[(a)]
+    \item Escriba una fórmula explícita para los nodos en términos de cosenos.
+    \item Proponga un algoritmo que calcule \emph{todos} los nodos usando esa fórmula con costo total $O(N^2)$ (por ejemplo, evaluando trigonometría con un bucle doble o mediante recurrencias por nodo).
+    \item Compare con una implementación directa de las fórmulas explícitas en costo $O(N)$ y discuta por qué, aun así, el costo dominante de la cuadratura puede estar en el cálculo de pesos o en la evaluación de la función.
+    \item (Opcional) Discuta cómo mejorar el cálculo de nodos y pesos cuando se requiere una secuencia de tamaños $N=2^m$.
+\end{enumerate}
+\fej
+
+\bej
+(Nodos anidados de Clenshaw-Curtis y estimación de error embebida)
+Considere Clenshaw-Curtis con
+\[
+x_j^{(N)}=\cos\left(\frac{\pi j}{N}\right),\qquad j=0,\ldots,N.
+\]
+\begin{enumerate}[(a)]
+    \item Muestre que, si se pasa de $N$ a $2N$, se cumple
+    \[
+    x_j^{(N)}=x_{2j}^{(2N)},\qquad j=0,\ldots,N,
+    \]
+    es decir, los nodos son anidados.
+    \item Explique cómo reutilizar evaluaciones de $f$ al pasar de $Q_N^{\mathrm{CC}}(f)$ a $Q_{2N}^{\mathrm{CC}}(f)$.
+    \item Proponga un estimador de error embebido del tipo
+    \[
+    E_N:=\left|Q_{2N}^{\mathrm{CC}}(f)-Q_N^{\mathrm{CC}}(f)\right|,
+    \]
+    y describa un criterio adaptativo de parada para alcanzar una tolerancia dada.
+    \item Discuta ventajas y limitaciones de este estimador cuando $f$ tiene baja regularidad o singularidades cerca de los extremos.
+\end{enumerate}
+\fej
+
+\section*{III. Polinomios de Legendre y cuadratura gaussiana}
 
 \bej
 (Mejor aproximación en $L^2$)
@@ -177,6 +641,17 @@ Q(f) = w_1 f(x_1) + w_2 f(x_2).
     \item Determine los pesos $w_1, w_2$ imponiendo que la regla sea exacta para $f(x)=1$ y $f(x)=x$ (o usando la fórmula de interpolación de Lagrange para los pesos).
     \item Verifique que la regla obtenida integra exactamente a $x^2$ y $x^3$.
     \item Use esta regla para aproximar $\int_{-1}^1 e^x dx$ y compare con el valor exacto.
+\end{enumerate}
+\fej
+
+\bej
+(Método de Golub--Welsch para cuadratura de Gauss-Legendre)
+Sea $\{P_n\}$ la familia de polinomios de Legendre ortogonales en $[-1,1]$ y considere la recurrencia tritérmino normalizada.
+\begin{enumerate}[(a)]
+    \item Construya la matriz de Jacobi $J_n\in\mathbb R^{n\times n}$ asociada a dicha recurrencia.
+    \item Muestre que los nodos de Gauss-Legendre de orden $n$ son los autovalores de $J_n$.
+    \item Muestre que los pesos pueden obtenerse a partir de la primera componente de los autovectores normalizados de $J_n$.
+    \item Describa el algoritmo de Golub--Welsch y estime su costo computacional.
 \end{enumerate}
 \fej
 
