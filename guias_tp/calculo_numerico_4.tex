@@ -36,50 +36,6 @@
 \section*{I. Series de Fourier}
 \subsection*{I.1 Aproximación de funciones}
 
-\bej 
-Muestre que el conjunto de funciones 
-    \[
-    B_N = \{ 1, \sin(x), \cos(x), ..., \sin(Nx), \cos(Nx) \} 
-    \]
-    es ortogonal con respecto al producto interno definido por:
-    \begin{equation}
-        (f,g)_2 = \int_0^{2\pi} f(x) g(x) dx
-    \end{equation}
-y calcule la norma de cada función en $B_N$ asociada a $(\cdot,\cdot)_2$ que se denotará por $\| \cdot \|_2$.
-\fej
-
-\bej Sea $f$ una función de cuadrado integrable en $[0,2\pi]$. Definimos los coeficientes de Fourier de $f$ como
-    \[
-        a_k = \frac{1}{\pi} \int_0^{2\pi} f(x) \cos(kx) \, dx, \quad k \ge 0
-    \]
-    \[
-        b_k = \frac{1}{\pi} \int_0^{2\pi} f(x) \sin(kx) \, dx, \quad k \ge 1
-    \]
-    y la suma parcial de Fourier como:
-    \[
-        S_N(f)(x) = \frac{a_0}{2} + \sum_{k=1}^N \left( a_k \cos(kx) + b_k \sin(kx) \right).
-    \]
-    Demuestre la propiedad de mejor aproximación en media cuadrática: de todos los elementos del subespacio generado por $B_N$, $S_N(f)$ es el que minimiza el error en norma $\| \cdot \|_2$. Es decir:
-    \[
-        \| f - S_N(f) \|_2 \le \| f - p \|_2 \quad \text{para todo } p \in \langle B_N \rangle.
-    \]
-\fej
-
-\bej
-(Forma Compleja de la Serie de Fourier)
-Considere la serie de Fourier en su forma compleja:
-\[ S_N(f)(x) = \sum_{k=-N}^{N} c_k e^{ikx} \]
-donde los coeficientes están dados por $c_k = \frac{1}{2\pi} \int_0^{2\pi} f(x) e^{-ikx} \, dx$.
-Muestre que esta representación es equivalente a la forma trigonométrica real obtenida en el Ejercicio 2, estableciendo las siguientes relaciones entre los coeficientes para $k \ge 1$:
-\[ c_0 = \frac{a_0}{2}, \quad c_k = \frac{a_k - i b_k}{2}, \quad c_{-k} = \frac{a_k + i b_k}{2}. \]
-\fej
-
-\bej
-Se define, para cada $n\in \mathbb{N}$, el espacio de funciones suaves y periódicas como:
-$$C^n_{per}([0,2\pi]) = \left\lbrace f \in C^n([0,2\pi]) : f^{(p)}(0) = f^{(p)}(2\pi) \mbox{ para todo } 0\le p\le n-1 \right\rbrace $$
-Muestre que, dada $f\in C^n_{per}([0,2\pi])$, sus coeficientes de Fourier decaen con orden $n$: es decir, muestre que $|c_k| \leq C k^{-n}$ para una cierta constante $C$ independiente de $k$. Sugerencia: Integre por partes.
-\fej
-
 \bej
 (Cálculo de Coeficientes y Decaimiento)
 \begin{enumerate}[(a)]
@@ -87,11 +43,6 @@ Muestre que, dada $f\in C^n_{per}([0,2\pi])$, sus coeficientes de Fourier decaen
     \item Calcule los coeficientes de Fourier de la onda triangular: $g(x) = |x|$ en $[-\pi, \pi]$.
     \item Analice la tasa de decaimiento de los coeficientes obtenidos cuando $k \to \infty$. Relacione este resultado con la suavidad de las funciones y con el resultado del ejercicio anterior.
 \end{enumerate}
-\fej
-
-\bej
-(Convergencia Uniforme) Demuestre que si $f \in C^1_{per}([0,2\pi])$, la serie de Fourier de $f$ converge uniformemente a $f$ en todo el intervalo.
-\par\noindent\textit{Sugerencia:} Utilice el criterio M de Weierstrass, mostrando que $\sum |c_k| < \infty$. Para ello, relacione los coeficientes de $f$ con los de la derivada $f'$ (que es de cuadrado integrable) integrando por partes, y luego aplique la desigualdad de Cauchy-Schwarz combinada con la desigualdad de Bessel.
 \fej
 
 \bej

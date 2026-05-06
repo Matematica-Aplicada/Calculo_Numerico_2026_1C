@@ -125,299 +125,7 @@ Consideremos una máquina de Turing que suma 1 a un número natural representado
 1 & 1 & \underline{1} & 1 & B & \ldots & Estado: $q_{\text{halt}}$ (se detiene) \\
 \end{tabular}
 \end{center}
-
-La cinta final contiene $1111$, que representa el número $4 = 3 + 1$. El subrayado indica la posición del cabezal.
 \end{example}
-
-\begin{remark}
-Aunque este ejemplo es simple, ilustra los principios fundamentales:
-\begin{itemize}
-\item La máquina opera mediante una secuencia de pasos discretos.
-\item Cada paso depende únicamente del estado actual y del símbolo leído.
-\item La máquina tiene memoria finita (los estados), pero puede usar la cinta para almacenamiento ilimitado.
-\item Operaciones complejas se construyen componiendo transiciones simples.
-\end{itemize}
-\end{remark}
-
-\subsection{Codificación}
-
-Un aspecto fundamental para trabajar con máquinas de Turing es la \textbf{codificación}: cómo representar objetos matemáticos (números, funciones, e incluso otras máquinas) como cadenas de símbolos en un alfabeto finito.
-
-\begin{definition}[Codificación]
-Una \textbf{codificación} de un conjunto $S$ es una función inyectiva $\langle \cdot \rangle: S \to \Sigma^*$ que asocia a cada elemento de $S$ una cadena finita sobre un alfabeto finito $\Sigma$.
-\end{definition}
-
-\paragraph{Codificación de números naturales.}
-La forma más simple es usar representación unaria: $\langle n \rangle = 1^{n+1}$ (o $0^{n+1}$). Por ejemplo, $\langle 3 \rangle = 1111$. Alternativamente, podemos usar representación binaria: $\langle 5 \rangle = 101$.
-
-\paragraph{Codificación de tuplas.}
-Para codificar pares $(m, n)$ podemos usar una función de emparejamiento de Cantor:
-\[
-\langle (m, n) \rangle = \langle \frac{(m+n)(m+n+1)}{2} + n \rangle
-\]
-Esta función es biyectiva $\mathbb{N} \times \mathbb{N} \to \mathbb{N}$, permitiendo representar cualquier par de naturales como un único natural.
-
-\paragraph{Codificación de máquinas de Turing.}
-Este es el paso crucial: una máquina de Turing $M = (Q, \Gamma, \delta, q_0, F)$ tiene una descripción finita, por lo que puede codificarse como una cadena. Podemos:
-\begin{enumerate}
-\item Enumerar los estados: $q_0, q_1, \ldots, q_k$.
-\item Enumerar los símbolos: $\gamma_0$ (blanco), $\gamma_1, \ldots, \gamma_m$.
-\item Codificar cada transición $\delta(q_i, \gamma_j) = (q_k, \gamma_\ell, D)$ como una tupla de números.
-\item Concatenar todas las transiciones separadas por un símbolo especial.
-\end{enumerate}
-
-Por ejemplo, si usamos el alfabeto $\{0, 1, \#\}$, podríamos codificar la transición $\delta(q_2, \gamma_3) = (q_5, \gamma_1, R)$ como:
-\[
-0^{2+1}\#0^{3+1}\#0^{5+1}\#0^{1+1}\#0^1
-\]
-donde el último $0$ representa $R$ (derecha) y $00$ representaría $L$ (izquierda).
-
-\begin{remark}
-La posibilidad de codificar máquinas de Turing como cadenas es fundamental por dos razones:
-\begin{enumerate}
-\item \textbf{Máquinas universales}: Podemos construir una máquina de Turing $U$ que recibe $\langle M \rangle$ y $w$ como entrada, y simula el comportamiento de $M$ sobre $w$. Esto es análogo a un computador moderno que ejecuta programas (ver siguiente subsección).
-\item \textbf{Auto-referencia}: Una máquina puede recibir su propia descripción como entrada, lo que permite construir argumentos diagonales (como veremos en el problema de la detención).
-\end{enumerate}
-\end{remark}
-
-\begin{definition}[Enumeración de máquinas de Turing]
-Dado un esquema de codificación fijo, podemos enumerar todas las máquinas de Turing: $M_0, M_1, M_2, \ldots$ donde $M_i$ es la máquina cuya codificación es la $i$-ésima cadena válida en orden lexicográfico. Las cadenas que no codifican una máquina válida pueden asociarse a una máquina trivial que se detiene inmediatamente.
-\end{definition}
-
-\subsection{La máquina de Turing universal}
-
-Uno de los resultados más profundos de la teoría de la computación es la existencia de una \textbf{máquina de Turing universal}.
-
-\begin{theorem}[Máquina de Turing Universal]
-Existe una máquina de Turing $U$ (llamada \textbf{universal}) que toma como entrada la codificación de cualquier máquina de Turing $M$ junto con una entrada $w$, y simula el comportamiento de $M$ sobre $w$. Es decir:
-\[
-U(\langle M, w \rangle) = M(w)
-\]
-Si $M$ se detiene en $w$, entonces $U$ se detiene y produce el mismo resultado. Si $M$ no se detiene en $w$, entonces $U$ tampoco se detiene.
-\end{theorem}
-
-\begin{proof}[Idea de la construcción]
-La máquina universal $U$ funciona interpretando la descripción codificada de $M$:
-\begin{enumerate}
-\item Lee la codificación $\langle M \rangle$ para extraer la tabla de transiciones de $M$.
-\item Mantiene en su cinta una representación del estado actual de $M$ y del contenido de la cinta de $M$.
-\item En cada paso, consulta la tabla de transiciones de $M$ para determinar qué haría $M$, y actualiza la simulación en consecuencia.
-\item Se detiene cuando $M$ alcanzaría un estado de aceptación o rechazo.
-\end{enumerate}
-Aunque $U$ es más lenta que $M$ (tiene que interpretar cada paso), eventualmente produce el mismo resultado.
-\end{proof}
-
-\begin{remark}[Importancia de la máquina universal]
-La máquina de Turing universal es el precursor conceptual de la computadora moderna de propósito general:
-\begin{itemize}
-\item Una única máquina puede ejecutar cualquier algoritmo simplemente cambiando su ``programa'' (la codificación $\langle M \rangle$).
-\item El hardware (la máquina $U$) está separado del software (las máquinas $M$ que se ejecutan).
-\item Esta idea se materializó en la arquitectura de von Neumann, donde programas y datos se almacenan en la misma memoria.
-\end{itemize}
-\end{remark}
-
-\begin{remark}[Arquitectura de von Neumann]
-En junio de 1945, \textbf{John von Neumann} escribió el influyente documento \textit{``First Draft of a Report on the EDVAC''} (Electronic Discrete Variable Automatic Computer), donde formalizó por primera vez la \textbf{arquitectura de programa almacenado}.
-
-Los principios fundamentales de esta arquitectura son:
-\begin{itemize}
-\item \textbf{Programa almacenado}: Las instrucciones del programa se almacenan en la memoria de la misma forma que los datos, codificadas en formato binario.
-\item \textbf{Memoria unificada}: Una única memoria contiene tanto el programa como los datos sobre los que opera.
-\item \textbf{Procesamiento secuencial}: Un contador de programa indica qué instrucción ejecutar, avanzando secuencialmente (salvo por instrucciones de salto).
-\item \textbf{Componentes básicos}: Unidad aritmético-lógica (ALU), unidad de control, memoria, y dispositivos de entrada/salida.
-\end{itemize}
-
-Esta arquitectura es la \textbf{realización física de la máquina de Turing universal}: así como $U$ puede simular cualquier máquina $M$ leyendo su codificación $\langle M \rangle$, una computadora de von Neumann puede ejecutar cualquier programa simplemente cargándolo en memoria. El ``programa'' es análogo a $\langle M \rangle$, y el procesador que lo interpreta es análogo a la máquina universal $U$.
-
-La arquitectura de von Neumann se convirtió en el modelo estándar para prácticamente todas las computadoras construidas desde entonces, desde mainframes hasta smartphones, materializando el concepto abstracto de computación universal de Turing.
-\end{remark}
-
-\subsection{La Tesis de Church-Turing}
-
-Hasta ahora hemos definido la computabilidad en términos de máquinas de Turing, pero existen otros modelos de computación: funciones recursivas (Church), cálculo lambda (Church), máquinas de registro, etc. Sorprendentemente, todos estos modelos resultan ser equivalentes.
-
-\begin{definition}[Tesis de Church-Turing]
-La \textbf{Tesis de Church-Turing} afirma que:
-\begin{quote}
-\textit{Toda función efectivamente calculable (en el sentido intuitivo) es computable por una máquina de Turing.}
-\end{quote}
-Equivalentemente: cualquier procedimiento algorítmico que pueda ser ejecutado por un ser humano siguiendo reglas mecánicas puede ser simulado por una máquina de Turing.
-\end{definition}
-
-\begin{remark}
-La Tesis de Church-Turing \textbf{no es un teorema matemático}, sino una propuesta filosófica sobre la naturaleza de la computación. No puede ser probada formalmente porque involucra el concepto informal de ``efectivamente calculable''. Sin embargo, está fuertemente respaldada por:
-\begin{itemize}
-\item La equivalencia demostrada entre todos los modelos formales de computación propuestos.
-\item Décadas de experiencia: nunca se ha encontrado un procedimiento efectivo que no pueda ser simulado por una máquina de Turing.
-\item La máquina de Turing universal muestra que el modelo es suficientemente poderoso para autosimularse.
-\end{itemize}
-\end{remark}
-
-\begin{remark}[Implicaciones]
-Si aceptamos la Tesis de Church-Turing, entonces:
-\begin{itemize}
-\item Los límites de las máquinas de Turing son los límites de la computación en general.
-\item El problema de la detención es indecidible para \textit{cualquier} modelo de computación, no solo para máquinas de Turing.
-\item No importa cuánto avance la tecnología (computadoras cuánticas, biológicas, etc.): no podrán resolver problemas incomputables como el problema de la detención.
-\end{itemize}
-\end{remark}
-
-\begin{definition}[Función computable]
-Una función $f: \mathbb{N} \to \mathbb{N}$ es \textbf{computable} (o \textbf{recursiva}) si existe una máquina de Turing que, dada una entrada $n$ codificada en la cinta, se detiene con $f(n)$ codificado en la cinta.
-\end{definition}
-
-\subsection{Números computables}
-
-\begin{definition}[Número computable]
-Un número real $x$ es \textbf{computable} si existe una máquina de Turing que, dado $n \in \mathbb{N}$, calcula un racional $r_n$ tal que $|x - r_n| < 1/n$. Equivalentemente, existe un algoritmo que puede calcular cualquier dígito de la expansión decimal de $x$.
-\end{definition}
-
-\begin{example}[Números computables]
-Son computables:
-\begin{itemize}
-\item Todos los números racionales: $\mathbb{Q} \subset \mathbb{R}_{\text{comp}}$.
-\item Raíces de polinomios con coeficientes racionales: $\sqrt{2}$, $\sqrt[3]{7}$, etc.
-\item Constantes matemáticas definidas por algoritmos: $\pi$, $e$, $\ln 2$, etc.
-\item Números definidos por series convergentes con términos computables: 
-\[
-\sum_{n=0}^\infty \frac{1}{n!}, \quad \sum_{n=1}^\infty \frac{1}{n^2}.
-\]
-\end{itemize}
-\end{example}
-
-\subsection{Incomputabilidad}
-
-A pesar de la potencia de las máquinas de Turing, existen problemas que ninguna máquina de Turing puede resolver.
-
-\begin{theorem}[Problema de la detención]
-No existe ningún algoritmo que, dada una descripción de una máquina de Turing $M$ y una entrada $w$, determine si $M$ se detiene cuando se ejecuta con entrada $w$.
-\end{theorem}
-
-Formalmente, definimos el \textbf{conjunto de detención} como:
-\[
-H = \{\langle M, w \rangle : \text{la máquina $M$ se detiene cuando se ejecuta con entrada $w$}\}
-\]
-El problema de la detención afirma que $H$ es un conjunto \textbf{no computable}: no existe máquina de Turing que compute su función característica.
-
-\begin{proof}[Idea de la demostración]
-La demostración usa un argumento diagonal similar al de Cantor, aprovechando que las máquinas de Turing pueden codificarse y recibirse a sí mismas como entrada.
-
-Supongamos, buscando una contradicción, que existe una máquina de Turing $H$ que resuelve el problema de la detención. Es decir, $H$ recibe como entrada la codificación $\langle M, w \rangle$ y:
-\begin{itemize}
-\item Se detiene y acepta si $M$ se detiene con entrada $w$.
-\item Se detiene y rechaza si $M$ no se detiene con entrada $w$.
-\end{itemize}
-
-Usando $H$, construimos una nueva máquina $D$ (``diagonal'') que hace lo siguiente al recibir la codificación de una máquina $\langle M \rangle$:
-\begin{enumerate}
-\item Ejecuta $H(\langle M, \langle M \rangle \rangle)$ para determinar si $M$ se detiene cuando recibe su propia descripción como entrada.
-\item Si $H$ acepta (es decir, $M$ se detiene con entrada $\langle M \rangle$), entonces $D$ entra en un \textbf{bucle infinito}.
-\item Si $H$ rechaza (es decir, $M$ no se detiene con entrada $\langle M \rangle$), entonces $D$ se \textbf{detiene} inmediatamente.
-\end{enumerate}
-
-Ahora consideramos qué sucede cuando ejecutamos $D$ con su propia descripción como entrada: $D(\langle D \rangle)$.
-
-\begin{itemize}
-\item \textbf{Caso 1}: Supongamos que $D(\langle D \rangle)$ se detiene. Entonces, por la construcción de $D$, esto significa que $H$ rechazó, lo que implica que $D$ no se detiene con entrada $\langle D \rangle$. Contradicción.
-
-\item \textbf{Caso 2}: Supongamos que $D(\langle D \rangle)$ no se detiene (entra en bucle). Entonces $H$ debe haber aceptado, lo que significa que $D$ sí se detiene con entrada $\langle D \rangle$. Contradicción.
-\end{itemize}
-
-En ambos casos llegamos a una contradicción. Por tanto, nuestra suposición inicial es falsa: no puede existir una máquina $H$ que resuelva el problema de la detención.
-\end{proof}
-
-\begin{remark}[Importancia de la codificación]
-La demostración del problema de la detención ilustra por qué la codificación es esencial:
-\begin{enumerate}
-\item Sin codificación, no podríamos hablar de ``dar una máquina como entrada a otra máquina''.
-\item La auto-referencia $D(\langle D \rangle)$ es posible precisamente porque las máquinas son objetos finitos codificables.
-\item El argumento diagonal funciona porque podemos enumerar todas las máquinas de Turing y aplicar cada máquina $M_i$ a su propia codificación $\langle M_i \rangle$.
-\end{enumerate}
-\end{remark}
-
-\begin{remark}[Consecuencias del problema de la detención]
-El problema de la detención tiene profundas implicaciones:
-\begin{itemize}
-\item No existe un depurador universal que detecte si un programa tiene bucles infinitos.
-\item No existe un verificador universal que determine si un programa es correcto.
-\item Muchos otros problemas son indecidibles por reducción al problema de la detención.
-\end{itemize}
-\end{remark}
-
-\begin{remark}
-La mayoría de los números reales son \textbf{incomputables}. Como el conjunto de máquinas de Turing es numerable (cada máquina tiene una descripción finita), solo hay numerablemente muchos números computables. Pero $\mathbb{R}$ es no numerable, por lo que casi todos los reales son incomputables. Sin embargo, ningún número incomputable específico puede ser exhibido constructivamente.
-\end{remark}
-
-\section{Complejidad Computacional}
-
-La teoría de la complejidad no pregunta si un problema es resoluble, sino \textit{cuántos recursos} (tiempo, memoria) requiere su solución.
-
-\subsection{Notación asintótica}
-
-Para analizar algoritmos, necesitamos comparar cómo crece su tiempo de ejecución con el tamaño de la entrada.
-
-\begin{definition}[Notación $O$ grande]
-Sean $f, g: \mathbb{N} \to \mathbb{R}^+$ funciones. Decimos que $f(n) = O(g(n))$ si existen constantes $c > 0$ y $n_0 \in \mathbb{N}$ tales que
-\[
-f(n) \leq c \cdot g(n) \quad \text{para todo } n \geq n_0.
-\]
-Interpretación: $g(n)$ es una \textbf{cota superior asintótica} de $f(n)$.
-\end{definition}
-
-\begin{definition}[Notación $\Omega$ grande]
-Sean $f, g: \mathbb{N} \to \mathbb{R}^+$ funciones. Decimos que $f(n) = \Omega(g(n))$ si existen constantes $c > 0$ y $n_0 \in \mathbb{N}$ tales que
-\[
-f(n) \geq c \cdot g(n) \quad \text{para todo } n \geq n_0.
-\]
-Interpretación: $g(n)$ es una \textbf{cota inferior asintótica} de $f(n)$.
-\end{definition}
-
-\begin{definition}[Notación $\Theta$ grande]
-Sean $f, g: \mathbb{N} \to \mathbb{R}^+$ funciones. Decimos que $f(n) = \Theta(g(n))$ si $f(n) = O(g(n))$ y $f(n) = \Omega(g(n))$. Equivalentemente, existen constantes $c_1, c_2 > 0$ y $n_0 \in \mathbb{N}$ tales que
-\[
-c_1 \cdot g(n) \leq f(n) \leq c_2 \cdot g(n) \quad \text{para todo } n \geq n_0.
-\]
-Interpretación: $g(n)$ es el \textbf{orden exacto} de $f(n)$.
-\end{definition}
-
-\begin{definition}[Notación $o$ chica]
-Sean $f, g: \mathbb{N} \to \mathbb{R}^+$ funciones. Decimos que $f(n) = o(g(n))$ si para toda constante $c > 0$, existe $n_0 \in \mathbb{N}$ tal que
-\[
-f(n) < c \cdot g(n) \quad \text{para todo } n \geq n_0.
-\]
-Equivalentemente: $\displaystyle\lim_{n \to \infty} \frac{f(n)}{g(n)} = 0$.
-Interpretación: $f(n)$ crece \textbf{estrictamente más lento} que $g(n)$.
-\end{definition}
-
-\begin{definition}[Notación $\omega$ chica]
-Sean $f, g: \mathbb{N} \to \mathbb{R}^+$ funciones. Decimos que $f(n) = \omega(g(n))$ si para toda constante $c > 0$, existe $n_0 \in \mathbb{N}$ tal que
-\[
-f(n) > c \cdot g(n) \quad \text{para todo } n \geq n_0.
-\]
-Equivalentemente: $\displaystyle\lim_{n \to \infty} \frac{f(n)}{g(n)} = \infty$.
-Interpretación: $f(n)$ crece \textbf{estrictamente más rápido} que $g(n)$.
-\end{definition}
-
-\noindent\textbf{Analogía con relaciones de orden}: $O$ es como $\leq$, $o$ es como $<$, $\Omega$ es como $\geq$, $\omega$ es como $>$, y $\Theta$ es como $=$.
-
-\begin{example}[Órdenes de crecimiento comunes]
-De más lento a más rápido:
-\[
-O(1) \ll O(\log n) \ll O(n) \ll O(n \log n) \ll O(n^2) \ll O(n^3) \ll O(2^n) \ll O(n!).
-\]
-Ejemplos:
-\begin{itemize}
-\item $3n^2 + 5n + 7 = \Theta(n^2)$.
-\item $n \log n + 100n = \Theta(n \log n)$.
-\item $2^n + n^{100} = \Theta(2^n)$.
-\end{itemize}
-\end{example}
-
-\subsection{Clases de complejidad temporal y espacial}
-
-\begin{definition}[Clase temporal TIME$(f(n))$]
-La clase $\text{TIME}(f(n))$ contiene todos los lenguajes (problemas de decisión) que pueden ser resueltos por una máquina de Turing determinista en tiempo $O(f(n))$.
-\end{definition}
 
 \begin{definition}[Clase espacial SPACE$(f(n))$]
 La clase $\text{SPACE}(f(n))$ contiene todos los lenguajes que pueden ser resueltos por una máquina de Turing determinista usando $O(f(n))$ celdas de memoria.
@@ -2598,232 +2306,6 @@ El cambio $t=x-a$ da $\int_0^h t(t-h)\,dt = -h^3/6$ con $h=b-a$, de donde el res
 
 Si en lugar de interpolar linealmente usamos una parábola (polinomio de grado 2), obtenemos una fórmula más precisa.  Tomamos tres nodos equiespaciados: $x_0 = a$, $x_1 = (a+b)/2$, $x_2 = b$.  El polinomio de Lagrange de grado 2 que pasa por $(x_0, f(x_0))$, $(x_1, f(x_1))$, $(x_2, f(x_2))$ se puede integrar directamente.  Haciendo el cambio $t = x - x_1$ (que centra el intervalo en el origen) e integrando los polinomios de Lagrange, se obtiene:
 
-\begin{theorem}[Regla de Simpson]\label{thm:regla_simpson}
-\[
-\int_a^b f(x)\,dx \approx S(f) := \frac{b-a}{6}\left(f(a) + 4f\!\left(\frac{a+b}{2}\right) + f(b)\right).
-\]
-El error satisface: si $f \in C^4([a,b])$, existe $\eta \in (a,b)$ tal que
-\[
-\int_a^b f(x)\,dx - S(f) = -\frac{(b-a)^5}{2880}\,f^{(4)}(\eta).
-\]
-\end{theorem}
-
-\begin{remark}
-La regla de Simpson es notablemente más precisa que la del trapecio: donde el trapecio tiene error $O(h^3)$ con $h = b-a$, Simpson tiene error $O(h^5)$.  Además, aunque se construye interpolando con un polinomio de grado 2, es exacta para polinomios de grado $\leq 3$ (no solo $\leq 2$).  Este ``grado extra'' de precisión se debe a la simetría de los nodos respecto del punto medio del intervalo.
-\end{remark}
-
-
-\subsection{Regla del trapecio compuesta}\label{subsec:trapecio_compuesto}
-
-Para aproximar mejor la integral, dividimos $[a,b]$ en $M$ subintervalos iguales de longitud $h=(b-a)/M$ con nodos $x_j=a+jh$, $j=0,\ldots,M$, y aplicamos la regla simple en cada uno.
-
-\begin{definition}[Regla del trapecio compuesta]\label{def:trapecio_compuesto}
-La \textbf{regla del trapecio compuesta} con $M$ subintervalos es
-\[
-T_M(f) := \sum_{j=0}^{M-1} T(f;\,x_j,x_{j+1})
-= \frac{h}{2}\!\left[f(a)+2\!\sum_{j=1}^{M-1}f(x_j)+f(b)\right]
-= h\!\left[\frac{f(a)}{2}+\sum_{j=1}^{M-1}f(x_j)+\frac{f(b)}{2}\right].
-\]
-\end{definition}
-
-\begin{remark}
-Para funciones periódicas con $f(a)=f(b)$, los dos medios extremos se combinan en un nodo completo y la fórmula se reduce a $T_M(f)=h\sum_{j=0}^{M-1}f(x_j)$, la regla del trapecio periódica del Capítulo~4 (Teorema~\ref{thm:trap_espectral}).
-\end{remark}
-
-\begin{theorem}[Error de la regla del trapecio compuesta]\label{thm:error_trapecio_compuesto}
-Si $f\in C^2([a,b])$, existe $\eta\in(a,b)$ tal que
-\[
-\int_a^b f(x)\,dx - T_M(f) = -\frac{(b-a)\,h^2}{12}\,f''(\eta), \qquad h=\frac{b-a}{M}.
-\]
-En particular, el error es $O(h^2)$ cuando $h\to 0$.
-\end{theorem}
-\begin{proof}
-Aplicamos el Teorema~\ref{thm:error_trapecio} en cada subintervalo $[x_j,x_{j+1}]$ (todos de longitud $h$).  Para cada $j=0,\dots,M-1$ existe $\eta_j\in(x_j,x_{j+1})$ tal que
-\[
-E_j:=\int_{x_j}^{x_{j+1}}f(x)\,dx-T(f;x_j,x_{j+1})=-\frac{h^3}{12}\,f''(\eta_j).
-\]
-Sumando los errores locales:
-\[
-E:=\int_a^b f(x)\,dx-T_M(f)=\sum_{j=0}^{M-1}E_j
-=-\frac{h^3}{12}\sum_{j=0}^{M-1}f''(\eta_j).
-\]
-
-\textbf{Paso clave ("se come un orden"):}
-cada término local es de tamaño $O(h^3)$, pero hay $M=(b-a)/h$ términos. Por lo tanto, en magnitud total
-\[
-|E|\le \frac{h^3}{12}\sum_{j=0}^{M-1}|f''(\eta_j)|
-\le \frac{h^3}{12}\,M\,\|f''\|_{\infty,[a,b]}
-=\frac{b-a}{12}\,h^2\,\|f''\|_{\infty,[a,b]}.
-\]
-Aquí se ve explícitamente la pérdida de un orden: \(M\sim h^{-1}\), entonces
-\[
-M\cdot h^3 \sim h^{-1}\cdot h^3 = h^2.
-\]
-
-Para obtener la forma exacta con un único punto, escribimos
-\[
-\sum_{j=0}^{M-1}f''(\eta_j)=M\,\overline s,
-\qquad
-\overline s:=\frac1M\sum_{j=0}^{M-1}f''(\eta_j).
-\]
-Si
-\[
-m:=\min_{x\in[a,b]}f''(x),\qquad M_2:=\max_{x\in[a,b]}f''(x),
-\]
-entonces $m\le f''(\eta_j)\le M_2$ para todo $j$, y por promediar también $m\le\overline s\le M_2$.  Como $f''$ es continua en $[a,b]$, por el teorema del valor intermedio existe $\eta\in[a,b]$ tal que $f''(\eta)=\overline s$. Sustituyendo:
-\[
-E=-\frac{h^3}{12}\,M\,f''(\eta)=-\frac{(b-a)h^2}{12}\,f''(\eta).
-\]
-Como el error es no trivial salvo casos degenerados, podemos tomar $\eta\in(a,b)$.
-\end{proof}
-
-El Teorema~\ref{thm:error_trapecio_compuesto} exige $f\in C^2$.  Cuando la función tiene menos regularidad, la regla del trapecio compuesta sigue convergiendo, pero a una velocidad menor que se cuantifica con el \textbf{módulo de continuidad}.
-
-\begin{definition}[Módulo de continuidad]\label{def:modulo_continuidad}
-Para $f\in C([a,b])$ y $\delta\ge 0$,
-\[
-\omega(f,\delta):=\sup_{\substack{x,y\in[a,b]\\|x-y|\le\delta}}|f(x)-f(y)|.
-\]
-Si $f$ es uniformemente continua (en particular, si $[a,b]$ es compacto), $\omega(f,\delta)\to 0$ cuando $\delta\to 0$.
-\end{definition}
-
-\begin{theorem}[Error del trapecio compuesto para funciones continuas]\label{thm:error_trapecio_continuo}
-Si $f\in C([a,b])$, entonces
-\[
-\left|\int_a^b f(x)\,dx - T_M(f)\right|\;\le\;(b-a)\,\omega(f,h),\qquad h=\frac{b-a}{M}.
-\]
-En particular, $T_M(f)\to\int_a^b f$ para toda $f$ continua.
-\end{theorem}
-\begin{proof}
-Particionamos $[a,b]$ en $x_j=a+jh$, $j=0,\dots,M$, con $h=(b-a)/M$.
-
-\textbf{Paso 1: error local como integral de interpolación.}
-En cada subintervalo $I_j=[x_j,x_{j+1}]$, sea $p_{1,j}$ el interpolante lineal de $f$ en los extremos:
-\[
-p_{1,j}(x)=f(x_j)\,\ell_{j,0}(x)+f(x_{j+1})\,\ell_{j,1}(x),
-\]
-con bases de Lagrange
-\[
-\ell_{j,0}(x)=\frac{x_{j+1}-x}{h},\qquad
-\ell_{j,1}(x)=\frac{x-x_j}{h},\qquad
-\ell_{j,0}(x)+\ell_{j,1}(x)=1.
-\]
-La regla del trapecio simple en $I_j$ es exactamente $\int_{x_j}^{x_{j+1}} p_{1,j}(x)\,dx$, luego
-\[
-E_j:=\int_{x_j}^{x_{j+1}} f(x)\,dx-T(f;x_j,x_{j+1})
-=\int_{x_j}^{x_{j+1}}\bigl(f(x)-p_{1,j}(x)\bigr)\,dx.
-\]
-
-\textbf{Paso 2: ``intercalar'' $f(x)$ en la combinación convexa.}
-Para $x\in I_j$:
-\[
-\begin{aligned}
-f(x)-p_{1,j}(x)
-&=f(x)-\ell_{j,0}(x)f(x_j)-\ell_{j,1}(x)f(x_{j+1})\\
-&=\ell_{j,0}(x)\bigl(f(x)-f(x_j)\bigr)+\ell_{j,1}(x)\bigl(f(x)-f(x_{j+1})\bigr),
-\end{aligned}
-\]
-donde usamos $\ell_{j,0}+\ell_{j,1}=1$ para escribir
-$f(x)=\ell_{j,0}(x)f(x)+\ell_{j,1}(x)f(x)$ y restar término a término.
-
-\textbf{Paso 3: cota por módulo de continuidad.}
-Como $x,x_j,x_{j+1}\in I_j$ y $\operatorname{diam}(I_j)=h$,
-\[
-|f(x)-f(x_j)|\le\omega(f,h),\qquad |f(x)-f(x_{j+1})|\le\omega(f,h).
-\]
-Además $\ell_{j,0}(x),\ell_{j,1}(x)\ge 0$ en $I_j$. Entonces
-\[
-|f(x)-p_{1,j}(x)|
-\le \ell_{j,0}(x)\omega(f,h)+\ell_{j,1}(x)\omega(f,h)
-=\omega(f,h).
-\]
-Integrando en $I_j$:
-\[
-|E_j|\le\int_{x_j}^{x_{j+1}}\omega(f,h)\,dx=h\,\omega(f,h).
-\]
-
-\textbf{Paso 4: suma global.}
-\[
-\left|\int_a^b f(x)\,dx-T_M(f)\right|
-=\left|\sum_{j=0}^{M-1}E_j\right|
-\le\sum_{j=0}^{M-1}|E_j|
-\le M h\,\omega(f,h)
-=(b-a)\,\omega(f,h).
-\]
-Como $f$ es continua en $[a,b]$, es uniformemente continua, y por tanto $\omega(f,h)\to 0$ cuando $h\to 0$; se concluye $T_M(f)\to\int_a^b f$.
-\end{proof}
-
-\begin{example}[Convergencia para funciones Hölder]\label{ex:trapecio_holder}
-Si $f$ satisface $|f(x)-f(y)|\le C|x-y|^\alpha$ con $\alpha\in(0,1]$ (\textbf{condición de Hölder}), entonces $\omega(f,h)\le Ch^\alpha$ y el Teorema~\ref{thm:error_trapecio_continuo} da
-\[
-\left|\int_a^b f - T_M(f)\right|\le C(b-a)\,h^\alpha = C(b-a)^{1+\alpha}M^{-\alpha}.
-\]
-Por ejemplo, la función $f(x)=\sqrt{x}$ en $[0,1]$ es Hölder de exponente $\alpha=\frac{1}{2}$ ya que
-\[
-|\sqrt{x}-\sqrt{y}|=\frac{|x-y|}{\sqrt{x}+\sqrt{y}}\le\frac{|x-y|}{\sqrt{|x-y|}}=\sqrt{|x-y|},
-\]
-luego $\omega(\sqrt{\cdot},h)\le\sqrt{h}$ y la cota es
-\[
-\left|\int_0^1\sqrt{x}\,dx - T_M(\sqrt{\cdot})\right|\le\frac{1}{\sqrt{M}}.
-\]
-En contraste, para una función Lipschitz ($\alpha=1$) la convergencia es $O(1/M)$, y para $f\in C^2$ se recupera $O(1/M^2)$ por el Teorema~\ref{thm:error_trapecio_compuesto}.
-\end{example}
-
-Sin embargo, la cota $O(h^{1/2})$ para $\sqrt{x}$ es muy pesimista: $\sqrt{x}$ es $C^2$ en $(0,1]$ y la singularidad de $f''$ está confinada a un entorno del origen.  Combinando la cota para funciones continuas en el subintervalo singular con la cota $C^2$ en los restantes se obtiene un orden mucho mejor.
-
-\begin{theorem}[Cota mejorada para singularidad aislada]\label{prop:trapecio_singularidad}
-Sea $f\in C([a,b])$ Hölder de exponente $\alpha>0$, y supongamos que $f\in C^2((a,b])$ con
-\[
-|f''(x)|\;\le\; C_0\,(x-a)^{-\beta},\qquad x\in(a,b],
-\]
-para constantes $C_0>0$ y $\beta\in(1,3)$.  Entonces el error de la regla del trapecio compuesta con paso $h=(b-a)/M$ satisface
-\[
-\left|\int_a^b f\,dx - T_M(f)\right| \;=\; O\!\bigl(h^{\min(1+\alpha,\,3-\beta)}\bigr).
-\]
-\end{theorem}
-
-\begin{proof}
-Separamos el error en el primer subintervalo $[a,a+h]$ (que contiene la singularidad) y los restantes $M-1$ subintervalos.
-
-\textbf{Primer subintervalo.}  Aplicando el Teorema~\ref{thm:error_trapecio_continuo} localmente:
-\[
-|E_0|\;\le\; h\,\omega(f,h)\;\le\; h\cdot C_1h^\alpha = C_1 h^{1+\alpha},
-\]
-donde $C_1$ es la constante de Hölder de~$f$.
-
-\textbf{Subintervalos $j=1,\ldots,M-1$.}  En $[x_j,x_{j+1}]$ con $x_j=a+jh$ la función $f$ es $C^2$, y el Teorema~\ref{thm:error_trapecio} da
-\[
-|E_j|\;\le\;\frac{h^3}{12}\sup_{[x_j,x_{j+1}]}|f''|
-\;\le\;\frac{h^3}{12}\,C_0\,(jh)^{-\beta}
-= \frac{C_0\,h^{3-\beta}}{12}\,j^{-\beta}.
-\]
-Sumando y usando que $\sum_{j=1}^{\infty}j^{-\beta}<\infty$ para $\beta>1$:
-\[
-\sum_{j=1}^{M-1}|E_j|\;\le\;\frac{C_0\,h^{3-\beta}}{12}\sum_{j=1}^{\infty}j^{-\beta}
-= C_2\,h^{3-\beta}.
-\]
-
-\textbf{Conclusión.}  El error total es $|E_0|+\sum_{j\ge 1}|E_j|=O(h^{1+\alpha})+O(h^{3-\beta})=O(h^{\min(1+\alpha,\,3-\beta)})$.
-\end{proof}
-
-\begin{example}[Cota mejorada para $\sqrt{x}$]\label{ex:trapecio_sqrt_mejorado}
-Para $f(x)=\sqrt{x}$ en $[0,1]$:
-\begin{itemize}
-\item $f$ es Hölder de exponente $\alpha=\tfrac{1}{2}$ (Ejemplo~\ref{ex:trapecio_holder}).
-\item $f''(x)=-\tfrac{1}{4}x^{-3/2}$, así que $\beta=\tfrac{3}{2}$ y $C_0=\tfrac{1}{4}$.
-\end{itemize}
-Las dos contribuciones dan el mismo exponente: $1+\alpha=\tfrac{3}{2}$ y $3-\beta=\tfrac{3}{2}$.  La Proposición~\ref{prop:trapecio_singularidad} da
-\[
-\left|\int_0^1\sqrt{x}\,dx - T_M(\sqrt{\cdot})\right|=O(h^{3/2})=O(M^{-3/2}),
-\]
-lo que mejora en un factor $1/M$ la cota $O(M^{-1/2})$ obtenida usando únicamente la regularidad Hölder global.
-\end{example}
-
-
-
-\section{Interpolación en $\mathbb{C}$ y la DFT}\label{sec:interpolacion_C}
-
-Un caso particularmente importante de interpolación ocurre cuando trabajamos sobre el cuerpo de los números complejos $\mathbb{C}$ y elegimos como nodos las \textbf{raíces $n$-ésimas de la unidad}.
 
 Esta elección no es arbitraria: la geometría regular de estos puntos sobre el círculo unitario dota al problema de interpolación de una estructura algebraica excepcional. La matriz de Vandermonde asociada se convierte, salvo un factor de escala, en una matriz unitaria. Esto significa que el problema de interpolación (y su inverso, la evaluación) se vuelve numéricamente muy estable y computacionalmente muy eficiente.
 
@@ -3564,306 +3046,348 @@ Por lo tanto, las evaluaciones de $m_1$ y $m_2$ difieren en al menos $n - (k-1) 
 
 \chapter{Teoría de Aproximación}\label{cap:teoria_aproximacion}
 
+En los capítulos anteriores desarrollamos dos grandes herramientas para construir aproximaciones. En el capítulo de Álgebra Lineal Numérica estudiamos la mejor aproximación de un vector por elementos de un subespacio, en el sentido de mínimos cuadrados. La fórmula de proyección ortogonal \eqref{proyeccion_ortogonal_appendix} nos permitió expresar esta aproximación de manera explícita en términos de una base ortogonal del subespacio. En el capítulo de Interpolación vimos cómo construir polinomios que pasan exactamente por un conjunto de puntos dados, utilizando para ello diferentes bases de polinomios, como la base monomial, la base de Lagrage, y en el caso complejo la base de los modos de Fourier discretos.
+
+En este capítulo queremos dar un paso más: obtener representaciones de funciones en bases de funciones, extendiendo la fórmula de proyección \eqref{proyeccion_ortogonal_appendix} a espacios de dimensión infinita. La idea es la misma que en el caso finito-dimensional: si $\{\phi_k\}_{k \in \mathcal{I}}$ es una familia ortogonal en un espacio de funciones dotado de un producto interno apropiado, los coeficientes $\hat{f}_k = (f, \phi_k)/\|\phi_k\|^2$ definen una representación
+\[
+f \;\sim\; \sum_{k \in \mathcal{I}} \hat{f}_k\, \phi_k,
+\]
+que llamamos \emph{serie} de $f$ en la base $\{\phi_k\}$.
+
+A diferencia del caso finito-dimensional, esta suma es en general infinita y surgen dos preguntas centrales. La primera es la convergencia: ¿en qué sentido tiende la serie completa a $f$? Y si la serie converge, la segunda pregunta es ¿Con qué velocidad lo hace? Equivalentemente, si retenemos sólo los primeros $N$ términos de la representación, ¿cuán grande es el error $\|f - \sum_{|k| \leq N} \hat{f}_k \phi_k\|$? Las respuestas dependen de la regularidad de $f$ y de la elección de la base, y su análisis es el hilo conductor de este capítulo.
+
 \section{Series de Fourier de funciones suaves periódicas}\label{sec:series_fourier_suaves}
 
-En el capítulo 2 estudiamos la teoría general de espacios con producto interno y vimos cómo representar vectores en bases ortogonales mediante proyecciones. Ahora aplicaremos estos conceptos a espacios de funciones periódicas.
+Para todo $n \ge 1$, el espacio de funciones $n$ veces continuamente diferenciables y periódicas se define como:
+$$C^n_{per}([0,2\pi]) = \left\lbrace f \in C^n([0,2\pi]) : f^{(p)}(0) = f^{(p)}(2\pi) \mbox{ para todo } 0\le p\le n-1 \right\rbrace.$$
+La condición de periodicidad hasta el orden $n-1$ garantiza que la extensión de $f$ por periodicidad a todo $\mathbb{R}$ es de clase $C^{n-1}$: en particular $f$ es continua y periódica, y para $n \ge 2$ también lo es~$f'$, y así sucesivamente.
 
-En diversas áreas de la ciencia y la ingeniería, es fundamental representar funciones complejas como sumas de componentes más simples. Las \textbf{series de Fourier} nos permiten descomponer funciones periódicas en una suma de exponenciales complejas de diferentes frecuencias. Esta descomposición es la aplicación directa de la fórmula de proyección \eqref{proyeccion_ortogonal_appendix} del apéndice, donde la base ortogonal son las exponenciales complejas $\{e^{ikx}\}_{k \in \mathbb{Z}}$.
+\subsection{La base exponencial compleja}
 
-Consideremos el espacio de funciones suaves y periódicas $C^n_{per}([0,2\pi])$ definido como:
-$$C^n_{per}([0,2\pi]) = \left\lbrace f \in C^n([0,2\pi]) : f^{(p)}(0) = f^{(p)}(2\pi) \mbox{ para todo } 0\le p\le n \right\rbrace$$
-
-Para funciones complejas $f, g : [0,2\pi] \to \mathbb{C}$, definimos el producto interno:
+Para funciones a valores complejos $f,g:[0,2\pi]\to\mathbb{C}$, la integral se define componente a componente: si $f=u+iv$ con $u,v$ reales, entonces $\int_0^{2\pi}f\,dx = \int_0^{2\pi}u\,dx + i\int_0^{2\pi}v\,dx$. Con esta convención, el espacio $C^n_{per}([0,2\pi])$ queda dotado del producto interno:
 \begin{equation}\label{prod_cont}
- (f,g) = \int_0^{2\pi} f(x) \overline{g(x)}\, dx
+(f,g) = \int_0^{2\pi} f(x)\,\overline{g(x)}\,dx,
 \end{equation}
-donde $\overline{g(x)}$ denota el conjugado complejo de $g(x)$.
-
-\begin{remark}[Notación]
-En este capítulo utilizamos $i$ para denotar la unidad imaginaria ($i^2 = -1$), siguiendo la convención matemática estándar. En algunas referencias sobre la DFT, se utiliza la notación $j$ (común en ingeniería eléctrica y procesamiento de señales). Ambas notaciones son equivalentes: $i \equiv j$.
-\end{remark}
-
-\begin{definition}[Coeficientes de Fourier complejos]
-Sea $f : [0,2\pi] \to \mathbb{C}$ una función $2\pi$-periódica integrable. Los \textbf{coeficientes de Fourier complejos} de $f$ se definen como:
-\begin{equation}\label{coef_fourier_complex}
-\hat{f}_k = \frac{1}{2\pi} \int_0^{2\pi} f(x) e^{-ikx}\, dx, \qquad k \in \mathbb{Z}.
-\end{equation}
-\end{definition}
-
-La \textbf{serie de Fourier compleja} de $f$ se escribe entonces como:
-\begin{equation}\label{serie_fourier_complex}
-f(x) \sim \sum_{k=-\infty}^{\infty} \hat{f}_k e^{ikx}.
-\end{equation}
-
-Para cada $N \in \mathbb{N}$, definimos el conjunto de funciones base
+donde $\overline{g(x)}$ denota el conjugado complejo. Para cada $N\in\mathbb{N}$, la base de exponenciales complejas es:
 \begin{equation}\label{bn_complex}
- B_N = \left\{ e^{ikx} : k \in \mathbb{Z}, \, |k| \leq N \right\} \subset C^\infty_{per}([0,2\pi]).
+B_N^{\mathbb{C}} = \left\{ e^{ikx} : k\in\mathbb{Z},\;|k|\le N \right\} \subset C^\infty_{per}([0,2\pi]).
 \end{equation}
 
-\begin{theorem}[Ortogonalidad de la base exponencial compleja]
-El conjunto de funciones
+\begin{theorem}[Ortogonalidad de la base exponencial]\label{thm:ortog_complex}
+Para $k, l\in\mathbb{Z}$:
 \[
-B_N = \left\{ e^{ikx} : k \in \mathbb{Z}, \, |k| \leq N \right\}
+(e^{ikx},\,e^{ilx}) = \int_0^{2\pi}e^{i(k-l)x}\,dx =
+\begin{cases} 2\pi & \text{si }k=l,\\ 0 & \text{si }k\ne l. \end{cases}
 \]
-es ortogonal respecto al producto interno
-\[
-(f,g) = \int_0^{2\pi} f(x) \overline{g(x)}\,dx
-\]
-en el espacio $C^\infty_{per}([0,2\pi])$. Más precisamente, para $k, l \in \mathbb{Z}$:
-\[
-\int_0^{2\pi} e^{ikx} e^{-ilx}\,dx = \int_0^{2\pi} e^{i(k-l)x}\,dx = 
-\begin{cases}
-2\pi & \text{si } k = l \\
-0 & \text{si } k \neq l
-\end{cases}
-\]
+En particular, $\|e^{ikx}\|^2 = 2\pi$ para todo $k\in\mathbb{Z}$.
 \end{theorem}
 
 \begin{proof}
-Si $k = l$, entonces $e^{i(k-l)x} = e^{0} = 1$, y por lo tanto:
+Si $k=l$: $\int_0^{2\pi}1\,dx = 2\pi$. Si $k\ne l$, sea $m=k-l\ne 0$:
 \[
-\int_0^{2\pi} e^{i(k-l)x}\,dx = \int_0^{2\pi} 1\,dx = 2\pi.
+\int_0^{2\pi}e^{imx}\,dx = \left[\frac{e^{imx}}{im}\right]_0^{2\pi} = \frac{e^{2\pi im}-1}{im} = 0,
 \]
-
-Si $k \neq l$, sea $m = k - l \neq 0$. Entonces:
-\[
-\int_0^{2\pi} e^{imx}\,dx = \left[ \frac{e^{imx}}{im} \right]_0^{2\pi} = \frac{e^{i m 2\pi} - e^{0}}{im} = \frac{1 - 1}{im} = 0,
-\]
-ya que $e^{i m 2\pi} = \cos(2\pi m) + i\sin(2\pi m) = 1$ para todo $m \in \mathbb{Z}$.
-
-Por lo tanto, las funciones exponenciales complejas forman una base ortogonal. La norma de cada función base es $\|e^{ikx}\|^2 = 2\pi$.
+pues $e^{2\pi im}=1$ para todo $m\in\mathbb{Z}$.
 \end{proof}
 
-\begin{corollary}[Ortogonalidad de los cosenos]\label{cor:ortogonalidad_cosenos}
-Para $j, k \in \mathbb{Z}_{\geq 0}$:
-\begin{equation}\label{eq:ortog_cos}
-\int_0^{\pi} \cos(j\theta)\,\cos(k\theta)\,d\theta = \begin{cases} \pi & \text{si } j = k = 0, \\ \pi/2 & \text{si } j = k \neq 0, \\ 0 & \text{si } j \neq k. \end{cases}
+Los \textbf{coeficientes de Fourier} de $f$ son sus coordenadas en $B_N^{\mathbb{C}}$ según la fórmula de proyección~\eqref{proyeccion_ortogonal_appendix}:
+\begin{equation}\label{coef_fourier_complex}
+\hat{f}_k = \frac{(f,\,e^{ikx})}{\|e^{ikx}\|^2} = \frac{1}{2\pi}\int_0^{2\pi}f(x)\,e^{-ikx}\,dx, \qquad k\in\mathbb{Z}.
 \end{equation}
-\end{corollary}
+La \textbf{suma parcial de Fourier} de orden $N$ es $S_Nf(x) = \sum_{|k|\le N}\hat{f}_k e^{ikx}$, y la \textbf{serie de Fourier} de $f$:
+\begin{equation}\label{serie_fourier_complex}
+f(x) \sim \sum_{k=-\infty}^{\infty} \hat{f}_k\,e^{ikx}.
+\end{equation}
+Como $S_Nf$ es la proyección ortogonal de $f$ sobre $\langle B_N^{\mathbb{C}}\rangle$, es el polinomio trigonométrico de grado $\le N$ más cercano a $f$ en norma cuadrática.
+
+\begin{theorem}[Propiedad de mejor aproximación]\label{thm:mejor_aprox}
+Sea $f\in L^2([0,2\pi];\mathbb{C})$ y $N\ge 0$. Para todo polinomio trigonométrico $p=\sum_{|k|\le N}c_k e^{ikx}$:
+\[
+\|f - S_N f\|_2 \le \|f - p\|_2,
+\]
+donde $\|h\|_2 = \bigl(\int_0^{2\pi}|h(x)|^2\,dx\bigr)^{1/2}$.
+\end{theorem}
 
 \begin{proof}
-Usando $\cos(j\theta)\cos(k\theta) = \frac{1}{2}[\cos((j-k)\theta) + \cos((j+k)\theta)]$ y la ortogonalidad del teorema anterior (restringida a $[0,\pi]$ por paridad).
+Escribimos $p = S_N f + q$ con $q = p - S_N f \in \langle B_N^{\mathbb{C}}\rangle$. Como $f - S_N f \perp \langle B_N^{\mathbb{C}}\rangle$ por construcción de $S_Nf$ como proyección ortogonal, la identidad de Pitágoras da:
+\[
+\|f-p\|_2^2 = \|f-S_N f\|_2^2 + \|q\|_2^2 \ge \|f-S_N f\|_2^2. \qedhere
+\]
 \end{proof}
 
-\begin{remark}[Conexión con la fórmula de proyección]
-Observemos que esta definición es precisamente la fórmula de proyección \eqref{proyeccion_ortogonal_appendix} aplicada a la función $f$ sobre la base (no normalizada) de exponenciales complejas. En efecto, si verificamos que $\|e^{ikx}\|^2 = \int_0^{2\pi} e^{ikx} e^{-ikx}\, dx = 2\pi$, entonces:
-\[
-\hat{f}_k = \frac{(f, e^{ikx})}{\|e^{ikx}\|^2} = \frac{\int_0^{2\pi} f(x) e^{-ikx}\, dx}{2\pi}.
-\]
-Esto muestra que los coeficientes de Fourier no son más que las coordenadas de $f$ en la base ortogonal de exponenciales complejas, calculadas mediante proyección.
+\begin{remark}[Notación]
+En este capítulo utilizamos $i$ para la unidad imaginaria ($i^2=-1$), siguiendo la convención matemática estándar. En ingeniería eléctrica y procesamiento de señales se usa a veces la notación $j$; ambas son equivalentes: $i\equiv j$.
 \end{remark}
 
-\begin{remark}[Relación con la base trigonométrica real]
-La representación compleja es equivalente a la versión real con senos y cosenos. Utilizando las identidades de Euler:
+\subsection{La serie trigonométrica real}
+
+Cuando $f$ toma valores reales, los coeficientes de Fourier presentan una estructura de simetría que permite reescribir la serie en términos de senos y cosenos.
+
+\begin{proposition}[Simetría conjugada]\label{prop:conj_simetria}
+Sea $f:[0,2\pi]\to\mathbb{R}$ integrable. Entonces $\hat{f}_{-k} = \overline{\hat{f}_k}$ para todo $k\in\mathbb{Z}$.
+\end{proposition}
+
+\begin{proof}
+Como $\overline{f(x)} = f(x)$:
 \[
-e^{ikx} = \cos(kx) + i \sin(kx), \qquad e^{-ikx} = \cos(kx) - i \sin(kx),
+\overline{\hat{f}_k} = \frac{1}{2\pi}\int_0^{2\pi}\overline{f(x)\,e^{-ikx}}\,dx = \frac{1}{2\pi}\int_0^{2\pi}f(x)\,e^{ikx}\,dx = \hat{f}_{-k}. \qedhere
 \]
-podemos escribir:
+\end{proof}
+
+Esta simetría permite agrupar los pares de frecuencia $\pm k$ en la suma parcial:
+\begin{equation}\label{eq:grouping}
+\hat{f}_k e^{ikx} + \hat{f}_{-k}e^{-ikx}
+= \hat{f}_k e^{ikx} + \overline{\hat{f}_k}\,e^{-ikx}
+= 2\operatorname{Re}\!\bigl(\hat{f}_k\,e^{ikx}\bigr).
+\end{equation}
+Escribiendo $\hat{f}_k = \tfrac{a_k - ib_k}{2}$ con $a_k, b_k \in \mathbb{R}$ y usando $e^{ikx}=\cos(kx)+i\sin(kx)$:
 \[
-\cos(kx) = \frac{e^{ikx} + e^{-ikx}}{2}, \qquad \sin(kx) = \frac{e^{ikx} - e^{-ikx}}{2i}.
+2\operatorname{Re}\!\bigl(\hat{f}_k\,e^{ikx}\bigr) = a_k\cos(kx) + b_k\sin(kx).
 \]
-Si $f$ es real y tiene coeficientes de Fourier complejos $\hat{f}_k$, entonces $\hat{f}_{-k} = \overline{\hat{f}_k}$. La serie de Fourier puede escribirse en forma real como:
-\[
-f(x) = \hat{f}_0 + \sum_{k=1}^{\infty} \left[ (\hat{f}_k + \hat{f}_{-k}) \cos(kx) + i(\hat{f}_k - \hat{f}_{-k}) \sin(kx) \right].
-\]
-Definiendo $\hat{a}_k = 2\text{Re}(\hat{f}_k)$ y $\hat{b}_k = -2\text{Im}(\hat{f}_k)$ para $k \geq 1$, recuperamos:
-\[
-f(x) = \frac{\hat{a}_0}{2} + \sum_{k=1}^{\infty} \left[ \hat{a}_k \cos(kx) + \hat{b}_k \sin(kx) \right].
-\]
+La evaluación directa de \eqref{coef_fourier_complex} con $e^{-ikx}=\cos(kx)-i\sin(kx)$ muestra que $a_k = 2\operatorname{Re}(\hat{f}_k)$ y $b_k = -2\operatorname{Im}(\hat{f}_k)$ coinciden con las integrales:
+
+\begin{definition}[Coeficientes de Fourier reales y suma parcial]\label{def:fourier_real}
+Sea $f:[0,2\pi]\to\mathbb{R}$ integrable. Sus \textbf{coeficientes de Fourier reales} son:
+\begin{equation}\label{coef_fourier_real}
+a_k = \frac{1}{\pi}\int_0^{2\pi}f(x)\cos(kx)\,dx \;(k\ge 0),
+\qquad
+b_k = \frac{1}{\pi}\int_0^{2\pi}f(x)\sin(kx)\,dx \;(k\ge 1).
+\end{equation}
+La \textbf{suma parcial de Fourier real} de orden $N$ es:
+\begin{equation}\label{SN_real}
+S_N(f)(x) = \frac{a_0}{2} + \sum_{k=1}^N \bigl(a_k\cos(kx)+b_k\sin(kx)\bigr).
+\end{equation}
+\end{definition}
+
+La equivalencia con la suma parcial compleja es inmediata de \eqref{eq:grouping}: para $f$ real, $S_Nf(x) = \hat{f}_0 + \sum_{k=1}^N[\hat{f}_k e^{ikx}+\hat{f}_{-k}e^{-ikx}] = \frac{a_0}{2}+\sum_{k=1}^N[a_k\cos(kx)+b_k\sin(kx)]$.
+
+\begin{remark}
+La ortogonalidad del conjunto $\{1,\cos(x),\sin(x),\ldots,\cos(Nx),\sin(Nx)\}$ en $L^2([0,2\pi])$ se obtiene sin verificación adicional: es una consecuencia del Teorema~\ref{thm:ortog_complex} y del cambio de base \eqref{eq:grouping}. El Teorema~\ref{thm:mejor_aprox} se extiende también al caso real: para $f$ real, $S_N(f)$ es el polinomio trigonométrico real de grado $\le N$ más cercano a $f$ en $L^2([0,2\pi])$.
 \end{remark}
 
 \subsection{Decaimiento de los coeficientes de Fourier y regularidad}
 
-El siguiente teorema fundamental relaciona la regularidad de una función con el decaimiento de sus coeficientes de Fourier.
-
-\begin{theorem}[Decaimiento de los coeficientes de Fourier]\label{thm:decaimiento_fourier}
-Sea $f \in C^n_{per}([0,2\pi])$, es decir, $f$ es periódica y su derivada de orden $n$ es continua. Entonces existe una constante $C > 0$ tal que, para todo $k \in \mathbb{Z}$ con $k \neq 0$:
+\begin{theorem}[Lema de Riemann-Lebesgue para funciones $C^1$]\label{cor:riemann_lebesgue_C1}
+Si $g\in C^1([a,b])$, entonces
 \[
-|\hat{f}_k| \leq \frac{C}{|k|^n},
+\int_a^b g(t)e^{i\omega t}\,dt\to 0
+\quad (|\omega|\to\infty).
 \]
-donde $\hat{f}_k = \frac{1}{2\pi} \int_0^{2\pi} f(x) e^{-ikx}\, dx$ son los coeficientes de Fourier de $f$.
 \end{theorem}
 
 \begin{proof}
-Por integración por partes:
+Sea
 \[
-\hat{f}_k = \frac{1}{2\pi} \int_0^{2\pi} f(x) e^{-ikx}\, dx.
+J(\omega):=\int_a^b g(t)e^{i\omega t}\,dt.
 \]
-Integramos por partes una vez. Sea $u = f(x)$ y $dv = e^{-ikx}dx$. Entonces $du = f'(x)dx$ y $v = \frac{e^{-ikx}}{-ik}$:
+Integramos por partes con $u=g(t)$ y $dv=e^{i\omega t}dt$:
 \[
-\hat{f}_k = \frac{1}{2\pi} \left[ f(x) \frac{e^{-ikx}}{-ik} \right]_0^{2\pi} + \frac{1}{2\pi ik} \int_0^{2\pi} f'(x) e^{-ikx}\, dx.
+J(\omega)=\left[\frac{g(t)e^{i\omega t}}{i\omega}\right]_a^b-\frac{1}{i\omega}\int_a^b g'(t)e^{i\omega t}dt.
 \]
-Usando que $f$ es $2\pi$-periódica (es decir, $f(2\pi) = f(0)$), el término evaluado en los extremos se anula:
+Tomando módulo:
 \[
-\left[ f(x) e^{-ikx} \right]_0^{2\pi} = f(2\pi)e^{-ik2\pi} - f(0) = f(0)(e^{-ik2\pi} - 1) = 0.
+|J(\omega)|
+\le \frac{|g(a)|+|g(b)|}{|\omega|}
++\frac{1}{|\omega|}\int_a^b|g'(t)|dt
+\xrightarrow[|\omega|\to\infty]{}0.
 \]
-Por lo tanto:
-\begin{equation}\label{fourier_deriv}
-\hat{f}_k = \frac{1}{ik} \cdot \frac{1}{2\pi} \int_0^{2\pi} f'(x) e^{-ikx}\, dx = \frac{1}{ik} \widehat{f'}_k,
-\end{equation}
-donde $\widehat{f'}_k$ denota el $k$-ésimo coeficiente de Fourier de $f'$.
-
-Repitiendo este proceso $n$ veces (y usando que todas las derivadas de $f$ hasta orden $n$ son periódicas), y utilizando la Ecuación~\eqref{fourier_deriv}:
-\[
-\hat{f}_k = \frac{1}{(ik)^n} \widehat{f^{(n)}}_k.
-\]
-
-Por lo tanto:
-\[
-|\hat{f}_k| = \frac{1}{|k|^n} |\widehat{f^{(n)}}_k| \leq \frac{1}{|k|^n} \cdot \frac{1}{2\pi} \int_0^{2\pi} |f^{(n)}(x)|\, dx = \frac{C}{|k|^n},
-\]
-donde $C = \frac{1}{2\pi} \int_0^{2\pi} |f^{(n)}(x)|\, dx$.
-
-Por lo tanto, los coeficientes de Fourier de funciones $C^n$ decrecen al menos como $1/|k|^n$.
 \end{proof}
 
 \begin{corollary}
-Si $f \in C^\infty_{per}([0,2\pi])$ (es decir, $f$ es infinitamente diferenciable), entonces sus coeficientes de Fourier decrecen más rápido que cualquier potencia de $1/|k|$:
+Si $g\in C^1([a,b])$, entonces
 \[
-\text{Para todo } n \in \mathbb{N}, \text{ existe } C_n > 0 \text{ tal que } |\hat{f}_k| \leq \frac{C_n}{|k|^n}.
+\int_a^b g(t)\sin(\omega t)\,dt\to 0,
+\qquad
+\int_a^b g(t)\cos(\omega t)\,dt\to 0,
+\quad (|\omega|\to\infty).
 \]
-Esto se conoce como \textbf{decaimiento espectral} o \textbf{super-algebraico}.
+\end{corollary}
+
+\begin{proof}
+Por Euler,
+\[
+\int_a^b g(t)e^{i\omega t}dt
+=\int_a^b g(t)\cos(\omega t)dt
++i\int_a^b g(t)\sin(\omega t)dt.
+\]
+Si un número complejo tiende a $0$, también tienden a $0$ su parte real e imaginaria. Aplicando el Teorema~\ref{cor:riemann_lebesgue_C1}, se obtiene el resultado.
+\end{proof}
+
+En el contexto periódico de Fourier, la misma idea se itera y los términos de borde se anulan exactamente.
+
+\begin{lemma}[Coeficientes de Fourier de la derivada]\label{lem:fourier_derivada_coef}
+Sea $f\in C^1_{per}([0,2\pi])$. Entonces, para todo $k\in\mathbb Z$:
+\[
+\widehat{f'}_k = ik\,\hat f_k.
+\]
+En particular, para $k\neq 0$,
+\begin{equation}\label{fourier_deriv}
+\hat f_k = \frac{1}{ik}\,\widehat{f'}_k.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Por definición,
+\[
+\widehat{f'}_k=\frac{1}{2\pi}\int_0^{2\pi}f'(x)e^{-ikx}\,dx.
+\]
+Integrando por partes:
+\[
+\widehat{f'}_k
+=\frac{1}{2\pi}\left[f(x)e^{-ikx}\right]_0^{2\pi}
++\frac{ik}{2\pi}\int_0^{2\pi}f(x)e^{-ikx}\,dx.
+\]
+El término de borde se anula por periodicidad de $f$ y porque $e^{-2\pi ik}=1$. Luego
+$\widehat{f'}_k=ik\,\hat f_k$.
+\end{proof}
+
+\begin{theorem}[Decaimiento de los coeficientes de Fourier]\label{thm:decaimiento_fourier}
+Sea $f \in C^n_{per}([0,2\pi])$ con $n \ge 1$. Entonces, para todo $k \in \mathbb{Z}$ con $k \neq 0$:
+\[
+\hat{f}_k = \frac{\widehat{f^{(n)}}_k}{(ik)^n}, \qquad |\hat{f}_k| \leq \frac{C}{|k|^n},
+\]
+donde $C = \frac{1}{2\pi}\int_0^{2\pi}|f^{(n)}(x)|\,dx$.
+\end{theorem}
+
+\begin{proof}
+Aplicando el Lema~\ref{lem:fourier_derivada_coef} sucesivamente a
+$f, f',\ldots,f^{(n-1)}$ (válido por periodicidad y regularidad), para $k\neq 0$ se obtiene
+\[
+\hat{f}_k=\frac{\widehat{f^{(n)}}_k}{(ik)^n}.
+\]
+Finalmente,
+\[
+|\hat{f}_k|=\frac{|\widehat{f^{(n)}}_k|}{|k|^n}
+\le \frac{1}{|k|^n}\cdot\frac{1}{2\pi}\int_0^{2\pi}|f^{(n)}(x)|\,dx
+=\frac{C}{|k|^n}. \qedhere
+\]
+\end{proof}
+
+\begin{corollary}[Decaimiento algebraico por regularidad finita]\label{cor:decaimiento_O_nk}
+Si $f\in C^k_{per}([0,2\pi])$ con $k\ge 1$, entonces
+\[
+|\hat f_n|=O(|n|^{-k}) \qquad (|n|\to\infty).
+\]
+Más precisamente, existe $C_k>0$ tal que $|\hat f_n|\le C_k/|n|^k$ para todo $n\neq 0$.
+\end{corollary}
+
+\begin{proof}
+Es el Teorema~\ref{thm:decaimiento_fourier} aplicado con $n=k$.
+\end{proof}
+
+\begin{corollary}
+Si $f \in C^\infty_{per}([0,2\pi])$, entonces para todo $n \in \mathbb{N}$ existe $C_n > 0$ tal que $|\hat{f}_k| \leq C_n/|k|^n$. Esto se conoce como \textit{decaimiento espectral} o \textit{super-algebraico}.
 \end{corollary}
 
 \subsection{Convergencia de la serie de Fourier para funciones suaves}
 
-Los resultados anteriores sobre el decaimiento de los coeficientes de Fourier tienen consecuencias inmediatas para la convergencia de la serie. Desarrollamos estas consecuencias paso a paso.
+Los resultados anteriores sobre decaimiento permiten organizar la convergencia en dos pasos: cota elemental del truncado y convergencia para $C^1_{per}$ mediante núcleo de Dirichlet y Riemann-Lebesgue.
 
-\begin{lemma}[Convergencia absoluta y uniforme]\label{lem:fourier_abs_unif}\label{prop:fourier_rate_naive}
-Sea $f \in C^n_{per}([0,2\pi])$ con $n \geq 2$. Entonces la serie de Fourier $\sum_{k \in \mathbb{Z}} \hat{f}_k e^{ikx}$ converge absoluta y uniformemente a una función continua $g$, y la suma parcial $S_N f(x) = \sum_{|k| \leq N} \hat{f}_k e^{ikx}$ satisface:
+\begin{lemma}[Cota elemental de truncamiento]\label{lem:fourier_abs_unif}\label{prop:fourier_rate_naive}
+Sea $f \in C^n_{per}([0,2\pi])$ con $n\ge 1$. Para todo $N\ge 1$:
 \[
-\left\|g - S_N f\right\|_\infty \leq \sum_{|k| > N} |\hat{f}_k| = O(N^{1-n}).
+\sum_{|k|>N}|\hat f_k| \le \frac{\|f^{(n)}\|_{L^2}}{\sqrt{\pi(2n-1)}}\,\frac{1}{N^{n-1/2}}.
 \]
 \end{lemma}
+
 \begin{proof}
-Del teorema de decaimiento, $|\hat{f}_k| \leq C/|k|^n$ para $k \neq 0$ con $C = \frac{1}{2\pi}\|f^{(n)}\|_{L^1}$.  Como $n \geq 2$, la serie $\sum_{k \neq 0} |k|^{-n}$ converge, y como $|\hat{f}_k e^{ikx}| = |\hat{f}_k|$ no depende de $x$, la convergencia absoluta y uniforme sigue del Test~M de Weierstrass.  Para la tasa, acotamos la cola comparando con una integral:
+Para $k\neq 0$, el Teorema~\ref{thm:decaimiento_fourier} da $\hat f_k=\widehat{f^{(n)}}_k/(ik)^n$. Por Cauchy-Schwarz,
 \[
-\sum_{|k| > N} |\hat{f}_k| \leq 2C \sum_{k=N+1}^\infty \frac{1}{k^n} \leq 2C \int_N^\infty \frac{dx}{x^n} = \frac{2C}{(n-1)N^{n-1}}. \qedhere
+\sum_{|k|>N}|\hat f_k|=\sum_{|k|>N}\frac{|\widehat{f^{(n)}}_k|}{|k|^n}
+\le \Bigl(\sum_{|k|>N}|\widehat{f^{(n)}}_k|^2\Bigr)^{1/2}
+\Bigl(\sum_{|k|>N}|k|^{-2n}\Bigr)^{1/2}.
 \]
+Por Bessel (Teorema~\ref{thm:bessel}),
+\[
+\sum_{k\in\mathbb Z}|\widehat{f^{(n)}}_k|^2\le \frac{\|f^{(n)}\|_{L^2}^2}{2\pi}.
+\]
+Además,
+\[
+\sum_{|k|>N}|k|^{-2n}=2\sum_{k=N+1}^{\infty}k^{-2n}
+\le 2\int_N^{\infty}x^{-2n}\,dx
+=\frac{2}{(2n-1)N^{2n-1}}.
+\]
+Combinando,
+\[
+\sum_{|k|>N}|\hat f_k|
+\le \sqrt{\frac{\|f^{(n)}\|_{L^2}^2}{2\pi}\cdot\frac{2}{(2n-1)N^{2n-1}}}
+=\frac{\|f^{(n)}\|_{L^2}}{\sqrt{\pi(2n-1)}}\,\frac{1}{N^{n-1/2}}.
+\]
+La segunda desigualdad sigue de $\left|\sum_{|k|>N}\hat f_k e^{ikx}\right|\le \sum_{|k|>N}|\hat f_k|$.
 \end{proof}
-
-\begin{remark}[Mejora de la tasa mediante Cauchy-Schwarz y Bessel]
-La cota $O(N^{1-n})$ del Lema~\ref{prop:fourier_rate_naive} se obtiene comparando la serie con una integral, usando solo información $L^1$ sobre $f^{(n)}$.  Es posible mejorar el exponente a $O(N^{1/2-n})$ aplicando la desigualdad de Cauchy-Schwarz a la serie $\sum_{|k|>N} |\hat{f}_k| = \sum_{|k|>N} |\widehat{f^{(n)}}_k|/|k|^n$ y acotando el primer factor con la desigualdad de Bessel (Apéndice, Teorema~\ref{thm:bessel}).  La demostración queda como ejercicio.
-\end{remark}
-
-\begin{remark}
-Más aún, es posible obtener la tasa óptima $O(N^{-n})$ pero para ello haría falta reemplazar la desigualdad de Bessel por la \textbf{identidad de Parseval} (que requiere demostrar que $\{e^{ikx}\}$ es base \emph{completa} de $L^2$, es decir, que la serie de Fourier de toda función $L^2$ converge en norma $L^2$ a la función).  La demostración de la tasa óptima $O(N^{-n})$ requiere además los \textbf{teoremas de Jackson} sobre mejor aproximación trigonométrica.
-\end{remark}
-
-Hasta aquí hemos demostrado que la serie de Fourier converge absoluta y uniformemente a \emph{alguna función} continua $g$. Falta demostrar que $g = f$. Esto no es trivial: la convergencia uniforme garantiza que $g$ y $f$ tienen los mismos coeficientes de Fourier, pero necesitamos mostrar que una función continua periódica queda determinada por sus coeficientes de Fourier sin recurrir a la completitud de $L^2$. El Teorema \ref{thm:fourier_converge_a_f} lo establece por medios elementales, pero antes demostremos el siguiente lema, que es la clave para la demostración.
 
 \begin{lemma}[Núcleo de Dirichlet]\label{lem:dirichlet_kernel}
-La suma parcial de la serie de Fourier admite la representación integral:
+La suma parcial de Fourier admite la representación
 \[
-S_N f(x) = \frac{1}{2\pi}\int_0^{2\pi} f(t)\, D_N(x-t)\,dt,
+S_N f(x)=\frac{1}{2\pi}\int_0^{2\pi} f(x-t)\,D_N(t)\,dt,
 \]
-donde $D_N(s) = \sum_{k=-N}^{N} e^{iks}$ es el \textbf{núcleo de Dirichlet}, que satisface:
-\begin{equation}\label{dirichlet_kernel}
-D_N(s) = \frac{\sin\!\big((N+\tfrac{1}{2})s\big)}{\sin(s/2)}, \qquad s \neq 0, \qquad \frac{1}{2\pi}\int_0^{2\pi} D_N(s)\,ds = 1.
-\end{equation}
+donde
+\[
+D_N(t)=\sum_{k=-N}^{N}e^{ikt}=\frac{\sin\!\big((N+\tfrac12)t\big)}{\sin(t/2)},
+\qquad
+\frac{1}{2\pi}\int_0^{2\pi}D_N(t)\,dt=1.
+\]
 \end{lemma}
+
 \begin{proof}
-\textbf{Representación integral.}  Partimos de la definición de la suma parcial:
+Partimos de $S_N f(x)=\sum_{k=-N}^{N}\hat f_k e^{ikx}$ y sustituimos
+$\hat f_k=\frac{1}{2\pi}\int_0^{2\pi}f(u)e^{-iku}\,du$:
 \[
-S_N f(x) = \sum_{k=-N}^{N} \hat{f}_k\, e^{ikx}.
+S_N f(x)=\frac{1}{2\pi}\int_0^{2\pi} f(u)\sum_{k=-N}^{N}e^{ik(x-u)}\,du.
 \]
-Sustituyendo la fórmula de los coeficientes $\hat{f}_k = \frac{1}{2\pi}\int_0^{2\pi} f(t)\,e^{-ikt}\,dt$:
-\[
-S_N f(x) = \sum_{k=-N}^{N} \frac{1}{2\pi}\int_0^{2\pi} f(t)\,e^{-ikt}\,dt \cdot e^{ikx} = \frac{1}{2\pi}\int_0^{2\pi} f(t) \underbrace{\sum_{k=-N}^{N} e^{ik(x-t)}}_{= D_N(x-t)}\,dt,
-\]
-donde el intercambio de suma e integral está justificado porque la suma es finita. 
-
-\textbf{Fórmula cerrada para $D_N(s)$.}  Sea $z = e^{is}$ con $s \neq 2m\pi$ ($m \in \mathbb{Z}$), de modo que $z \neq 1$.  Escribimos la suma como una serie geométrica finita.  Sacando factor $z^{-N}$:
-\[
-D_N(s) = \sum_{k=-N}^{N} z^k = z^{-N}\sum_{j=0}^{2N} z^j = z^{-N} \cdot \frac{z^{2N+1} - 1}{z - 1}.
-\]
-Multiplicamos numerador y denominador por $z^{-1/2} = e^{-is/2}$ (es decir, expresamos todo simétricamente respecto de $k=0$):
-\[
-D_N(s) = \frac{z^{N+1/2} - z^{-(N+1/2)}}{z^{1/2} - z^{-1/2}} = \frac{e^{i(N+1/2)s} - e^{-i(N+1/2)s}}{e^{is/2} - e^{-is/2}} = \frac{2i\sin\big((N+\tfrac{1}{2})s\big)}{2i\sin(s/2)} = \frac{\sin\big((N+\tfrac{1}{2})s\big)}{\sin(s/2)}.
-\]
-En $s = 0$ (y $s = 2m\pi$), el cociente tiene una singularidad removible: por L'Hôpital (o por inspección directa de la suma original), $D_N(0) = 2N+1$.
-
-\textbf{Normalización.}  Integramos término a término usando la definición como suma:
-\[
-\frac{1}{2\pi}\int_0^{2\pi} D_N(s)\,ds = \frac{1}{2\pi}\sum_{k=-N}^{N}\int_0^{2\pi} e^{iks}\,ds.
-\]
-Para $k \neq 0$, $\int_0^{2\pi} e^{iks}\,ds = \frac{e^{2\pi ik} - 1}{ik} = 0$ (ya que $e^{2\pi ik} = 1$).  Para $k = 0$, $\int_0^{2\pi} 1\,ds = 2\pi$.  Por lo tanto, la suma da $\frac{1}{2\pi}\cdot 2\pi = 1$.
+Con el cambio $u=x-t$ (periodicidad) se obtiene la fórmula de convolución. La expresión cerrada de $D_N$ resulta de la suma geométrica finita y la normalización de integrar término a término.
 \end{proof}
 
-\begin{theorem}[La serie de Fourier converge a $f$]\label{thm:fourier_converge_a_f}
-Sea $f \in C^n_{per}([0,2\pi])$ con $n \geq 2$. Entonces $S_N f \to f$ uniformemente, con:
+\begin{theorem}[Convergencia para funciones $C^1$]\label{thm:conv_C1}
+Sea $f\in C^1_{per}([0,2\pi])$. Entonces, para todo $x\in[0,2\pi]$,
 \[
-\|S_N f - f\|_\infty = O(1/N).
+S_N f(x)\to f(x).
 \]
-En particular, la serie de Fourier de $f$ converge a la propia función $f$.
 \end{theorem}
+
 \begin{proof}
-\textbf{Paso 1: Representación como integral.} Por el Lema~\ref{lem:dirichlet_kernel}, $S_N f(x) = \frac{1}{2\pi}\int_0^{2\pi} f(t)\, D_N(x-t)\,dt$. Usando la normalización $\frac{1}{2\pi}\int_0^{2\pi} D_N(t)\,dt = 1$, podemos escribir $f(x) = \frac{1}{2\pi}\int_0^{2\pi} f(x)\, D_N(t)\,dt$. Restando:
+Por el Lema~\ref{lem:dirichlet_kernel} y la normalización de $D_N$,
 \[
-S_N f(x) - f(x) = \frac{1}{2\pi}\int_0^{2\pi} \big[f(x-t) - f(x)\big]\, D_N(t)\,dt.
+S_N f(x)-f(x)=\frac{1}{2\pi}\int_0^{2\pi}\big(f(x-t)-f(x)\big)D_N(t)\,dt.
 \]
-Ahora sustituimos la fórmula cerrada $D_N(t) = \frac{\sin((N+1/2)t)}{\sin(t/2)}$ y absorbemos el denominador en el numerador del integrando, definiendo $h_x(t) = \frac{f(x-t) - f(x)}{\sin(t/2)}$:
-\begin{equation}\label{eq:SNf_dirichlet}
-S_N f(x) - f(x) = \frac{1}{2\pi}\underbrace{\int_0^{2\pi} h_x(t)\, \sin\!\big((N+\tfrac{1}{2})t\big)\,dt}_{=:\, I}.
-\end{equation}
+Usando la forma cerrada de $D_N$,
+\[
+S_N f(x)-f(x)=\frac{1}{2\pi}\int_0^{2\pi} g_x(t)\,\sin\!\big((N+\tfrac12)t\big)\,dt,
+\]
+donde
+\[
+g_x(t):=\frac{f(x-t)-f(x)}{\sin(t/2)}
+\]
+y se define por continuidad en $t=0$ y $t=2\pi$. Como $f\in C^1_{per}$, el cociente tiene singularidad removible y $g_x\in C([0,2\pi])$.
 
-\textbf{Paso 2: Regularidad de $h_x$.} La función $h_x$ tiene una singularidad aparente en $t = 0$, pero es removible. Como $f(x-t) - f(x) = -f'(x)t + O(t^2)$ y $\sin(t/2) = t/2 + O(t^3)$:
-\[
-\lim_{t \to 0} h_x(t) = \frac{-f'(x)t + O(t^2)}{t/2 + O(t^3)} = -2f'(x).
-\]
-Más generalmente, si $f \in C^n_{per}$, entonces $t \mapsto f(x-t) - f(x)$ es $C^n$ y se anula en $t=0$, mientras que $\sin(t/2)$ es $C^\infty$ y tiene un cero simple en $t=0$. Por lo tanto $h_x$ (definida como $-2f'(x)$ en $t=0$) resulta $C^{n-1}$ y $2\pi$-periódica en~$t$.
-
-\textbf{Paso 3: Integración por partes.} Definimos $\omega = N + \tfrac{1}{2}$ y acotamos la integral $I$ (lado derecho de \eqref{eq:SNf_dirichlet}).  Como $h_x \in C^{n-1}_{per}$ con $n \geq 2$, en particular $h_x \in C^1_{per}$.  Integramos por partes con $u = h_x(t)$, $dv = \sin(\omega t)\,dt$:
-\[
-I = \left[\frac{-h_x(t)\cos(\omega t)}{\omega}\right]_0^{2\pi} + \frac{1}{\omega}\int_0^{2\pi} h_x'(t)\cos(\omega t)\,dt.
-\]
-El término de frontera se evalúa usando periodicidad $h_x(2\pi) = h_x(0)$ y $\cos(2\omega\pi) = \cos((2N+1)\pi) = -1$:
-\[
-\left[\frac{-h_x(t)\cos(\omega t)}{\omega}\right]_0^{2\pi} = \frac{h_x(0)\big(\cos(0) - \cos(2\omega\pi)\big)}{\omega} = \frac{2h_x(0)}{\omega} = \frac{-4f'(x)}{\omega}.
-\]
-Para la integral restante usamos la cota trivial $\left|\int_0^{2\pi} h_x'(t)\cos(\omega t)\,dt\right| \leq \|h_x'\|_{L^1}$.  Combinando:
-\[
-|I| \leq \frac{4\|f'\|_\infty + \sup_x\|h_x'\|_{L^1}}{\omega} =: \frac{C}{\omega},
-\]
-con $C$ independiente de $N$.  Por~\eqref{eq:SNf_dirichlet}, $\|S_N f - f\|_\infty \leq C/(2\pi\omega) = O(1/N)$.
+Aplicando el Corolario~\ref{cor:riemann_lebesgue_C1} a $g_x$, el integral tiende a $0$ cuando $N\to\infty$. Concluimos $S_N f(x)\to f(x)$.
 \end{proof}
 
-\begin{remark}
-Esta demostración es puramente elemental: usa una sola integración por partes y no requiere la teoría $L^2$ ni la completitud de la base de Fourier.  Para $f \in C^1_{per}$, el cociente $h_x$ es solo $C^0$ y el argumento falla; en ese caso se necesitan herramientas más sofisticadas (el teorema de Carleson establece convergencia puntual c.t.p.\ incluso para $f \in L^2$, pero su demostración es mucho más difícil).
-\end{remark}
-
-\begin{remark}
-La tasa $O(1/N)$ obtenida por el método del núcleo de Dirichlet es mucho más débil que la $O(N^{1-n})$ del Lema~\ref{prop:fourier_rate_naive}, que estima la cola $\sum_{|k|>N}|\hat{f}_k|$ usando frecuencias \emph{enteras} donde sí opera el decaimiento de Fourier.  La ventaja de este argumento no está en la velocidad, sino en que demuestra directamente que el límite es~$f$, sin necesidad de identificarlo a posteriori.
-\end{remark}
-
-Combinando el Lema~\ref{lem:fourier_abs_unif} y el Teorema~\ref{thm:fourier_converge_a_f}, obtenemos el resultado completo:
-
-\begin{theorem}[Convergencia uniforme de la serie de Fourier]\label{thm:convergencia_uniforme_fourier}
-Sea $f \in C^n_{per}([0,2\pi])$ con $n \geq 2$. Entonces la serie de Fourier de $f$ converge absoluta y uniformemente a $f(x)$, con tasa:
+\begin{theorem}[Convergencia uniforme y cota cuantitativa]\label{thm:convergencia_uniforme_fourier}
+Sea $f\in C^n_{per}([0,2\pi])$ con $n\ge 1$. Entonces
 \[
-\|f - S_N f\|_\infty = O(N^{1-n}).
+\|f-S_Nf\|_\infty \le \frac{\|f^{(n)}\|_{L^2}}{\sqrt{\pi(2n-1)}}\,\frac{1}{N^{n-1/2}},
 \]
-En particular, para $C^\infty_{per}$ el error decae más rápido que cualquier potencia de $1/N$ (convergencia \textbf{super-algebraica}).
+y en particular $\|f-S_Nf\|_\infty=O(N^{1/2-n})$.
 \end{theorem}
+
 \begin{proof}
-Por el Lema~\ref{lem:fourier_abs_unif}, la serie converge absoluta y uniformemente a una función continua $g$. Por el Teorema~\ref{thm:fourier_converge_a_f}, $S_N f \to f$ uniformemente. Como el límite uniforme es único, $g = f$. La cota cuantitativa sigue del Lema~\ref{prop:fourier_rate_naive}.
+Como $n\ge 1$, se tiene $f\in C^1_{per}$ y por el Teorema~\ref{thm:conv_C1} la serie de Fourier converge uniformemente a $f$. Luego
+\[
+\|f-S_Nf\|_\infty
+=\left\|\sum_{|k|>N}\hat f_k e^{ikx}\right\|_\infty
+\le \sum_{|k|>N}|\hat f_k|,
+\]
+y la cota final es la del Lema~\ref{lem:fourier_abs_unif}.
 \end{proof}
 
-\begin{corollary}[Suavidad del Límite]
-Si los coeficientes de Fourier de una función $f$ decrecen suficientemente rápido, tal que para algún $m \geq 0$, la serie $\sum_{k=-\infty}^{\infty} |k|^m |\hat{f}_k|$ converge, entonces $f$ es de clase $C^m_{per}([0,2\pi])$.
-\end{corollary}
-\begin{proof}
-Consideremos la serie de Fourier de $f$, $S(x) = \sum_{k=-\infty}^{\infty} \hat{f}_k e^{ikx}$. Si la derivamos formalmente término a término $m$ veces, obtenemos la serie:
+\begin{remark}[Mejora tipo Jackson]
+Bajo las mismas hip\'otesis, un resultado m\'as fino de teor\'ia de aproximaci\'on (debido a Jackson) da la tasa \emph{\'optima} en norma uniforme:
 \[
-S^{(m)}(x) = \sum_{k=-\infty}^{\infty} (ik)^m \hat{f}_k e^{ikx}.
+\|f-S_N(f)\|_\infty = O(N^{-n}).
 \]
-Para verificar que esta es la derivada de $S(x)$, necesitamos que la serie derivada converja uniformemente. La suma de los valores absolutos de sus términos es:
-\[
-\sum_{k=-\infty}^{\infty} |(ik)^m \hat{f}_k e^{ikx}| = \sum_{k=-\infty}^{\infty} |k|^m |\hat{f}_k|.
-\]
-Por hipótesis, esta serie converge. Por el Test M de Weierstrass, la serie $S^{(m)}(x)$ converge absoluta y uniformemente. Un teorema estándar de análisis real establece que si una secuencia de funciones derivables converge en un punto y la secuencia de sus derivadas converge uniformemente, entonces la función límite es derivable y su derivada es el límite de las derivadas. Aplicando este resultado de forma inductiva, concluimos que $S(x)$ es $m$ veces diferenciable, y su $m$-ésima derivada es $S^{(m)}(x)$, que es una función continua por ser límite uniforme de funciones continuas. Por lo tanto, $f \in C^m_{per}([0,2\pi])$.
-\end{proof}
-
+Es decir, la cota del Teorema~\ref{thm:convergencia_uniforme_fourier} no es \'optima en la potencia de $N$, aunque se obtiene con una demostraci\'on elemental basada en decaimiento de coeficientes y Cauchy--Schwarz.
+\end{remark}
 
 \subsection{Cuadratura de funciones suaves y periódicas}
 
@@ -4102,7 +3626,16 @@ Hacemos el cambio $x = \cos\theta$, $dx = -\sin\theta\,d\theta$, y $\sqrt{1-x^2}
 \[
 \int_{-1}^{1} T_j(x)\,T_k(x)\,\frac{dx}{\sqrt{1-x^2}} = \int_0^{\pi} \cos(j\theta)\,\cos(k\theta)\,d\theta.
 \]
-La integral del lado derecho es exactamente la relación de ortogonalidad~\eqref{eq:ortog_cos}.
+La integral del lado derecho satisface
+\begin{equation}\label{eq:ortog_cos}
+\int_0^{\pi} \cos(j\theta)\,\cos(k\theta)\,d\theta=
+\begin{cases}
+\pi, & j=k=0,\\
+\pi/2, & j=k\neq 0,\\
+0, & j\neq k.
+\end{cases}
+\end{equation}
+y esto prueba la ortogonalidad enunciada.
 \end{proof}
 
 \begin{remark}[Raíces y extremos de $T_k$]
