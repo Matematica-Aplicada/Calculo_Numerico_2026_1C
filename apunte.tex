@@ -827,7 +827,7 @@ Los algoritmos geométricos comerciales (CAD, GIS) usan técnicas especiales:
 \end{remark}
 
 
-\chapter{Álgebra Lineal Numérica}
+\chapter{Álgebra Lineal Numérica \label{cap_aln}}
 
 \section{Eliminación Gaussiana y factorización LU}
 
@@ -2361,7 +2361,7 @@ En el segundo caso, la suma es una serie geométrica con razón $r = \omega^\ell
 \end{enumerate}
 \end{remark}
 
-\begin{definition}[Matriz DFT como Vandermonde]
+\begin{definition}[Matriz DFT como Vandermonde]\label{thm:dft_vandermonde}
 La matriz de Vandermonde evaluada en las raíces $n$-ésimas de la unidad es:
 \[
 F_n = 
@@ -3044,31 +3044,83 @@ Por lo tanto, las evaluaciones de $m_1$ y $m_2$ difieren en al menos $n - (k-1) 
 
 
 
-\chapter{Teoría de Aproximación}\label{cap:teoria_aproximacion}
+\chapter{Series de Fourier Generalizadas}\label{cap_fourier_generalizado}
 
-En los capítulos anteriores desarrollamos dos grandes herramientas para construir aproximaciones. En el capítulo de Álgebra Lineal Numérica estudiamos la mejor aproximación de un vector por elementos de un subespacio, en el sentido de mínimos cuadrados. La fórmula de proyección ortogonal \eqref{proyeccion_ortogonal_appendix} nos permitió expresar esta aproximación de manera explícita en términos de una base ortogonal del subespacio. En el capítulo de Interpolación vimos cómo construir polinomios que pasan exactamente por un conjunto de puntos dados, utilizando para ello diferentes bases de polinomios, como la base monomial, la base de Lagrage, y en el caso complejo la base de los modos de Fourier discretos.
-
-En este capítulo queremos dar un paso más: obtener representaciones de funciones en bases de funciones, extendiendo la fórmula de proyección \eqref{proyeccion_ortogonal_appendix} a espacios de dimensión infinita. La idea es la misma que en el caso finito-dimensional: si $\{\phi_k\}_{k \in \mathcal{I}}$ es una familia ortogonal en un espacio de funciones dotado de un producto interno apropiado, los coeficientes $\hat{f}_k = (f, \phi_k)/\|\phi_k\|^2$ definen una representación
+En este capítulo queremos obtener representaciones de funciones en bases de funciones, extendiendo la fórmula de proyección \eqref{proyeccion_ortogonal_appendix} utilizada en el capítulo \ref{cap_aln} para el estudio del problema de la mejor aproximación lineal en el sentido de mínimos cuadrados, a espacios de dimensión infinita. La idea es la misma que en el caso finito-dimensional: si $\{\phi_k\}_{k \in \mathcal{I}}$ es una familia ortonormal en un espacio de funciones dotado de un producto interno apropiado, podemos definir una representación
 \[
-f \;\sim\; \sum_{k \in \mathcal{I}} \hat{f}_k\, \phi_k,
+f \;\sim\; \sum_{k \in \mathcal{I}} (f, \phi_k) \phi_k,
 \]
-que llamamos \emph{serie} de $f$ en la base $\{\phi_k\}$.
+que llamamos \emph{serie} de $f$ en la base $\{\phi_k\}$. Los coeficientes de esta serie son las coordenadas de $f$ en la base $\{\phi_k\}$, y se denominan \textit{coeficientes de Fourier generalizados} de $f$ (en la base dada).
 
 A diferencia del caso finito-dimensional, esta suma es en general infinita y surgen dos preguntas centrales. La primera es la convergencia: ¿en qué sentido tiende la serie completa a $f$? Y si la serie converge, la segunda pregunta es ¿Con qué velocidad lo hace? Equivalentemente, si retenemos sólo los primeros $N$ términos de la representación, ¿cuán grande es el error $\|f - \sum_{|k| \leq N} \hat{f}_k \phi_k\|$? Las respuestas dependen de la regularidad de $f$ y de la elección de la base, y su análisis es el hilo conductor de este capítulo.
 
+\begin{remark}[Alcance analítico del capítulo]
+En esta exposición trabajamos principalmente con funciones continuas (y, cuando hace falta, suaves) e integrales en intervalos acotados. Con este marco se pueden demostrar de manera elemental los resultados centrales para series de Fourier de funciones continuas y periódicas: definición de coeficientes, decaimiento por integración por partes, convergencia mediante núcleo de Dirichlet y estimaciones de truncamiento. La formulación en términos de espacios $L^2$, integral de Lebesgue y espacios de Hilbert no es necesaria para estos resultados básicos, pero sí proporciona la generalización natural a datos menos regulares y un marco abstracto unificado.
+\end{remark}
+
+\begin{remark}[Funciones a valores complejos vs. funciones de variable compleja]
+Cuando escribimos $f:[a,b]\to\mathbb{C}$, la variable es real. Esto no es lo mismo que una función $f:\mathbb{C}\to\mathbb{C}$ de variable compleja. En consecuencia, tanto las derivadas como las integrales de funciones a valores complejos se entienden componente a componente: si $f=u+iv$ con $u,v$ reales, entonces
+\[
+f'=u'+iv',
+\qquad
+\int_a^b f(x)\,dx=\int_a^b u(x)\,dx+i\int_a^b v(x)\,dx.
+\]
+\end{remark}
+
 \section{Series de Fourier de funciones suaves periódicas}\label{sec:series_fourier_suaves}
 
-Para todo $n \ge 1$, el espacio de funciones $n$ veces continuamente diferenciables y periódicas se define como:
-$$C^n_{per}([0,2\pi]) = \left\lbrace f \in C^n([0,2\pi]) : f^{(p)}(0) = f^{(p)}(2\pi) \mbox{ para todo } 0\le p\le n-1 \right\rbrace.$$
-La condición de periodicidad hasta el orden $n-1$ garantiza que la extensión de $f$ por periodicidad a todo $\mathbb{R}$ es de clase $C^{n-1}$: en particular $f$ es continua y periódica, y para $n \ge 2$ también lo es~$f'$, y así sucesivamente.
+En esta sección trabajamos con funciones de variable real y valores complejos,
+\[
+f:[0,2\pi]\to\mathbb{C},\qquad f=u+iv,
+\]
+donde $u,v:[0,2\pi]\to\mathbb{R}$.
 
-\subsection{La base exponencial compleja}
+\begin{definition}[Espacio $C^n_{per}$ complejo periódico]
+Sea $n\in\mathbb{N}\cup\{0\}$. Diremos que $f:[0,2\pi]\to\mathbb{C}$ pertenece a $C^n_{per}([0,2\pi];\mathbb{C})$ si, al escribir $f=u+iv$ con $u,v:[0,2\pi]\to\mathbb{R}$, se cumple $u,v\in C^n([0,2\pi])$ y
+\[
+f^{(p)}(0)=f^{(p)}(2\pi),\qquad 0\le p\le n-1,
+\]
+donde $f^{(p)}:=u^{(p)}+iv^{(p)}$.
+\end{definition}
 
-Para funciones a valores complejos $f,g:[0,2\pi]\to\mathbb{C}$, la integral se define componente a componente: si $f=u+iv$ con $u,v$ reales, entonces $\int_0^{2\pi}f\,dx = \int_0^{2\pi}u\,dx + i\int_0^{2\pi}v\,dx$. Con esta convención, el espacio $C^n_{per}([0,2\pi])$ queda dotado del producto interno:
+La condición de periodicidad hasta orden $n-1$ garantiza que la extensión periódica de $f$ a todo $\mathbb{R}$ es de clase $C^{n-1}$.
+
+\subsection{Producto interno, norma cuadrática y cuadrado integrabilidad}
+
+Para funciones a valores complejos $f,g:[0,2\pi]\to\mathbb{C}$, la integral se define componente a componente: si $f=u+iv$ con $u,v$ reales, entonces
+\[
+\int_0^{2\pi}f\,dx = \int_0^{2\pi}u\,dx + i\int_0^{2\pi}v\,dx.
+\]
+Con esta convención, el espacio $C^n_{per}([0,2\pi];\mathbb{C})$ queda dotado del producto interno:
 \begin{equation}\label{prod_cont}
 (f,g) = \int_0^{2\pi} f(x)\,\overline{g(x)}\,dx,
 \end{equation}
-donde $\overline{g(x)}$ denota el conjugado complejo. Para cada $N\in\mathbb{N}$, la base de exponenciales complejas es:
+donde $\overline{g(x)}$ denota el conjugado complejo.
+
+\begin{definition}[Norma cuadrática]
+La norma asociada al producto interno \eqref{prod_cont} se define por
+\[
+\|f\|_2 := \sqrt{(f,f)} = \left(\int_0^{2\pi}|f(x)|^2\,dx\right)^{1/2}.
+\]
+\end{definition}
+
+\begin{lemma}[Funciones continuas son cuadrado integrables]
+Si $f\in C([a,b];\mathbb{C})$, entonces $f$ es cuadrado integrable en $[a,b]$, es decir,
+\[
+\int_a^b |f(x)|^2\,dx < \infty.
+\]
+\end{lemma}
+
+\begin{proof}
+Como $f$ es continua en el compacto $[a,b]$, existe $M\ge 0$ tal que $|f(x)|\le M$ para todo $x\in[a,b]$. Luego
+\[
+0\le \int_a^b |f(x)|^2\,dx \le \int_a^b M^2\,dx = M^2(b-a) < \infty.
+\]
+\end{proof}
+
+\subsection{La base exponencial compleja}
+
+Para cada $N\in\mathbb{N}$, la base de exponenciales complejas es:
 \begin{equation}\label{bn_complex}
 B_N^{\mathbb{C}} = \left\{ e^{ikx} : k\in\mathbb{Z},\;|k|\le N \right\} \subset C^\infty_{per}([0,2\pi]).
 \end{equation}
@@ -3090,22 +3142,29 @@ Si $k=l$: $\int_0^{2\pi}1\,dx = 2\pi$. Si $k\ne l$, sea $m=k-l\ne 0$:
 pues $e^{2\pi im}=1$ para todo $m\in\mathbb{Z}$.
 \end{proof}
 
-Los \textbf{coeficientes de Fourier} de $f$ son sus coordenadas en $B_N^{\mathbb{C}}$ según la fórmula de proyección~\eqref{proyeccion_ortogonal_appendix}:
+\begin{definition}[Coeficientes de Fourier complejos, suma parcial y serie de Fourier]\label{def:fourier_compleja}
+Sea $f\in C([0,2\pi];\mathbb{C})$. Sus coeficientes de Fourier complejos (respecto de la familia $\{e^{ikx}\}_{k\in\mathbb{Z}}$) se definen por la fórmula de proyección~\eqref{proyeccion_ortogonal_appendix}:
 \begin{equation}\label{coef_fourier_complex}
-\hat{f}_k = \frac{(f,\,e^{ikx})}{\|e^{ikx}\|^2} = \frac{1}{2\pi}\int_0^{2\pi}f(x)\,e^{-ikx}\,dx, \qquad k\in\mathbb{Z}.
+\hat{f}_k = \frac{(f,\,e^{ikx})}{\|e^{ikx}\|^2}
+= \frac{1}{2\pi}\int_0^{2\pi}f(x)\,e^{-ikx}\,dx,\qquad k\in\mathbb{Z}.
 \end{equation}
-La \textbf{suma parcial de Fourier} de orden $N$ es $S_Nf(x) = \sum_{|k|\le N}\hat{f}_k e^{ikx}$, y la \textbf{serie de Fourier} de $f$:
+La suma parcial de Fourier de orden $N$ es
+\[
+S_Nf(x)=\sum_{|k|\le N}\hat f_k\,e^{ikx}.
+\]
+La serie de Fourier de $f$ es
 \begin{equation}\label{serie_fourier_complex}
-f(x) \sim \sum_{k=-\infty}^{\infty} \hat{f}_k\,e^{ikx}.
+f(x)\sim\sum_{k=-\infty}^{\infty}\hat f_k\,e^{ikx}.
 \end{equation}
+\end{definition}
 Como $S_Nf$ es la proyección ortogonal de $f$ sobre $\langle B_N^{\mathbb{C}}\rangle$, es el polinomio trigonométrico de grado $\le N$ más cercano a $f$ en norma cuadrática.
 
 \begin{theorem}[Propiedad de mejor aproximación]\label{thm:mejor_aprox}
-Sea $f\in L^2([0,2\pi];\mathbb{C})$ y $N\ge 0$. Para todo polinomio trigonométrico $p=\sum_{|k|\le N}c_k e^{ikx}$:
+Sea $f\in C([0,2\pi];\mathbb{C})$ y $N\ge 0$. Para todo polinomio trigonométrico $p=\sum_{|k|\le N}c_k e^{ikx}$:
 \[
 \|f - S_N f\|_2 \le \|f - p\|_2,
 \]
-donde $\|h\|_2 = \bigl(\int_0^{2\pi}|h(x)|^2\,dx\bigr)^{1/2}$.
+donde $\|\cdot\|_2$ es la norma cuadrática asociada a \eqref{prod_cont}.
 \end{theorem}
 
 \begin{proof}
@@ -3114,10 +3173,6 @@ Escribimos $p = S_N f + q$ con $q = p - S_N f \in \langle B_N^{\mathbb{C}}\rangl
 \|f-p\|_2^2 = \|f-S_N f\|_2^2 + \|q\|_2^2 \ge \|f-S_N f\|_2^2. \qedhere
 \]
 \end{proof}
-
-\begin{remark}[Notación]
-En este capítulo utilizamos $i$ para la unidad imaginaria ($i^2=-1$), siguiendo la convención matemática estándar. En ingeniería eléctrica y procesamiento de señales se usa a veces la notación $j$; ambas son equivalentes: $i\equiv j$.
-\end{remark}
 
 \subsection{La serie trigonométrica real}
 
@@ -3162,58 +3217,10 @@ S_N(f)(x) = \frac{a_0}{2} + \sum_{k=1}^N \bigl(a_k\cos(kx)+b_k\sin(kx)\bigr).
 La equivalencia con la suma parcial compleja es inmediata de \eqref{eq:grouping}: para $f$ real, $S_Nf(x) = \hat{f}_0 + \sum_{k=1}^N[\hat{f}_k e^{ikx}+\hat{f}_{-k}e^{-ikx}] = \frac{a_0}{2}+\sum_{k=1}^N[a_k\cos(kx)+b_k\sin(kx)]$.
 
 \begin{remark}
-La ortogonalidad del conjunto $\{1,\cos(x),\sin(x),\ldots,\cos(Nx),\sin(Nx)\}$ en $L^2([0,2\pi])$ se obtiene sin verificación adicional: es una consecuencia del Teorema~\ref{thm:ortog_complex} y del cambio de base \eqref{eq:grouping}. El Teorema~\ref{thm:mejor_aprox} se extiende también al caso real: para $f$ real, $S_N(f)$ es el polinomio trigonométrico real de grado $\le N$ más cercano a $f$ en $L^2([0,2\pi])$.
+La ortogonalidad del conjunto $\{1,\cos(x),\sin(x),\ldots,\cos(Nx),\sin(Nx)\}$ con el producto interno \eqref{prod_cont} se obtiene sin verificación adicional: es una consecuencia del Teorema~\ref{thm:ortog_complex} y del cambio de base \eqref{eq:grouping}. El Teorema~\ref{thm:mejor_aprox} se extiende también al caso real: para $f$ real, $S_N(f)$ es el polinomio trigonométrico real de grado $\le N$ más cercano a $f$ en norma cuadrática.
 \end{remark}
 
 \subsection{Decaimiento de los coeficientes de Fourier y regularidad}
-
-\begin{theorem}[Lema de Riemann-Lebesgue para funciones $C^1$]\label{cor:riemann_lebesgue_C1}
-Si $g\in C^1([a,b])$, entonces
-\[
-\int_a^b g(t)e^{i\omega t}\,dt\to 0
-\quad (|\omega|\to\infty).
-\]
-\end{theorem}
-
-\begin{proof}
-Sea
-\[
-J(\omega):=\int_a^b g(t)e^{i\omega t}\,dt.
-\]
-Integramos por partes con $u=g(t)$ y $dv=e^{i\omega t}dt$:
-\[
-J(\omega)=\left[\frac{g(t)e^{i\omega t}}{i\omega}\right]_a^b-\frac{1}{i\omega}\int_a^b g'(t)e^{i\omega t}dt.
-\]
-Tomando módulo:
-\[
-|J(\omega)|
-\le \frac{|g(a)|+|g(b)|}{|\omega|}
-+\frac{1}{|\omega|}\int_a^b|g'(t)|dt
-\xrightarrow[|\omega|\to\infty]{}0.
-\]
-\end{proof}
-
-\begin{corollary}
-Si $g\in C^1([a,b])$, entonces
-\[
-\int_a^b g(t)\sin(\omega t)\,dt\to 0,
-\qquad
-\int_a^b g(t)\cos(\omega t)\,dt\to 0,
-\quad (|\omega|\to\infty).
-\]
-\end{corollary}
-
-\begin{proof}
-Por Euler,
-\[
-\int_a^b g(t)e^{i\omega t}dt
-=\int_a^b g(t)\cos(\omega t)dt
-+i\int_a^b g(t)\sin(\omega t)dt.
-\]
-Si un número complejo tiende a $0$, también tienden a $0$ su parte real e imaginaria. Aplicando el Teorema~\ref{cor:riemann_lebesgue_C1}, se obtiene el resultado.
-\end{proof}
-
-En el contexto periódico de Fourier, la misma idea se itera y los términos de borde se anulan exactamente.
 
 \begin{lemma}[Coeficientes de Fourier de la derivada]\label{lem:fourier_derivada_coef}
 Sea $f\in C^1_{per}([0,2\pi])$. Entonces, para todo $k\in\mathbb Z$:
@@ -3278,116 +3285,6 @@ Es el Teorema~\ref{thm:decaimiento_fourier} aplicado con $n=k$.
 \begin{corollary}
 Si $f \in C^\infty_{per}([0,2\pi])$, entonces para todo $n \in \mathbb{N}$ existe $C_n > 0$ tal que $|\hat{f}_k| \leq C_n/|k|^n$. Esto se conoce como \textit{decaimiento espectral} o \textit{super-algebraico}.
 \end{corollary}
-
-\subsection{Convergencia de la serie de Fourier para funciones suaves}
-
-Los resultados anteriores sobre decaimiento permiten organizar la convergencia en dos pasos: cota elemental del truncado y convergencia para $C^1_{per}$ mediante núcleo de Dirichlet y Riemann-Lebesgue.
-
-\begin{lemma}[Cota elemental de truncamiento]\label{lem:fourier_abs_unif}\label{prop:fourier_rate_naive}
-Sea $f \in C^n_{per}([0,2\pi])$ con $n\ge 1$. Para todo $N\ge 1$:
-\[
-\sum_{|k|>N}|\hat f_k| \le \frac{\|f^{(n)}\|_{L^2}}{\sqrt{\pi(2n-1)}}\,\frac{1}{N^{n-1/2}}.
-\]
-\end{lemma}
-
-\begin{proof}
-Para $k\neq 0$, el Teorema~\ref{thm:decaimiento_fourier} da $\hat f_k=\widehat{f^{(n)}}_k/(ik)^n$. Por Cauchy-Schwarz,
-\[
-\sum_{|k|>N}|\hat f_k|=\sum_{|k|>N}\frac{|\widehat{f^{(n)}}_k|}{|k|^n}
-\le \Bigl(\sum_{|k|>N}|\widehat{f^{(n)}}_k|^2\Bigr)^{1/2}
-\Bigl(\sum_{|k|>N}|k|^{-2n}\Bigr)^{1/2}.
-\]
-Por Bessel (Teorema~\ref{thm:bessel}),
-\[
-\sum_{k\in\mathbb Z}|\widehat{f^{(n)}}_k|^2\le \frac{\|f^{(n)}\|_{L^2}^2}{2\pi}.
-\]
-Además,
-\[
-\sum_{|k|>N}|k|^{-2n}=2\sum_{k=N+1}^{\infty}k^{-2n}
-\le 2\int_N^{\infty}x^{-2n}\,dx
-=\frac{2}{(2n-1)N^{2n-1}}.
-\]
-Combinando,
-\[
-\sum_{|k|>N}|\hat f_k|
-\le \sqrt{\frac{\|f^{(n)}\|_{L^2}^2}{2\pi}\cdot\frac{2}{(2n-1)N^{2n-1}}}
-=\frac{\|f^{(n)}\|_{L^2}}{\sqrt{\pi(2n-1)}}\,\frac{1}{N^{n-1/2}}.
-\]
-La segunda desigualdad sigue de $\left|\sum_{|k|>N}\hat f_k e^{ikx}\right|\le \sum_{|k|>N}|\hat f_k|$.
-\end{proof}
-
-\begin{lemma}[Núcleo de Dirichlet]\label{lem:dirichlet_kernel}
-La suma parcial de Fourier admite la representación
-\[
-S_N f(x)=\frac{1}{2\pi}\int_0^{2\pi} f(x-t)\,D_N(t)\,dt,
-\]
-donde
-\[
-D_N(t)=\sum_{k=-N}^{N}e^{ikt}=\frac{\sin\!\big((N+\tfrac12)t\big)}{\sin(t/2)},
-\qquad
-\frac{1}{2\pi}\int_0^{2\pi}D_N(t)\,dt=1.
-\]
-\end{lemma}
-
-\begin{proof}
-Partimos de $S_N f(x)=\sum_{k=-N}^{N}\hat f_k e^{ikx}$ y sustituimos
-$\hat f_k=\frac{1}{2\pi}\int_0^{2\pi}f(u)e^{-iku}\,du$:
-\[
-S_N f(x)=\frac{1}{2\pi}\int_0^{2\pi} f(u)\sum_{k=-N}^{N}e^{ik(x-u)}\,du.
-\]
-Con el cambio $u=x-t$ (periodicidad) se obtiene la fórmula de convolución. La expresión cerrada de $D_N$ resulta de la suma geométrica finita y la normalización de integrar término a término.
-\end{proof}
-
-\begin{theorem}[Convergencia para funciones $C^1$]\label{thm:conv_C1}
-Sea $f\in C^1_{per}([0,2\pi])$. Entonces, para todo $x\in[0,2\pi]$,
-\[
-S_N f(x)\to f(x).
-\]
-\end{theorem}
-
-\begin{proof}
-Por el Lema~\ref{lem:dirichlet_kernel} y la normalización de $D_N$,
-\[
-S_N f(x)-f(x)=\frac{1}{2\pi}\int_0^{2\pi}\big(f(x-t)-f(x)\big)D_N(t)\,dt.
-\]
-Usando la forma cerrada de $D_N$,
-\[
-S_N f(x)-f(x)=\frac{1}{2\pi}\int_0^{2\pi} g_x(t)\,\sin\!\big((N+\tfrac12)t\big)\,dt,
-\]
-donde
-\[
-g_x(t):=\frac{f(x-t)-f(x)}{\sin(t/2)}
-\]
-y se define por continuidad en $t=0$ y $t=2\pi$. Como $f\in C^1_{per}$, el cociente tiene singularidad removible y $g_x\in C([0,2\pi])$.
-
-Aplicando el Corolario~\ref{cor:riemann_lebesgue_C1} a $g_x$, el integral tiende a $0$ cuando $N\to\infty$. Concluimos $S_N f(x)\to f(x)$.
-\end{proof}
-
-\begin{theorem}[Convergencia uniforme y cota cuantitativa]\label{thm:convergencia_uniforme_fourier}
-Sea $f\in C^n_{per}([0,2\pi])$ con $n\ge 1$. Entonces
-\[
-\|f-S_Nf\|_\infty \le \frac{\|f^{(n)}\|_{L^2}}{\sqrt{\pi(2n-1)}}\,\frac{1}{N^{n-1/2}},
-\]
-y en particular $\|f-S_Nf\|_\infty=O(N^{1/2-n})$.
-\end{theorem}
-
-\begin{proof}
-Como $n\ge 1$, se tiene $f\in C^1_{per}$ y por el Teorema~\ref{thm:conv_C1} la serie de Fourier converge uniformemente a $f$. Luego
-\[
-\|f-S_Nf\|_\infty
-=\left\|\sum_{|k|>N}\hat f_k e^{ikx}\right\|_\infty
-\le \sum_{|k|>N}|\hat f_k|,
-\]
-y la cota final es la del Lema~\ref{lem:fourier_abs_unif}.
-\end{proof}
-
-\begin{remark}[Mejora tipo Jackson]
-Bajo las mismas hip\'otesis, un resultado m\'as fino de teor\'ia de aproximaci\'on (debido a Jackson) da la tasa \emph{\'optima} en norma uniforme:
-\[
-\|f-S_N(f)\|_\infty = O(N^{-n}).
-\]
-Es decir, la cota del Teorema~\ref{thm:convergencia_uniforme_fourier} no es \'optima en la potencia de $N$, aunque se obtiene con una demostraci\'on elemental basada en decaimiento de coeficientes y Cauchy--Schwarz.
-\end{remark}
 
 \subsection{Cuadratura de funciones suaves y periódicas}
 
@@ -3466,6 +3363,49 @@ Del Teorema de decaimiento, $|\hat{f}_k| \leq C/|k|^n$.  Entonces:
 
 \begin{remark}[Contraste con funciones no periódicas]
 Para una función $f \in C^m([a,b])$ no periódica, la regla del trapecio solo tiene error $O(M^{-2})$, independientemente de la suavidad de $f$.  La periodicidad elimina los errores en los extremos del intervalo y permite aprovechar plenamente la suavidad de la función.
+\end{remark}
+
+
+\begin{theorem}[Error de interpolación trigonométrica]\label{thm:interp_error_fourier}
+Sea $f \in C^m_{per}([0,2\pi])$ con $m \geq 2$. Entonces:
+\[
+\|f - I_N f\|_\infty \leq 2 \sum_{|k| > N} |\hat{f}_k|.
+\]
+Como $|\hat{f}_k| = O(|k|^{-m})$, esta cota es $O(N^{1-m})$.
+\end{theorem}
+
+\begin{proof}
+Descomponemos el error de interpolación usando la proyección como término intermedio. Como $I_N$ reproduce exactamente los polinomios trigonométricos de grado $\leq N$ (es decir, $I_N(S_N f) = S_N f$), tenemos:
+\[
+f - I_N f = \underbrace{(f - S_N f)}_{\text{cola de la serie}} - \underbrace{I_N(f - S_N f)}_{\text{aliasing}}.
+\]
+
+\textbf{Cota de la cola.} Usando $|e^{ikx}| = 1$:
+\[
+\|f - S_N f\|_\infty = \left\|\sum_{|k| > N} \hat{f}_k e^{ikx}\right\|_\infty \leq \sum_{|k| > N} |\hat{f}_k|.
+\]
+
+\textbf{Cota del aliasing.} El polinomio trigonométrico $I_N(f - S_N f)$ tiene coeficientes $\tilde{f}_k - \hat{f}_k$ para $|k| \leq N$. Por la fórmula de aliasing~\eqref{aliasing_fourier}:
+\[
+\tilde{f}_k - \hat{f}_k = \sum_{m \neq 0} \hat{f}_{k + m(2N+1)}.
+\]
+Crucialmente, la función $k \mapsto k + m(2N+1)$ es inyectiva: cada coeficiente $\hat{f}_j$ con $|j| > N$ aparece como ``alias'' de \textbf{exactamente un} coeficiente $\tilde{f}_k$ con $|k| \leq N$ (el único $k \in \{-N, \ldots, N\}$ tal que $j \equiv k \pmod{2N+1}$). Por lo tanto:
+\[
+\sum_{|k| \leq N} |\tilde{f}_k - \hat{f}_k| \leq \sum_{|j| > N} |\hat{f}_j|.
+\]
+Usando esta cota y $|e^{ikx}| = 1$:
+\[
+\|I_N(f - S_N f)\|_\infty \leq \sum_{|k| \leq N} |\tilde{f}_k - \hat{f}_k| \leq \sum_{|j| > N} |\hat{f}_j|.
+\]
+
+\textbf{Conclusión.} Sumando ambas contribuciones:
+\[
+\|f - I_N f\|_\infty \leq \sum_{|k| > N} |\hat{f}_k| + \sum_{|j| > N} |\hat{f}_j| = 2\sum_{|k| > N} |\hat{f}_k|. \qedhere
+\]
+\end{proof}
+
+\begin{remark}
+El factor $2$ tiene una interpretación clara: la cola de la serie contribuye una vez al error (lo que ``falta'' por truncar), y los mismos coeficientes de alta frecuencia contribuyen una segunda vez por aliasing (lo que se ``pliega'' y contamina los coeficientes discretos de baja frecuencia). Para funciones muy suaves, donde los coeficientes de alta frecuencia son despreciables, la interpolación es prácticamente tan buena como la proyección.
 \end{remark}
 
 
@@ -3679,7 +3619,7 @@ La norma asociada es $\|f\|_w = \sqrt{(f,f)_w}$.  Denotamos $L^2_w(a,b)$ al espa
 \end{definition}
 
 \begin{definition}[Base ortogonal y coeficientes de proyección]
-Una familia $\{\varphi_k\}_{k=0}^\infty$ en $L^2_w(a,b)$ es \textbf{ortogonal} si $(\varphi_j, \varphi_k)_w = 0$ para $j \neq k$.  Dada $f \in L^2_w$, sus \textbf{coeficientes de proyección} son
+Una familia $\{\varphi_k\}_{k=0}^\infty$ en $L^2_w(a,b)$ es \textbf{ortogonal} si $(\varphi_j, \varphi_k)_w = 0$ para $j \neq k$.  Dada $f \in C([a,b])$, sus \textbf{coeficientes de proyección} son
 \[
 c_k = \frac{(f, \varphi_k)_w}{\|\varphi_k\|_w^2},
 \]
@@ -3694,7 +3634,7 @@ Estas definiciones recuperan ambos casos conocidos: para Fourier, $\varphi_k(x) 
 Las dos propiedades fundamentales de la proyección ortogonal son:
 
 \begin{theorem}[Mejor aproximación e identidad de Parseval]\label{thm:mejor_aprox_parseval}
-Sea $\{\varphi_k\}$ una base ortogonal de $L^2_w(a,b)$ y $S_n f$ la proyección de orden $n$.  Entonces:
+Sea $\{\varphi_k\}$ una base ortogonal de $L^2_w(a,b)$, sea $f\in C([a,b])$ y sea $S_n f$ la proyección de orden $n$.  Entonces:
 \begin{enumerate}
 \item \textbf{Mejor aproximación:} $S_n f$ minimiza el error $\|f - g\|_w$ entre todas las combinaciones lineales $g \in \mathrm{span}\{\varphi_0, \ldots, \varphi_n\}$.
 \item \textbf{Identidad de Parseval para el resto:}
@@ -3863,7 +3803,7 @@ E_n(f) = \int_a^b f(x)\,w(x)\,dx - Q_n(f).
 El Teorema~\ref{thm:exactitud_gauss} dice que $E_n(p) = 0$ para $p \in \Pi_{2n-1}$.  En particular, $E_n(p) = 0$ para todo $p \in \Pi_{n-1}$.  Esto permite conectar el error de cuadratura con el error de la \textbf{proyección ortogonal} $S_{n-1}f = \sum_{k=0}^{n-1} c_k P_k$.
 
 \begin{theorem}[Cota del error en términos de la proyección]\label{thm:error_gauss_proj}
-Para toda $f \in L^2_w(a,b)$ continua, el error de la cuadratura de Gauss satisface:
+Para toda $f\in C([a,b])$, el error de la cuadratura de Gauss satisface:
 \[
 |E_n(f)| \leq C_n\,\|f - S_{n-1}f\|_w,
 \]
@@ -3994,47 +3934,7 @@ Sustituyendo la serie de Fourier de $f$ en la fórmula de $\tilde{f}_k$, obtenem
 \end{equation}
 Es decir, el coeficiente discreto $\tilde{f}_k$ ``ve'' no solo la frecuencia $k$, sino también todas las frecuencias $k + m(2N+1)$ para $m \neq 0$.
 
-\begin{theorem}[Error de interpolación trigonométrica]\label{thm:interp_error_fourier}
-Sea $f \in C^m_{per}([0,2\pi])$ con $m \geq 2$. Entonces:
-\[
-\|f - I_N f\|_\infty \leq 2 \sum_{|k| > N} |\hat{f}_k|.
-\]
-Como $|\hat{f}_k| = O(|k|^{-m})$, esta cota es $O(N^{1-m})$.
-\end{theorem}
 
-\begin{proof}
-Descomponemos el error de interpolación usando la proyección como término intermedio. Como $I_N$ reproduce exactamente los polinomios trigonométricos de grado $\leq N$ (es decir, $I_N(S_N f) = S_N f$), tenemos:
-\[
-f - I_N f = \underbrace{(f - S_N f)}_{\text{cola de la serie}} - \underbrace{I_N(f - S_N f)}_{\text{aliasing}}.
-\]
-
-\textbf{Cota de la cola.} Usando $|e^{ikx}| = 1$:
-\[
-\|f - S_N f\|_\infty = \left\|\sum_{|k| > N} \hat{f}_k e^{ikx}\right\|_\infty \leq \sum_{|k| > N} |\hat{f}_k|.
-\]
-
-\textbf{Cota del aliasing.} El polinomio trigonométrico $I_N(f - S_N f)$ tiene coeficientes $\tilde{f}_k - \hat{f}_k$ para $|k| \leq N$. Por la fórmula de aliasing~\eqref{aliasing_fourier}:
-\[
-\tilde{f}_k - \hat{f}_k = \sum_{m \neq 0} \hat{f}_{k + m(2N+1)}.
-\]
-Crucialmente, la función $k \mapsto k + m(2N+1)$ es inyectiva: cada coeficiente $\hat{f}_j$ con $|j| > N$ aparece como ``alias'' de \textbf{exactamente un} coeficiente $\tilde{f}_k$ con $|k| \leq N$ (el único $k \in \{-N, \ldots, N\}$ tal que $j \equiv k \pmod{2N+1}$). Por lo tanto:
-\[
-\sum_{|k| \leq N} |\tilde{f}_k - \hat{f}_k| \leq \sum_{|j| > N} |\hat{f}_j|.
-\]
-Usando esta cota y $|e^{ikx}| = 1$:
-\[
-\|I_N(f - S_N f)\|_\infty \leq \sum_{|k| \leq N} |\tilde{f}_k - \hat{f}_k| \leq \sum_{|j| > N} |\hat{f}_j|.
-\]
-
-\textbf{Conclusión.} Sumando ambas contribuciones:
-\[
-\|f - I_N f\|_\infty \leq \sum_{|k| > N} |\hat{f}_k| + \sum_{|j| > N} |\hat{f}_j| = 2\sum_{|k| > N} |\hat{f}_k|. \qedhere
-\]
-\end{proof}
-
-\begin{remark}
-El factor $2$ tiene una interpretación clara: la cola de la serie contribuye una vez al error (lo que ``falta'' por truncar), y los mismos coeficientes de alta frecuencia contribuyen una segunda vez por aliasing (lo que se ``pliega'' y contamina los coeficientes discretos de baja frecuencia). Para funciones muy suaves, donde los coeficientes de alta frecuencia son despreciables, la interpolación es prácticamente tan buena como la proyección.
-\end{remark}
 
 \subsection{Error de interpolación de Chebyshev}\label{sec:error_interp_chebyshev}
 
@@ -6177,6 +6077,7 @@ Inducción en $n$.  Para $n=0$ un polinomio no nulo es una constante $c\neq 0$, 
 Paso inductivo: sea $p$ no nulo de grado $\leq n$.  Si $p$ no tiene raíces, no hay nada que probar.  Si $\alpha\in\mathbb{F}$ es una raíz, el algoritmo de división da $p(x)=(x-\alpha)\,q(x)$ con $q$ no nulo de grado $\leq n-1$.  Para toda raíz $\beta\neq\alpha$ de $p$ se tiene $0=p(\beta)=(\beta-\alpha)\,q(\beta)$; como $\mathbb{F}$ no tiene divisores de cero, $q(\beta)=0$.  Por hipótesis inductiva $q$ tiene a lo sumo $n-1$ raíces, luego $p$ tiene a lo sumo $1+(n-1)=n$.
 \end{proof}
 
+
 \chapter{Espacios de Pre-Hilbert}
 
 En este apéndice revisamos conceptos fundamentales de álgebra lineal en espacios con producto interno. Comenzamos con las definiciones geométricas básicas (ortogonalidad, proyección) para luego establecer resultados centrales sobre aproximación y bases ortonormales. Finalmente, aplicamos estas herramientas para demostrar teoremas de factorización matricial esenciales en análisis numérico, como la descomposición de Schur y la diagonalización de matrices normales.
@@ -6531,6 +6432,446 @@ Como esto vale para todo $S$, el máximo de los mínimos es $\leq \lambda_k$.
 Concluimos que el valor es exactamente $\lambda_k$. La otra igualdad se prueba de manera análoga.
 \end{proof}
 
+
+\chapter{Convergencia de Series de Fourier}
+
+En el cuerpo principal de las notas (Capítulo~\ref{cap_fourier_generalizado}, Sección~\ref{sec:series_fourier_suaves}) ya establecimos la relación básica entre regularidad y decaimiento de coeficientes de Fourier. En particular, el Teorema~\ref{thm:decaimiento_fourier} y el Corolario~\ref{cor:decaimiento_O_nk} muestran que la regularidad $C^m$ implica decaimiento algebraico $|\hat f_k|=O(|k|^{-m})$, mientras que el Teorema~\ref{thm:converso_suavidad_decaimiento} da un converso útil en términos de sumabilidad ponderada de coeficientes.
+
+Este apéndice reúne los argumentos de convergencia de series de Fourier en un bloque autónomo. El objetivo es separar con claridad dos planos complementarios: por un lado, la convergencia puntual/uniforme de las sumas parciales (núcleo de Dirichlet y Lema de Riemann--Lebesgue), y por otro, la convergencia en norma $L^2$ y la identidad de Parseval, formuladas en lenguaje de proyección ortogonal. Esta organización permite reutilizar los resultados de decaimiento ya probados en el texto principal y, al mismo tiempo, presentar la teoría de convergencia con una lógica interna independiente.
+
+\begin{theorem}[Lema de Riemann-Lebesgue para funciones $C^1$]\label{cor:riemann_lebesgue_C1}
+Si $g\in C^1([a,b])$, entonces
+\[
+\int_a^b g(t)e^{i\omega t}\,dt\to 0
+\quad (|\omega|\to\infty).
+\]
+\end{theorem}
+
+\begin{proof}
+Sea
+\[
+J(\omega):=\int_a^b g(t)e^{i\omega t}\,dt.
+\]
+Integramos por partes con $u=g(t)$ y $dv=e^{i\omega t}dt$:
+\[
+J(\omega)=\left[\frac{g(t)e^{i\omega t}}{i\omega}\right]_a^b-\frac{1}{i\omega}\int_a^b g'(t)e^{i\omega t}dt.
+\]
+Tomando módulo:
+\[
+|J(\omega)|
+\le \frac{|g(a)|+|g(b)|}{|\omega|}
++\frac{1}{|\omega|}\int_a^b|g'(t)|dt
+\xrightarrow[|\omega|\to\infty]{}0.
+\]
+\end{proof}
+
+\begin{corollary}
+Si $g\in C^1([a,b])$, entonces
+\[
+\int_a^b g(t)\sin(\omega t)\,dt\to 0,
+\qquad
+\int_a^b g(t)\cos(\omega t)\,dt\to 0,
+\quad (|\omega|\to\infty).
+\]
+\end{corollary}
+
+\begin{proof}
+Por Euler,
+\[
+\int_a^b g(t)e^{i\omega t}dt
+=\int_a^b g(t)\cos(\omega t)dt
++i\int_a^b g(t)\sin(\omega t)dt.
+\]
+Si un número complejo tiende a $0$, también tienden a $0$ su parte real e imaginaria. Aplicando el Teorema~\ref{cor:riemann_lebesgue_C1}, se obtiene el resultado.
+\end{proof}
+
+\begin{lemma}[Núcleo de Dirichlet]\label{lem:dirichlet_kernel}
+La suma parcial de Fourier admite la representación
+\[
+S_N f(x)=\frac{1}{2\pi}\int_0^{2\pi} f(x-t)\,D_N(t)\,dt,
+\]
+donde
+\[
+D_N(t)=\sum_{k=-N}^{N}e^{ikt}=\frac{\sin\!\big((N+\tfrac12)t\big)}{\sin(t/2)},
+\qquad
+\frac{1}{2\pi}\int_0^{2\pi}D_N(t)\,dt=1.
+\]
+\end{lemma}
+
+\begin{proof}
+Partimos de $S_N f(x)=\sum_{k=-N}^{N}\hat f_k e^{ikx}$ y sustituimos
+$\hat f_k=\frac{1}{2\pi}\int_0^{2\pi}f(u)e^{-iku}\,du$:
+\[
+S_N f(x)=\frac{1}{2\pi}\int_0^{2\pi} f(u)\sum_{k=-N}^{N}e^{ik(x-u)}\,du.
+\]
+Con el cambio $u=x-t$ (periodicidad) se obtiene la fórmula de convolución. La expresión cerrada de $D_N$ resulta de la suma geométrica finita y la normalización de integrar término a término.
+\end{proof}
+
+\begin{theorem}[Convergencia puntual]\label{thm:conv_C1}
+Sea $f\in C^1_{per}([0,2\pi])$. Entonces, para todo $x\in[0,2\pi]$,
+\[
+S_N f(x)\to f(x).
+\]
+\end{theorem}
+
+\begin{proof}
+Por el Lema~\ref{lem:dirichlet_kernel} y la normalización de $D_N$,
+\[
+S_N f(x)-f(x)=\frac{1}{2\pi}\int_0^{2\pi}\big(f(x-t)-f(x)\big)D_N(t)\,dt.
+\]
+Usando la forma cerrada de $D_N$,
+\[
+S_N f(x)-f(x)=\frac{1}{2\pi}\int_0^{2\pi} g_x(t)\,\sin\!\big((N+\tfrac12)t\big)\,dt,
+\]
+donde
+\[
+g_x(t):=\frac{f(x-t)-f(x)}{\sin(t/2)}
+\]
+y se define por continuidad en $t=0$ y $t=2\pi$. Como $f\in C^1_{per}$, el cociente tiene singularidad removible y $g_x\in C([0,2\pi])$.
+
+Aplicando el Corolario~\ref{cor:riemann_lebesgue_C1} a $g_x$, el integral tiende a $0$ cuando $N\to\infty$. Concluimos $S_N f(x)\to f(x)$.
+\end{proof}
+
+\begin{lemma}[Completitud en norma supremo]\label{lem:completitud_supremo}
+Sea $E$ un conjunto y sea $B(E)$ el espacio de funciones acotadas $f:E\to\mathbb C$, con norma
+\[
+\|f\|_\infty:=\sup_{x\in E}|f(x)|.
+\]
+Entonces $(B(E),\|\cdot\|_\infty)$ es completo: toda sucesión de Cauchy en $\|\cdot\|_\infty$ converge en $\|\cdot\|_\infty$ a una función de $B(E)$.
+\end{lemma}
+
+\begin{proof}
+Sea $(f_n)$ una sucesión de Cauchy en $\|\cdot\|_\infty$. Para cada $x\in E$,
+\[
+|f_n(x)-f_m(x)|\le \|f_n-f_m\|_\infty\xrightarrow[n,m\to\infty]{}0,
+\]
+así que $(f_n(x))$ es de Cauchy en $\mathbb C$ y por completitud de $\mathbb C$ existe
+\[
+f(x):=\lim_{n\to\infty}f_n(x).
+\]
+
+Tomemos $\varepsilon>0$. Como $(f_n)$ es Cauchy en $\|\cdot\|_\infty$, existe $N$ tal que
+\[
+\|f_n-f_m\|_\infty<\varepsilon\qquad(n,m\ge N).
+\]
+Fijado $n\ge N$ y para todo $x\in E$, al pasar $m\to\infty$ en
+$|f_n(x)-f_m(x)|<\varepsilon$ obtenemos
+\[
+|f_n(x)-f(x)|\le \varepsilon.
+\]
+Tomando supremo en $x$,
+\[
+\|f_n-f\|_\infty\le \varepsilon\qquad(n\ge N).
+\]
+Luego $f_n\to f$ en $\|\cdot\|_\infty$. Además, para $n\ge N$,
+\[
+|f(x)|\le |f_n(x)|+|f(x)-f_n(x)|\le \|f_n\|_\infty+\varepsilon,
+\]
+por lo que $f$ es acotada y $f\in B(E)$.
+\end{proof}
+
+\begin{lemma}[Criterio $M$ de Weierstrass para series de funciones]\label{lem:criterio_M_weierstrass}
+Sea $(u_k)_{k\in\mathbb Z}$ una familia de funciones en $[0,2\pi]$. Supongamos que existen números $M_k\ge 0$ tales que
+\[
+|u_k(x)|\le M_k\quad\text{para todo }x\in[0,2\pi],\ k\in\mathbb Z,
+\]
+y
+\[
+\sum_{k\in\mathbb Z} M_k<\infty.
+\]
+Entonces la serie $\sum_{k\in\mathbb Z}u_k(x)$ converge absoluta y uniformemente en $[0,2\pi]$. Si además cada $u_k$ es continua, la suma es continua.
+\end{lemma}
+
+\begin{proof}
+Para $N>M$,
+\[
+\sup_{x\in[0,2\pi]}\left|\sum_{M<|k|\le N}u_k(x)\right|
+\le \sum_{M<|k|\le N}\sup_{x\in[0,2\pi]}|u_k(x)|
+\le \sum_{M<|k|\le N}M_k.
+\]
+Como $\sum_{k\in\mathbb Z}M_k$ converge, su cola tiende a $0$ cuando $M,N\to\infty$. Luego las sumas parciales son de Cauchy en norma supremo y, por el Lema~\ref{lem:completitud_supremo}, convergen uniformemente.
+
+Además,
+\[
+\sup_{x\in[0,2\pi]}\sum_{k\in\mathbb Z}|u_k(x)|
+\le \sum_{k\in\mathbb Z}M_k<\infty,
+\]
+de donde la convergencia absoluta es uniforme. Si cada $u_k$ es continua, el límite uniforme de sumas parciales continuas es continuo.
+\end{proof}
+
+\begin{theorem}[Convergencia uniforme y cota cuantitativa]\label{thm:convergencia_uniforme_fourier}
+Sea $f\in C^n_{per}([0,2\pi])$ con $n\ge 1$. Entonces
+\[
+\|f-S_Nf\|_\infty \le \frac{\|f^{(n)}\|_{L^2}}{\sqrt{\pi(2n-1)}}\,\frac{1}{N^{n-1/2}},
+\]
+y en particular $\|f-S_Nf\|_\infty=O(N^{1/2-n})$.
+\end{theorem}
+
+\begin{proof}
+Para $k\neq 0$, por el Teorema~\ref{thm:decaimiento_fourier} se tiene
+\[
+\hat f_k=\frac{\widehat{f^{(n)}}_k}{(ik)^n}.
+\]
+Entonces, por Cauchy-Schwarz,
+\[
+\sum_{|k|>N}|\hat f_k|
+=\sum_{|k|>N}\frac{|\widehat{f^{(n)}}_k|}{|k|^n}
+\le
+\Bigl(\sum_{|k|>N}|\widehat{f^{(n)}}_k|^2\Bigr)^{1/2}
+\Bigl(\sum_{|k|>N}|k|^{-2n}\Bigr)^{1/2}.
+\]
+Por Bessel (Teorema~\ref{thm:bessel}),
+\[
+\sum_{k\in\mathbb Z}|\widehat{f^{(n)}}_k|^2\le \frac{\|f^{(n)}\|_{L^2}^2}{2\pi},
+\]
+y por comparación integral,
+\[
+\sum_{|k|>N}|k|^{-2n}=2\sum_{k=N+1}^{\infty}k^{-2n}
+\le 2\int_N^{\infty}x^{-2n}\,dx
+=\frac{2}{(2n-1)N^{2n-1}}.
+\]
+Combinando,
+\[
+\sum_{|k|>N}|\hat f_k|
+\le \frac{\|f^{(n)}\|_{L^2}}{\sqrt{\pi(2n-1)}}\,\frac{1}{N^{n-1/2}}.
+\]
+
+Esta cota implica convergencia absoluta de $\sum_k \hat f_k e^{ikx}$; por el Lema~\ref{lem:criterio_M_weierstrass}, la convergencia es uniforme. Como además $f\in C^1_{per}$ (porque $n\ge 1$), el Teorema~\ref{thm:conv_C1} da convergencia puntual de las sumas parciales a $f$; por lo tanto, el límite uniforme coincide con $f$.
+
+Finalmente,
+\[
+\|f-S_Nf\|_\infty
+=\left\|\sum_{|k|>N}\hat f_k e^{ikx}\right\|_\infty
+\le \sum_{|k|>N}|\hat f_k|
+\le \frac{\|f^{(n)}\|_{L^2}}{\sqrt{\pi(2n-1)}}\,\frac{1}{N^{n-1/2}},
+\]
+que es la cota buscada.
+\end{proof}
+
+\begin{theorem}[Parseval para funciones $C^1_{per}$]\label{thm:parseval_C1_per}
+Sea $f\in C^1_{per}([0,2\pi])$ y sea
+\[
+S_Nf(x)=\sum_{|k|\le N}\hat f_k e^{ikx},
+\qquad
+\hat f_k=\frac{1}{2\pi}\int_0^{2\pi}f(x)e^{-ikx}\,dx.
+\]
+Entonces
+\[
+\|f\|_{L^2}^2=2\pi\sum_{k\in\mathbb Z}|\hat f_k|^2.
+\]
+\end{theorem}
+
+\begin{proof}
+Sea
+\[
+\mathcal T_N:=\operatorname{span}\{e^{ikx}:|k|\le N\}.
+\]
+Si $p(x)=\sum_{|k|\le N}a_k e^{ikx}\in\mathcal T_N$, entonces
+\[
+\begin{aligned}
+(f-S_Nf,p)
+&=\sum_{|k|\le N}\overline{a_k}\,(f-S_Nf,e^{ikx})\\
+&=\sum_{|k|\le N}\overline{a_k}\,\big((f,e^{ikx})-(S_Nf,e^{ikx})\big)=0,
+\end{aligned}
+\]
+porque $(S_Nf,e^{ikx})=(f,e^{ikx})$ para $|k|\le N$ por definición de $\hat f_k$. Por lo tanto,
+$f-S_Nf\perp\mathcal T_N$, es decir, $S_Nf$ es la proyección ortogonal de $f$ sobre $\mathcal T_N$.
+
+Aplicando Pitágoras en esta descomposición ortogonal,
+\[
+\|f\|_{L^2}^2=\|S_Nf\|_{L^2}^2+\|f-S_Nf\|_{L^2}^2.
+\]
+Además, por ortogonalidad de la base exponencial,
+\[
+\|S_Nf\|_{L^2}^2=2\pi\sum_{|k|\le N}|\hat f_k|^2.
+\]
+Luego
+\[
+\|f\|_{L^2}^2=2\pi\sum_{|k|\le N}|\hat f_k|^2+\|f-S_Nf\|_{L^2}^2.
+\]
+
+Como $f\in C^1_{per}$, por el Teorema~\ref{thm:convergencia_uniforme_fourier} (con $n=1$) se tiene $\|f-S_Nf\|_\infty\to 0$. En consecuencia,
+\[
+\|f-S_Nf\|_{L^2}\le \sqrt{2\pi}\,\|f-S_Nf\|_\infty\xrightarrow[N\to\infty]{}0.
+\]
+Pasando al límite en la igualdad anterior, obtenemos
+\[
+\|f\|_{L^2}^2=2\pi\sum_{k\in\mathbb Z}|\hat f_k|^2.
+\]
+\end{proof}
+
+\begin{remark}[Mejora tipo Jackson]
+Bajo las mismas hip\'otesis, un resultado m\'as fino de teor\'ia de aproximaci\'on (debido a Jackson) da la tasa \emph{\'optima} en norma uniforme:
+\[
+\|f-S_N(f)\|_\infty = O(N^{-n}).
+\]
+Es decir, la cota del Teorema~\ref{thm:convergencia_uniforme_fourier} no es \'optima en la potencia de $N$, aunque se obtiene con una demostraci\'on elemental basada en decaimiento de coeficientes y Cauchy--Schwarz.
+\end{remark}
+
+\begin{remark}[Qué aporta el teorema de convergencia $C^1$]
+El Teorema~\ref{thm:conv_C1} garantiza que, para $f\in C^1_{per}$, la serie de Fourier converge a $f$. Sin embargo, por sí solo no da una tasa explícita del error $\|f-S_Nf\|_\infty$ en función de $N$. La cota cuantitativa del Teorema~\ref{thm:convergencia_uniforme_fourier} aporta justamente esa información de velocidad de convergencia.
+\end{remark}
+
+\begin{lemma}[Criterio funcional de derivación bajo el límite]\label{lem:criterio_funcional_derivacion}
+Sea $(F_N)_{N\ge 1}\subset C^1([0,2\pi])$. Supongamos que:
+\begin{enumerate}
+\item Existe $x_0\in[0,2\pi]$ tal que $F_N(x_0)$ converge.
+\item Existe $g\in C([0,2\pi])$ tal que $F_N'\to g$ uniformemente en $[0,2\pi]$.
+\end{enumerate}
+Entonces existe $F\in C^1([0,2\pi])$ tal que $F_N\to F$ uniformemente y $F'=g$.
+\end{lemma}
+
+\begin{proof}
+Sea $L:=\lim_{N\to\infty}F_N(x_0)$ y definamos
+\[
+F(x):=L+\int_{x_0}^x g(t)\,dt.
+\]
+Como $g$ es continua, $F\in C^1([0,2\pi])$ y $F'=g$.
+
+Para cada $x\in[0,2\pi]$, por el teorema fundamental del cálculo:
+\[
+F_N(x)=F_N(x_0)+\int_{x_0}^x F_N'(t)\,dt.
+\]
+Restando la definición de $F$,
+\[
+F_N(x)-F(x)=\big(F_N(x_0)-L\big)+\int_{x_0}^x\big(F_N'(t)-g(t)\big)\,dt.
+\]
+Tomando supremo en $x$:
+\[
+\|F_N-F\|_\infty
+\le |F_N(x_0)-L|+2\pi\,\|F_N'-g\|_\infty\xrightarrow[N\to\infty]{}0.
+\]
+Luego $F_N\to F$ uniformemente y ya vimos que $F'=g$.
+\end{proof}
+
+\begin{theorem}[Derivación término a término de la serie de Fourier]\label{thm:derivacion_termino_termino_fourier}
+Sea $f\in C^2_{per}([0,2\pi])$. Entonces:
+\[
+f'(x)=\sum_{k=-\infty}^{\infty} ik\,\hat f_k\,e^{ikx}
+\quad\text{para todo }x\in[0,2\pi],
+\]
+y la convergencia de esta serie de derivadas es uniforme en $[0,2\pi]$.
+\end{theorem}
+
+\begin{proof}
+Para cada $N$, la suma parcial
+\[
+S_N f(x)=\sum_{|k|\le N}\hat f_k e^{ikx}
+\]
+es un polinomio trigonométrico y por tanto
+\[
+(S_N f)'(x)=\sum_{|k|\le N} ik\,\hat f_k\,e^{ikx}.
+\]
+Por el Lema~\ref{lem:fourier_derivada_coef}, $\widehat{f'}_k=ik\hat f_k$, luego
+\[
+(S_N f)'(x)=\sum_{|k|\le N}\widehat{f'}_k e^{ikx}=S_N(f')(x).
+\]
+
+Como $f\in C^2_{per}$, se tiene $f'\in C^1_{per}$. Aplicando el Teorema~\ref{thm:convergencia_uniforme_fourier} a $g=f'$ (con $n=1$), obtenemos
+\[
+\|S_N(f')-f'\|_\infty\to 0.
+\]
+Es decir,
+\[
+\|(S_N f)'-f'\|_\infty\to 0,
+\]
+así que la serie de derivadas converge uniformemente a $f'$.
+
+Además, por el Teorema~\ref{thm:conv_C1}, $S_N f(0)\to f(0)$. Aplicando el Lema~\ref{lem:criterio_funcional_derivacion} a $F_N=S_N f$ (con $x_0=0$ y $g=f'$), obtenemos que $S_N f$ converge uniformemente a una función $F\in C^1$ con $F'=f'$.
+
+Por otro lado, el Teorema~\ref{thm:conv_C1} también da convergencia puntual $S_N f(x)\to f(x)$ para todo $x$, luego necesariamente $F=f$. En consecuencia,
+\[
+f'(x)=\lim_{N\to\infty}(S_N f)'(x)=\lim_{N\to\infty}\sum_{|k|\le N} ik\,\hat f_k\,e^{ikx},
+\]
+y la convergencia de la serie de derivadas es uniforme.
+\end{proof}
+
+\begin{theorem}[Converso de suavidad por decaimiento de coeficientes]\label{thm:converso_suavidad_decaimiento}
+Sea $m\in\mathbb N\cup\{0\}$ y
+\[
+f(x)=\sum_{k\in\mathbb Z} c_k e^{ikx}
+\]
+una serie trigonométrica $2\pi$-periódica. Si
+\[
+\sum_{k\in\mathbb Z}(1+|k|)^m|c_k|<\infty,
+\]
+entonces $f\in C^m_{per}([0,2\pi])$ y, para todo $0\le j\le m$,
+\[
+f^{(j)}(x)=\sum_{k\in\mathbb Z}(ik)^j c_k e^{ikx},
+\]
+convergencia uniforme en $[0,2\pi]$.
+\end{theorem}
+
+\begin{proof}
+Para $0\le j\le m$, definimos
+\[
+u_k^{(j)}(x):=(ik)^j c_k e^{ikx},
+\qquad
+M_k:=(1+|k|)^m|c_k|.
+\]
+Entonces
+\[
+|u_k^{(j)}(x)|\le |k|^j|c_k|\le (1+|k|)^m|c_k|=M_k,
+\]
+y $\sum_{k\in\mathbb Z}M_k<\infty$. Por el Lema~\ref{lem:criterio_M_weierstrass}, para cada $j\le m$ la serie
+\[
+\sum_{k\in\mathbb Z}(ik)^j c_k e^{ikx}
+\]
+converge absoluta y uniformemente; denotemos su suma por $g_j\in C([0,2\pi])$.
+
+Sea $S_N^{(j)}(x):=\sum_{|k|\le N}(ik)^j c_k e^{ikx}$. Entonces
+\[
+\frac{d}{dx}S_N^{(j)}(x)=S_N^{(j+1)}(x).
+\]
+Además, $S_N^{(j)}(0)=\sum_{|k|\le N}(ik)^j c_k$ converge cuando $N\to\infty$ por convergencia absoluta de $\sum_k |k|^j|c_k|$.
+
+Aplicando el Lema~\ref{lem:criterio_funcional_derivacion} a $F_N=S_N^{(j)}$ y $g=g_{j+1}$, obtenemos que $g_j\in C^1$ y $(g_j)'=g_{j+1}$. Iterando para $j=0,1,\dots,m-1$, concluimos que $g_0\in C^m$ y
+\[
+g_0^{(j)}=g_j\qquad(0\le j\le m).
+\]
+Como $g_0$ es justamente la suma de la serie original, $g_0=f$, y el resultado queda probado.
+\end{proof}
+
+\begin{corollary}[Criterio práctico de suavidad por cota de decaimiento]
+Sea $m\in\mathbb N\cup\{0\}$. Si
+\[
+|c_k|\le \frac{C}{(1+|k|)^{m+1+\varepsilon}}
+\quad\text{con }\varepsilon>0,
+\]
+entonces la serie trigonométrica $\sum_{k\in\mathbb Z} c_k e^{ikx}$ define una función de clase $C^m_{per}$.
+\end{corollary}
+
+\begin{proof}
+La hipótesis implica
+\[
+(1+|k|)^m|c_k|\le \frac{C}{(1+|k|)^{1+\varepsilon}},
+\]
+y como $\sum_k (1+|k|)^{-1-\varepsilon}<\infty$, se cumple la hipótesis del Teorema~\ref{thm:converso_suavidad_decaimiento}.
+\end{proof}
+
+\begin{remark}[Resultados finos: convergencia y derivación término a término]
+Los resultados demostrados en esta sección cubren el marco $C^n_{per}$, pero existen teoremas más ajustados:
+\begin{itemize}
+\item \textbf{Convergencia de la serie de Fourier:}
+\begin{itemize}
+\item (Dirichlet--Jordan) Si $f$ es de variación acotada, entonces
+\[
+S_Nf(x)\to \frac{f(x^+)+f(x^-)}{2}
+\quad\text{en todo }x.
+\]
+\item (Carleson--Hunt) Si $f\in L^p([0,2\pi])$ con $1<p<\infty$, entonces $S_Nf(x)\to f(x)$ para casi todo $x$.
+\item Este umbral es esencialmente óptimo: existe $f\in L^1([0,2\pi])$ cuya serie de Fourier diverge casi en todo punto (Kolmogorov).
+\end{itemize}
+\item \textbf{Hipótesis mínimas naturales para derivar término a término:}
+\begin{itemize}
+\item Para la identidad de coeficientes $\widehat{f'}_k=ik\hat f_k$ basta que $f$ sea absolutamente continua, $2\pi$-periódica y $f'\in L^1([0,2\pi])$.
+\item Para justificar rigurosamente la derivación de la serie, alcanza el criterio del Lema~\ref{lem:criterio_funcional_derivacion}: convergencia en un punto de $S_Nf$ y convergencia uniforme de $(S_Nf)'$ en $[0,2\pi]$. En particular, la hipótesis $f\in C^2_{per}$ del Teorema~\ref{thm:derivacion_termino_termino_fourier} garantiza este criterio en forma directa.
+\end{itemize}
+\end{itemize}
+\end{remark}
+
+
+
 \chapter{Espacios de Hilbert}
 
 \section{Definiciones y Ejemplos}
@@ -6640,7 +6981,7 @@ Despejando $L(v)$, obtenemos $L(v) = (v, u)$ con $u = \overline{L(z)}z$.
 
 % \section{Los espacios de Sobolev periódicos $H_{\mathrm{per}}^s$}
 
-% En el capítulo de series de Fourier (Capítulo~\ref{cap:teoria_aproximacion}, Sección~\ref{sec:series_fourier_suaves}) vimos que la regularidad clásica de una función (por ejemplo, ser $C^n$) implica decaimiento de sus coeficientes de Fourier (Teorema~\ref{thm:decaimiento_fourier}).
+% En el capítulo de series de Fourier (Capítulo~\ref{cap_fourier_generalizado}, Sección~\ref{sec:series_fourier_suaves}) vimos que la regularidad clásica de una función (por ejemplo, ser $C^n$) implica decaimiento de sus coeficientes de Fourier (Teorema~\ref{thm:decaimiento_fourier}).
 
 % Ahora recorremos la implicación inversa: usaremos ese decaimiento para \emph{definir} regularidad. Esta idea conduce a los espacios de Sobolev periódicos $H_{\mathrm{per}}^s$, que forman una escala natural de espacios de Hilbert y son fundamentales en análisis y en métodos espectrales.
 

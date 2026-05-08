@@ -1,0 +1,378 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx,amsmath,amsfonts,amssymb,epsfig,euscript,enumerate}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\def\dt{\Delta t}
+\def\dx{\Delta x}
+
+\topmargin-2cm \vsize 29.5cm \hsize 21cm
+\setlength{\textwidth}{16.75cm}\setlength{\textheight}{23.5cm}
+\setlength{\oddsidemargin}{0.0cm}
+\setlength{\evensidemargin}{0.0cm}
+
+\begin{document}
+\centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
+ 
+ \vskip 0.2cm
+ \hrulefill
+ \vskip 0.2cm
+
+ \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+ \vskip 0.2cm
+ \centerline{\ttfamily Primer Cuatrimestre 2026}
+ \hrulefill
+
+ \bigskip
+ \centerline{\bf Práctica N$^\circ$ 4 ``A'': Series de Fourier}
+ \bigskip
+
+\section*{Aproximación de funciones periódicas}
+
+\bej (Cálculo de Coeficientes y Decaimiento)
+\begin{enumerate}[(a)]
+    \item Calcule los coeficientes de Fourier (en el intervalo $[-\pi, \pi]$) de la función signo: $f(x) = \text{sgn}(x)$ (onda cuadrada).
+    \item Calcule los coeficientes de Fourier de la onda triangular: $g(x) = |x|$ en $[-\pi, \pi]$.
+    \item Analice la tasa de decaimiento de los coeficientes obtenidos cuando $k \to \infty$. ¿Cuál decae más rápido? ¿Qué función es más suave?
+\end{enumerate}
+\fej
+
+\bej
+(Exactitud de la regla de trapecios para funciones trigonométricas)
+Demuestre que la regla de los trapecios compuesta de $N$ nodos en $[0, 2\pi]$ integra exactamente a las funciones base $g(x) = e^{imx}$ para todo entero $m$ que no sea un múltiplo no nulo de $N$. 
+\fej
+
+\bej
+(Orden de convergencia de trapecios en $C^n_{per}$)
+Sea $f\in C^n_{per}([0,2\pi])$ con $n\ge 2$ y considere
+\[
+I(f)=\int_0^{2\pi} f(x)\,dx,
+\qquad
+Q_N(f)=\frac{2\pi}{N}\sum_{j=0}^{N-1} f\!\left(\frac{2\pi j}{N}\right),
+\qquad
+E_N(f):=|I(f)-Q_N(f)|.
+\]
+Sea $\hat f_k$ la sucesion de coeficientes de Fourier complejos de $f$.
+\begin{enumerate}[(a)]
+    \item Use la exactitud de la regla de trapecios sobre exponenciales complejas para probar
+    \[
+    Q_N(f)-I(f)=2\pi\sum_{\ell\neq 0}\hat f_{\ell N}.
+    \]
+    \item Utilizando la cota de decaimiento de los coeficientes de Fourier para $f\in C^n_{per}([0,2\pi])$, deduzca que $E_N(f)=O(N^{-n})$. 
+\end{enumerate}
+\fej
+
+\bej (De Fourier a la DFT). Considere los coeficientes de Fourier en forma compleja $c_k = \frac{1}{2\pi} \int_0^{2\pi} f(x) e^{-ikx} \, dx$. Muestre que al aproximar estas integrales (para $k=0,1,\dots,N-1$) utilizando la regla de los trapecios compuesta con $N$ puntos $T_N$, se obtiene la DFT de la secuencia de valores muestreados $f(x_j)$ salvo factores de normalización.
+\fej
+
+\bej (Error de truncamiento espectral). Considere la función $2\pi$-periódica dada por su serie de Fourier compleja
+\[
+f(x)=\sum_{k\in\mathbb Z} c_k e^{ikx},
+\qquad
+c_0=0,
+\qquad
+c_k=\frac{1}{(1+|k|)^2}\ \ (k\neq 0).
+\]
+Para $N\ge 0$, defina el truncado
+\[
+S_Nf(x)=\sum_{|k|\le N} c_k e^{ikx}.
+\]
+\begin{enumerate}[(a)]
+    \item Usando Parseval, pruebe que
+    \[
+    \|f-S_Nf\|_{L^2(-\pi,\pi)}^2=2\pi\sum_{|k|>N}|c_k|^2.
+    \]
+    \item Escriba la expresión explícita del error para estos coeficientes y deduzca una cota superior simple en función de $N$.
+    \item Determine el menor $N$ que garantice $\|f-S_Nf\|_{L^2(-\pi,\pi)}<10^{-3}$
+\end{enumerate}
+\fej
+
+\bej (Derivada espectral truncada). Considere una función $2\pi$-periódica dada por su serie de Fourier compleja. Para $N\ge 0$, defina
+\[
+S_Nf(x)=\sum_{|k|\le N} c_k e^{ikx}
+\qquad\text{y}\qquad
+D_N(x):=(S_Nf)'(x)=\sum_{|k|\le N} ik\,c_k e^{ikx}.
+\]
+\begin{enumerate}[(a)]
+    \item Utilizando que la derivada formal de $f$ es $f'(x)=\sum_{k\in\mathbb Z} ik\,c_k e^{ikx}$,
+    muestre que el error de truncamiento de la derivada satisface
+    \[
+    \|f'-D_N\|_{L^2(-\pi,\pi)}^2=2\pi\sum_{|k|>N}k^2|c_k|^2.
+    \]
+    \item Para la misma función del ejercicio anterior, escriba una expresión explícita del error y deduzca una cota superior simple en función de $N$. En base a ello, determine el menor $N$ que garantice
+    \[
+    \|f'-D_N\|_{L^2(-\pi,\pi)}<10^{-3}.
+    \]
+    \item Compare el valor de $N$ obtenido con el del ejercicio anterior (error en $\|f-S_Nf\|_{L^2}$) e interprete la diferencia en términos del orden del decaimiento de los coeficientes.
+\end{enumerate}
+\fej
+
+\bej 
+Sea $f$ una función $2\pi$-periódica con serie de Fourier real 
+$$f(x)=a_0+\sum_{n\ge 1}\big(a_n\cos(nx)+b_n\sin(nx)\big)$$ 
+Muestre que $\int_{-\pi}^{\pi} f(x)\,dx=2\pi a_0$
+\fej
+
+\section*{Ecuaciones diferenciales con borde periódico}
+
+\bej
+Considere
+\[
+-y''(t)+y(t)=f(t),\qquad f(t)=\operatorname{sgn}(\sin t),
+\]
+con condición de borde periódica
+\[
+y(0)=y(2\pi).
+\]
+Sea
+\[
+f(t)=\sum_{k\in\mathbb Z}\hat f_k e^{ikt},
+\qquad
+y(t)=\sum_{k\in\mathbb Z}\hat y_k e^{ikt},
+\]
+y, para $N\ge 0$, defina los truncados
+\[
+f_N(t):=\sum_{|k|\le N}\hat f_k e^{ikt},
+\qquad
+y_N(t):=\sum_{|k|\le N}\hat y_k e^{ikt}.
+\]
+\begin{enumerate}[(a)]
+    \item Calcule los coeficientes $\hat f_k$ y determine su orden de decaimiento cuando $|k|\to\infty$.
+    \item En base a $\hat f_k$, calcule $\hat y_k$ y determine su orden de decaimiento.
+    \item Determine el orden de convergencia de $\|y-y_N\|_{L^2}$ y compárelo con el orden de $\|f-f_N\|_{L^2}$.
+\end{enumerate}
+\fej
+
+\bej
+Considere
+\[
+y''(t)+2\gamma y'(t)+\omega_0^2y(t)=f(t),\qquad t\in[0,2\pi],
+\]
+con condición de borde periódica
+\[
+y(0)=y(2\pi),
+\]
+y suponga que
+\[
+f(t)=\sum_{k\in\mathbb Z}\hat f_k e^{ikt}.
+\]
+Si $y(t)=\sum_{k\in\mathbb Z}\hat y_k e^{ikt}$, para $N\ge 0$ defina
+\[
+y_N(t):=\sum_{|k|\le N}\hat y_k e^{ikt}.
+\]
+\begin{enumerate}[(a)]
+    \item Muestre que
+    \[
+    \hat y_k=H_k\hat f_k,\qquad H_k=\frac{1}{\omega_0^2-k^2+2i\gamma k}.
+    \]
+    \item Escriba una cota para $\|y-y_N\|_{L^2}$ en términos de $H_k$ y de los coeficientes truncados de $f$.
+    \item Estudie el comportamiento de $|H_k|$ para $|k|\to\infty$ y concluya cómo cambia el orden de convergencia de $y_N$ respecto del orden de convergencia de la serie de Fourier de $f$.
+    \item Discuta el caso límite en que el denominador se anula para algún modo (resonancia) como situación de estabilidad muy mala.
+\end{enumerate}
+\fej
+
+\section*{Ecuaciones integrales e integro-diferenciales}
+
+\bej
+Considere
+\[
+Ku=f,
+\qquad
+(Ku)(x)=\frac{1}{2\pi}\int_0^{2\pi}k(x-t)u(t)\,dt,
+\]
+y suponga que
+\[
+f(x)=\sum_{n\in\mathbb Z}\hat f_n e^{inx},
+\qquad
+u(x)=\sum_{n\in\mathbb Z}\hat u_n e^{inx},
+\]
+con $\hat k_n\neq 0$ para todo $n$. Para $N\ge 0$, defina
+\[
+f_N(x):=\sum_{|n|\le N}\hat f_n e^{inx},
+\qquad
+u_N(x):=\sum_{|n|\le N}\hat u_n e^{inx}.
+\]
+Suponga ademas que
+\[
+|\hat k_n|=\Theta(|n|^{-r}),\quad r>0,
+\qquad
+|\hat f_n|=\Theta(|n|^{-p}),\quad p>\frac12,
+\]
+para $|n|\to\infty$.
+\begin{enumerate}[(a)]
+    \item Obtenga la relacion modal
+    \[
+    \hat u_n=\frac{\hat f_n}{\hat k_n}
+    \]
+    y deduzca el orden de decaimiento de $|\hat u_n|$.
+    \item Suponiendo $p-r>\frac12$, use Parseval para obtener el orden de
+    \[
+    \|u-u_N\|_{L^2(0,2\pi)}
+    \]
+    y compare con el orden de $\|f-f_N\|_{L^2(0,2\pi)}$.
+    \item Interprete el resultado en terminos de ganancia/perdida de orden respecto de $f$.
+\end{enumerate}
+\fej
+
+\bej
+Considere
+\[
+u+Ku=f,
+\qquad
+(Ku)(x)=\frac{1}{2\pi}\int_0^{2\pi}k(x-t)u(t)\,dt,
+\]
+con
+\[
+f(x)=\sum_{n\in\mathbb Z}\hat f_n e^{inx},
+\qquad
+u(x)=\sum_{n\in\mathbb Z}\hat u_n e^{inx},
+\]
+y truncados
+\[
+f_N(x):=\sum_{|n|\le N}\hat f_n e^{inx},
+\qquad
+u_N(x):=\sum_{|n|\le N}\hat u_n e^{inx}.
+\]
+Suponga que $|\hat k_n|=\Theta(|n|^{-r})$ con $r>0$ para $|n|\to\infty$.
+\begin{enumerate}[(a)]
+    \item Obtenga la relacion modal
+    \[
+    \hat u_n=T_n\hat f_n,
+    \qquad
+    T_n=\frac{1}{1+\hat k_n}.
+    \]
+    \item Estudie el comportamiento de $|T_n|$ para $|n|\to\infty$ y concluya el orden de decaimiento de $|\hat u_n|$ en funcion del de $|\hat f_n|$.
+    \item Usando Parseval, escriba
+    \[
+    \|u-u_N\|_{L^2(0,2\pi)}^2=2\pi\sum_{|n|>N}|T_n|^2|\hat f_n|^2
+    \]
+    y compare el orden de convergencia con el de $\|f-f_N\|_{L^2(0,2\pi)}$.
+    \item Discuta el papel de los modos en los que $|1+\hat k_n|$ es pequeno sobre la estabilidad del problema.
+\end{enumerate}
+\fej
+
+\bej
+Considere
+\[
+u(t)+\frac{d}{dt}\left[\frac{1}{2\pi}\int_0^{2\pi}k(t-s)u(s)\,ds\right]=f(t),
+\]
+con
+\[
+f(t)=\sum_{n\in\mathbb Z}\hat f_n e^{int},
+\qquad
+u(t)=\sum_{n\in\mathbb Z}\hat u_n e^{int},
+\]
+y truncados
+\[
+f_N(t):=\sum_{|n|\le N}\hat f_n e^{int},
+\qquad
+u_N(t):=\sum_{|n|\le N}\hat u_n e^{int}.
+\]
+Suponga que $|\hat k_n|=\Theta(|n|^{-r})$ con $r>0$ para $|n|\to\infty$.
+\begin{enumerate}[(a)]
+    \item Muestre que
+    \[
+    \hat u_n=T_n\hat f_n,
+    \qquad
+    T_n=\frac{1}{1+in\hat k_n}.
+    \]
+    \item Segun el valor de $r$, analice el comportamiento asintotico de $|T_n|$ y concluya si hay ganancia, conservacion o perdida de orden en el decaimiento de $|\hat u_n|$ respecto de $|\hat f_n|$.
+    \item Escriba el error de truncamiento en norma $L^2$ mediante Parseval y deduzca el orden esperado de $\|u-u_N\|_{L^2(0,2\pi)}$ en cada regimen de $r$.
+\end{enumerate}
+\fej
+
+\bej
+Considere la ecuacion de primer tipo
+\[
+\frac{d}{dt}\left[\frac{1}{2\pi}\int_0^{2\pi}k(t-s)u'(s)\,ds\right]=f(t),
+\]
+con condicion de borde periodica
+\[
+u(0)=u(2\pi),
+\]
+y suponga
+\[
+f(t)=\sum_{n\in\mathbb Z}\hat f_n e^{int},
+\qquad
+u(t)=\sum_{n\in\mathbb Z}\hat u_n e^{int},
+\]
+y truncados
+\[
+f_N(t):=\sum_{|n|\le N}\hat f_n e^{int},
+\qquad
+u_N(t):=\sum_{|n|\le N}\hat u_n e^{int}.
+\]
+Suponga que $|\hat k_n|=\Theta(|n|^{-r})$ con $r>0$ para $|n|\to\infty$.
+\begin{enumerate}[(a)]
+    \item Muestre que
+    \[
+    -(n^2\hat k_n)\hat u_n=\hat f_n,
+    \qquad
+    \hat u_n=T_n\hat f_n,
+    \qquad
+    T_n=-\frac{1}{n^2\hat k_n}\quad (n\neq 0).
+    \]
+    ¿Que condicion de compatibilidad aparece en el modo $n=0$?
+    \item Deduza el orden de decaimiento de $|\hat u_n|$ a partir del de $|\hat f_n|$ y clasifique (segun $r$) cuando hay ganancia, conservacion o perdida de orden.
+    \item Usando Parseval,
+    \[
+    \|u-u_N\|_{L^2(0,2\pi)}^2=2\pi\sum_{|n|>N}|\hat u_n|^2,
+    \]
+    determine el orden esperado del error de truncamiento en norma $L^2$ y comparelo con el de $\|f-f_N\|_{L^2(0,2\pi)}$.
+\end{enumerate}
+\fej
+
+\section*{Error total}
+
+\bej Considere nuevamente el problema periódico
+\[
+-y''(t)+y(t)=f(t),\qquad t\in[0,2\pi],\qquad y(0)=y(2\pi),
+\]
+con
+\[
+f(t)=\sum_{k\in\mathbb Z}\hat f_k e^{ikt},
+\qquad
+y(t)=\sum_{k\in\mathbb Z}\hat y_k e^{ikt},
+\qquad
+\hat y_k=H_k\hat f_k,\quad H_k=\frac{1}{1+k^2}.
+\]
+Para $N\ge 0$, defina el truncado exacto
+\[
+y_N(t):=\sum_{|k|\le N}H_k\hat f_k e^{ikt}.
+\]
+Ahora aproxime los coeficientes de $f$ con la regla de trapecios (DFT/FFT) usando $M$ nodos $x_j=2\pi j/M$:
+\[
+\tilde f_k^{(M)}:=\frac1M\sum_{j=0}^{M-1} f(x_j)e^{-ikx_j},
+\]
+y defina la solución numérica truncada
+\[
+y_{N,M}(t):=\sum_{|k|\le N}H_k\tilde f_k^{(M)}e^{ikt}.
+\]
+\begin{enumerate}[(a)]
+    \item Pruebe la descomposición exacta del error total en norma $L^2$:
+    \[
+    \|y-y_{N,M}\|_{L^2(0,2\pi)}^2
+    =2\pi\sum_{|k|>N}|H_k\hat f_k|^2
+    +2\pi\sum_{|k|\le N}|H_k(\hat f_k-\tilde f_k^{(M)})|^2.
+    \]
+    Interprete cada término (error de truncado y error de cuadratura/FFT).
+    \item Usando la cota
+    \[
+    \sup_{|k|\le N}|\hat f_k-\tilde f_k^{(M)}|\le C\,M^{-r},
+    \]
+    y una cota para el truncado de $f$ (por ejemplo, existe $C_f>0$ tal que $|\hat f_k|\le C_f |k|^{-p}$ para $|k|$ grande), deduzca una cota del tipo
+    \[
+    \|y-y_{N,M}\|_{L^2}\le C_1 N^{-\alpha}+C_2 M^{-r}.
+    \]
+    Identifique $\alpha$ en función del decaimiento de $\hat f_k$.
+    \item Proponga un criterio práctico para elegir $(N,M)$, dado un error objetivo $\varepsilon$, balanceando contribuciones de truncado y cuadratura.
+\end{enumerate}
+\fej
+
+\end{document}
