@@ -30,10 +30,8 @@
  \hrulefill
 
  \bigskip
- \centerline{\bf Práctica N$^\circ$ 4 ``A'': Series de Fourier}
+ \centerline{\bf Práctica N$^\circ$ 4: Series de Fourier Generalizadas (primera parte)}
  \bigskip
-
-\section*{Aproximación de funciones periódicas}
 
 \bej (Cálculo de Coeficientes y Decaimiento)
 \begin{enumerate}[(a)]
@@ -43,73 +41,29 @@
 \end{enumerate}
 \fej
 
-\bej
-(Exactitud de la regla de trapecios para funciones trigonométricas)
-Demuestre que la regla de los trapecios compuesta de $N$ nodos en $[0, 2\pi]$ integra exactamente a las funciones base $g(x) = e^{imx}$ para todo entero $m$ que no sea un múltiplo no nulo de $N$. 
-\fej
-
-\bej
-(Orden de convergencia de trapecios en $C^n_{per}$)
-Sea $f\in C^n_{per}([0,2\pi])$ con $n\ge 2$ y considere
-\[
-I(f)=\int_0^{2\pi} f(x)\,dx,
-\qquad
-Q_N(f)=\frac{2\pi}{N}\sum_{j=0}^{N-1} f\!\left(\frac{2\pi j}{N}\right),
-\qquad
-E_N(f):=|I(f)-Q_N(f)|.
-\]
-Sea $\hat f_k$ la sucesion de coeficientes de Fourier complejos de $f$.
-\begin{enumerate}[(a)]
-    \item Use la exactitud de la regla de trapecios sobre exponenciales complejas para probar
-    \[
-    Q_N(f)-I(f)=2\pi\sum_{\ell\neq 0}\hat f_{\ell N}.
-    \]
-    \item Utilizando la cota de decaimiento de los coeficientes de Fourier para $f\in C^n_{per}([0,2\pi])$, deduzca que $E_N(f)=O(N^{-n})$. 
-\end{enumerate}
-\fej
-
-\bej (De Fourier a la DFT). Considere los coeficientes de Fourier en forma compleja $c_k = \frac{1}{2\pi} \int_0^{2\pi} f(x) e^{-ikx} \, dx$. Muestre que al aproximar estas integrales (para $k=0,1,\dots,N-1$) utilizando la regla de los trapecios compuesta con $N$ puntos $T_N$, se obtiene la DFT de la secuencia de valores muestreados $f(x_j)$ salvo factores de normalización.
-\fej
-
 \bej (Error de truncamiento espectral). Considere la función $2\pi$-periódica dada por su serie de Fourier compleja
 \[
-f(x)=\sum_{k\in\mathbb Z} c_k e^{ikx},
-\qquad
-c_0=0,
-\qquad
-c_k=\frac{1}{(1+|k|)^2}\ \ (k\neq 0).
+f(x)=\sum_{k\in\mathbb Z} \frac{1}{(1+|k|)^2} e^{ikx},
 \]
-Para $N\ge 0$, defina el truncado
-\[
-S_Nf(x)=\sum_{|k|\le N} c_k e^{ikx}.
-\]
-\begin{enumerate}[(a)]
-    \item Usando Parseval, pruebe que
-    \[
-    \|f-S_Nf\|_{L^2(-\pi,\pi)}^2=2\pi\sum_{|k|>N}|c_k|^2.
-    \]
-    \item Escriba la expresión explícita del error para estos coeficientes y deduzca una cota superior simple en función de $N$.
-    \item Determine el menor $N$ que garantice $\|f-S_Nf\|_{L^2(-\pi,\pi)}<10^{-3}$
-\end{enumerate}
+Usando la fórmula del error de truncamiento espectral, determine el menor $N$ que garantice $\|f-S_N(f)\|_{L^2(-\pi,\pi)}<10^{-3}$.
+
 \fej
 
-\bej (Derivada espectral truncada). Considere una función $2\pi$-periódica dada por su serie de Fourier compleja. Para $N\ge 0$, defina
+\bej (Derivada espectral truncada). Considere una función $2\pi$-periódica con serie de Fourier compleja. Para $N\ge 0$, defina
 \[
-S_Nf(x)=\sum_{|k|\le N} c_k e^{ikx}
-\qquad\text{y}\qquad
-D_N(x):=(S_Nf)'(x)=\sum_{|k|\le N} ik\,c_k e^{ikx}.
+S_N(f)(x)=\sum_{|k|\le N} c_k e^{ikx},
+\qquad
+D_N(x):=(S_N(f))'(x)=\sum_{|k|\le N} ik\,c_k e^{ikx}.
 \]
 \begin{enumerate}[(a)]
-    \item Utilizando que la derivada formal de $f$ es $f'(x)=\sum_{k\in\mathbb Z} ik\,c_k e^{ikx}$,
-    muestre que el error de truncamiento de la derivada satisface
+    \item Concluya la expresión del error de truncamiento de la derivada:
     \[
     \|f'-D_N\|_{L^2(-\pi,\pi)}^2=2\pi\sum_{|k|>N}k^2|c_k|^2.
     \]
-    \item Para la misma función del ejercicio anterior, escriba una expresión explícita del error y deduzca una cota superior simple en función de $N$. En base a ello, determine el menor $N$ que garantice
+    \item Para la misma función del ejercicio anterior, determine el menor $N$ que garantice
     \[
     \|f'-D_N\|_{L^2(-\pi,\pi)}<10^{-3}.
     \]
-    \item Compare el valor de $N$ obtenido con el del ejercicio anterior (error en $\|f-S_Nf\|_{L^2}$) e interprete la diferencia en términos del orden del decaimiento de los coeficientes.
 \end{enumerate}
 \fej
 
@@ -118,8 +72,6 @@ Sea $f$ una función $2\pi$-periódica con serie de Fourier real
 $$f(x)=a_0+\sum_{n\ge 1}\big(a_n\cos(nx)+b_n\sin(nx)\big)$$ 
 Muestre que $\int_{-\pi}^{\pi} f(x)\,dx=2\pi a_0$
 \fej
-
-\section*{Ecuaciones diferenciales con borde periódico}
 
 \bej
 Considere
@@ -136,16 +88,11 @@ f(t)=\sum_{k\in\mathbb Z}\hat f_k e^{ikt},
 \qquad
 y(t)=\sum_{k\in\mathbb Z}\hat y_k e^{ikt},
 \]
-y, para $N\ge 0$, defina los truncados
-\[
-f_N(t):=\sum_{|k|\le N}\hat f_k e^{ikt},
-\qquad
-y_N(t):=\sum_{|k|\le N}\hat y_k e^{ikt}.
-\]
+y use la notación $S_N(f)$ y $S_N(y)$.
 \begin{enumerate}[(a)]
     \item Calcule los coeficientes $\hat f_k$ y determine su orden de decaimiento cuando $|k|\to\infty$.
     \item En base a $\hat f_k$, calcule $\hat y_k$ y determine su orden de decaimiento.
-    \item Determine el orden de convergencia de $\|y-y_N\|_{L^2}$ y compárelo con el orden de $\|f-f_N\|_{L^2}$.
+    \item Determine el orden de convergencia de $\|y-S_N(y)\|_{L^2}$ y compárelo con el de $\|f-S_N(f)\|_{L^2}$.
 \end{enumerate}
 \fej
 
@@ -162,22 +109,17 @@ y suponga que
 \[
 f(t)=\sum_{k\in\mathbb Z}\hat f_k e^{ikt}.
 \]
-Si $y(t)=\sum_{k\in\mathbb Z}\hat y_k e^{ikt}$, para $N\ge 0$ defina
-\[
-y_N(t):=\sum_{|k|\le N}\hat y_k e^{ikt}.
-\]
+Si $y(t)=\sum_{k\in\mathbb Z}\hat y_k e^{ikt}$, use $S_N(y)$ para su truncado.
 \begin{enumerate}[(a)]
     \item Muestre que
     \[
     \hat y_k=H_k\hat f_k,\qquad H_k=\frac{1}{\omega_0^2-k^2+2i\gamma k}.
     \]
-    \item Escriba una cota para $\|y-y_N\|_{L^2}$ en términos de $H_k$ y de los coeficientes truncados de $f$.
-    \item Estudie el comportamiento de $|H_k|$ para $|k|\to\infty$ y concluya cómo cambia el orden de convergencia de $y_N$ respecto del orden de convergencia de la serie de Fourier de $f$.
+    \item Escriba una cota para $\|y-S_N(y)\|_{L^2}$ en términos de $H_k$ y de los coeficientes de $f$.
+    \item Estudie el comportamiento de $|H_k|$ para $|k|\to\infty$ y concluya cómo cambia el orden de convergencia de $S_N(y)$ respecto del orden de convergencia de la serie de Fourier de $f$.
     \item Discuta el caso límite en que el denominador se anula para algún modo (resonancia) como situación de estabilidad muy mala.
 \end{enumerate}
 \fej
-
-\section*{Ecuaciones integrales e integro-diferenciales}
 
 \bej
 Considere
@@ -192,12 +134,7 @@ f(x)=\sum_{n\in\mathbb Z}\hat f_n e^{inx},
 \qquad
 u(x)=\sum_{n\in\mathbb Z}\hat u_n e^{inx},
 \]
-con $\hat k_n\neq 0$ para todo $n$. Para $N\ge 0$, defina
-\[
-f_N(x):=\sum_{|n|\le N}\hat f_n e^{inx},
-\qquad
-u_N(x):=\sum_{|n|\le N}\hat u_n e^{inx}.
-\]
+con $\hat k_n\neq 0$ para todo $n$, y use $S_N(f)$, $S_N(u)$.
 Suponga ademas que
 \[
 |\hat k_n|=\Theta(|n|^{-r}),\quad r>0,
@@ -211,11 +148,7 @@ para $|n|\to\infty$.
     \hat u_n=\frac{\hat f_n}{\hat k_n}
     \]
     y deduzca el orden de decaimiento de $|\hat u_n|$.
-    \item Suponiendo $p-r>\frac12$, use Parseval para obtener el orden de
-    \[
-    \|u-u_N\|_{L^2(0,2\pi)}
-    \]
-    y compare con el orden de $\|f-f_N\|_{L^2(0,2\pi)}$.
+    \item Suponiendo $p-r>\frac12$, concluya el orden de $\|u-S_N(u)\|_{L^2(0,2\pi)}$ y compárelo con el de $\|f-S_N(f)\|_{L^2(0,2\pi)}$.
     \item Interprete el resultado en terminos de ganancia/perdida de orden respecto de $f$.
 \end{enumerate}
 \fej
@@ -233,12 +166,7 @@ f(x)=\sum_{n\in\mathbb Z}\hat f_n e^{inx},
 \qquad
 u(x)=\sum_{n\in\mathbb Z}\hat u_n e^{inx},
 \]
-y truncados
-\[
-f_N(x):=\sum_{|n|\le N}\hat f_n e^{inx},
-\qquad
-u_N(x):=\sum_{|n|\le N}\hat u_n e^{inx}.
-\]
+y use $S_N(f)$, $S_N(u)$.
 Suponga que $|\hat k_n|=\Theta(|n|^{-r})$ con $r>0$ para $|n|\to\infty$.
 \begin{enumerate}[(a)]
     \item Obtenga la relacion modal
@@ -248,11 +176,7 @@ Suponga que $|\hat k_n|=\Theta(|n|^{-r})$ con $r>0$ para $|n|\to\infty$.
     T_n=\frac{1}{1+\hat k_n}.
     \]
     \item Estudie el comportamiento de $|T_n|$ para $|n|\to\infty$ y concluya el orden de decaimiento de $|\hat u_n|$ en funcion del de $|\hat f_n|$.
-    \item Usando Parseval, escriba
-    \[
-    \|u-u_N\|_{L^2(0,2\pi)}^2=2\pi\sum_{|n|>N}|T_n|^2|\hat f_n|^2
-    \]
-    y compare el orden de convergencia con el de $\|f-f_N\|_{L^2(0,2\pi)}$.
+    \item Concluya el orden de convergencia de $\|u-S_N(u)\|_{L^2(0,2\pi)}$ y compárelo con el de $\|f-S_N(f)\|_{L^2(0,2\pi)}$.
     \item Discuta el papel de los modos en los que $|1+\hat k_n|$ es pequeno sobre la estabilidad del problema.
 \end{enumerate}
 \fej
@@ -268,12 +192,7 @@ f(t)=\sum_{n\in\mathbb Z}\hat f_n e^{int},
 \qquad
 u(t)=\sum_{n\in\mathbb Z}\hat u_n e^{int},
 \]
-y truncados
-\[
-f_N(t):=\sum_{|n|\le N}\hat f_n e^{int},
-\qquad
-u_N(t):=\sum_{|n|\le N}\hat u_n e^{int}.
-\]
+y use $S_N(f)$, $S_N(u)$.
 Suponga que $|\hat k_n|=\Theta(|n|^{-r})$ con $r>0$ para $|n|\to\infty$.
 \begin{enumerate}[(a)]
     \item Muestre que
@@ -283,30 +202,13 @@ Suponga que $|\hat k_n|=\Theta(|n|^{-r})$ con $r>0$ para $|n|\to\infty$.
     T_n=\frac{1}{1+in\hat k_n}.
     \]
     \item Segun el valor de $r$, analice el comportamiento asintotico de $|T_n|$ y concluya si hay ganancia, conservacion o perdida de orden en el decaimiento de $|\hat u_n|$ respecto de $|\hat f_n|$.
-    \item Escriba el error de truncamiento en norma $L^2$ mediante Parseval y deduzca el orden esperado de $\|u-u_N\|_{L^2(0,2\pi)}$ en cada regimen de $r$.
 \end{enumerate}
 \fej
 
 \bej
 Considere la ecuacion de primer tipo
 \[
-\frac{d}{dt}\left[\frac{1}{2\pi}\int_0^{2\pi}k(t-s)u'(s)\,ds\right]=f(t),
-\]
-con condicion de borde periodica
-\[
-u(0)=u(2\pi),
-\]
-y suponga
-\[
-f(t)=\sum_{n\in\mathbb Z}\hat f_n e^{int},
-\qquad
-u(t)=\sum_{n\in\mathbb Z}\hat u_n e^{int},
-\]
-y truncados
-\[
-f_N(t):=\sum_{|n|\le N}\hat f_n e^{int},
-\qquad
-u_N(t):=\sum_{|n|\le N}\hat u_n e^{int}.
+\frac{d}{dt}\left[\frac{1}{2\pi}\int_0^{2\pi}k(t-s)u'(s)\,ds\right]=f(t), \qquad u(0)=u(2\pi),
 \]
 Suponga que $|\hat k_n|=\Theta(|n|^{-r})$ con $r>0$ para $|n|\to\infty$.
 \begin{enumerate}[(a)]
@@ -320,17 +222,11 @@ Suponga que $|\hat k_n|=\Theta(|n|^{-r})$ con $r>0$ para $|n|\to\infty$.
     \]
     ¿Que condicion de compatibilidad aparece en el modo $n=0$?
     \item Deduza el orden de decaimiento de $|\hat u_n|$ a partir del de $|\hat f_n|$ y clasifique (segun $r$) cuando hay ganancia, conservacion o perdida de orden.
-    \item Usando Parseval,
-    \[
-    \|u-u_N\|_{L^2(0,2\pi)}^2=2\pi\sum_{|n|>N}|\hat u_n|^2,
-    \]
-    determine el orden esperado del error de truncamiento en norma $L^2$ y comparelo con el de $\|f-f_N\|_{L^2(0,2\pi)}$.
+    \item Concluya el orden esperado de $\|u-S_N(u)\|_{L^2(0,2\pi)}$ y compárelo con el de $\|f-S_N(f)\|_{L^2(0,2\pi)}$.
 \end{enumerate}
 \fej
 
-\section*{Error total}
-
-\bej Considere nuevamente el problema periódico
+\bej (Error total) Considere nuevamente el problema periódico
 \[
 -y''(t)+y(t)=f(t),\qquad t\in[0,2\pi],\qquad y(0)=y(2\pi),
 \]
@@ -344,7 +240,7 @@ y(t)=\sum_{k\in\mathbb Z}\hat y_k e^{ikt},
 \]
 Para $N\ge 0$, defina el truncado exacto
 \[
-y_N(t):=\sum_{|k|\le N}H_k\hat f_k e^{ikt}.
+S_N(y)(t):=\sum_{|k|\le N}H_k\hat f_k e^{ikt}.
 \]
 Ahora aproxime los coeficientes de $f$ con la regla de trapecios (DFT/FFT) usando $M$ nodos $x_j=2\pi j/M$:
 \[
@@ -352,12 +248,12 @@ Ahora aproxime los coeficientes de $f$ con la regla de trapecios (DFT/FFT) usand
 \]
 y defina la solución numérica truncada
 \[
-y_{N,M}(t):=\sum_{|k|\le N}H_k\tilde f_k^{(M)}e^{ikt}.
+S_N^{(M)}(y)(t):=\sum_{|k|\le N}H_k\tilde f_k^{(M)}e^{ikt}.
 \]
 \begin{enumerate}[(a)]
-    \item Pruebe la descomposición exacta del error total en norma $L^2$:
+    \item Use la descomposición del error total en norma $L^2$:
     \[
-    \|y-y_{N,M}\|_{L^2(0,2\pi)}^2
+    \|y-S_N^{(M)}(y)\|_{L^2(0,2\pi)}^2
     =2\pi\sum_{|k|>N}|H_k\hat f_k|^2
     +2\pi\sum_{|k|\le N}|H_k(\hat f_k-\tilde f_k^{(M)})|^2.
     \]
@@ -368,11 +264,168 @@ y_{N,M}(t):=\sum_{|k|\le N}H_k\tilde f_k^{(M)}e^{ikt}.
     \]
     y una cota para el truncado de $f$ (por ejemplo, existe $C_f>0$ tal que $|\hat f_k|\le C_f |k|^{-p}$ para $|k|$ grande), deduzca una cota del tipo
     \[
-    \|y-y_{N,M}\|_{L^2}\le C_1 N^{-\alpha}+C_2 M^{-r}.
+    \|y-S_N^{(M)}(y)\|_{L^2}\le C_1 N^{-\alpha}+C_2 M^{-r}.
     \]
     Identifique $\alpha$ en función del decaimiento de $\hat f_k$.
     \item Proponga un criterio práctico para elegir $(N,M)$, dado un error objetivo $\varepsilon$, balanceando contribuciones de truncado y cuadratura.
 \end{enumerate}
 \fej
+
+\bej
+Considere
+\[
+I(\omega):=\int_{-\infty}^{\infty}\sin(\omega t^2)\,dt,
+\qquad \omega>0,
+\]
+Compare los siguientes dos metodos de truncamiento de la integral impropia oscilatoria:
+\[
+I_T^{\sharp}:=\int_{-T}^{T}\sin(\omega t^2)\,dt,
+\qquad
+I_T^{w}:=\int_{-T}^{T}W_T(t)\sin(\omega t^2)\,dt,
+\]
+donde $W_T\in C^{\infty}([-T,T])$ está dada, $W_T\equiv 1$ en la zona central y se anula junto con todas sus derivadas en los bordes. En ambas integrales truncadas se aplica la regla de trapecios compuesta con $N$ nodos uniformes.
+
+\begin{enumerate}[(a)]
+\item Muestre las descomposiciones
+\[
+|I-Q_{T,h}^{\sharp}|\le |I-I_T^{\sharp}|+|I_T^{\sharp}-Q_{T,h}^{\sharp}|,
+\qquad
+|I-Q_{T,h}^{w}|\le |I-I_T^{w}|+|I_T^{w}-Q_{T,h}^{w}|.
+\]
+
+\item Utilizando integración por partes, pruebe que para truncación dura,
+\[
+|I-I_T^{\sharp}|=O(T^{-1}).
+\]
+
+\item Análogamente, pruebe que para la versión con ventana suave,
+\[
+|I-I_T^{w}| = O(T^{-n}) \quad \mbox{para todo } n\in\mathbb N.
+\]
+
+\item Justifique por qué, para la versión con ventana suave, el error de cuadratura satisface
+\[
+|I_T^{w}-Q_{T,h}^{w}| = O(h^q) \quad \mbox{para todo } q\in\mathbb N.
+\]
+
+\item Compare el error total de ambos métodos y discuta la ventaja de usar una ventana suave en este caso.
+\end{enumerate}
+\fej
+
+\bej (Paridad y base de cosenos)
+Sea $f\in L^2(-\pi,\pi)$ real y par.
+\begin{enumerate}[(a)]
+    \item Muestre que sus coeficientes seno son nulos y que su serie de Fourier real queda
+    \[
+    f(x)\sim \frac{a_0}{2}+\sum_{k\ge 1}a_k\cos(kx).
+    \]
+    \item Escriba una fórmula para $a_k$ usando solo la semirrecta $[0,\pi]$.
+    \item Aplique el resultado a $f(x)=|x|$ en $[-\pi,\pi]$.
+\end{enumerate}
+\fej
+
+\bej (Matriz de diferenciación de Chebyshev--Lobatto para $N=2$)
+Considere los nodos de Chebyshev--Lobatto
+\[
+x_j=\cos\left(\frac{j\pi}{2}\right),\qquad j=0,1,2,
+\]
+y la matriz de diferenciación $D\in\R^{3\times 3}$ dada por
+\[
+D_{ij}=\frac{c_i}{c_j}\frac{(-1)^{i+j}}{x_i-x_j}\ (i\ne j),
+\qquad
+D_{ii}=-\sum_{j\ne i}D_{ij},
+\]
+con $c_0=c_2=2$, $c_1=1$.
+\begin{enumerate}[(a)]
+    \item Construya explícitamente la matriz $D$.
+    \item Calcule $D^2$ y verifique que aproxima la derivada segunda en nodos.
+    \item Pruebe numéricamente sobre $u(x)=x^2$ y $u(x)=x^3$ que $D\,\mathbf u$ y $D^2\,\mathbf u$ reproducen exactamente los valores nodales de $u'$ y $u''$.
+\end{enumerate}
+\fej
+
+\bej (Colocación de Chebyshev con Dirichlet homogéneo)
+Considere el problema de borde lineal
+\[
+-u''(x)+\alpha u(x)=f(x),\qquad x\in(-1,1),
+\qquad
+u(-1)=u(1)=0,
+\]
+con $\alpha\ge 0$.
+
+Use nodos de Chebyshev--Lobatto con $N=3$:
+\[
+x_j=\cos\left(\frac{j\pi}{3}\right),\qquad j=0,\dots,3.
+\]
+Sea $D$ la matriz de primera derivada y $D^{(2)}=D^2$.
+
+\begin{enumerate}[(a)]
+    \item Defina $\mathbf U=(U_0,\dots,U_3)^T\approx (u(x_0),\dots,u(x_3))^T$ y escriba el sistema de colocación en todos los nodos.
+    \item Imponga las condiciones de borde $U_0=U_3=0$ y deduzca el sistema interior para $\mathbf U_I=(U_1,U_2)^T$:
+    \[
+    A\mathbf U_I=\mathbf F_I,
+    \qquad
+    A=-\big(D^{(2)}\big)_{I,I}+\alpha I_2,
+    \]
+    donde $I=\{1,2\}$ y $\mathbf F_I=(f(x_1),f(x_2))^T$.
+    Escriba explícitamente la matriz $A\in\R^{2\times 2}$.
+\end{enumerate}
+\fej
+
+
+\bej (Clenshaw--Curtis anidada: 2 y 4 puntos)
+Considere la integral
+\[
+I=\int_{-1}^1 e^x\,dx.
+\]
+\begin{enumerate}[(a)]
+    \item Construya la regla de Clenshaw--Curtis de 2 puntos (nodos extremos) y calcule la aproximación $Q_2$ de $I$.
+    \item Construya la regla de Clenshaw--Curtis de 4 puntos (nodos de Lobatto para $N=3$) y calcule la aproximación $Q_4$ de $I$.
+    \item Verifique la anidación de nodos (los nodos de 2 puntos están contenidos en los de 4 puntos).
+    \item Compare $Q_2$ y $Q_4$ con el valor exacto $I=e-1$ y use $\eta:=|Q_4-Q_2|$ como estimador a posteriori del error para el nivel fino. ¿Qué estimación obtiene?
+\end{enumerate}
+\fej
+
+\bej (Gauss--Chebyshev de 3 puntos)
+Considere la integral con peso de Chebyshev de primera especie
+\[
+I=\int_{-1}^1\frac{e^x}{\sqrt{1-x^2}}\,dx.
+\]
+\begin{enumerate}[(a)]
+    \item Use la regla de Gauss--Chebyshev con $n=3$ nodos
+    \[
+    x_j=\cos\left(\frac{(2j-1)\pi}{2n}\right),\qquad j=1,2,3,
+    \]
+    y pesos $w_j=\pi/n$, para construir $Q_3$.
+    \item Calcule numéricamente $Q_3$ y compare con el valor exacto $I=\pi I_0(1) \approx 3.9774632605$, donde $I_0$ es la función de Bessel modificada de orden $0$.
+\end{enumerate}
+\fej
+
+
+\bej Considere la ecuación integral de segundo tipo
+\[
+y(x)+\int_{-1}^1 (x-t)^2 y(t)\,dt=\cos(x),\qquad x\in[-1,1].
+\]
+Use una aproximación en base de Chebyshev:
+\[
+y_3(x)=\sum_{m=0}^3 a_m\,T_m(x).
+\]
+Tomando los nodos de Chebyshev--Lobatto para $N=3$,
+\[\
+\xi_j=\cos\!\left(\frac{j\pi}{3}\right),\qquad x_j=\frac{1+\xi_j}{2},\qquad j=0,1,2,3,
+\]
+y usando en la integral la regla de Clenshaw--Curtis de 4 puntos en $[0,1]$:
+\[
+\int_0^1 g(t)\,dt\approx\sum_{j=0}^3 \widetilde w_j g(x_j),
+\qquad
+\widetilde w_0=\widetilde w_3=\frac{1}{18},\ \widetilde w_1=\widetilde w_2=\frac{4}{9},
+\]
+escriba las ecuaciones de colocación en los puntos $x_i$ y muestre que se obtiene un sistema lineal para $\mathbf a=(a_0,a_1,a_2,a_3)^T$ de la forma
+\[
+A\mathbf a=\mathbf b.
+\]
+Calcule explícitamente la matriz $A\in\R^{4\times 4}$ y el vector $\mathbf b$.
+\fej
+
+
 
 \end{document}

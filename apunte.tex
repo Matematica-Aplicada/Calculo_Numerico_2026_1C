@@ -2166,6 +2166,66 @@ La fórmula~\eqref{eq:error_interpolacion} separa dos contribuciones al error:
 Para nodos \emph{equiespaciados}, $\|\omega_{n+1}\|_\infty$ crece factorialmente con $n$, lo que explica el \textbf{fenómeno de Runge}: la interpolación equiespaciada puede diverger aunque $f$ sea analítica.
 \end{remark}
 
+\subsection{Nodos equiespaciados y el fenómeno de Runge}
+
+\begin{definition}[Nodos equiespaciados]
+En el intervalo $[a,b]$, los \textbf{nodos equiespaciados} se definen como:
+\[
+x_k = a + k \frac{b-a}{n}, \quad k = 0, 1, \ldots, n.
+\]
+\end{definition}
+
+Los nodos equiespaciados son la elección más natural y se usan frecuentemente en aplicaciones prácticas. Sin embargo, como veremos, pueden llevar a problemas de convergencia serios.
+
+\begin{theorem}[Fenómeno de Runge]
+Existen funciones $C^\infty$ para las cuales la interpolación polinomial en nodos equiespaciados diverge cuando $n \to \infty$.
+\end{theorem}
+
+\begin{example}[Función de Runge]
+Consideremos la función
+\[
+f(x) = \frac{1}{1 + 25x^2}
+\]
+en el intervalo $[-1,1]$. Esta función es $C^\infty(\mathbb{R})$ y perfectamente suave.
+
+Para nodos equiespaciados $x_k = -1 + \frac{2k}{n}$, $k = 0, \ldots, n$, los polinomios interpolantes $p_n(x)$ satisfacen:
+\begin{itemize}
+\item $p_n(x) \to f(x)$ uniformemente en $[-1/2, 1/2]$ cuando $n \to \infty$.
+\item $p_n(x)$ diverge cerca de los extremos $x = \pm 1$, con oscilaciones de amplitud creciente.
+\end{itemize}
+\end{example}
+
+\begin{proof}[Demostración de divergencia para la función de Runge]
+Sea
+\[
+\omega_{n+1}(x):=\prod_{k=0}^n\bigl(x-x_k\bigr),
+\qquad x_k=-1+\frac{2k}{n}.
+\]
+Como $f$ es meromorfa en $\mathbb C$ con polos simples en $\pm i/5$, la fórmula integral de Hermite para el error de interpolación da, para $x\in(-1,1)$,
+\[
+f(x)-p_n(x)=\frac{\omega_{n+1}(x)}{2\pi i}\int_\Gamma\frac{f(z)}{(z-x)\,\omega_{n+1}(z)}\,dz,
+\]
+donde $\Gamma$ rodea $[-1,1]$ y los polos de $f$. Evaluando por residuos en $z=\pm i/5$ se obtiene la identidad exacta
+\[
+f(x)-p_n(x)=\frac{\omega_{n+1}(x)}{10i}\left(
+\frac{1}{(x-i/5)\,\omega_{n+1}(i/5)}
+-
+\frac{1}{(x+i/5)\,\omega_{n+1}(-i/5)}
+\right).
+\]
+Para nodos reales, $\omega_{n+1}(-i/5)=\overline{\omega_{n+1}(i/5)}$. Además, las estimaciones clásicas de Runge para malla equiespaciada implican que existen $\delta\in(0,1)$, $c>1$ y $C>0$ tales que
+\[
+\max_{x\in[1-\delta,\,1]}\left|\frac{\omega_{n+1}(x)}{\omega_{n+1}(i/5)}\right|
+\ge C\,c^n
+\qquad (n\ \text{grande}).
+\]
+Como $|(x\pm i/5)^{-1}|$ está uniformemente acotado y separado de cero en $[1-\delta,1]$, de la identidad anterior se deduce
+\[
+\max_{x\in[1-\delta,\,1]}|f(x)-p_n(x)|\ge C_1\,c^n\xrightarrow[n\to\infty]{}\infty.
+\]
+Por simetría ocurre lo mismo en $[-1,-1+\delta]$. Esto prueba la divergencia cerca de los extremos para la función de Runge.
+\end{proof}
+
 \begin{example}[Error de la interpolación lineal]\label{ex:error_interpolacion_lineal}
 Sea $f\in C^2([a,a+h])$ y $p_1\in\mathcal{P}_1$ el polinomio que interpola $f$ en los extremos $x_0=a$ y $x_1=a+h$.  Aplicamos el Teorema~\ref{thm:error_interpolacion} con $n=1$: para todo $x\in[a,a+h]$ existe $\xi\in(a,a+h)$ tal que
 \[
@@ -3052,11 +3112,23 @@ f \;\sim\; \sum_{k \in \mathcal{I}} (f, \phi_k) \phi_k,
 \]
 que llamamos \emph{serie} de $f$ en la base $\{\phi_k\}$. Los coeficientes de esta serie son las coordenadas de $f$ en la base $\{\phi_k\}$, y se denominan \textit{coeficientes de Fourier generalizados} de $f$ (en la base dada).
 
-A diferencia del caso finito-dimensional, esta suma es en general infinita y surgen dos preguntas centrales. La primera es la convergencia: ¿en qué sentido tiende la serie completa a $f$? Y si la serie converge, la segunda pregunta es ¿Con qué velocidad lo hace? Equivalentemente, si retenemos sólo los primeros $N$ términos de la representación, ¿cuán grande es el error $\|f - \sum_{|k| \leq N} \hat{f}_k \phi_k\|$? Las respuestas dependen de la regularidad de $f$ y de la elección de la base, y su análisis es el hilo conductor de este capítulo.
+A diferencia del caso finito-dimensional, esta suma es en general infinita y surgen dos preguntas centrales. La primera es la convergencia: ¿en qué sentido tiende la serie completa a $f$? Y si la serie converge, la segunda pregunta es ¿Con qué velocidad lo hace? Equivalentemente, si retenemos sólo los primeros $N$ términos de la representación, ¿cuán grande es el error $\|f - S_N(f)\|$, donde $S_N(f)$ es la suma parcial de los primeros $N$ términos? Como veremos, las respuestas dependen fundamentalmente de la regularidad de $f$ y de la elección de la base, y su análisis es el hilo conductor de este capítulo.
 
-\begin{remark}[Alcance analítico del capítulo]
-En esta exposición trabajamos principalmente con funciones continuas (y, cuando hace falta, suaves) e integrales en intervalos acotados. Con este marco se pueden demostrar de manera elemental los resultados centrales para series de Fourier de funciones continuas y periódicas: definición de coeficientes, decaimiento por integración por partes, convergencia mediante núcleo de Dirichlet y estimaciones de truncamiento. La formulación en términos de espacios $L^2$, integral de Lebesgue y espacios de Hilbert no es necesaria para estos resultados básicos, pero sí proporciona la generalización natural a datos menos regulares y un marco abstracto unificado.
-\end{remark}
+\section{Series de Fourier de funciones suaves periódicas}\label{sec:series_fourier_suaves}
+
+La teoría de series de Fourier es un área muy rica y profunda, con una historia que se remonta a los trabajos de Joseph Fourier a comienzos del siglo XIX. Fourier introdujo estas expansiones en su estudio de la conducción del calor, modelada por
+\[
+u_t = \alpha u_{xx},
+\]
+donde $u(x,t)$ representa la temperatura en el punto $x$ y en el tiempo $t$. Mediante separación de variables, obtuvo soluciones en términos de senos y cosenos y postuló que funciones muy generales podían representarse por series trigonométricas. Esa intuición fue extraordinariamente fecunda, aunque varias afirmaciones iniciales eran todavía imprecisas, y algunas formulaciones resultaron ser falsas sin hipótesis adicionales.
+
+El desarrollo riguroso de la convergencia de series de Fourier (condiciones de convergencia puntual, convergencia en distintas normas, comportamiento en discontinuidades, etc.) tomó muchas décadas y consolidó una parte central del análisis moderno. En este curso nos concentramos en las consecuencias y aplicaciones numéricas de esta teoría. Trabajaremos principalmente con funciones periódicas suficientemente suaves (con $n$ derivadas continuas, $n \ge 0$), donde se pueden demostrar de manera relativamente elemental los resultados centrales: definición de coeficientes, estimaciones de decaimiento, convergencia puntual y uniforme, la identidad de Parseval y cotas de error de truncamiento. Por una cuestión de espacio, deferiremos varias de estas demostraciones al Apéndice \ref{app_convergencia_fourier}, que incluye un compendio de resultados de convergencia que cubre funciones al menos continuas a trozos (integrables de Riemann), sin requerir el uso de la integral de Lebesgue.
+
+En esta sección trabajamos con funciones de variable real y valores complejos,
+\[
+f:[0,2\pi]\to\mathbb{C},\qquad f=u+iv,
+\]
+donde $u,v:[0,2\pi]\to\mathbb{R}$.
 
 \begin{remark}[Funciones a valores complejos vs. funciones de variable compleja]
 Cuando escribimos $f:[a,b]\to\mathbb{C}$, la variable es real. Esto no es lo mismo que una función $f:\mathbb{C}\to\mathbb{C}$ de variable compleja. En consecuencia, tanto las derivadas como las integrales de funciones a valores complejos se entienden componente a componente: si $f=u+iv$ con $u,v$ reales, entonces
@@ -3066,14 +3138,6 @@ f'=u'+iv',
 \int_a^b f(x)\,dx=\int_a^b u(x)\,dx+i\int_a^b v(x)\,dx.
 \]
 \end{remark}
-
-\section{Series de Fourier de funciones suaves periódicas}\label{sec:series_fourier_suaves}
-
-En esta sección trabajamos con funciones de variable real y valores complejos,
-\[
-f:[0,2\pi]\to\mathbb{C},\qquad f=u+iv,
-\]
-donde $u,v:[0,2\pi]\to\mathbb{R}$.
 
 \begin{definition}[Espacio $C^n_{per}$ complejo periódico]
 Sea $n\in\mathbb{N}\cup\{0\}$. Diremos que $f:[0,2\pi]\to\mathbb{C}$ pertenece a $C^n_{per}([0,2\pi];\mathbb{C})$ si, al escribir $f=u+iv$ con $u,v:[0,2\pi]\to\mathbb{R}$, se cumple $u,v\in C^n([0,2\pi])$ y
@@ -3087,11 +3151,7 @@ La condición de periodicidad hasta orden $n-1$ garantiza que la extensión peri
 
 \subsection{Producto interno, norma cuadrática y cuadrado integrabilidad}
 
-Para funciones a valores complejos $f,g:[0,2\pi]\to\mathbb{C}$, la integral se define componente a componente: si $f=u+iv$ con $u,v$ reales, entonces
-\[
-\int_0^{2\pi}f\,dx = \int_0^{2\pi}u\,dx + i\int_0^{2\pi}v\,dx.
-\]
-Con esta convención, el espacio $C^n_{per}([0,2\pi];\mathbb{C})$ queda dotado del producto interno:
+El espacio $C^n_{per}([0,2\pi];\mathbb{C})$ puede dotarse del producto interno:
 \begin{equation}\label{prod_cont}
 (f,g) = \int_0^{2\pi} f(x)\,\overline{g(x)}\,dx,
 \end{equation}
@@ -3103,20 +3163,6 @@ La norma asociada al producto interno \eqref{prod_cont} se define por
 \|f\|_2 := \sqrt{(f,f)} = \left(\int_0^{2\pi}|f(x)|^2\,dx\right)^{1/2}.
 \]
 \end{definition}
-
-\begin{lemma}[Funciones continuas son cuadrado integrables]
-Si $f\in C([a,b];\mathbb{C})$, entonces $f$ es cuadrado integrable en $[a,b]$, es decir,
-\[
-\int_a^b |f(x)|^2\,dx < \infty.
-\]
-\end{lemma}
-
-\begin{proof}
-Como $f$ es continua en el compacto $[a,b]$, existe $M\ge 0$ tal que $|f(x)|\le M$ para todo $x\in[a,b]$. Luego
-\[
-0\le \int_a^b |f(x)|^2\,dx \le \int_a^b M^2\,dx = M^2(b-a) < \infty.
-\]
-\end{proof}
 
 \subsection{La base exponencial compleja}
 
@@ -3174,6 +3220,61 @@ Escribimos $p = S_N f + q$ con $q = p - S_N f \in \langle B_N^{\mathbb{C}}\rangl
 \]
 \end{proof}
 
+\begin{theorem}[Equivalencia entre densidad, convergencia en $L^2$ y Parseval]
+Sea $f\in C([0,2\pi];\mathbb C)$. Son equivalentes:
+\begin{enumerate}
+\item Para todo $\varepsilon>0$ existe un polinomio trigonométrico $p$ tal que $\|f-p\|_2<\varepsilon$.
+\item $\|f-S_Nf\|_2\xrightarrow[N\to\infty]{}0$.
+\item Identidad de Parseval: \[\|f\|_2^2 = 2\pi\sum_{k\in\mathbb Z}|\hat f_k|^2.\]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\textbf{(1) $\Rightarrow$ (2).} Sea $\varepsilon>0$ y tome $p(x)=\sum_{|k|\le m}c_k e^{ikx}$ con $\|f-p\|_2<\varepsilon$. Para $N\ge m$, como $p\in\mathcal T_N$, por el Teorema~\ref{thm:mejor_aprox}:
+\[
+\|f-S_Nf\|_2\le \|f-p\|_2<\varepsilon.
+\]
+Luego $\|f-S_Nf\|_2\to 0$.
+
+\textbf{(2) $\Rightarrow$ (3).} Para cada $N$, por ortogonalidad de los exponentiales:
+\[
+\|f\|_2^2 = 2\pi\sum_{|k|\le N}|\hat f_k|^2 + \|f-S_Nf\|_2^2.
+\]
+Si $\|f-S_Nf\|_2\to 0$, al pasar al límite se obtiene Parseval.
+
+\textbf{(3) $\Rightarrow$ (2).} De la misma identidad finita,
+\[
+\|f-S_Nf\|_2^2 = \|f\|_2^2 - 2\pi\sum_{|k|\le N}|\hat f_k|^2.
+\]
+Bajo (3), el segundo término converge a $\|f\|_2^2$, luego $\|f-S_Nf\|_2\to 0$.
+
+Finalmente, (2) implica (1) tomando $p=S_Nf$ para $N$ grande.
+\end{proof}
+
+\begin{corollary}[Identidad de Parseval para el error de truncamiento]\label{cor:parseval_error_truncamiento}
+Bajo las hipótesis equivalentes del teorema anterior, para todo $N\ge 0$ se cumple
+\begin{equation}\label{eq:parseval_error_truncamiento}
+\|f-S_Nf\|_2^2 = 2\pi\sum_{|k|>N}|\hat f_k|^2.
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+Para cada $N$, la identidad finita del teorema anterior da
+\[
+\|f\|_2^2 = 2\pi\sum_{|k|\le N}|\hat f_k|^2 + \|f-S_Nf\|_2^2.
+\]
+Usando Parseval,
+\[
+\|f\|_2^2 = 2\pi\sum_{k\in\mathbb Z}|\hat f_k|^2,
+\]
+y restando término a término se obtiene
+\[
+\|f-S_Nf\|_2^2 = 2\pi\sum_{|k|>N}|\hat f_k|^2.
+\]
+\end{proof}
+
+En particular, admitiendo la densidad trigonométrica en $L^2$ del Apéndice~\ref{app_convergencia_fourier} (Teorema~\ref{thm:densidad_trig_L2_riemann}), las tres propiedades valen para toda $f$ continua a trozos.
+
 \subsection{La serie trigonométrica real}
 
 Cuando $f$ toma valores reales, los coeficientes de Fourier presentan una estructura de simetría que permite reescribir la serie en términos de senos y cosenos.
@@ -3202,13 +3303,13 @@ Escribiendo $\hat{f}_k = \tfrac{a_k - ib_k}{2}$ con $a_k, b_k \in \mathbb{R}$ y 
 La evaluación directa de \eqref{coef_fourier_complex} con $e^{-ikx}=\cos(kx)-i\sin(kx)$ muestra que $a_k = 2\operatorname{Re}(\hat{f}_k)$ y $b_k = -2\operatorname{Im}(\hat{f}_k)$ coinciden con las integrales:
 
 \begin{definition}[Coeficientes de Fourier reales y suma parcial]\label{def:fourier_real}
-Sea $f:[0,2\pi]\to\mathbb{R}$ integrable. Sus \textbf{coeficientes de Fourier reales} son:
+Sea $f:[0,2\pi]\to\mathbb{R}$ integrable. Sus coeficientes de Fourier reales son:
 \begin{equation}\label{coef_fourier_real}
 a_k = \frac{1}{\pi}\int_0^{2\pi}f(x)\cos(kx)\,dx \;(k\ge 0),
 \qquad
 b_k = \frac{1}{\pi}\int_0^{2\pi}f(x)\sin(kx)\,dx \;(k\ge 1).
 \end{equation}
-La \textbf{suma parcial de Fourier real} de orden $N$ es:
+La suma parcial de Fourier real de orden $N$ es:
 \begin{equation}\label{SN_real}
 S_N(f)(x) = \frac{a_0}{2} + \sum_{k=1}^N \bigl(a_k\cos(kx)+b_k\sin(kx)\bigr).
 \end{equation}
@@ -3294,8 +3395,23 @@ El cálculo numérico de los coeficientes de Fourier requiere evaluar las integr
 \]
 En la práctica estas integrales raramente admiten fórmula cerrada.  Sin embargo, la herramienta necesaria ya fue desarrollada en el Capítulo~3: la regla del trapecio compuesta.
 
-\begin{remark}[Los coeficientes discretos de Fourier son la regla del trapecio]
-Apliquemos la regla del trapecio compuesta con $M$ subintervalos iguales de ancho $h = 2\pi/M$ a la integral $\int_0^{2\pi} g(x)\,dx$ con $g(x) = f(x)e^{-ikx}$.  Los nodos son $x_j = jh = 2\pi j/M$ para $j = 0,\ldots,M$.  La regla del trapecio compuesta da:
+\begin{proposition}[Coeficientes discretos de Fourier como regla del trapecio]\label{prop:coef_discretos_trap}
+Sea $M\ge 1$, $h=2\pi/M$ y $x_j=2\pi j/M$ para $j=0,\ldots,M-1$. Si
+\[
+\hat f_k = \frac{1}{2\pi}\int_0^{2\pi} f(x)e^{-ikx}\,dx,
+\]
+la aproximación trapezoidal periódica de $\hat f_k$ es
+\[
+\tilde f_k^{(M)} := \frac{1}{M}\sum_{j=0}^{M-1} f(x_j)e^{-ikx_j}.
+\]
+\end{proposition}
+
+\begin{proof}
+Apliquemos la regla del trapecio compuesta a
+\[
+\int_0^{2\pi} g(x)\,dx,\qquad g(x)=f(x)e^{-ikx}.
+\]
+Con $x_j=jh$ y $h=2\pi/M$:
 \[
 \int_0^{2\pi} g(x)\,dx \approx \frac{h}{2}\big[g(x_0) + 2g(x_1) + \cdots + 2g(x_{M-1}) + g(x_M)\big].
 \]
@@ -3303,31 +3419,21 @@ Pero $g$ es $2\pi$-periódica (producto de funciones $2\pi$-periódicas), de mod
 \[
 \int_0^{2\pi} g(x)\,dx \approx h \sum_{j=0}^{M-1} g(x_j) = \frac{2\pi}{M}\sum_{j=0}^{M-1} f(x_j)\,e^{-ikx_j}.
 \]
-Dividiendo por $2\pi$, obtenemos la aproximación de $\hat{f}_k$:
-\[
-\hat{f}_k \approx \tilde{f}_k^{(M)} := \frac{1}{M}\sum_{j=0}^{M-1} f(x_j)\,e^{-ikx_j}.
-\]
-Esta es exactamente la \textbf{Transformada Discreta de Fourier (DFT)} del vector de muestras $(f(x_0),\ldots,f(x_{M-1}))^T$ (con la convención de normalización $1/M$, consistente con la Definición~\ref{thm:dft_vandermonde}).  No se trata de una coincidencia: los ``coeficientes de Fourier discretos'' \emph{son} la regla del trapecio aplicada a la integral de los coeficientes exactos.
+Dividiendo por $2\pi$ obtenemos exactamente la fórmula anunciada.
+\end{proof}
 
-La estructura de la DFT permite calcular los $M$ coeficientes $\tilde{f}_0^{(M)},\ldots,\tilde{f}_{M-1}^{(M)}$ simultáneamente en $O(M\log M)$ operaciones mediante el algoritmo \textbf{FFT} (Fast Fourier Transform), en lugar de las $O(M^2)$ que requeriría la evaluación directa.
-\end{remark}
-
-\begin{remark}[Aliasing]
-Los coeficientes discretos son periódicos en la frecuencia: $\tilde{f}_{k+M}^{(M)} = \tilde{f}_k^{(M)}$, ya que $e^{-i(k+M)x_j} = e^{-ikx_j}\cdot e^{-iMx_j} = e^{-ikx_j}$ (porque $Mx_j = 2\pi j$).  En consecuencia, el coeficiente discreto $\tilde{f}_k^{(M)}$ no solo aproxima $\hat{f}_k$ sino que captura la contribución de \emph{todas} las frecuencias $k + mM$ ($m \in \mathbb{Z}$):
-\[
-\tilde{f}_k^{(M)} = \sum_{m=-\infty}^{\infty} \hat{f}_{k+mM}.
-\]
-Este fenómeno se denomina \textbf{aliasing}: las frecuencias altas $|k+mM|$ con $m\neq 0$ ``se disfrazan'' de la frecuencia baja $k$ al muestrear en una malla finita.  Para funciones suaves cuyos coeficientes decaen rápidamente, los términos con $m\neq 0$ son despreciables y $\tilde{f}_k^{(M)} \approx \hat{f}_k$.
-\end{remark}
-
-La efectividad de la regla del trapecio para funciones periódicas suaves es extraordinaria, y se explica con la siguiente observación.
+La efectividad de esta aproximación para funciones periódicas se apoya en una ortogonalidad discreta elemental de los modos exponenciales. En lo que sigue, cuando discutamos exactitud de orden, tomaremos la convención $M=2N+1$.
 
 \begin{lemma}[Exactitud de la cuadratura trapezoidal para exponenciales complejas]\label{lem:trap_exp}
 Sea $M \geq 1$ entero, $h = 2\pi/M$ y $x_j = jh$ para $j=0,\ldots,M-1$.  Entonces:
 \[
 \frac{1}{M}\sum_{j=0}^{M-1} e^{i\ell x_j} = \begin{cases} 1 & \text{si $\ell$ es múltiplo de } M, \\ 0 & \text{en caso contrario.}\end{cases}
 \]
-Es decir, la regla del trapecio periódica integra \textbf{exactamente} a $e^{i\ell x}$ siempre que $\ell$ no sea múltiplo no nulo de $M$.
+Es decir, la regla del trapecio periódica integra \textbf{exactamente} a $e^{i\ell x}$ siempre que $\ell$ no sea múltiplo no nulo de $M$. En particular, tomando $M=2N+1$ se obtiene exactitud para
+\[
+0\le k<2N+1\quad(\text{equivalentemente }k\le 2N),
+\]
+y no para $k=2N+1$.
 \end{lemma}
 \begin{proof}
 Si $\ell \equiv 0 \pmod{M}$, cada sumando vale $e^{i\ell \cdot 2\pi j/M} = e^{2\pi i j \cdot (\ell/M)} = 1$, y la suma da $M/M = 1$.
@@ -3339,25 +3445,62 @@ Si $\ell \not\equiv 0 \pmod{M}$, definimos $w = e^{2\pi i \ell/M} \neq 1$ y suma
 ya que $e^{2\pi i \ell} = 1$ para todo $\ell \in \mathbb{Z}$.
 \end{proof}
 
-\begin{theorem}[Convergencia espectral del trapecio periódico]\label{thm:trap_espectral}
-Sea $f \in C^n_{per}([0,2\pi])$ con $n \geq 2$.  Entonces el error de la regla del trapecio periódica con $M$ nodos satisface:
+\begin{proposition}[Aliasing de los coeficientes discretos]\label{prop:aliasing_coef_discretos}
+Sea $f\in C^2_{per}([0,2\pi])$. Para $M\ge 1$ y $|k|\le M-1$ se cumple:
+\begin{equation}\label{aliasing_fourier_trap}
+\tilde f_k^{(M)} = \sum_{m\in\mathbb Z}\hat f_{k+mM}.
+\end{equation}
+En particular, $\tilde f_{k+M}^{(M)}=\tilde f_k^{(M)}$.
+\end{proposition}
+
+\begin{proof}
+La periodicidad discreta en frecuencia es inmediata de la definición:
 \[
-\left| \int_0^{2\pi} f(x)\,dx - \frac{2\pi}{M}\sum_{j=0}^{M-1} f(x_j) \right| = O(M^{-n}).
+\tilde f_{k+M}^{(M)} = \frac1M\sum_{j=0}^{M-1} f(x_j)e^{-i(k+M)x_j}
+= \frac1M\sum_{j=0}^{M-1} f(x_j)e^{-ikx_j}e^{-iMx_j}
+=\tilde f_k^{(M)},
 \]
-Para $f \in C^\infty_{per}$, la convergencia es más rápida que cualquier potencia de $1/M$ (\textbf{convergencia espectral}).
+porque $Mx_j=2\pi j$.
+
+Para la fórmula de aliasing, expandimos $f$ en serie de Fourier. Como $f\in C^2_{per}$, por el Teorema~\ref{thm:convergencia_uniforme_fourier} del Apéndice~\ref{app_convergencia_fourier}, la serie converge absoluta y uniformemente; en particular,
+\[
+\sum_{\ell\in\mathbb Z}|\hat f_\ell|<\infty.
+\]
+Esta convergencia absoluta es la que permite intercambiar la suma infinita en $\ell$ con la suma finita en $j$:
+\[
+\tilde f_k^{(M)}
+=\frac1M\sum_{j=0}^{M-1}\sum_{\ell\in\mathbb Z}\hat f_\ell e^{i(\ell-k)x_j}
+=\sum_{\ell\in\mathbb Z}\hat f_\ell\left(\frac1M\sum_{j=0}^{M-1}e^{i(\ell-k)x_j}\right).
+\]
+Por el Lema~\ref{lem:trap_exp}, el paréntesis vale $1$ si $\ell-k$ es múltiplo de $M$ y $0$ en caso contrario. Entonces sobreviven exactamente los índices $\ell=k+mM$:
+\[
+\tilde f_k^{(M)}=\sum_{m\in\mathbb Z}\hat f_{k+mM}.
+\]
+\end{proof}
+
+\begin{theorem}[Convergencia espectral del trapecio periódico]\label{thm:trap_espectral}
+Sea $f \in C^n_{per}([0,2\pi])$ con $n \geq 2$ y sea
+\[
+x_j=\frac{2\pi j}{2N+1},\qquad j=0,\dots,2N.
+\]
+Entonces el error de la regla del trapecio periódica con $2N+1$ nodos satisface:
+\[
+\left| \int_0^{2\pi} f(x)\,dx - \frac{2\pi}{2N+1}\sum_{j=0}^{2N} f(x_j) \right| = O\big((2N+1)^{-n}\big)=O(N^{-n}).
+\]
+Para $f \in C^\infty_{per}$, la convergencia es más rápida que cualquier potencia de $1/N$ (\textbf{convergencia espectral}).
 \end{theorem}
 \begin{proof}
-Por el Lema~\ref{lem:trap_exp}, la cuadratura trapezoidal integra exactamente a $e^{ikx}$ para $|k| < M$.  Escribiendo $f$ como su serie de Fourier (que converge uniformemente por el Teorema~\ref{thm:convergencia_uniforme_fourier}):
+Por la Proposición~\ref{prop:aliasing_coef_discretos} con $M=2N+1$ y $k=0$:
 \[
-\frac{1}{M}\sum_{j=0}^{M-1} f(x_j) = \sum_{k=-\infty}^{\infty} \hat{f}_k \cdot \frac{1}{M}\sum_{j=0}^{M-1}e^{ikx_j} = \sum_{\substack{k \in \mathbb{Z} \\ M | k}} \hat{f}_k = \hat{f}_0 + \sum_{\substack{m \neq 0 \\ m \in \mathbb{Z}}} \hat{f}_{mM}.
+\tilde f_0^{(2N+1)}=\sum_{m\in\mathbb Z}\hat f_{m(2N+1)}=\hat f_0+\sum_{m\neq 0}\hat f_{m(2N+1)}.
 \]
-Como $\int_0^{2\pi} f(x)\,dx = 2\pi \hat{f}_0$, el error de cuadratura es:
+Como $\tilde f_0^{(2N+1)}=\frac{1}{2N+1}\sum_{j=0}^{2N}f(x_j)$ y $\int_0^{2\pi}f(x)\,dx=2\pi\hat f_0$, el error es
 \[
-\frac{2\pi}{M}\sum_{j=0}^{M-1} f(x_j) - \int_0^{2\pi}f(x)\,dx = 2\pi\sum_{m \neq 0} \hat{f}_{mM}.
+\frac{2\pi}{2N+1}\sum_{j=0}^{2N} f(x_j) - \int_0^{2\pi}f(x)\,dx = 2\pi\sum_{m \neq 0} \hat{f}_{m(2N+1)}.
 \]
 Del Teorema de decaimiento, $|\hat{f}_k| \leq C/|k|^n$.  Entonces:
 \[
-\left|\sum_{m\neq 0}\hat{f}_{mM}\right| \leq \sum_{m\neq 0}\frac{C}{|mM|^n} = \frac{C}{M^n}\cdot 2\sum_{m=1}^{\infty}\frac{1}{m^n} = \frac{2C\,\zeta(n)}{M^n} = O(M^{-n}). \qedhere
+\left|\sum_{m\neq 0}\hat{f}_{m(2N+1)}\right| \leq \sum_{m\neq 0}\frac{C}{|m(2N+1)|^n} = \frac{C}{(2N+1)^n}\cdot 2\sum_{m=1}^{\infty}\frac{1}{m^n} = \frac{2C\,\zeta(n)}{(2N+1)^n} = O\big((2N+1)^{-n}\big). \qedhere
 \]
 \end{proof}
 
@@ -3385,7 +3528,7 @@ f - I_N f = \underbrace{(f - S_N f)}_{\text{cola de la serie}} - \underbrace{I_N
 \|f - S_N f\|_\infty = \left\|\sum_{|k| > N} \hat{f}_k e^{ikx}\right\|_\infty \leq \sum_{|k| > N} |\hat{f}_k|.
 \]
 
-\textbf{Cota del aliasing.} El polinomio trigonométrico $I_N(f - S_N f)$ tiene coeficientes $\tilde{f}_k - \hat{f}_k$ para $|k| \leq N$. Por la fórmula de aliasing~\eqref{aliasing_fourier}:
+\textbf{Cota del aliasing.} El polinomio trigonométrico $I_N(f - S_N f)$ tiene coeficientes $\tilde{f}_k - \hat{f}_k$ para $|k| \leq N$. Por la fórmula de aliasing~\eqref{aliasing_fourier_trap} (aplicada con $M=2N+1$):
 \[
 \tilde{f}_k - \hat{f}_k = \sum_{m \neq 0} \hat{f}_{k + m(2N+1)}.
 \]
@@ -3406,6 +3549,52 @@ Usando esta cota y $|e^{ikx}| = 1$:
 
 \begin{remark}
 El factor $2$ tiene una interpretación clara: la cola de la serie contribuye una vez al error (lo que ``falta'' por truncar), y los mismos coeficientes de alta frecuencia contribuyen una segunda vez por aliasing (lo que se ``pliega'' y contamina los coeficientes discretos de baja frecuencia). Para funciones muy suaves, donde los coeficientes de alta frecuencia son despreciables, la interpolación es prácticamente tan buena como la proyección.
+\end{remark}
+
+\begin{corollary}[Convergencia de alto orden de la interpolación trigonométrica]\label{cor:interp_trig_orden_alto}
+Sea $f\in C^n_{per}([0,2\pi])$ con $n\ge 2$. Entonces
+\[
+\|f-I_Nf\|_\infty = O(N^{\frac12-n}).
+\]
+Si $f\in C^\infty_{per}([0,2\pi])$, la convergencia es super-algebraica.
+\end{corollary}
+
+\begin{proof}
+Por el Teorema~\ref{thm:interp_error_fourier}, cuya demostración combina la descomposición del error con la fórmula de aliasing~\eqref{aliasing_fourier_trap},
+\[
+\|f-I_Nf\|_\infty \le 2\sum_{|k|>N}|\hat f_k|.
+\]
+Para $k\neq 0$, vale
+\[
+\hat f_k=\frac{\widehat{f^{(n)}}_k}{(ik)^n}.
+\]
+Aplicando Cauchy--Schwarz,
+\[
+\sum_{|k|>N}|\hat f_k|
+=\sum_{|k|>N}\frac{|\widehat{f^{(n)}}_k|}{|k|^n}
+\le
+\Bigl(\sum_{|k|>N}|\widehat{f^{(n)}}_k|^2\Bigr)^{1/2}
+\Bigl(\sum_{|k|>N}|k|^{-2n}\Bigr)^{1/2}.
+\]
+Por Bessel (Teorema~\ref{thm:bessel}),
+\[
+\sum_{k\in\mathbb Z}|\widehat{f^{(n)}}_k|^2\le \frac{\|f^{(n)}\|_2^2}{2\pi},
+\]
+y por comparación integral,
+\[
+\sum_{|k|>N}|k|^{-2n}=O(N^{1-2n}).
+\]
+En consecuencia,
+\[
+\sum_{|k|>N}|\hat f_k|=O(N^{\frac12-n}),
+\]
+y por lo tanto $\|f-I_Nf\|_\infty=O(N^{\frac12-n})$.
+
+Si $f\in C^\infty_{per}([0,2\pi])$, para todo $q\in\mathbb N$ puede repetirse el argumento con $q$ derivadas y se obtiene $\|f-I_Nf\|_\infty=O(N^{\frac12-q})$ para todo $q$, es decir, convergencia super-algebraica.
+\end{proof}
+
+\begin{remark}[Mejora adicional bajo regularidad Hölder]
+Si además $f^{(n)}$ es Hölder (de exponente $\alpha\in(0,1]$), los coeficientes de Fourier decaen más rápido que en el caso meramente $C^n$. Insertando ese decaimiento mejorado en la misma estrategia (cota de cola + aliasing) se gana orden adicional; en particular, se obtiene al menos medio orden extra respecto de $O(N^{\frac12-n})$ (es decir, $O(N^{-n})$ o mejor, según $\alpha$).
 \end{remark}
 
 
@@ -3441,11 +3630,101 @@ La Figura~\ref{fig:gibbs_fx_x} muestra las sumas parciales $S_N(x) = \sum_{k=1}^
 \end{example}
 
 
+\subsection{Aplicaciones: ODEs periódicas y ecuaciones integrales}
+
+El esquema para resolver problemas periódicos por Fourier se resume en tres pasos:
+\begin{enumerate}
+\item diagonalizar el operador en la base $\{e^{ikx}\}$;
+\item escribir la relación modal entre coeficientes;
+\item estimar la cola por Parseval para truncamiento (Corolario~\ref{cor:parseval_error_truncamiento}) más decaimiento de coeficientes.
+\end{enumerate}
+
+\begin{theorem}[Error de truncamiento para operadores diagonales en Fourier]\label{thm:error_truncamiento_operador_modal}
+Sea $L$ un operador lineal periódico tal que
+\[
+L[e^{ikx}] = \lambda_k e^{ikx},\qquad \lambda_k\neq 0\ \forall k\in\mathbb Z.
+\]
+Si $Lu=f$, con
+\[
+f(x)=\sum_{k\in\mathbb Z}\hat f_k e^{ikx},\qquad u(x)=\sum_{k\in\mathbb Z}\hat u_k e^{ikx},
+\]
+entonces $\hat u_k=\hat f_k/\lambda_k$, y para el truncado $u_N=\sum_{|k|\le N}\hat u_k e^{ikx}$:
+\begin{equation}\label{eq:error_modal_general}
+\|u-u_N\|_2^2
+=2\pi\sum_{|k|>N}\frac{|\hat f_k|^2}{|\lambda_k|^2}.
+\end{equation}
+Además, si existen $p,m,c,C>0$ tales que para $|k|$ grande
+\[
+|\hat f_k|\le C|k|^{-p},\qquad |\lambda_k|\ge c|k|^{m},
+\]
+y $p+m>\tfrac12$, se obtiene
+\[
+\|u-u_N\|_2 = O\bigl(N^{\frac12-(p+m)}\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+La relación modal $\hat u_k=\hat f_k/\lambda_k$ sale de comparar coeficientes de Fourier en $Lu=f$. La identidad \eqref{eq:error_modal_general} es el Corolario~\ref{cor:parseval_error_truncamiento} aplicado a $u$:
+\[
+\|u-u_N\|_2^2=2\pi\sum_{|k|>N}|\hat u_k|^2
+=2\pi\sum_{|k|>N}\frac{|\hat f_k|^2}{|\lambda_k|^2}.
+\]
+Con las hipótesis de decaimiento/crecimiento,
+\[
+\frac{|\hat f_k|^2}{|\lambda_k|^2}\le \frac{C^2}{c^2}|k|^{-2(p+m)},
+\]
+y la cola de p-serie da
+\[
+\sum_{|k|>N}|k|^{-2(p+m)}=O\bigl(N^{1-2(p+m)}\bigr),
+\]
+de donde el resultado al tomar raíz cuadrada.
+\end{proof}
+
+\begin{corollary}[Ejemplo: Schrödinger 1D estacionaria periódica]\label{cor:schrodinger_periodica_trunc}
+Sea $V_0>0$ y considere
+\[
+-\psi''(x)+V_0\psi(x)=f(x),\qquad x\in[0,2\pi],
+\]
+con condiciones periódicas en $\psi$ y $\psi'$. Entonces
+\[
+\hat\psi_k=\frac{\hat f_k}{k^2+V_0},
+\]
+y, si $f\in C^n_{per}([0,2\pi])$ con $n\ge 1$,
+\[
+\|\psi-\psi_N\|_2 = O\bigl(N^{-(n+\frac32)}\bigr).
+\]
+\end{corollary}
+
+\begin{proof}
+Aquí $\lambda_k=k^2+V_0\sim k^2$ (es decir, $m=2$). Por el Teorema~\ref{thm:decaimiento_fourier}, $|\hat f_k|=O(|k|^{-n})$ (o sea, $p=n$). Aplicando el Teorema~\ref{thm:error_truncamiento_operador_modal}:
+\[
+\|\psi-\psi_N\|_2 = O\bigl(N^{\frac12-(n+2)}\bigr)=O\bigl(N^{-(n+\frac32)}\bigr).
+\]
+\end{proof}
+
+\begin{remark}[Convolución periódica]
+Para la ecuación integral $Ku=f$ con
+\[
+(Ku)(x)=\frac1{2\pi}\int_0^{2\pi}k(x-t)u(t)\,dt,
+\]
+se tiene $\hat u_n=\hat f_n/\hat k_n$, y por Parseval
+\[
+\|u-u_N\|_2^2=2\pi\sum_{|n|>N}\frac{|\hat f_n|^2}{|\hat k_n|^2}.
+\]
+Análogamente, para $(I+K)u=f$:
+\[
+\hat u_n=\frac{\hat f_n}{1+\hat k_n},
+\qquad
+\|u-u_N\|_2^2=2\pi\sum_{|n|>N}\frac{|\hat f_n|^2}{|1+\hat k_n|^2}.
+\]
+Estas fórmulas son la base para discutir orden de convergencia y estabilidad modal en problemas periódicos lineales.
+\end{remark}
+
+
+
 \section{Series de Chebyshev}
 
-Las series de Fourier son una herramienta poderosa para aproximar funciones periódicas, ofreciendo convergencia espectral para funciones suaves. Sin embargo, la mayoría de las funciones que encontramos en aplicaciones (como soluciones de ecuaciones diferenciales con condiciones de frontera) no son periódicas. Si intentamos aproximar una función no periódica $f(x)$ en $[-1,1]$ usando series de Fourier, nos encontramos con el \textbf{fenómeno de Gibbs} en los extremos, lo que destruye la convergencia uniforme.
-
-¿Podemos "salvar" la convergencia espectral para funciones no periódicas? La respuesta es sí, mediante un simple cambio de variable.
+Las series de Fourier son una herramienta poderosa para aproximar funciones periódicas, ofreciendo convergencia espectral para funciones suaves. Sin embargo, la mayoría de las funciones que encontramos en aplicaciones (como soluciones de ecuaciones diferenciales con condiciones de frontera) no son periódicas. Si intentamos aproximar una función no periódica $f(x)$ en $[-1,1]$ usando series de Fourier, nos encontramos con el fenómeno de Gibbs en los extremos, lo que destruye la convergencia uniforme. ¿Podemos de alguna manera "salvar" la convergencia espectral para funciones no periódicas? La respuesta es sí, mediante un simple cambio de variable.
 
 \subsection{De Fourier a Chebyshev: El cambio de variable coseno}
 
@@ -3460,7 +3739,7 @@ g(\theta) = f(\cos(\theta)).
 Esta función $g(\theta)$ tiene propiedades notables:
 \begin{enumerate}
 \item Está definida en $[0, \pi]$.
-\item Podemos extenderla a $[-\pi, \pi]$ como una función \textbf{par} ($g(-\theta) = f(\cos(-\theta)) = f(\cos(\theta)) = g(\theta)$).
+\item Podemos extenderla a $[-\pi, \pi]$ como una función par ($g(-\theta) = f(\cos(-\theta)) = f(\cos(\theta)) = g(\theta)$).
 \item Podemos extenderla a todo $\mathbb{R}$ como una función $2\pi$-periódica.
 \end{enumerate}
 
@@ -3469,15 +3748,28 @@ Sea $f \in C^m([-1,1])$ con $m \geq 0$.  Entonces la función $g(\theta) = f(\co
 \end{lemma}
 
 \begin{proof}
-La paridad de $g$ es inmediata: $g(-\theta) = f(\cos(-\theta)) = f(\cos\theta) = g(\theta)$.  En el interior $(0,\pi)$, la función $\cos\theta$ es $C^\infty$ con imagen en $(-1,1)$, así que $g = f \circ \cos$ es $C^m$ por la regla de la cadena.
-
-El punto clave es la regularidad en los extremos.  Calculemos la primera derivada:
+Definimos directamente, para todo $\theta\in\mathbb R$,
 \[
-g'(\theta) = -f'(\cos\theta)\,\sin\theta.
+g(\theta):=f(\cos\theta).
 \]
-Como $\sin 0 = \sin \pi = 0$, se tiene $g'(0) = g'(\pi) = 0$.  Pero $g$ es par, así que $g'$ es impar: $g'(-\theta) = -g'(\theta)$.  Entonces $g'(0^+) = -g'(0^-) = g'(0^+)$, lo que fuerza $g'(0) = 0$ (la derivada se ``pega'' suavemente).  El mismo argumento, usando $g(\pi - \varphi) = f(-\cos\varphi)$, da $g'(\pi^-) = g'(\pi^+)$.
+Esta definición coincide con la extensión por paridad y $2\pi$-periodicidad porque $\cos$ es par y $2\pi$-periódica. En $(0,\pi)$, $g=f\circ\cos$ es $C^m$ por regla de la cadena. El punto a chequear es el pegado en $0$ y $\pi$. 
 
-Para las derivadas de orden superior, el mecanismo es el mismo: cada derivada $g^{(j)}(\theta)$ es una combinación de términos $f^{(r)}(\cos\theta)$ multiplicados por potencias de $\sin\theta$ y $\cos\theta$.  Por la paridad de $g$, las derivadas de orden impar son funciones impares y se anulan en $\theta = 0$; las de orden par son funciones pares y tienen límites laterales iguales.  Esto garantiza que $g \in C^m$ en un entorno de $\theta = 0$.  El caso $\theta = \pi$ se reduce al anterior sustituyendo $f$ por $\tilde{f}(x) = f(-x)$, y el pegado periódico ($\theta = -\pi$ con $\theta = \pi$) es consecuencia directa de la paridad.
+La primera derivada es explícita:
+\[
+g'(\theta)=-f'(\cos\theta)\sin\theta.
+\]
+Luego $g'(0)=g'(\pi)=0$ (porque $\sin 0=\sin\pi=0$), y por tanto no hay salto en esos puntos. Para órdenes superiores, las primeras expresiones son
+\[
+g''(\theta)=f''(\cos\theta)\sin^2\theta-f'(\cos\theta)\cos\theta,
+\]
+\[
+g'''(\theta)=-f'''(\cos\theta)\sin^3\theta+3f''(\cos\theta)\sin\theta\cos\theta+f'(\cos\theta)\sin\theta,
+\]
+y, en general (por derivación iterada/Faa di Bruno),
+\[
+g^{(j)}(\theta)=\sum_{r=1}^{j} f^{(r)}(\cos\theta)\,P_{j,r}(\sin\theta,\cos\theta),\qquad j\le m,
+\]
+donde cada $P_{j,r}$ es un polinomio. Así, cada término tiene límite finito cuando $\theta\to0$ o $\theta\to\pi$, ya que $f^{(r)}$ es continua en $[-1,1]$ y $\sin,\cos$ son continuas. Además, como $g$ es par, se cumple $g^{(j)}(-\theta)=(-1)^j g^{(j)}(\theta)$: para $j$ impar, $g^{(j)}(0)=0$; para $j$ par, los límites laterales en $0$ coinciden. En $\pi$ se razona igual escribiendo $h(\varphi):=g(\pi+\varphi)=f(-\cos\varphi)$ y aplicando el mismo argumento en $\varphi=0$. Concluimos que $g\in C^m$ en $[-\pi,\pi]$ y, como los valores y derivadas hasta orden $m$ coinciden en $-\pi$ y $\pi$, su extensión $2\pi$-periódica pertenece a $C^m_{per}(\mathbb R)$.
 \end{proof}
 
 Este lema es la razón fundamental por la que las series de Chebyshev evitan el fenómeno de Gibbs: la composición con el coseno convierte cualquier función suave en $[-1,1]$ en una función periódica igualmente suave, sin introducir discontinuidades artificiales en los puntos de pegado.
@@ -3488,10 +3780,10 @@ g(\theta) = \frac{a_0}{2} + \sum_{k=1}^\infty a_k \cos(k\theta),
 \]
 con coeficientes $a_k = \frac{2}{\pi}\int_0^{\pi} g(\theta)\cos(k\theta)\,d\theta$.  Para volver a la variable original $x = \cos\theta$, introducimos la siguiente notación.
 
-\subsection{Las funciones de Chebyshev y la serie de Chebyshev}
+\subsection{Los polinomios de Chebyshev y la serie de Chebyshev}
 
-\begin{definition}[Funciones de Chebyshev]\label{def:chebyshev}
-Para cada entero $k \geq 0$, definimos la \textbf{función de Chebyshev} $T_k : [-1,1] \to \mathbb{R}$ por:
+\begin{definition}[Polinomios de Chebyshev]\label{def:chebyshev}
+Para cada entero $k \geq 0$, definimos el \textbf{polinomio de Chebyshev} $T_k : [-1,1] \to \mathbb{R}$ por:
 \[
 T_k(x) = \cos(k\arccos x).
 \]
@@ -3520,13 +3812,11 @@ Si $f \in C^m([-1,1])$ con $m \geq 1$, entonces sus coeficientes de Chebyshev sa
 Por el Lema~\ref{lem:suavidad_chebyshev}, $g(\theta) = f(\cos\theta) \in C^m_{per}(\mathbb{R})$.  Los coeficientes $a_k$ son exactamente los coeficientes de Fourier en cosenos de $g$.  El Teorema~\ref{thm:decaimiento_fourier} aplicado a $g$ da $|a_k| = O(k^{-m})$.
 \end{proof}
 
-Esto significa que para funciones suaves (pero no necesariamente periódicas), la serie de Chebyshev converge tan rápido como la serie de Fourier para funciones periódicas de la misma regularidad.  Si además $f$ es analítica en $[-1,1]$, los coeficientes decaen \emph{exponencialmente}.
+Esto significa que para funciones suaves (pero no necesariamente periódicas), la serie de Chebyshev converge tan rápido como la serie de Fourier para funciones periódicas de la misma regularidad. 
 
-\subsection{Las funciones de Chebyshev son polinomios}
+Hasta aquí, las funciones $T_k(x) = \cos(k\arccos x)$ son simplemente funciones trigonométricas compuestas unas con otras. El siguiente resultado, quizás sorprendente, muestra que en realidad son \emph{polinomios}.
 
-Hasta aquí, las funciones $T_k(x) = \cos(k\arccos x)$ son simplemente funciones trigonométricas disfrazadas.  El siguiente resultado, quizás sorprendente, muestra que en realidad son \emph{polinomios}.
-
-\begin{theorem}[Las funciones de Chebyshev son polinomios]\label{thm:chebyshev_polinomios}
+\begin{theorem}\label{thm:chebyshev_polinomios}
 Para cada $k \geq 0$, la función $T_k(x) = \cos(k\arccos x)$ es un polinomio de grado exactamente $k$, con coeficiente líder $2^{k-1}$ para $k \geq 1$.
 \end{theorem}
 
@@ -3580,15 +3870,302 @@ y esto prueba la ortogonalidad enunciada.
 
 \begin{remark}[Raíces y extremos de $T_k$]
 De la identidad $T_k(\cos\theta) = \cos(k\theta)$ se deducen inmediatamente:
-\begin{itemize}
+\begin{enumerate}[(a)]
 \item \textbf{Raíces:} $T_k(x_j) = 0$ con $x_j = \cos\!\left(\frac{(2j+1)\pi}{2k}\right)$ para $j = 0,\ldots,k-1$.  Son los \textbf{nodos de Chebyshev}, que minimizan el error de interpolación polinomial.
 \item \textbf{Extremos:} $|T_k(x)| = 1$ en los puntos $x_j = \cos(j\pi/k)$ para $j = 0,\ldots,k$, alternando entre $+1$ y $-1$.
 \item \textbf{Acotación:} $|T_k(x)| \leq 1$ para todo $x \in [-1,1]$.
-\end{itemize}
+\end{enumerate}
 \end{remark}
 
+\begin{proposition}[Aliasing en interpolación de Chebyshev]\label{prop:aliasing_chebyshev}
+Sea $f\in C([-1,1])$, $g(\theta)=f(\cos\theta)$ y
+\[
+g(\theta)=\frac{a_0}{2}+\sum_{k\ge1}a_k\cos(k\theta).
+\]
+Sea $I_N^{Ch}f$ el interpolante de Chebyshev en los nodos $x_j=\cos(j\pi/N)$ ($j=0,\dots,N$), y escribamos
+\[
+I_N^{Ch}f(\cos\theta)=\frac{\tilde a_0}{2}+\sum_{k=1}^{N}\tilde a_k\cos(k\theta).
+\]
+Entonces, para $0\le k\le N$, los coeficientes satisfacen la fórmula de aliasing
+\[
+\tilde a_k
+=a_k+\sum_{m\ge1}\bigl(a_{2mN+k}+a_{|2mN-k|}\bigr),
+\]
+y en particular
+\[
+\|f-I_N^{Ch}f\|_\infty\le 3\sum_{k>N}|a_k|.
+\]
+Es decir, el error de interpolación queda controlado por la misma cola que el error de proyección (truncamiento de la serie de Chebyshev).
+\end{proposition}
 
-\section{Polinomios Ortogonales (Series de Fourier Generalizadas)}
+\begin{proof}
+Sea $\theta_j=j\pi/N$ y escribamos
+\[
+p_N(\theta):=I_N^{Ch}f(\cos\theta)=\frac{\tilde a_0}{2}+\sum_{k=1}^N\tilde a_k\cos(k\theta).
+\]
+Para todo $m\ge1$, $0\le k\le N$ y todo nodo $\theta_j$ vale
+\[
+\cos\bigl((2mN+k)\theta_j\bigr)=\cos(k\theta_j),
+\qquad
+\cos\bigl((2mN-k)\theta_j\bigr)=\cos(k\theta_j),
+\]
+porque $\theta_j=j\pi/N$. Definimos entonces
+\[
+b_k:=a_k+\sum_{m\ge1}\bigl(a_{2mN+k}+a_{|2mN-k|}\bigr),\qquad 0\le k\le N,
+\]
+y
+\[
+q_N(\theta):=\frac{b_0}{2}+\sum_{k=1}^N b_k\cos(k\theta).
+\]
+Reagrupando en cada nodo los modos de $g(\theta_j)$ por clases de alias módulo $2N$, se obtiene $q_N(\theta_j)=g(\theta_j)$ para $j=0,\dots,N$. Como $q_N(\theta)$ y $p_N(\theta)$ son dos polinomios en cosenos de grado $\le N$ que interpolan los mismos $N+1$ datos en los nodos de Chebyshev--Lobatto, por unicidad de la interpolación se concluye $q_N\equiv p_N$, y por lo tanto $\tilde a_k=b_k$.
+
+Para la cota de error,
+\[
+g(\theta)-p_N(\theta)=\sum_{k>N}a_k\cos(k\theta)-\sum_{k=0}^N(\tilde a_k-a_k)\cos(k\theta),
+\]
+y entonces
+\[
+\|f-I_N^{Ch}f\|_\infty=\|g-p_N\|_\infty
+\le \sum_{k>N}|a_k|+\sum_{k=0}^N|\tilde a_k-a_k|.
+\]
+Además, por la fórmula de aliasing y desigualdad triangular,
+\[
+\sum_{k=0}^N|\tilde a_k-a_k|
+\le \sum_{k=0}^N\sum_{m\ge1}\Bigl(|a_{2mN+k}|+|a_{|2mN-k|}|\Bigr).
+\]
+Cada índice $j>N$ aparece a lo sumo una vez en la familia $2mN+k$ y a lo sumo una vez en la familia $|2mN-k|$, de modo que
+\[
+\sum_{k=0}^N|\tilde a_k-a_k|\le 2\sum_{j>N}|a_j|.
+\]
+Sustituyendo en la desigualdad anterior,
+\[
+\|f-I_N^{Ch}f\|_\infty\le 3\sum_{k>N}|a_k|.
+\]
+\end{proof}
+
+\begin{corollary}[Cota por decaimiento de coeficientes de Chebyshev]\label{cor:error_interp_chebyshev_aliasing}
+Si $|a_k|=O(k^{-m})$ con $m>1$, entonces
+\[
+\|f-I_N^{Ch}f\|_\infty=O(N^{1-m}).
+\]
+En particular, si los coeficientes decaen super-algebraicamente, también lo hace el error de interpolación de Chebyshev.
+\end{corollary}
+
+\begin{proof}
+La primera afirmación es inmediata de la Proposición~\ref{prop:aliasing_chebyshev} y de
+\[
+\sum_{k>N}k^{-m}=O(N^{1-m}).
+\]
+La segunda se obtiene repitiendo el mismo argumento para todo exponente $m$.
+\end{proof}
+
+\subsection{Interpolación baricéntrica y matriz de diferenciación de Chebyshev}
+
+Para aplicaciones numéricas, suele preferirse la interpolación en los nodos de Chebyshev--Lobatto
+\[
+x_j=\cos\!\left(\frac{j\pi}{N}\right),\qquad j=0,\dots,N.
+\]
+Si $u_j=u(x_j)$, el interpolante $p_N\in\mathcal P_N$ puede escribirse en forma baricéntrica:
+\[
+p_N(x)=\frac{\displaystyle\sum_{j=0}^N \frac{\lambda_j}{x-x_j}\,u_j}{\displaystyle\sum_{j=0}^N \frac{\lambda_j}{x-x_j}},
+\qquad x\neq x_0,\dots,x_N,
+\]
+donde
+\[
+\lambda_j=\frac{1}{\prod_{m\ne j}(x_j-x_m)}.
+\]
+
+\begin{proposition}[Pesos baricéntricos explícitos en nodos de Chebyshev--Lobatto]\label{prop:pesos_baricentricos_cheb}
+Para $x_j=\cos(j\pi/N)$ se tiene
+\[
+\lambda_j=\kappa\,(-1)^j\delta_j,
+\qquad
+\delta_0=\delta_N=\frac12,\ \delta_j=1\ (1\le j\le N-1),
+\]
+con una constante global $\kappa\neq0$ independiente de $j$.
+\end{proposition}
+
+\begin{proof}
+Es la fórmula cerrada estándar para nodos de Chebyshev--Lobatto; se obtiene evaluando los productos $\prod_{m\ne j}(x_j-x_m)$ mediante identidades trigonométricas. Omitimos esas cuentas porque aquí sólo se usa la estructura final de los pesos.
+\end{proof}
+
+\begin{remark}[Invariancia por factor constante]
+En la fórmula baricéntrica, multiplicar todos los pesos por una misma constante no cambia $p_N$, porque ese factor aparece tanto en numerador como en denominador y se simplifica. Por eso, en la práctica se usan pesos normalizados equivalentes.
+\end{remark}
+
+Derivando la fórmula baricéntrica y evaluando en nodos se obtiene una matriz de diferenciación explícita.
+
+\begin{theorem}[Matriz de diferenciación de Chebyshev]\label{thm:matriz_diferenciacion_cheb}
+Sea $p_N$ el interpolante de $u$ en los nodos $x_j=\cos(j\pi/N)$ y defina
+\[
+\mathbf u=(u_0,\dots,u_N)^T,\qquad
+\mathbf p'=(p_N'(x_0),\dots,p_N'(x_N))^T.
+\]
+Entonces
+\[
+\mathbf p'=D\,\mathbf u,
+\]
+donde, para $i\ne j$,
+\[
+D_{ij}=\frac{\lambda_j}{\lambda_i}\frac{1}{x_i-x_j},
+\]
+y
+\[
+D_{ii}=-\sum_{j\ne i}D_{ij}.
+\]
+En particular, usando la normalización
+\[
+c_0=c_N=2,\qquad c_j=1\ (1\le j\le N-1),
+\]
+los términos fuera de la diagonal quedan
+\[
+D_{ij}=\frac{c_i}{c_j}\frac{(-1)^{i+j}}{x_i-x_j},\qquad i\ne j.
+\]
+Además,
+\[
+D_{ii}=-\frac{x_i}{2(1-x_i^2)},\quad 1\le i\le N-1,
+\qquad
+D_{00}=\frac{2N^2+1}{6},\quad D_{NN}=-\frac{2N^2+1}{6}.
+\]
+\end{theorem}
+
+\begin{proof}
+La fórmula general para $D_{ij}$ se obtiene diferenciando la regla baricéntrica y tomando límite cuando $x\to x_i$. Las expresiones cerradas en nodos de Chebyshev--Lobatto resultan al sustituir la Proposición~\ref{prop:pesos_baricentricos_cheb} y simplificar.
+\end{proof}
+
+Esta matriz es la base de los métodos pseudospectrales de Chebyshev: permite aproximar derivadas en nodos con precisión espectral para datos suaves.
+
+\subsection{Reglas de cuadratura en nodos de Chebyshev}
+
+Las mismas mallas de Chebyshev usadas para interpolar y derivar dan reglas de integración muy eficientes. La idea común es integrar un interpolante polinomial y trasladar la integral a una combinación lineal de valores nodales.
+
+\begin{proposition}[Regla de Clenshaw--Curtis]\label{prop:clenshaw_curtis}
+Sea $f\in C([-1,1])$ y sea $I_N^{Ch}f\in\mathcal P_N$ su interpolante en nodos de Chebyshev--Lobatto
+\[
+x_j=\cos\!\left(\frac{j\pi}{N}\right),\qquad j=0,\dots,N.
+\]
+Definimos
+\[
+Q_N^{CC}(f):=\int_{-1}^1 I_N^{Ch}f(x)\,dx=\sum_{j=0}^N w_j^{CC}f(x_j),
+\qquad
+w_j^{CC}:=\int_{-1}^1\ell_j(x)\,dx,
+\]
+donde $\ell_j$ son los polinomios de Lagrange asociados a los nodos. Entonces $Q_N^{CC}$ es exacta sobre $\mathcal P_N$ y satisface
+\[
+\left|\int_{-1}^1 f(x)\,dx-Q_N^{CC}(f)\right|\le 2\,\|f-I_N^{Ch}f\|_\infty.
+\]
+En particular, para funciones suaves, el error de Clenshaw--Curtis hereda el mismo orden del error de interpolación de Chebyshev.
+\end{proposition}
+
+\begin{proof}
+La exactitud en $\mathcal P_N$ es inmediata porque $I_N^{Ch}p=p$ para todo $p\in\mathcal P_N$. Además,
+\[
+\int_{-1}^1 f- Q_N^{CC}(f)=\int_{-1}^1\bigl(f-I_N^{Ch}f\bigr),
+\]
+y la cota se obtiene por desigualdad triangular y longitud del intervalo.
+\end{proof}
+
+\begin{proposition}[C\'alculo de pesos de Clenshaw--Curtis por DCT-I/FFT]\label{prop:pesos_cc_dct}
+Sea $N\ge1$, $x_j=\cos(j\pi/N)$ y $c_0=c_N=2$, $c_j=1$ para $1\le j\le N-1$. Definimos los momentos de Chebyshev
+\[
+\mu_k:=\int_{-1}^1 T_k(x)\,dx,
+\qquad
+\mu_0=2,
+\quad
+\mu_k=0\ (k\ \text{impar}),
+\quad
+\mu_k=\frac{2}{1-k^2}\ (k\ge2\ \text{par}).
+\]
+Entonces los pesos de Clenshaw--Curtis en
+\[
+Q_N^{CC}(f)=\sum_{j=0}^N w_j^{CC}f(x_j)
+\]
+vienen dados por
+\[
+w_j^{CC}=\frac{1}{c_j}\,\frac{2}{N}\sum_{k=0}^N \frac{\mu_k}{c_k}\cos\!\left(\frac{jk\pi}{N}\right),
+\qquad j=0,\dots,N.
+\]
+Es decir, $w^{CC}$ se obtiene aplicando una DCT-I al vector $(\mu_k/c_k)_{k=0}^N$ y reescalando por $(2/N)/c_j$. Por lo tanto, los $N+1$ pesos se calculan en costo $O(N\log N)$ usando una implementación FFT de DCT-I.
+\end{proposition}
+
+\begin{proof}
+Escribimos el interpolante como
+\[
+p_N(x)=\sum_{k=0}^N a_kT_k(x),\qquad p_N(x_j)=f(x_j).
+\]
+La transformada coseno discreta tipo I en nodos de Lobatto da
+\[
+a_k=\frac{2}{Nc_k}\sum_{j=0}^N\frac{1}{c_j}f(x_j)\cos\!\left(\frac{jk\pi}{N}\right).
+\]
+Integrando término a término,
+\[
+Q_N^{CC}(f)=\int_{-1}^1 p_N(x)\,dx=\sum_{k=0}^N a_k\mu_k.
+\]
+Sustituyendo la expresión de $a_k$ e intercambiando sumas finitas,
+\[
+Q_N^{CC}(f)=\sum_{j=0}^N\left[\frac{1}{c_j}\,\frac{2}{N}\sum_{k=0}^N\frac{\mu_k}{c_k}\cos\!\left(\frac{jk\pi}{N}\right)\right]f(x_j),
+\]
+de donde se identifica la fórmula para $w_j^{CC}$.
+\end{proof}
+
+\begin{remark}[Anidamiento y adaptación en Clenshaw--Curtis]\label{rem:cc_anidada}
+A diferencia de otras reglas de orden alto (por ejemplo, las gaussianas), Clenshaw--Curtis es naturalmente anidada cuando se refina por duplicación $N\mapsto 2N$: los nodos de nivel $N$ quedan contenidos en los de nivel $2N$. Esto permite construir estimadores de error baratos mediante diferencias entre niveles, por ejemplo
+\[
+\eta_N:=\bigl|Q_{2N}^{CC}(f)-Q_N^{CC}(f)\bigr|,
+\]
+sin reevaluar $f$ en los nodos ya usados. Esa reutilización de evaluaciones es la base de esquemas adaptativos robustos, donde se refina sólo en subintervalos con mayor error estimado.
+\end{remark}
+
+\begin{proposition}[Regla de Fej\'er tipo I]\label{prop:fejer_tipo_1}
+Sea $f\in C([-1,1])$ y consideremos los nodos interiores de Chebyshev
+\[
+x_j=\cos\!\left(\frac{(2j-1)\pi}{2N}\right),\qquad j=1,\dots,N,
+\]
+que son las raíces de $T_N$. Si $I_{N-1}^{F}f\in\mathcal P_{N-1}$ es el interpolante en esos nodos, definimos
+\[
+Q_N^{F}(f):=\int_{-1}^1 I_{N-1}^{F}f(x)\,dx=\sum_{j=1}^N w_j^{F}f(x_j),
+\qquad
+w_j^{F}:=\int_{-1}^1\ell_j^{F}(x)\,dx.
+\]
+Entonces $Q_N^{F}$ es exacta sobre $\mathcal P_{N-1}$ y cumple
+\[
+\left|\int_{-1}^1 f(x)\,dx-Q_N^{F}(f)\right|\le 2\,\|f-I_{N-1}^{F}f\|_\infty.
+\]
+Para funciones analíticas, el error decrece espectralmente con $N$.
+\end{proposition}
+
+\begin{proof}
+La demostración es idéntica a la de la Proposición~\ref{prop:clenshaw_curtis}, reemplazando la malla de Lobatto por la malla interior de Fej\'er.
+\end{proof}
+
+\begin{proposition}[Regla de Gauss--Chebyshev]\label{prop:gauss_chebyshev}
+Para la integral con peso
+\[
+I_w(g):=\int_{-1}^1\frac{g(x)}{\sqrt{1-x^2}}\,dx,
+\]
+la regla gaussiana asociada al peso $(1-x^2)^{-1/2}$ es
+\[
+Q_N^{GC}(g):=\frac{\pi}{N}\sum_{j=1}^N g\!\left(\cos\!\frac{(2j-1)\pi}{2N}\right).
+\]
+Esta regla es exacta para todo polinomio de grado $\le 2N-1$.
+
+Si se desea aproximar la integral sin peso,
+\[
+\int_{-1}^1 f(x)\,dx,
+\]
+se puede escribir
+\[
+\int_{-1}^1 f(x)\,dx=\int_{-1}^1\frac{\sqrt{1-x^2}\,f(x)}{\sqrt{1-x^2}}\,dx
+\]
+y aplicar Gauss--Chebyshev a $g(x)=\sqrt{1-x^2}\,f(x)$. Esta reformulación es especialmente útil cuando la estructura del problema ya viene dada en términos del peso de Chebyshev.
+\end{proposition}
+
+\begin{proof}
+Es la propiedad general de las cuadraturas de Gauss: con $N$ nodos, la regla asociada a una familia de polinomios ortogonales es exacta hasta grado $2N-1$. En este caso, los nodos son las raíces de $T_N$ y los pesos son todos iguales a $\pi/N$.
+\end{proof}
+
+
+\section{Polinomios Ortogonales}
 
 En las secciones anteriores obtuvimos dos resultados de aproximación notablemente similares:
 \begin{itemize}
@@ -3631,30 +4208,77 @@ S_n f = \sum_{k=0}^n c_k\,\varphi_k.
 
 Estas definiciones recuperan ambos casos conocidos: para Fourier, $\varphi_k(x) = e^{ikx}$ con peso uniforme en $[0,2\pi]$; para Chebyshev, $\varphi_k(x) = T_k(x)$ con peso $(1-x^2)^{-1/2}$ en $[-1,1]$.
 
-Las dos propiedades fundamentales de la proyección ortogonal son:
+Para poder identificar el resto con una cola infinita de coeficientes hace falta, además de ortogonalidad, una hipótesis de densidad/completitud. En el caso de polinomios ortogonales sobre intervalos compactos, esa densidad se obtiene con Stone-Weierstrass.
 
-\begin{theorem}[Mejor aproximación e identidad de Parseval]\label{thm:mejor_aprox_parseval}
-Sea $\{\varphi_k\}$ una base ortogonal de $L^2_w(a,b)$, sea $f\in C([a,b])$ y sea $S_n f$ la proyección de orden $n$.  Entonces:
+\begin{theorem}[Densidad de polinomios en norma $L^2_w$ para funciones continuas]\label{thm:densidad_polinomios_stone_w}
+Sea $[a,b]$ compacto y sea $w\in L^1(a,b)$ con $w(x)>0$ para todo $x\in(a,b)$. Entonces, para toda $f\in C([a,b])$ y todo $\varepsilon>0$, existe un polinomio algebraico $p$ tal que
+\[
+\|f-p\|_w<\varepsilon.
+\]
+\end{theorem}
+
+\begin{proof}
+Por Stone-Weierstrass, los polinomios son densos en $C([a,b])$ para la norma uniforme. Dado $\varepsilon>0$, existe $p\in\mathbb P$ tal que
+\[
+\|f-p\|_\infty < \frac{\varepsilon}{\sqrt{\int_a^b w(x)\,dx}}.
+\]
+Entonces
+\[
+\|f-p\|_w^2 = \int_a^b |f(x)-p(x)|^2w(x)\,dx
+\le \|f-p\|_\infty^2\int_a^b w(x)\,dx < \varepsilon^2,
+\]
+y por tanto $\|f-p\|_w<\varepsilon$.
+\end{proof}
+
+Las propiedades fundamentales de la proyección ortogonal (en el caso de familias de polinomios ortogonales) son:
+
+\begin{theorem}[Mejor aproximación e identidad de Parseval para el resto]\label{thm:mejor_aprox_parseval}
+Sea $[a,b]$ compacto, $w\in L^1(a,b)$ con $w>0$ en $(a,b)$ y sea $\{P_k\}_{k\ge 0}$ la familia de polinomios ortogonales obtenida por ortogonalizar $\{1,x,x^2,\ldots\}$ en $L_w^2(a,b)$. Dada $f\in C([a,b])$, definimos
+\[
+c_k=\frac{(f,P_k)_w}{\|P_k\|_w^2},\qquad S_n f=\sum_{k=0}^n c_kP_k.
+\]
+Entonces:
 \begin{enumerate}
-\item \textbf{Mejor aproximación:} $S_n f$ minimiza el error $\|f - g\|_w$ entre todas las combinaciones lineales $g \in \mathrm{span}\{\varphi_0, \ldots, \varphi_n\}$.
+\item \textbf{Mejor aproximación:} $S_n f$ minimiza $\|f-g\|_w$ entre todos los polinomios $g\in\mathbb P_n$.
 \item \textbf{Identidad de Parseval para el resto:}
 \begin{equation}\label{eq:parseval_resto}
-\|f - S_n f\|_w^2 = \sum_{k=n+1}^\infty |c_k|^2\,\|\varphi_k\|_w^2.
+\|f - S_n f\|_w^2 = \sum_{k=n+1}^\infty |c_k|^2\,\|P_k\|_w^2.
 \end{equation}
 \end{enumerate}
 \end{theorem}
 
 \begin{proof}
-Sea $g = \sum_{k=0}^n a_k \varphi_k$ una combinación lineal arbitraria.  Entonces:
+Como $\mathrm{span}\{P_0,\ldots,P_n\}=\mathbb P_n$, basta considerar $g=\sum_{k=0}^n a_kP_k\in\mathbb P_n$. Entonces:
 \[
-\|f - g\|_w^2 = \Big\|f - S_n f + \sum_{k=0}^n (c_k - a_k)\varphi_k\Big\|_w^2 = \|f - S_n f\|_w^2 + \sum_{k=0}^n |c_k - a_k|^2\,\|\varphi_k\|_w^2,
+\|f - g\|_w^2 = \Big\|f - S_n f + \sum_{k=0}^n (c_k - a_k)P_k\Big\|_w^2
+= \|f - S_n f\|_w^2 + \sum_{k=0}^n |c_k - a_k|^2\,\|P_k\|_w^2,
 \]
-donde la igualdad usa que $f - S_n f$ es ortogonal a cada $\varphi_k$ con $k \leq n$ (verificación: $(f - S_nf, \varphi_j)_w = (f, \varphi_j)_w - c_j\|\varphi_j\|_w^2 = 0$).  El mínimo se alcanza cuando $a_k = c_k$ para todo $k$, probando (1).
+porque $(f-S_nf,P_j)_w=0$ para $j\le n$. Esto prueba (1).
 
-Para (2), la ortogonalidad de $\{\varphi_k\}$ da:
+Por el Teorema~\ref{thm:densidad_polinomios_stone_w}, para todo $\varepsilon>0$ existe $p\in\mathbb P$ con $\|f-p\|_w<\varepsilon$. Si $\deg p=m$, para todo $n\ge m$, por mejor aproximación,
 \[
-\|f - S_n f\|_w^2 = \Big\|\sum_{k > n} c_k\,\varphi_k\Big\|_w^2 = \sum_{k > n} |c_k|^2\,\|\varphi_k\|_w^2. \qedhere
+\|f-S_nf\|_w\le \|f-p\|_w<\varepsilon,
 \]
+de donde $\|f-S_nf\|_w\to 0$.
+
+Fijado $n$ y para $M>n$, por ortogonalidad y Pitágoras:
+\[
+\|f-S_nf\|_w^2 = \|f-S_Mf\|_w^2 + \|S_Mf-S_nf\|_w^2,
+\]
+y
+\[
+\|S_Mf-S_nf\|_w^2 = \left\|\sum_{k=n+1}^M c_kP_k\right\|_w^2
+= \sum_{k=n+1}^M |c_k|^2\|P_k\|_w^2.
+\]
+Luego
+\[
+\|f-S_nf\|_w^2 = \|f-S_Mf\|_w^2 + \sum_{k=n+1}^M |c_k|^2\|P_k\|_w^2.
+\]
+Pasando al límite $M\to\infty$ y usando $\|f-S_Mf\|_w\to 0$, resulta
+\[
+\|f-S_nf\|_w^2 = \sum_{k=n+1}^{\infty}|c_k|^2\|P_k\|_w^2.
+\]
+Esto prueba (2).
 \end{proof}
 
 La consecuencia central es que \textbf{el error de proyección está completamente determinado por la velocidad de decaimiento de los coeficientes} $c_k$.  Si podemos demostrar que $|c_k| = O(k^{-m})$ para una base ortogonal dada, la ecuación~\eqref{eq:parseval_resto} traduce inmediatamente esta información en una cota del error.
@@ -3903,526 +4527,8 @@ w_k = \mu_0\,(\hat{v}_{k,1})^2. \qedhere
 \end{proof}
 
 \begin{remark}
-El método es extremadamente robusto y eficiente ($O(n^2)$ con el algoritmo QR para matrices tridiagonales simétricas), y permite calcular reglas de cuadratura para cualquier peso cuyos coeficientes de recurrencia $\alpha_k, \beta_k$ se conozcan.  Para las familias clásicas estos tienen fórmulas cerradas; para pesos generales pueden obtenerse por el algoritmo de Stieltjes.
+El método es extremadamente robusto y bastante eficiente ($O(n^2)$ con el algoritmo QR para matrices tridiagonales simétricas), y permite calcular reglas de cuadratura para cualquier peso cuyos coeficientes de recurrencia $\alpha_k, \beta_k$ se conozcan.  Para las familias clásicas estos tienen fórmulas cerradas; para pesos generales pueden obtenerse por un algoritmo que se debe a Stieltjes.
 \end{remark}
-
-
-\section{Del error de proyección al error de interpolación}
-
-Las secciones anteriores establecieron que los coeficientes de la expansión de una función $f$ en una base ortogonal (Fourier, Chebyshev, o polinomios ortogonales generales) decaen a una tasa determinada por la regularidad de $f$. Este decaimiento tiene una consecuencia inmediata para la calidad de la \textbf{proyección ortogonal} (el truncamiento de la serie).
-
-En esta sección, nos interesa estudiar cómo este decaimiento afecta también la calidad de la \textbf{interpolación}. La clave es que, aunque la interpolación y la proyección son operaciones distintas, están estrechamente relacionadas. En esta sección formalizamos esta conexión, que es uno de los resultados centrales y más útiles de la teoría de aproximación en el curso.
-
-\subsection{Error de interpolación de Fourier}\label{sec:error_interp_fourier}
-
-Consideremos una función $f \in C^m_{per}([0,2\pi])$ con $m \geq 2$ y su serie de Fourier $f(x) = \sum_{k \in \mathbb{Z}} \hat{f}_k e^{ikx}$. La \textbf{proyección de Fourier} de orden $N$ es:
-\[
-S_N f(x) = \sum_{|k| \leq N} \hat{f}_k e^{ikx},
-\]
-y el \textbf{interpolante trigonométrico} $I_N f$ se obtiene a partir de los $2N+1$ valores $f(x_j)$ en los nodos equiespaciados $x_j = 2\pi j/(2N+1)$, $j = 0, \ldots, 2N$:
-\[
-I_N f(x) = \sum_{|k| \leq N} \tilde{f}_k e^{ikx}, \qquad \tilde{f}_k = \frac{1}{2N+1} \sum_{j=0}^{2N} f(x_j) e^{-ikx_j}.
-\]
-
-Los coeficientes discretos $\tilde{f}_k$ difieren de los coeficientes exactos $\hat{f}_k$ por el fenómeno de \textbf{aliasing}: la ortogonalidad discreta de las exponenciales en los $2N+1$ nodos equiespaciados da:
-\[
-\frac{1}{2N+1}\sum_{j=0}^{2N} e^{i(k-l)x_j} = \begin{cases} 1 & \text{si } k - l \equiv 0 \pmod{2N+1}, \\ 0 & \text{en caso contrario.} \end{cases}
-\]
-Sustituyendo la serie de Fourier de $f$ en la fórmula de $\tilde{f}_k$, obtenemos la \textbf{fórmula de aliasing}:
-\begin{equation}\label{aliasing_fourier}
-\tilde{f}_k = \sum_{m \in \mathbb{Z}} \hat{f}_{k + m(2N+1)}, \qquad |k| \leq N.
-\end{equation}
-Es decir, el coeficiente discreto $\tilde{f}_k$ ``ve'' no solo la frecuencia $k$, sino también todas las frecuencias $k + m(2N+1)$ para $m \neq 0$.
-
-
-
-\subsection{Error de interpolación de Chebyshev}\label{sec:error_interp_chebyshev}
-
-Sea $f \in C^m([-1,1])$ con expansión de Chebyshev $f(x) = \frac{a_0}{2} + \sum_{k=1}^\infty a_k T_k(x)$. La \textbf{proyección de Chebyshev} de orden $n$ es:
-\[
-S_n f(x) = \frac{a_0}{2} + \sum_{k=1}^n a_k T_k(x),
-\]
-y el \textbf{interpolante de Chebyshev} $I_n f$ se construye a partir de los $n+1$ ceros de $T_{n+1}$:
-\[
-x_j = \cos\!\left(\frac{(2j+1)\pi}{2(n+1)}\right), \quad j = 0, 1, \ldots, n.
-\]
-
-Bajo la sustitución $x = \cos\theta$, los nodos $x_j$ corresponden a los ángulos $\theta_j = \frac{(2j+1)\pi}{2(n+1)}$ equiespaciados en $(0,\pi)$, y los polinomios de Chebyshev se reducen a cosenos: $T_k(\cos\theta) = \cos(k\theta)$. Por lo tanto, el interpolante de Chebyshev es equivalente a un interpolante trigonométrico en la variable~$\theta$.
-
-El interpolante se escribe como $I_n f(x) = \frac{\tilde{a}_0}{2} + \sum_{k=1}^n \tilde{a}_k T_k(x)$, donde los \textbf{coeficientes discretos} $\tilde{a}_k$ se obtienen por la ortogonalidad discreta de los cosenos en los nodos $\theta_j$:
-\[
-\tilde{a}_k = \frac{2}{n+1}\sum_{j=0}^n f(x_j) T_k(x_j), \quad k = 0, 1, \ldots, n.
-\]
-
-La \textbf{fórmula de aliasing} para estos coeficientes es:
-\begin{equation}\label{aliasing_chebyshev}
-\tilde{a}_k - a_k = \sum_{q=1}^{\infty} (-1)^q \big[a_{2q(n+1)-k} + a_{2q(n+1)+k}\big], \quad k = 1, \ldots, n,
-\end{equation}
-con una fórmula análoga para $k = 0$ (donde los términos $2q(n+1) \pm 0$ coinciden, dando un coeficiente $2(-1)^q a_{2q(n+1)}$, que al dividirse por $2$ en la expansión $a_0/2$ produce la misma contribución que para $k \geq 1$).
-
-\begin{theorem}[Error de interpolación de Chebyshev]\label{thm:interp_error_chebyshev}
-Sea $f \in C^m([-1,1])$ con $m \geq 2$. Entonces el interpolante $I_n f$ en los ceros de $T_{n+1}$ satisface:
-\[
-\|f - I_n f\|_\infty \leq 2 \sum_{k=n+1}^\infty |a_k|.
-\]
-Como $|a_k| = O(k^{-m})$, esta cota es $O(n^{1-m})$.
-\end{theorem}
-
-\begin{proof}
-La estrategia es idéntica al caso de Fourier. Descomponemos: $f - I_n f = (f - S_n f) - I_n(f - S_n f)$, usando que $I_n(S_n f) = S_n f$ (el interpolante reproduce exactamente los polinomios de grado $\leq n$).
-
-\textbf{Cota de la cola.} Por $|T_k(x)| \leq 1$ para todo $x \in [-1,1]$:
-\[
-\|f - S_n f\|_\infty = \left\|\sum_{k=n+1}^\infty a_k T_k(x)\right\|_\infty \leq \sum_{k=n+1}^\infty |a_k|.
-\]
-
-\textbf{Cota del aliasing.} El polinomio $I_n(f - S_n f) = \frac{b_0}{2} + \sum_{k=1}^n b_k T_k(x)$, donde $b_k = \tilde{a}_k - a_k$ es el error de aliasing del coeficiente $k$-ésimo. Debemos acotar:
-\[
-\|I_n(f - S_n f)\|_\infty \leq \frac{|b_0|}{2} + \sum_{k=1}^n |b_k|.
-\]
-
-Usando la fórmula de aliasing \eqref{aliasing_chebyshev}, cada $|a_m|$ con $m > n$ contribuye a esta suma. La clave es que \textbf{cada $|a_m|$ aparece a lo sumo una vez}. En efecto, dado $m > n$, escribimos $m = 2q(n+1) + r$ con $0 \leq r < 2(n+1)$:
-\begin{itemize}
-\item Si $0 \leq r \leq n$: $a_m$ aparece en $b_r$ (vía el término $a_{2q(n+1)+r}$).
-\item Si $n+2 \leq r \leq 2n+1$: $a_m$ aparece en $b_{2(n+1)-r}$ (vía $a_{2(q+1)(n+1) - (2(n+1)-r)}$).
-\item Si $r = n+1$: $m$ es un múltiplo impar de $n+1$, y $T_m$ se anula en todos los nodos (pues $T_m(x_j) = \cos(m\theta_j)$ y $m\theta_j$ recorre ángulos de la forma $\frac{m(2j+1)\pi}{2(n+1)}$ que se cancelan). {\bfseries En este caso, $a_m$ no aparece en ningún $b_k$.}
-\end{itemize}
-
-Incluyendo la contribución del término $\frac{b_0}{2}$ (que absorbe el factor $2$ de la fórmula para $k=0$), tenemos:
-\[
-\frac{|b_0|}{2} + \sum_{k=1}^n |b_k| \leq \sum_{\substack{m > n \\ m \neq \text{múlt.\,impar de } n+1}} |a_m| \leq \sum_{m=n+1}^\infty |a_m|.
-\]
-
-\textbf{Conclusión.} Sumando ambas contribuciones:
-\[
-\|f - I_n f\|_\infty \leq \sum_{k > n} |a_k| + \sum_{k > n} |a_k| = 2\sum_{k=n+1}^\infty |a_k|. \qedhere
-\]
-\end{proof}
-
-\begin{remark}[Conexión con FFT]
-Los nodos de Chebyshev $x_j = \cos(\theta_j)$ corresponden a puntos equiespaciados en la variable $\theta$. Por lo tanto, los coeficientes discretos $\tilde{a}_k$ pueden calcularse eficientemente mediante la FFT en $O(n \log n)$ operaciones, lo que hace que los métodos espectrales de Chebyshev sean extremadamente eficientes en la práctica.
-\end{remark}
-
-\subsection{Generalización a otros polinomios ortogonales}
-
-Los resultados anteriores para Fourier y Chebyshev se extienden cualitativamente a otras familias de polinomios ortogonales. Sin embargo, la cota uniforme $|P_k(x)| \leq C$ (que fue esencial en las demostraciones) no vale para familias generales: por ejemplo, los polinomios de Legendre satisfacen $|P_k(x)| \leq 1$ en $[-1,1]$ pero $|P_k(\pm 1)| = 1$, y su crecimiento en norma $L^\infty$ es $\|P_k\|_\infty = 1$ (favorable), mientras que para Hermite o Laguerre la situación es diferente.
-
-La herramienta general que permite pasar del error de proyección al error de interpolación es la \textbf{constante de Lebesgue} $\Lambda_n$, introducida en la siguiente sección.
-
-\begin{theorem}[Del error de proyección al error de interpolación: caso general]\label{thm:proj_to_interp_general}
-Sea $I_n f$ el polinomio interpolante de $f$ en $n+1$ nodos arbitrarios $\{x_j\}_{j=0}^n \subset [a,b]$, y sea $E_n(f) = \inf_{p \in \Pi_n} \|f - p\|_\infty$ el error de la mejor aproximación uniforme. Entonces:
-\[
-\|f - I_n f\|_\infty \leq (1 + \Lambda_n) E_n(f),
-\]
-donde $\Lambda_n = \max_{x \in [a,b]} \sum_{k=0}^n |\ell_k(x)|$ es la constante de Lebesgue de los nodos.
-
-\medskip
-Para las familias clásicas de nodos (ceros de polinomios ortogonales), la constante de Lebesgue satisface:
-\begin{center}
-\begin{tabular}{|l|c|}
-\hline
-\textbf{Nodos} & $\Lambda_n$ \\
-\hline
-Chebyshev (ceros de $T_{n+1}$) & $\frac{2}{\pi}\log(n+1) + O(1)$ \\
-Legendre (ceros de $P_{n+1}$) & $O(\sqrt{n})$ \\
-Jacobi general & $O(\sqrt{n})$ \\
-Equiespaciados & $O(2^n / (n \log n))$ \\
-\hline
-\end{tabular}
-\end{center}
-\end{theorem}
-
-La demostración de este teorema se da en la Sección~\ref{sec:lebesgue_constant}, a continuación.
-
-\section{El operador de interpolación (*)}\label{sec:lebesgue_constant}
-
-\subsection{Constante de Lebesgue}
-
-Como vimos, el error de interpolación depende de dos factores fundamentales:
-
-\begin{enumerate}
-\item \textbf{Suavidad de la función}: $\frac{f^{(n+1)}(\xi)}{(n+1)!}$
-\item \textbf{Distribución de los nodos}: $\prod_{k=0}^n (x - x_k)$
-\end{enumerate}
-
-\begin{definition}[Función de Lebesgue]
-Para un conjunto de nodos $\{x_k\}$, la \textbf{función de Lebesgue} se define como:
-\[
-\Lambda(x) = \sum_{k=0}^n |\ell_k(x)|.
-\]
-La \textbf{constante de Lebesgue} es $\Lambda_n = \max_{x \in [a,b]} \Lambda(x)$.
-\end{definition}
-
-
-\begin{definition}[Mejor aproximación en $L^\infty$]
-Dada una función continua $f$ en $[a,b]$, la \textbf{mejor aproximación uniforme} de grado $n$ es el polinomio $p^* \in \Pi_n$ que minimiza:
-\[
-\|f - p^*\|_\infty = \max_{x \in [a,b]} |f(x) - p^*(x)|.
-\]
-\end{definition}
-
-\begin{theorem}[Existencia de la mejor aproximación uniforme]\label{thm:existencia_mejor_aprox_unif}
-Para toda función continua $f: [a,b] \to \mathbb{R}$ y todo $n \geq 0$, existe al menos un polinomio $p^* \in \Pi_n$ que minimiza $\|f - p\|_\infty$ sobre todos los $p \in \Pi_n$.
-\end{theorem}
-
-\begin{proof}
-Definimos $E_n(f) = \inf_{p \in \Pi_n} \|f - p\|_\infty$. Sea $\{p_k\}$ una sucesión minimizante, es decir, $\|f - p_k\|_\infty \to E_n(f)$.
-
-Primero mostramos que los coeficientes de $p_k$ están acotados. Como $\|p_k\|_\infty \leq \|f - p_k\|_\infty + \|f\|_\infty \leq E_n(f) + 1 + \|f\|_\infty$ para $k$ suficientemente grande, y en el espacio de dimensión finita $\Pi_n$ todas las normas son equivalentes, los coeficientes de $p_k$ en cualquier base están acotados.
-
-Por el teorema de Bolzano-Weierstrass, existe una subsucesión $\{p_{k_j}\}$ que converge a algún polinomio $p^* \in \Pi_n$ (la convergencia coeficiente a coeficiente implica convergencia uniforme en $[a,b]$). Entonces:
-\[
-\|f - p^*\|_\infty = \lim_{j \to \infty} \|f - p_{k_j}\|_\infty = E_n(f).
-\]
-\end{proof}
-
-\begin{theorem}[Cota del error en términos de la constante de Lebesgue]
-Si $p^*$ es la mejor aproximación uniforme de $f$ en el espacio de polinomios de grado $\leq n$, entonces:
-\[
-\|f - p\|_\infty \leq (1 + \Lambda_n) \|f - p^*\|_\infty.
-\]
-\end{theorem}
-
-\begin{proof}
-La demostración se basa en descomponer el error de interpolación usando la mejor aproximación como término intermedio.
-
-Para cualquier $x \in [a,b]$, podemos escribir:
-\[
-f(x) - p(x) = [f(x) - p^*(x)] + [p^*(x) - p(x)],
-\]
-donde $p$ es el polinomio interpolante y $p^*$ es la mejor aproximación uniforme. El primer término ya está acotado por $\|f - p^*\|_\infty$ por definición de la norma infinito. Debemos analizar el segundo término.
-
-Como $p^*$ es un polinomio de grado $\leq n$, podemos escribirlo en la base de Lagrange asociada a los nodos $\{x_k\}_{k=0}^n$:
-\[
-p^*(x) = \sum_{k=0}^n p^*(x_k) \ell_k(x),
-\]
-donde $\ell_k(x)$ son los polinomios base de Lagrange. Por otro lado, el polinomio interpolante $p$ satisface $p(x_k) = f(x_k)$ para todo $k$, por lo que:
-\[
-p(x) = \sum_{k=0}^n f(x_k) \ell_k(x).
-\]
-
-Restando estas expresiones obtenemos:
-\[
-p^*(x) - p(x) = \sum_{k=0}^n [p^*(x_k) - f(x_k)] \ell_k(x).
-\]
-
-Tomando valores absolutos y usando la desigualdad triangular:
-\begin{align*}
-|p^*(x) - p(x)| &= \left| \sum_{k=0}^n [p^*(x_k) - f(x_k)] \ell_k(x) \right| \\
-&\leq \sum_{k=0}^n |p^*(x_k) - f(x_k)| \cdot |\ell_k(x)| \\
-&\leq \max_{k=0,\ldots,n} |p^*(x_k) - f(x_k)| \cdot \sum_{k=0}^n |\ell_k(x)| \\
-&\leq \|f - p^*\|_\infty \cdot \Lambda(x),
-\end{align*}
-donde en la última desigualdad usamos que el máximo puntual de $|p^*(x_k) - f(x_k)|$ está acotado por el supremo global $\|f - p^*\|_\infty$.
-
-Juntando ambos términos de la descomposición inicial, obtenemos:
-\begin{align*}
-|f(x) - p(x)| &\leq |f(x) - p^*(x)| + |p^*(x) - p(x)| \\
-&\leq \|f - p^*\|_\infty + \Lambda(x) \|f - p^*\|_\infty \\
-&= (1 + \Lambda(x)) \|f - p^*\|_\infty.
-\end{align*}
-
-Finalmente, tomando supremo sobre $x \in [a,b]$:
-\[
-\|f - p\|_\infty = \sup_{x \in [a,b]} |f(x) - p(x)| \leq (1 + \Lambda_n) \|f - p^*\|_\infty,
-\]
-donde $\Lambda_n = \max_{x \in [a,b]} \Lambda(x)$ es la constante de Lebesgue.
-\end{proof}
-
-\begin{theorem}[La cota es ajustada]\label{thm:lebesgue_tight}
-La cota $(1 + \Lambda_n)$ del teorema anterior no puede mejorarse: para cualquier conjunto de nodos $\{x_k\}_{k=0}^n$, existen funciones continuas $f$ para las cuales el error de interpolación alcanza (esencialmente) este valor. Más precisamente, para cualquier $\varepsilon > 0$, existe una función continua $f$ tal que:
-\[
-\|f - p\|_\infty \geq (\Lambda_n - \varepsilon) \|f - p^*\|_\infty,
-\]
-donde $p$ es el interpolante de $f$ y $p^*$ es la mejor aproximación uniforme de $f$ de grado $n$.
-\end{theorem}
-\begin{proof}[Idea de la demostración]
-Una construcción explícita de la función $f$ que alcanza la cota puede realizarse considerando:
-\[
-f(x) = \sum_{k=0}^n \text{sgn}(\ell_k(\bar{x})) \cdot \ell_k(x) + h(x),
-\]
-donde $\bar{x}$ es un punto donde $\Lambda(\bar{x}) = \Lambda_n$ y $h$ es una función continua no polinomial apropiadamente elegida. La demostración es técnica y se basa en analizar el comportamiento del interpolante y la mejor aproximación para esta función específica.
-\end{proof}
-
-\begin{remark}[Interpretación y consecuencias]
-Los resultados anteriores tienen varias implicaciones importantes para la interpolación polinomial:
-
-\begin{enumerate}
-\item \textbf{Cuasi-optimalidad}: La interpolación es cuasi-óptima: su error está controlado por $(1 + \Lambda_n)$ veces el error de la mejor aproximación posible. Esto significa que si existe un polinomio que aproxima bien a $f$, entonces el interpolante también lo hará razonablemente bien.
-
-\item \textbf{La cota es ajustada}: El Teorema~\ref{thm:lebesgue_tight} muestra que no podemos mejorar el factor $(1 + \Lambda_n)$ en general: existen funciones para las cuales el error de interpolación es esencialmente $(1 + \Lambda_n)$ veces el error de la mejor aproximación.
-
-\item \textbf{Importancia de $\Lambda_n$}: La constante de Lebesgue determina completamente la calidad de la interpolación en el peor caso:
-   \begin{itemize}
-   \item Si $\Lambda_n$ es pequeña (como para nodos de Chebyshev, donde $\Lambda_n \approx \frac{2}{\pi}\log(n+1)$), la interpolación es casi óptima.
-   \item Si $\Lambda_n$ es grande (como para nodos equiespaciados, donde $\Lambda_n \approx \frac{2^n}{e n \log n}$), la interpolación puede ser mucho peor que la mejor aproximación.
-   \end{itemize}
-
-\item \textbf{Factor de amplificación inevitable}: La constante de Lebesgue representa un factor de amplificación inevitable del error de aproximación. Es una propiedad intrínseca del conjunto de nodos elegido, independiente de la función particular que interpolamos.
-
-\item \textbf{Criterio de selección de nodos}: Para obtener buenas interpolaciones, debemos elegir nodos que minimicen $\Lambda_n$. Esto justifica matemáticamente la preferencia por nodos de Chebyshev sobre nodos equiespaciados.
-\end{enumerate}
-\end{remark}
-
-\subsection{Nodos equiespaciados y el fenómeno de Runge}
-
-\begin{definition}[Nodos equiespaciados]
-En el intervalo $[a,b]$, los \textbf{nodos equiespaciados} se definen como:
-\[
-x_k = a + k \frac{b-a}{n}, \quad k = 0, 1, \ldots, n.
-\]
-\end{definition}
-
-Los nodos equiespaciados son la elección más natural y se usan frecuentemente en aplicaciones prácticas. Sin embargo, como veremos, pueden llevar a problemas de convergencia serios.
-
-\begin{theorem}[Fenómeno de Runge]
-Existen funciones $C^\infty$ para las cuales la interpolación polinomial en nodos equiespaciados diverge cuando $n \to \infty$.
-\end{theorem}
-
-\begin{example}[Función de Runge]
-Consideremos la función $f(x) = \frac{1}{1 + 25x^2}$ en el intervalo $[-1,1]$. Esta función es $C^\infty(\mathbb{R})$ y perfectamente suave.
-
-Para nodos equiespaciados $x_k = -1 + \frac{2k}{n}$, $k = 0, \ldots, n$, los polinomios interpolantes $p_n(x)$ satisfacen:
-\begin{itemize}
-\item $p_n(x) \to f(x)$ uniformemente en $[-1/2, 1/2]$ cuando $n \to \infty$.
-\item $p_n(x)$ diverge cerca de los extremos $x = \pm 1$, con oscilaciones de amplitud creciente.
-\end{itemize}
-\end{example}
-
-\begin{proof}[Explicación del fenómeno]
-El polinomio interpolante puede escribirse usando la fórmula de error:
-\[
-p_n(x) = f(x) - \frac{f^{(n+1)}(\xi)}{(n+1)!} \prod_{k=0}^n (x - x_k).
-\]
-
-Para nodos equiespaciados en $[-1,1]$, se puede demostrar que:
-\[
-\max_{x \in [-1,1]} \left| \prod_{k=0}^n (x - x_k) \right| \geq \frac{2^n}{4^n} = \left(\frac{1}{2}\right)^n.
-\]
-
-Sin embargo, este crecimiento no es uniforme: cerca de los extremos, $|\prod (x - x_k)|$ crece mucho más rápido que cerca del centro. Las derivadas $f^{(n+1)}$ crecen factorialmente con $n$, y la competencia entre el decaimiento del factor $1/(n+1)!$ y el crecimiento del producto nodal $\prod(x - x_k)$ determina si hay convergencia o divergencia en cada punto.
-\end{proof}
-
-\begin{theorem}[Constante de Lebesgue para nodos equiespaciados]
-Para nodos equiespaciados en $[-1,1]$, la constante de Lebesgue satisface:
-\[
-\Lambda_n \geq \frac{2^n}{e n \log n}.
-\]
-Es decir, la constante de Lebesgue crece exponencialmente con $n$.
-\end{theorem}
-
-Esta cota inferior explica por qué los nodos equiespaciados pueden ser problemáticos: incluso si la función tiene una excelente aproximación polinomial, la interpolación puede amplificar enormemente el error debido a la constante de Lebesgue grande.
-
-\subsection{Convergencia de la interpolación polinomial en $L^\infty$}
-
-Una pregunta fundamental es: ¿bajo qué condiciones los polinomios interpolantes $p_n$ convergen a la función $f$ cuando $n \to \infty$? La respuesta depende tanto de las propiedades de $f$ como de la elección de los nodos de interpolación.
-
-\begin{theorem}[Teorema de Faber, 1914]\label{thm:faber}
-Para cualquier conjunto de nodos triangular $\{x_k^{(n)}\}_{k=0}^n$ con $n = 0, 1, 2, \ldots$ en $[-1,1]$ (es decir, un esquema donde para cada $n$ se tienen $n+1$ nodos), existe una función continua $f \in C[-1,1]$ tal que la sucesión de polinomios interpolantes $\{p_n\}$ diverge en al menos un punto de $[-1,1]$.
-\end{theorem}
-
-\begin{remark}
-Este resultado negativo muestra que \textbf{no existe un conjunto universal de nodos} que garantice convergencia uniforme para todas las funciones continuas. Incluso para funciones suaves, la interpolación puede diverger si los nodos no están bien elegidos.
-\end{remark}
-
-A pesar de este resultado negativo, existen resultados positivos importantes bajo hipótesis adicionales:
-
-\subsubsection{Teoremas fundamentales de aproximación polinomial}
-
-Antes de estudiar la convergencia de interpolación, recordemos dos resultados fundamentales sobre la mejor aproximación uniforme por polinomios:
-
-\begin{definition}[Módulo de continuidad]
-Para una función $f \in C[a,b]$, el \textbf{módulo de continuidad} se define como:
-\[
-\omega(f, \delta) = \sup_{\substack{x,y \in [a,b] \\ |x-y| \leq \delta}} |f(x) - f(y)|.
-\]
-Esta función mide cuánto puede variar $f$ en un intervalo de longitud $\delta$.
-\end{definition}
-
-\begin{remark}
-El módulo de continuidad satisface:
-\begin{enumerate}
-\item $\omega(f, \delta) \to 0$ cuando $\delta \to 0$ (por continuidad uniforme en $[a,b]$).
-\item $\omega(f, \delta)$ es creciente en $\delta$.
-\item $\omega(f, \lambda\delta) \leq (1 + \lambda)\omega(f, \delta)$ para $\lambda \geq 0$.
-\item Si $f \in C^1[a,b]$, entonces $\omega(f, \delta) \leq \|f'\|_\infty \cdot \delta$.
-\end{enumerate}
-\end{remark}
-
-\begin{theorem}[Teorema de Jackson, 1911]\label{thm:jackson}
-Sea $f \in C[-1,1]$. Para todo $n \geq 1$, existe un polinomio $p_n \in \Pi_n$ tal que:
-\[
-\|f - p_n\|_\infty \leq C \cdot \omega\left(f, \frac{1}{n}\right),
-\]
-donde $C$ es una constante absoluta (independiente de $f$ y $n$).
-
-En particular, si $f \in C^k[-1,1]$ para algún $k \geq 1$, entonces existe $p_n \in \Pi_n$ tal que:
-\[
-\|f - p_n\|_\infty \leq \frac{C_k \|f^{(k)}\|_\infty}{n^k}.
-\]
-\end{theorem}
-
-\begin{proof}[Idea de la demostración]
-La demostración original de Jackson usa un núcleo de suavización específico (el \textbf{núcleo de Jackson}). La construcción moderna más simple usa los \textbf{polinomios de Bernstein}:
-\[
-B_n(f)(x) = \sum_{k=0}^n f\left(\frac{k}{n}\right) \binom{n}{k} x^k (1-x)^{n-k}.
-\]
-
-Estos polinomios tienen las siguientes propiedades:
-\begin{enumerate}
-\item $B_n(f)$ es un polinomio de grado $\leq n$.
-\item $B_n(f)(x) \to f(x)$ uniformemente cuando $n \to \infty$ (teorema de aproximación de Weierstrass).
-\item El error satisface:
-\[
-|f(x) - B_n(f)(x)| \leq \frac{3}{2} \omega\left(f, \frac{1}{\sqrt{n}}\right).
-\]
-\end{enumerate}
-
-Para obtener la tasa óptima $\omega(f, 1/n)$, Jackson utilizó un proceso de suavización iterado. La idea es:
-\begin{enumerate}
-\item Convolucionar $f$ con un núcleo suave $K_n$ de soporte $\sim 1/n$.
-\item El resultado es una función suavizada $f_n = f * K_n$ que es aproximadamente polinomial.
-\item El error es $|f - f_n| \leq C\omega(f, 1/n)$ por la construcción del núcleo.
-\item Aproximar $f_n$ por un polinomio da el resultado.
-\end{enumerate}
-
-La versión para $f \in C^k$ se obtiene integrando por partes $k$ veces en la representación integral del error.
-\end{proof}
-
-\begin{theorem}[Teorema de Bernstein, 1912]\label{thm:bernstein}
-Sea $f \in C[-1,1]$ y sea $E_n(f) = \inf_{p \in \Pi_n} \|f - p\|_\infty$ el error de la mejor aproximación uniforme por polinomios de grado $\leq n$. Si $E_n(f) = O(n^{-\alpha})$ para algún $\alpha > 0$, entonces $f \in C^{\lfloor \alpha \rfloor}[-1,1]$.
-
-Más precisamente:
-\begin{enumerate}
-\item Si $E_n(f) = O(n^{-\alpha})$ con $0 < \alpha < 1$, entonces $\omega(f, \delta) = O(\delta^\alpha)$ (es decir, $f$ es Hölder continua de exponente $\alpha$).
-
-\item Si $E_n(f) = O(n^{-k})$ para $k \in \mathbb{N}$, entonces $f \in C^{k-1}[-1,1]$ y $\omega(f^{(k-1)}, \delta) = O(\delta)$.
-
-\end{enumerate}
-\end{theorem}
-
-\begin{proof}[Idea de la demostración]
-La demostración se basa en las siguientes observaciones:
-
-\textbf{Caso 1: Regularidad Hölder.}
-
-Sea $p_n$ la mejor aproximación de $f$ de grado $n$. Para $h > 0$ pequeño, consideremos la diferencia:
-\[
-\Delta_h f(x) = f(x+h) - f(x).
-\]
-
-Queremos acotar $|\Delta_h f(x)|$. Como $p_n$ aproxima bien a $f$:
-\[
-|\Delta_h f(x)| \leq |\Delta_h [f-p_n](x)| + |\Delta_h p_n(x)|.
-\]
-
-El primer término satisface:
-\[
-|\Delta_h [f-p_n](x)| \leq 2\|f - p_n\|_\infty \leq 2E_n(f).
-\]
-
-El segundo término, usando que $|p_n'(x)| \leq Cn^2\|p_n\|_\infty$ (desigualdad de Markov para polinomios):
-\[
-|\Delta_h p_n(x)| \leq h\|p_n'\|_\infty \leq Chn^2\|p_n\|_\infty \leq Chn^2(\|f\|_\infty + E_n(f)).
-\]
-
-Eligiendo $n \sim 1/h$ y usando $E_n(f) = O(n^{-\alpha})$, obtenemos:
-\[
-|\Delta_h f(x)| \leq Ch^{\alpha},
-\]
-lo que implica $\omega(f, h) = O(h^\alpha)$.
-
-\textbf{Caso 2: Diferenciabilidad.}
-
-Si $E_n(f) = O(n^{-k})$ con $k \geq 1$, se puede demostrar inductivamente que $f$ tiene $k-1$ derivadas continuas. La idea es usar que:
-\[
-E_n(f') \leq Cn \cdot E_{n-1}(f) = O(n^{1-k}).
-\]
-
-Por el caso Hölder, esto implica que $f^{(k-1)}$ existe y es Hölder continua.
-
-\end{proof}
-
-\begin{remark}[Jackson vs. Bernstein]
-Los teoremas de Jackson y Bernstein son \textbf{conversos} el uno del otro:
-\begin{itemize}
-\item \textbf{Jackson}: regularidad de $f$ $\Rightarrow$ velocidad de aproximación.
-\item \textbf{Bernstein}: velocidad de aproximación $\Rightarrow$ regularidad de $f$.
-\end{itemize}
-
-Juntos, caracterizan completamente la relación entre la suavidad de una función y qué tan bien puede ser aproximada por polinomios.
-\end{remark}
-
-\subsubsection{Convergencia de interpolación polinomial}
-
-Ahora podemos estudiar la convergencia de interpolación usando estos resultados:
-
-\begin{theorem}[Convergencia para funciones $C^m$ con nodos de Chebyshev]\label{thm:convergencia_chebyshev}
-Sea $f \in C^m[-1,1]$ con $m \geq 1$. Sea $p_n$ el polinomio que interpola a $f$ en los $n+1$ nodos de Chebyshev. Entonces $p_n \to f$ uniformemente en $[-1,1]$ cuando $n \to \infty$, con tasa:
-\[
-\|f - p_n\|_\infty = O\!\left(\frac{\log n}{n^m}\right).
-\]
-\end{theorem}
-
-\begin{proof}
-Por el teorema de Jackson, $E_n(f) = O(n^{-m})$. Como la constante de Lebesgue para nodos de Chebyshev satisface $\Lambda_n = O(\log n)$:
-\[
-\|f - p_n\|_\infty \leq (1 + \Lambda_n) E_n(f) = O(\log(n) \cdot n^{-m}) \to 0.
-\]
-\end{proof}
-
-\begin{theorem}[No convergencia con nodos equiespaciados]
-Existen funciones $f \in C^\infty(\mathbb{R})$ tales que los polinomios interpolantes en nodos equiespaciados en $[-1,1]$ divergen cuando $n \to \infty$.
-\end{theorem}
-
-\begin{proof}[Idea]
-La función de Runge $f(x) = \frac{1}{1+25x^2}$ es un ejemplo explícito. El crecimiento exponencial $\Lambda_n \approx \frac{2^n}{en\log n}$ para nodos equiespaciados domina cualquier decaimiento del error de aproximación, causando divergencia cerca de los extremos del intervalo.
-\end{proof}
-
-\begin{theorem}[Convergencia uniforme para funciones Lipschitz]\label{thm:convergencia_lipschitz}
-Sea $f \in C^1[-1,1]$ una función con derivada acotada. Sea $\{x_k^{(n)}\}$ un conjunto de nodos tal que $\Lambda_n = O(n^\alpha)$ para algún $\alpha > 0$ (por ejemplo, nodos de Chebyshev con $\alpha = 0$, o incluso algunos nodos menos óptimos con $\alpha$ finito). Entonces el error de interpolación satisface:
-\[
-\|f - p_n\|_\infty = O\left(\frac{\Lambda_n}{n}\right) = O(n^{\alpha-1}).
-\]
-En particular, si $\alpha < 1$, entonces $p_n \to f$ uniformemente.
-\end{theorem}
-
-\begin{proof}[Idea]
-Por el teorema de Jackson, existe un polinomio $q_n$ de grado $n$ tal que:
-\[
-\|f - q_n\|_\infty \leq \frac{C\omega(f, 1/n)}{n} \leq \frac{C\|f'\|_\infty}{n},
-\]
-donde $\omega(f, \delta)$ es el módulo de continuidad de $f$. Aplicando la cota de la constante de Lebesgue:
-\[
-\|f - p_n\|_\infty \leq (1 + \Lambda_n)\|f - q_n\|_\infty \leq \frac{C(1 + \Lambda_n)\|f'\|_\infty}{n}.
-\]
-\end{proof}
-
-\begin{theorem}[Teorema de Erd\H{o}s-Turán]
-Para nodos equiespaciados en $[-1,1]$, existe una constante $c > 0$ tal que para toda función $f \in C[-1,1]$:
-\[
-\limsup_{n \to \infty} \|f - p_n\|_\infty \geq c \cdot E_n(f),
-\]
-donde $E_n(f) = \inf_{q \in \Pi_n} \|f - q\|_\infty$ es el error de la mejor aproximación uniforme.
-
-En particular, si $E_n(f) \not\to 0$ rápidamente (como $O(\rho^{-n})$), entonces $\|f - p_n\|_\infty$ puede no converger a cero.
-\end{theorem}
-
-\begin{remark}[Criterios prácticos de convergencia]
-En la práctica, la convergencia de interpolación depende de:
-\begin{enumerate}
-\item \textbf{Regularidad de $f$}: A mayor regularidad ($C^m$ con $m$ grande, o $C^\infty$), más rápida es la convergencia con nodos adecuados. Funciones apenas continuas pueden divergir con cualquier esquema de nodos (Teorema de Faber).
-
-\item \textbf{Elección de nodos}: Nodos de Chebyshev garantizan $\Lambda_n = O(\log n)$, lo cual es casi óptimo. Nodos equiespaciados tienen $\Lambda_n = O(2^n/n)$, lo cual es catastrófico.
-
-\item \textbf{Comportamiento asintótico}: Para funciones $C^k$, la convergencia con nodos de Chebyshev es algebraica: $\|f - p_n\|_\infty = O(\log(n)/n^{k})$.
-
-\item \textbf{Criterio de selección}: Para funciones generales en aplicaciones prácticas, se recomienda usar nodos de Chebyshev o Gauss-Lobatto en lugar de nodos equiespaciados.
-\end{enumerate}
-\end{remark}
-
-
-
 
 
 
@@ -6433,11 +6539,15 @@ Concluimos que el valor es exactamente $\lambda_k$. La otra igualdad se prueba d
 \end{proof}
 
 
-\chapter{Convergencia de Series de Fourier}
+\chapter{Convergencia de Series de Fourier \label{app_convergencia_fourier}}
 
-En el cuerpo principal de las notas (Capítulo~\ref{cap_fourier_generalizado}, Sección~\ref{sec:series_fourier_suaves}) ya establecimos la relación básica entre regularidad y decaimiento de coeficientes de Fourier. En particular, el Teorema~\ref{thm:decaimiento_fourier} y el Corolario~\ref{cor:decaimiento_O_nk} muestran que la regularidad $C^m$ implica decaimiento algebraico $|\hat f_k|=O(|k|^{-m})$, mientras que el Teorema~\ref{thm:converso_suavidad_decaimiento} da un converso útil en términos de sumabilidad ponderada de coeficientes.
+En el cuerpo principal de las notas (Capítulo~\ref{cap_fourier_generalizado}, Sección~\ref{sec:series_fourier_suaves}) ya establecimos la relación básica entre regularidad y decaimiento de coeficientes de Fourier. En particular, el Teorema~\ref{thm:decaimiento_fourier} y el Corolario~\ref{cor:decaimiento_O_nk} muestran que la regularidad $C^m$ implica decaimiento algebraico $|\hat f_k|=O(|k|^{-m})$.
 
 Este apéndice reúne los argumentos de convergencia de series de Fourier en un bloque autónomo. El objetivo es separar con claridad dos planos complementarios: por un lado, la convergencia puntual/uniforme de las sumas parciales (núcleo de Dirichlet y Lema de Riemann--Lebesgue), y por otro, la convergencia en norma $L^2$ y la identidad de Parseval, formuladas en lenguaje de proyección ortogonal. Esta organización permite reutilizar los resultados de decaimiento ya probados en el texto principal y, al mismo tiempo, presentar la teoría de convergencia con una lógica interna independiente.
+
+\section{Convergencia puntual de sumas parciales}
+
+En esta primera etapa queremos entender por qu\'e las sumas parciales realmente se acercan a la funci\'on en cada punto. La idea del pizarr\'on es combinar dos piezas cl\'asicas: por un lado, el lema de Riemann--Lebesgue para apagar integrales oscilatorias, y por otro la f\'ormula de convoluci\'on con el n\'ucleo de Dirichlet. Con esas herramientas, el error se reescribe en una forma manejable y la convergencia puntual cae de manera natural.
 
 \begin{theorem}[Lema de Riemann-Lebesgue para funciones $C^1$]\label{cor:riemann_lebesgue_C1}
 Si $g\in C^1([a,b])$, entonces
@@ -6485,6 +6595,8 @@ Por Euler,
 Si un número complejo tiende a $0$, también tienden a $0$ su parte real e imaginaria. Aplicando el Teorema~\ref{cor:riemann_lebesgue_C1}, se obtiene el resultado.
 \end{proof}
 
+Con este paso ya controlamos el efecto de la oscilaci\'on en integrales. El siguiente ingrediente no es de estimaci\'on, sino de estructura: necesitamos una f\'ormula que escriba $S_N f$ de forma expl\'icita para poder manipular el error con comodidad.
+
 \begin{lemma}[Núcleo de Dirichlet]\label{lem:dirichlet_kernel}
 La suma parcial de Fourier admite la representación
 \[
@@ -6506,6 +6618,8 @@ S_N f(x)=\frac{1}{2\pi}\int_0^{2\pi} f(u)\sum_{k=-N}^{N}e^{ik(x-u)}\,du.
 \]
 Con el cambio $u=x-t$ (periodicidad) se obtiene la fórmula de convolución. La expresión cerrada de $D_N$ resulta de la suma geométrica finita y la normalización de integrar término a término.
 \end{proof}
+
+Una vez obtenida la representaci\'on por n\'ucleo, el argumento de convergencia puntual queda casi servido: reescribimos el error y aplicamos el resultado oscilatorio del comienzo de la secci\'on.
 
 \begin{theorem}[Convergencia puntual]\label{thm:conv_C1}
 Sea $f\in C^1_{per}([0,2\pi])$. Entonces, para todo $x\in[0,2\pi]$,
@@ -6531,6 +6645,12 @@ y se define por continuidad en $t=0$ y $t=2\pi$. Como $f\in C^1_{per}$, el cocie
 
 Aplicando el Corolario~\ref{cor:riemann_lebesgue_C1} a $g_x$, el integral tiende a $0$ cuando $N\to\infty$. Concluimos $S_N f(x)\to f(x)$.
 \end{proof}
+
+La conclusi\'on de esta secci\'on es que la regularidad $C^1$ alcanza para convergencia puntual. A continuaci\'on pediremos m\'as suavidad para subir al nivel de convergencia uniforme y, adem\'as, obtener tasas expl\'icitas.
+
+\section{Convergencia uniforme para funciones suaves}
+
+Ahora subimos la exigencia: no nos alcanza con convergencia punto a punto, queremos convergencia uniforme y una cota expl\'icita del error. Para eso necesitamos preparar el terreno funcional con completitud en norma supremo y el criterio $M$ de Weierstrass, que permiten controlar series de funciones de forma robusta. Esta maquinaria no es s\'olo t\'ecnica: volver\'a a aparecer cuando estudiemos el rec\'iproco de regularidad.
 
 \begin{lemma}[Completitud en norma supremo]\label{lem:completitud_supremo}
 Sea $E$ un conjunto y sea $B(E)$ el espacio de funciones acotadas $f:E\to\mathbb C$, con norma
@@ -6599,6 +6719,8 @@ Además,
 de donde la convergencia absoluta es uniforme. Si cada $u_k$ es continua, el límite uniforme de sumas parciales continuas es continuo.
 \end{proof}
 
+Con estas dos herramientas funcionales en mano, volvemos al problema de Fourier: ahora s\'i podemos traducir decaimiento de coeficientes en convergencia uniforme de la serie y en una cota cuantitativa del error.
+
 \begin{theorem}[Convergencia uniforme y cota cuantitativa]\label{thm:convergencia_uniforme_fourier}
 Sea $f\in C^n_{per}([0,2\pi])$ con $n\ge 1$. Entonces
 \[
@@ -6648,8 +6770,145 @@ Finalmente,
 que es la cota buscada.
 \end{proof}
 
-\begin{theorem}[Parseval para funciones $C^1_{per}$]\label{thm:parseval_C1_per}
-Sea $f\in C^1_{per}([0,2\pi])$ y sea
+\begin{remark}[Mejora tipo Jackson]
+Bajo las mismas hip\'otesis, un resultado m\'as fino de teor\'ia de aproximaci\'on (debido a Jackson) da la tasa \emph{\'optima} en norma uniforme:
+\[
+\|f-S_N(f)\|_\infty = O(N^{-n}).
+\]
+Es decir, la cota del Teorema~\ref{thm:convergencia_uniforme_fourier} no es \'optima en la potencia de $N$, aunque se obtiene con una demostraci\'on elemental basada en decaimiento de coeficientes y Cauchy--Schwarz.
+\end{remark}
+
+Hasta este punto trabajamos en norma supremo. El pr\'oximo salto ser\'a pasar al lenguaje $L^2$ y preparar el camino para Parseval, apoy\'andonos en densidad de polinomios trigonom\'etricos.
+
+
+\section{Densidad de trigonom\'etricas e igualdad de Parseval}
+
+Hasta ahora hemos visto resultados de convergencia puntual y uniforme, pero no hemos tocado la densidad de los polinomios trigonom\'etricos en espacios de funciones, que es fundamental para establecer resultados como la identidad de Parseval. El recorrido es el siguiente: una versión compleja del Teorema de Stone--Weierstrass nos da densidad uniforme de las trigonométricas en el espacio de funciones continuas y peri\'odicas, de all\'i pasamos a densidad en $L^2$ para funciones continuas a trozos, y con esa densidad cerramos la identidad de Parseval usando proyecci\'on ortogonal y mejor aproximaci\'on.
+
+\begin{theorem}[Stone--Weierstrass complejo (reducci\'on al caso real)]\label{thm:stone_weierstrass_complejo}
+Sea $K$ un compacto y sea $\mathcal A\subset C(K;\mathbb C)$ una sub\'algebra tal que:
+\begin{enumerate}
+\item contiene a las constantes,
+\item separa puntos de $K$,
+\item es cerrada por conjugaci\'on compleja ($f\in\mathcal A\Rightarrow \overline f\in\mathcal A$).
+\end{enumerate}
+Entonces $\mathcal A$ es densa en $C(K;\mathbb C)$ en norma supremo.
+\end{theorem}
+
+\begin{proof}
+Definimos
+\[
+\mathcal A_{\mathbb R}:=\{u\in\mathcal A:\ u\text{ es real-valuada}\}\subset C(K;\mathbb R).
+\]
+Como $\mathcal A$ es sub\'algebra y estable por conjugaci\'on, para todo $f\in\mathcal A$ se tiene
+\[
+\operatorname{Re}f=\frac{f+\overline f}{2}\in\mathcal A_{\mathbb R},
+\qquad
+\operatorname{Im}f=\frac{f-\overline f}{2i}\in\mathcal A_{\mathbb R}.
+\]
+Luego $\mathcal A_{\mathbb R}$ es una sub\'algebra real que contiene constantes.
+
+Verifiquemos separaci\'on de puntos. Si $x\neq y$, por hip\'otesis existe $f\in\mathcal A$ con $f(x)\neq f(y)$. Entonces al menos una de las dos diferencias
+\[
+\operatorname{Re}f(x)-\operatorname{Re}f(y),
+\qquad
+\operatorname{Im}f(x)-\operatorname{Im}f(y)
+\]
+es no nula. Por lo tanto, $\mathcal A_{\mathbb R}$ separa puntos de $K$.
+
+Aplicando Stone--Weierstrass real, $\mathcal A_{\mathbb R}$ es densa en $C(K;\mathbb R)$ para $\|\cdot\|_\infty$.
+
+Sea ahora $g\in C(K;\mathbb C)$, $g=u+iv$ con $u,v\in C(K;\mathbb R)$. Dado $\varepsilon>0$, elegimos $u_\varepsilon,v_\varepsilon\in\mathcal A_{\mathbb R}$ tales que
+\[
+\|u-u_\varepsilon\|_\infty<\frac{\varepsilon}{2},
+\qquad
+\|v-v_\varepsilon\|_\infty<\frac{\varepsilon}{2}.
+\]
+Como $u_\varepsilon,v_\varepsilon\in\mathcal A\subset C(K;\mathbb C)$, tambi\'en
+\[
+g_\varepsilon:=u_\varepsilon+i v_\varepsilon\in\mathcal A.
+\]
+Adem\'as,
+\[
+\|g-g_\varepsilon\|_\infty
+\le \|u-u_\varepsilon\|_\infty+\|v-v_\varepsilon\|_\infty
+<\varepsilon.
+\]
+Concluimos que $\overline{\mathcal A}^{\|\cdot\|_\infty}=C(K;\mathbb C)$.
+\end{proof}
+
+Este resultado abstracto se vuelve concreto en el c\'irculo unitario: all\'i los monomios $z^k$ se identifican exactamente con los modos exponenciales de Fourier.
+
+\begin{corollary}[Densidad uniforme de polinomios trigonom\'etricos]\label{cor:densidad_trig_uniforme_stone}
+Sea
+\[
+\mathcal T:=\left\{\sum_{|k|\le N}c_k e^{ikx}:\ N\in\mathbb N,\ c_k\in\mathbb C\right\}.
+\]
+Entonces $\mathcal T$ es denso en $C_{per}([0,2\pi];\mathbb C)$ para la norma supremo.
+\end{corollary}
+
+\begin{proof}
+Identificamos $C_{per}([0,2\pi];\mathbb C)$ con $C(\mathbb T;\mathbb C)$, donde
+\[
+\mathbb T:=\{z\in\mathbb C:|z|=1\},\qquad z=e^{ix}.
+\]
+En $C(\mathbb T;\mathbb C)$ consideramos la sub\'algebra
+\[
+\mathcal A:=\operatorname{span}\{z^k:\ k\in\mathbb Z\}.
+\]
+Contiene constantes, es cerrada por conjugaci\'on porque $\overline{z^k}=z^{-k}$ en $\mathbb T$, y separa puntos porque $z\mapsto z$ separa puntos en $\mathbb T$. Por el Teorema~\ref{thm:stone_weierstrass_complejo}, $\mathcal A$ es densa en $C(\mathbb T;\mathbb C)$. Volviendo a la variable $x$, esto es exactamente la densidad uniforme de $\mathcal T$ en $C_{per}([0,2\pi];\mathbb C)$.
+\end{proof}
+
+Con la densidad uniforme establecida en $C_{per}$, el paso siguiente es llevar la aproximaci\'on al marco $L^2$ para funciones continuas a trozos, que es el entorno natural en que vamos a formular Parseval.
+
+\begin{theorem}[Densidad trigonom\'etrica en $L^2$ (marco Riemann)]\label{thm:densidad_trig_L2_riemann}
+Sea $f:[0,2\pi]\to\mathbb C$ una funci\'on $2\pi$-peri\'odica y continua a trozos. Entonces, para todo $\varepsilon>0$, existe $p\in\mathcal T$ tal que
+\[
+\|f-p\|_{L^2}<\varepsilon.
+\]
+\end{theorem}
+
+\begin{proof}
+Como $f$ es continua a trozos en un intervalo compacto, es acotada: existe $M>0$ con $|f(x)|\le M$.
+
+Sean $x_1,\dots,x_m$ los puntos de discontinuidad de $f$ (finitos). Dado $\delta>0$, elegimos intervalos abiertos disjuntos $I_j$ centrados en $x_j$ tales que
+\[
+\sum_{j=1}^m |I_j|<\delta.
+\]
+Definimos $h:[0,2\pi]\to\mathbb C$ as\'i: $h=f$ fuera de $\bigcup_j I_j$, y en cada $I_j$ conectamos linealmente los valores de $f$ en los extremos de $I_j$. Entonces $h\in C_{per}([0,2\pi];\mathbb C)$ y
+\[
+|f-h|\le 2M,
+\qquad
+\operatorname{supp}(f-h)\subset\bigcup_{j=1}^m I_j.
+\]
+Por lo tanto,
+\[
+\|f-h\|_{L^2}^2=\int_0^{2\pi}|f-h|^2
+\le 4M^2\sum_{j=1}^m|I_j|<4M^2\delta.
+\]
+Tomando $\delta<\varepsilon^2/(16M^2)$ obtenemos
+\[
+\|f-h\|_{L^2}<\frac{\varepsilon}{2}.
+\]
+
+Por el Corolario~\ref{cor:densidad_trig_uniforme_stone}, existe $p\in\mathcal T$ tal que
+\[
+\|h-p\|_\infty<\frac{\varepsilon}{2\sqrt{2\pi}}.
+\]
+Luego
+\[
+\|h-p\|_{L^2}\le \sqrt{2\pi}\,\|h-p\|_\infty<\frac{\varepsilon}{2}.
+\]
+Finalmente,
+\[
+\|f-p\|_{L^2}\le \|f-h\|_{L^2}+\|h-p\|_{L^2}<\varepsilon.
+\]
+\end{proof}
+
+Esta densidad en norma $L^2$ es exactamente la pieza que faltaba: combinada con la propiedad de proyecci\'on ortogonal, permite hacer desaparecer el resto en la identidad de energ\'ia y llegar a Parseval.
+
+\begin{theorem}[Parseval para funciones continuas a trozos]\label{thm:parseval_C1_per}
+Sea $f:[0,2\pi]\to\mathbb C$ una funci\'on $2\pi$-peri\'odica y continua a trozos. Definimos
 \[
 S_Nf(x)=\sum_{|k|\le N}\hat f_k e^{ikx},
 \qquad
@@ -6666,51 +6925,39 @@ Sea
 \[
 \mathcal T_N:=\operatorname{span}\{e^{ikx}:|k|\le N\}.
 \]
-Si $p(x)=\sum_{|k|\le N}a_k e^{ikx}\in\mathcal T_N$, entonces
+La interpretaci\'on de $S_N f$ como proyecci\'on ortogonal sobre $\mathcal T_N$ y su propiedad de mejor aproximaci\'on ya fueron demostradas en el Teorema~\ref{thm:mejor_aprox}. En particular, para todo $p\in\mathcal T_N$,
 \[
-\begin{aligned}
-(f-S_Nf,p)
-&=\sum_{|k|\le N}\overline{a_k}\,(f-S_Nf,e^{ikx})\\
-&=\sum_{|k|\le N}\overline{a_k}\,\big((f,e^{ikx})-(S_Nf,e^{ikx})\big)=0,
-\end{aligned}
+\|f-p\|_{L^2}^2=\|f-S_Nf\|_{L^2}^2+\|S_Nf-p\|_{L^2}^2\ge \|f-S_Nf\|_{L^2}^2.
 \]
-porque $(S_Nf,e^{ikx})=(f,e^{ikx})$ para $|k|\le N$ por definición de $\hat f_k$. Por lo tanto,
-$f-S_Nf\perp\mathcal T_N$, es decir, $S_Nf$ es la proyección ortogonal de $f$ sobre $\mathcal T_N$.
 
-Aplicando Pitágoras en esta descomposición ortogonal,
+Adem\'as, por ortogonalidad de los exponentiales complejos,
 \[
-\|f\|_{L^2}^2=\|S_Nf\|_{L^2}^2+\|f-S_Nf\|_{L^2}^2.
+\|S_Nf\|_{L^2}^2=2\pi\sum_{|k|\le N}|\hat f_k|^2,
 \]
-Además, por ortogonalidad de la base exponencial,
-\[
-\|S_Nf\|_{L^2}^2=2\pi\sum_{|k|\le N}|\hat f_k|^2.
-\]
-Luego
+y por Pit\'agoras para la descomposici\'on ortogonal $f=S_Nf+(f-S_Nf)$,
 \[
 \|f\|_{L^2}^2=2\pi\sum_{|k|\le N}|\hat f_k|^2+\|f-S_Nf\|_{L^2}^2.
 \]
 
-Como $f\in C^1_{per}$, por el Teorema~\ref{thm:convergencia_uniforme_fourier} (con $n=1$) se tiene $\|f-S_Nf\|_\infty\to 0$. En consecuencia,
+Sea ahora $\varepsilon>0$. Por el Teorema~\ref{thm:densidad_trig_L2_riemann}, existe un polinomio trigonom\'etrico
 \[
-\|f-S_Nf\|_{L^2}\le \sqrt{2\pi}\,\|f-S_Nf\|_\infty\xrightarrow[N\to\infty]{}0.
+p(x)=\sum_{|k|\le m}c_k e^{ikx}
 \]
-Pasando al límite en la igualdad anterior, obtenemos
+tal que $\|f-p\|_{L^2}<\varepsilon$. Para $N\ge m$, se tiene $p\in\mathcal T_N$, y por la propiedad anterior
+\[
+\|f-S_Nf\|_{L^2}\le \|f-p\|_{L^2}<\varepsilon.
+\]
+Por lo tanto, $\|f-S_Nf\|_{L^2}\to 0$.
+
+Pasando al l\'imite en la igualdad anterior, obtenemos
 \[
 \|f\|_{L^2}^2=2\pi\sum_{k\in\mathbb Z}|\hat f_k|^2.
 \]
 \end{proof}
 
-\begin{remark}[Mejora tipo Jackson]
-Bajo las mismas hip\'otesis, un resultado m\'as fino de teor\'ia de aproximaci\'on (debido a Jackson) da la tasa \emph{\'optima} en norma uniforme:
-\[
-\|f-S_N(f)\|_\infty = O(N^{-n}).
-\]
-Es decir, la cota del Teorema~\ref{thm:convergencia_uniforme_fourier} no es \'optima en la potencia de $N$, aunque se obtiene con una demostraci\'on elemental basada en decaimiento de coeficientes y Cauchy--Schwarz.
-\end{remark}
+\section{Derivación término a término de la serie de Fourier}
 
-\begin{remark}[Qué aporta el teorema de convergencia $C^1$]
-El Teorema~\ref{thm:conv_C1} garantiza que, para $f\in C^1_{per}$, la serie de Fourier converge a $f$. Sin embargo, por sí solo no da una tasa explícita del error $\|f-S_Nf\|_\infty$ en función de $N$. La cota cuantitativa del Teorema~\ref{thm:convergencia_uniforme_fourier} aporta justamente esa información de velocidad de convergencia.
-\end{remark}
+Volvemos aqu\'i a una pregunta muy natural de clase: \textit{\'se puede derivar la serie de Fourier t\'ermino a t\'ermino?} La respuesta es s\'i bajo hip\'otesis de regularidad, y la justificaci\'on se apoya en un criterio de derivaci\'on bajo l\'imite. Ese criterio se combina con dos resultados que ya tenemos en la mochila: convergencia uniforme para la serie de $f'$ y convergencia puntual de $S_N f$ hacia $f$.
 
 \begin{lemma}[Criterio funcional de derivación bajo el límite]\label{lem:criterio_funcional_derivacion}
 Sea $(F_N)_{N\ge 1}\subset C^1([0,2\pi])$. Supongamos que:
@@ -6743,6 +6990,8 @@ Tomando supremo en $x$:
 \]
 Luego $F_N\to F$ uniformemente y ya vimos que $F'=g$.
 \end{proof}
+
+Con este criterio preparado, la demostraci\'on de derivaci\'on t\'ermino a t\'ermino se vuelve transparente: basta controlar uniformemente las derivadas de las sumas parciales y fijar el valor en un punto.
 
 \begin{theorem}[Derivación término a término de la serie de Fourier]\label{thm:derivacion_termino_termino_fourier}
 Sea $f\in C^2_{per}([0,2\pi])$. Entonces:
@@ -6785,6 +7034,13 @@ f'(x)=\lim_{N\to\infty}(S_N f)'(x)=\lim_{N\to\infty}\sum_{|k|\le N} ik\,\hat f_k
 \]
 y la convergencia de la serie de derivadas es uniforme.
 \end{proof}
+
+Como cierre conceptual, invertimos ahora la direcci\'on del razonamiento: en vez de partir de suavidad para deducir decaimiento, partimos de decaimiento para reconstruir suavidad.
+
+
+\section{Recíproco de suavidad por decaimiento de coeficientes}
+
+Hasta ahora vimos que la suavidad implica decaimiento de coeficientes; en esta secci\'on recorremos el camino inverso. La idea es mostrar que, si los coeficientes caen lo suficientemente r\'apido, entonces la funci\'on necesariamente hereda regularidad. T\'ecnicamente, el argumento encadena el criterio $M$ de Weierstrass (para asegurar convergencia uniforme de las series derivadas formales) con el criterio de derivaci\'on bajo l\'imite (para identificar una a una las derivadas reales de la suma).
 
 \begin{theorem}[Converso de suavidad por decaimiento de coeficientes]\label{thm:converso_suavidad_decaimiento}
 Sea $m\in\mathbb N\cup\{0\}$ y
@@ -6832,27 +7088,13 @@ g_0^{(j)}=g_j\qquad(0\le j\le m).
 Como $g_0$ es justamente la suma de la serie original, $g_0=f$, y el resultado queda probado.
 \end{proof}
 
-\begin{corollary}[Criterio práctico de suavidad por cota de decaimiento]
-Sea $m\in\mathbb N\cup\{0\}$. Si
-\[
-|c_k|\le \frac{C}{(1+|k|)^{m+1+\varepsilon}}
-\quad\text{con }\varepsilon>0,
-\]
-entonces la serie trigonométrica $\sum_{k\in\mathbb Z} c_k e^{ikx}$ define una función de clase $C^m_{per}$.
-\end{corollary}
+Tomado junto con los teoremas de decaimiento del cuerpo principal, este resultado cierra el c\'irculo: regularidad y velocidad de ca\'ida de coeficientes se describen mutuamente.
 
-\begin{proof}
-La hipótesis implica
-\[
-(1+|k|)^m|c_k|\le \frac{C}{(1+|k|)^{1+\varepsilon}},
-\]
-y como $\sum_k (1+|k|)^{-1-\varepsilon}<\infty$, se cumple la hipótesis del Teorema~\ref{thm:converso_suavidad_decaimiento}.
-\end{proof}
+\section{Comentarios finales}
 
-\begin{remark}[Resultados finos: convergencia y derivación término a término]
-Los resultados demostrados en esta sección cubren el marco $C^n_{per}$, pero existen teoremas más ajustados:
-\begin{itemize}
-\item \textbf{Convergencia de la serie de Fourier:}
+Para cerrar el ap\'endice, conviene tomar perspectiva: los resultados demostrados aqu\'i cubren el marco que necesitamos para aplicaciones num\'ericas, pero la teor\'ia de Fourier se extiende mucho m\'as all\'a cuando se relajan hip\'otesis de regularidad y se trabaja en espacios funcionales m\'as generales.
+
+Los resultados demostrados en esta sección cubren el marco de funciones suaves a trozos, pero existen teoremas más ajustados:
 \begin{itemize}
 \item (Dirichlet--Jordan) Si $f$ es de variación acotada, entonces
 \[
@@ -6862,13 +7104,8 @@ S_Nf(x)\to \frac{f(x^+)+f(x^-)}{2}
 \item (Carleson--Hunt) Si $f\in L^p([0,2\pi])$ con $1<p<\infty$, entonces $S_Nf(x)\to f(x)$ para casi todo $x$.
 \item Este umbral es esencialmente óptimo: existe $f\in L^1([0,2\pi])$ cuya serie de Fourier diverge casi en todo punto (Kolmogorov).
 \end{itemize}
-\item \textbf{Hipótesis mínimas naturales para derivar término a término:}
-\begin{itemize}
-\item Para la identidad de coeficientes $\widehat{f'}_k=ik\hat f_k$ basta que $f$ sea absolutamente continua, $2\pi$-periódica y $f'\in L^1([0,2\pi])$.
-\item Para justificar rigurosamente la derivación de la serie, alcanza el criterio del Lema~\ref{lem:criterio_funcional_derivacion}: convergencia en un punto de $S_Nf$ y convergencia uniforme de $(S_Nf)'$ en $[0,2\pi]$. En particular, la hipótesis $f\in C^2_{per}$ del Teorema~\ref{thm:derivacion_termino_termino_fourier} garantiza este criterio en forma directa.
-\end{itemize}
-\end{itemize}
-\end{remark}
+
+Estas tres referencias marcan una frontera conceptual \`util: desde el punto de vista num\'erico, nuestras hip\'otesis de suavidad son naturales y productivas; desde el punto de vista anal\'itico, el comportamiento de las series de Fourier en baja regularidad exige herramientas mucho m\'as finas.
 
 
 
