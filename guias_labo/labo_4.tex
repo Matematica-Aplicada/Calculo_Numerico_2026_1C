@@ -52,20 +52,17 @@ Para cada $n$:
 \item Grafique en una misma figura $f$ e $I_n f$ para $n=4,6,8,10$.
 \end{itemize}
 
-Reporte una tabla con $\|f-I_n f\|_\infty$ (en la malla fina interior).
+Reporte una tabla con $\|f-I_n f\|_\infty$ (en la malla fina interior). Repita para el error de interpolación de $f'$.
 
-\item \textbf{Cuadratura por trapecios.}
+\item \textbf{Cuadratura por trapecios para funciones suaves periódicas.}
 
 Para cada $n$:
 \begin{itemize}
-\item Aproxime
+\item Mediante la regla de trapecios compuesta con $n$ subintervalos, calcule
 \[
 I=\int_0^{2\pi}e^{\sin x}\,dx
 \]
-mediante la regla de trapecios compuesta con $n$ subintervalos:
-\[
-Q_n=\frac{2\pi}{n}\sum_{j=0}^{n-1}f\!\left(\frac{2\pi j}{n}\right).
-\]
+
 \item Tome como referencia $I_{\mathrm{ref}}=Q_{n_{\mathrm{ref}}}$ con $n_{\mathrm{ref}}$ grande (por ejemplo $n_{\mathrm{ref}}=2^{14}$ o mayor).
 \item Calcule el error $E_n=|I_{\mathrm{ref}}-Q_n|$ para $n=4,6,8,10$.
 \item Grafique la función y el área bajo los trapecios para cada $n$.
