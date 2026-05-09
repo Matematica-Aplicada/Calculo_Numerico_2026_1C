@@ -41,19 +41,6 @@ f(x)=e^{\sin x},\qquad x\in[0,2\pi].
 Trabaje con $n=4,6,8,10$.
 
 \begin{enumerate}[(a)]
-\item \textbf{Serie de Fourier e interpolación trigonométrica.}
-
-Para cada $n$:
-\begin{itemize}
-\item Muestree $f$ en la grilla uniforme $x_j=2\pi j/(2n+1)$, $j=0,\dots,2n$.
-\item Calcule numéricamente los coeficientes de Fourier discretos (por DFT/FFT).
-\item Construya el interpolante trigonométrico $I_n f$.
-\item Evalúe el error de interpolación en el interior del intervalo, por ejemplo sobre una malla fina en $[\delta,2\pi-\delta]$ con $\delta>0$ fijo pequeño.
-\item Grafique en una misma figura $f$ e $I_n f$ para $n=4,6,8,10$.
-\end{itemize}
-
-Reporte una tabla con $\|f-I_n f\|_\infty$ (en la malla fina interior). Repita para el error de interpolación de $f'$.
-
 \item \textbf{Cuadratura por trapecios para funciones suaves periódicas.}
 
 Para cada $n$:
@@ -69,6 +56,19 @@ I=\int_0^{2\pi}e^{\sin x}\,dx
 \end{itemize}
 
 Comente por qué, aunque los errores locales en cada trapecio son visibles, el error global puede ser de orden mucho mejor para funciones periódicas suaves.
+
+\item \textbf{Serie de Fourier e interpolación trigonométrica.}
+
+Para cada $n$:
+\begin{itemize}
+\item Muestree $f$ en la grilla uniforme $x_j=2\pi j/(2n+1)$, $j=0,\dots,2n$.
+\item Calcule numéricamente los coeficientes de Fourier discretos (por DFT/FFT).
+\item Construya el interpolante trigonométrico $I_n f$.
+\item Evalúe el error de interpolación en el interior del intervalo, por ejemplo sobre una malla fina en $[\delta,2\pi-\delta]$ con $\delta>0$ fijo pequeño.
+\item Grafique en una misma figura $f$ e $I_n f$ para $n=4,6,8,10$.
+\end{itemize}
+
+Reporte una tabla con $\|f-I_n f\|_\infty$ (en la malla fina interior). Repita para el error de interpolación de $f'$.
 \end{enumerate}
 \fej
 
