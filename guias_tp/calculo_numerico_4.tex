@@ -45,7 +45,7 @@
 \[
 f(x)=\sum_{k\in\mathbb Z} \frac{1}{(1+|k|)^2} e^{ikx},
 \]
-Usando la fórmula del error de truncamiento espectral, determine el menor $N$ que garantice $\|f-S_N(f)\|_{L^2(-\pi,\pi)}<10^{-3}$.
+Usando la fórmula del error de truncamiento espectral, determine $N$ que garantice $\|f-S_N(f)\|_{L^2(-\pi,\pi)}<10^{-3}$.
 
 \fej
 
@@ -55,16 +55,7 @@ S_N(f)(x)=\sum_{|k|\le N} c_k e^{ikx},
 \qquad
 D_N(x):=(S_N(f))'(x)=\sum_{|k|\le N} ik\,c_k e^{ikx}.
 \]
-\begin{enumerate}[(a)]
-    \item Concluya la expresión del error de truncamiento de la derivada:
-    \[
-    \|f'-D_N\|_{L^2(-\pi,\pi)}^2=2\pi\sum_{|k|>N}k^2|c_k|^2.
-    \]
-    \item Para la misma función del ejercicio anterior, determine el menor $N$ que garantice
-    \[
-    \|f'-D_N\|_{L^2(-\pi,\pi)}<10^{-3}.
-    \]
-\end{enumerate}
+Para la función del ejercicio anterior, determine $N$ que garantice $\|f'-D_N\|_{L^2(-\pi,\pi)}<10^{-3}$.
 \fej
 
 \bej 
@@ -272,19 +263,30 @@ S_N^{(M)}(y)(t):=\sum_{|k|\le N}H_k\tilde f_k^{(M)}e^{ikt}.
 \fej
 
 \bej
-Considere
+Consideramos dos métodos para calcular la integral impropia oscilatoria
 \[
 I(\omega):=\int_{-\infty}^{\infty}\sin(\omega t^2)\,dt,
 \qquad \omega>0,
 \]
-Compare los siguientes dos metodos de truncamiento de la integral impropia oscilatoria:
+que involucran una truncación dura y una truncación con ventana suave:
 \[
 I_T^{\sharp}:=\int_{-T}^{T}\sin(\omega t^2)\,dt,
 \qquad
-I_T^{w}:=\int_{-T}^{T}W_T(t)\sin(\omega t^2)\,dt,
+I_T^{w}:=\int_{-T}^{T}S_{c,T}(t)\sin(\omega t^2)\,dt,
 \]
-donde $W_T\in C^{\infty}([-T,T])$ está dada, $W_T\equiv 1$ en la zona central y se anula junto con todas sus derivadas en los bordes. En ambas integrales truncadas se aplica la regla de trapecios compuesta con $N$ nodos uniformes.
+con $0<c<1$, y donde la familia suave $S_{c,T}$ está dada por
+\begin{equation}
+\label{S_def}
+S_{c,T}(t)=
+\begin{cases}
+1, & \text{si } |t|\le c T,\\
+\exp\!\left(\dfrac{2e^{-1/u}}{u-1}\right), & \text{si } c T<|t|<T,\quad u=\dfrac{|t|-c T}{T-c T},\\
+0, & \text{si } |t|\ge T.
+\end{cases}
+\end{equation}
+Con esta elección, $S_{c,T}\in C^{\infty}(\mathbb R)$, vale $S_{cT,T}\equiv 1$ en la región central $|t|\le cT$, se anula para $|t|\ge T$, y todas sus derivadas se anulan en $|t|=T$.
 
+En ambas integrales truncadas se aplica la regla de trapecios compuesta con $N$ nodos uniformes.
 \begin{enumerate}[(a)]
 \item Muestre las descomposiciones
 \[
