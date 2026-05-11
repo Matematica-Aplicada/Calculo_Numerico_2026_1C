@@ -3106,29 +3106,27 @@ Por lo tanto, las evaluaciones de $m_1$ y $m_2$ difieren en al menos $n - (k-1) 
 
 \chapter{Series de Fourier Generalizadas}\label{cap_fourier_generalizado}
 
-En este capítulo queremos obtener representaciones de funciones en bases de funciones, extendiendo la fórmula de proyección \eqref{proyeccion_ortogonal_appendix} utilizada en el capítulo \ref{cap_aln} para el estudio del problema de la mejor aproximación lineal en el sentido de mínimos cuadrados, a espacios de dimensión infinita. La idea es la misma que en el caso finito-dimensional: si $\{\phi_k\}_{k \in \mathcal{I}}$ es una familia ortonormal en un espacio de funciones dotado de un producto interno apropiado, podemos definir una representación
-\[
-f \;\sim\; \sum_{k \in \mathcal{I}} (f, \phi_k) \phi_k,
-\]
-que llamamos \emph{serie} de $f$ en la base $\{\phi_k\}$. Los coeficientes de esta serie son las coordenadas de $f$ en la base $\{\phi_k\}$, y se denominan \textit{coeficientes de Fourier generalizados} de $f$ (en la base dada).
+En este capítulo queremos aproximar funciones en bases de funciones, extendiendo la fórmula de proyección ortogonal del capítulo~\ref{cap_aln} al caso de dimensión infinita. Para hacerlo de manera sistemática, necesitamos un marco general en espacios con producto interno donde existan sistemas ortogonales de funciones, en completa analogía con las bases ortogonales de vectores en dimensión finita.
 
-A diferencia del caso finito-dimensional, esta suma es en general infinita y surgen dos preguntas centrales. La primera es la convergencia: ¿en qué sentido tiende la serie completa a $f$? Y si la serie converge, la segunda pregunta es ¿Con qué velocidad lo hace? Equivalentemente, si retenemos sólo los primeros $N$ términos de la representación, ¿cuán grande es el error $\|f - S_N(f)\|$, donde $S_N(f)$ es la suma parcial de los primeros $N$ términos? Como veremos, las respuestas dependen fundamentalmente de la regularidad de $f$ y de la elección de la base, y su análisis es el hilo conductor de este capítulo.
+El marco necesario es el de los espacios de pre-Hilbert, que son espacios vectoriales con producto interno, pero sin suponer completitud (no necesariamente espacios de Hilbert). Una vez fijado ese marco abstracto, lo especializaremos a bases concretas (Fourier, Chebyshev y otras). 
 
-\section{Series de Fourier de funciones suaves periódicas}\label{sec:series_fourier_suaves}
-
-La teoría de series de Fourier es un área muy rica y profunda, con una historia que se remonta a los trabajos de Joseph Fourier a comienzos del siglo XIX. Fourier introdujo estas expansiones en su estudio de la conducción del calor, modelada por
+Históricamente, las series de Fourier nacen en el estudio de la conducción del calor. Fourier consideró la ecuación
 \[
 u_t = \alpha u_{xx},
 \]
-donde $u(x,t)$ representa la temperatura en el punto $x$ y en el tiempo $t$. Mediante separación de variables, obtuvo soluciones en términos de senos y cosenos y postuló que funciones muy generales podían representarse por series trigonométricas. Esa intuición fue extraordinariamente fecunda, aunque varias afirmaciones iniciales eran todavía imprecisas, y algunas formulaciones resultaron ser falsas sin hipótesis adicionales.
+y, mediante separación de variables, obtuvo expansiones en senos y cosenos para describir la evolución temporal de la temperatura. Esa intuición fue extraordinariamente fecunda, aunque su formalización rigurosa (convergencia puntual, convergencia en norma, comportamiento en discontinuidades) tomó varias décadas.
 
-El desarrollo riguroso de la convergencia de series de Fourier (condiciones de convergencia puntual, convergencia en distintas normas, comportamiento en discontinuidades, etc.) tomó muchas décadas y consolidó una parte central del análisis moderno. En este curso nos concentramos en las consecuencias y aplicaciones numéricas de esta teoría. Trabajaremos principalmente con funciones periódicas suficientemente suaves (con $n$ derivadas continuas, $n \ge 0$), donde se pueden demostrar de manera relativamente elemental los resultados centrales: definición de coeficientes, estimaciones de decaimiento, convergencia puntual y uniforme, la identidad de Parseval y cotas de error de truncamiento. Por una cuestión de espacio, deferiremos varias de estas demostraciones al Apéndice \ref{app_convergencia_fourier}, que incluye un compendio de resultados de convergencia que cubre funciones al menos continuas a trozos (integrables de Riemann), sin requerir el uso de la integral de Lebesgue.
+La perspectiva actual enmarca ese desarrollo dentro de una teoría unificada de expansiones ortogonales: las series de Fourier son un caso particular de una familia más amplia de representaciones por proyección (Chebyshev y otras bases), con una arquitectura común de coeficientes, sumas parciales, densidad y estimación del error de truncamiento. En este capítulo seguimos precisamente esa lógica: primero el marco general y luego las especializaciones concretas.
 
-En esta sección trabajamos con funciones de variable real y valores complejos,
+\begin{definition}[Espacio de pre-Hilbert]
+Un espacio de pre-Hilbert es un espacio vectorial $V$ sobre $\mathbb C$ (o $\mathbb R$) provisto de un producto interno $\langle\cdot,\cdot\rangle$. En este capítulo reservamos la letra $V$ para el espacio abstracto.
+\end{definition}
+
+En este capítulo trabajamos con funciones de variable real y valores complejos,
 \[
-f:[0,2\pi]\to\mathbb{C},\qquad f=u+iv,
+f:[a,b]\to\mathbb{C},\qquad f=u+iv,
 \]
-donde $u,v:[0,2\pi]\to\mathbb{R}$.
+donde $u,v:[a,b]\to\mathbb{R}$.
 
 \begin{remark}[Funciones a valores complejos vs. funciones de variable compleja]
 Cuando escribimos $f:[a,b]\to\mathbb{C}$, la variable es real. Esto no es lo mismo que una función $f:\mathbb{C}\to\mathbb{C}$ de variable compleja. En consecuencia, tanto las derivadas como las integrales de funciones a valores complejos se entienden componente a componente: si $f=u+iv$ con $u,v$ reales, entonces
@@ -3139,59 +3137,77 @@ f'=u'+iv',
 \]
 \end{remark}
 
-\begin{definition}[Espacio $C^n_{per}$ complejo periódico]
-Sea $n\in\mathbb{N}\cup\{0\}$. Diremos que $f:[0,2\pi]\to\mathbb{C}$ pertenece a $C^n_{per}([0,2\pi];\mathbb{C})$ si, al escribir $f=u+iv$ con $u,v:[0,2\pi]\to\mathbb{R}$, se cumple $u,v\in C^n([0,2\pi])$ y
+\begin{definition}[Producto interno con peso]
+Dado un intervalo $(a,b)$ y una función de peso $w(x) > 0$ integrable, el producto interno con peso es
 \[
-f^{(p)}(0)=f^{(p)}(2\pi),\qquad 0\le p\le n-1,
+\langle f,g\rangle_w = \int_a^b f(x)\,\overline{g(x)}\,w(x)\,dx.
 \]
-donde $f^{(p)}:=u^{(p)}+iv^{(p)}$.
+En el caso real, la barra de conjugación se omite.
 \end{definition}
 
-La condición de periodicidad hasta orden $n-1$ garantiza que la extensión periódica de $f$ a todo $\mathbb{R}$ es de clase $C^{n-1}$.
-
-\subsection{Producto interno, norma cuadrática y cuadrado integrabilidad}
-
-El espacio $C^n_{per}([0,2\pi];\mathbb{C})$ puede dotarse del producto interno:
-\begin{equation}\label{prod_cont}
-(f,g) = \int_0^{2\pi} f(x)\,\overline{g(x)}\,dx,
-\end{equation}
-donde $\overline{g(x)}$ denota el conjugado complejo.
-
-\begin{definition}[Norma cuadrática]
-La norma asociada al producto interno \eqref{prod_cont} se define por
+\begin{definition}[Norma asociada]
+La norma inducida por $\langle\cdot,\cdot\rangle_w$ se define por
 \[
-\|f\|_2 := \sqrt{(f,f)} = \left(\int_0^{2\pi}|f(x)|^2\,dx\right)^{1/2}.
+\|f\|_w := \sqrt{\langle f,f\rangle_w}.
 \]
 \end{definition}
 
-\subsection{La base exponencial compleja}
+\begin{definition}[Sistema ortonormal, coeficientes y sumas parciales]
+Sea $\{e_k\}_{k\ge 1}\subset V$ un sistema ortonormal, es decir,
+\[
+\langle e_j,e_k\rangle=\delta_{jk}.
+\]
+Para $u\in V$, definimos los coeficientes de Fourier generalizados
+\[
+\widehat u_k:=\langle u,e_k\rangle,
+\]
+y las sumas parciales
+\[
+S_Nu:=\sum_{k=1}^N\widehat u_k\,e_k.
+\]
+Más generalmente, si $\{\varphi_k\}$ es una familia ortogonal no normalizada, los coeficientes de proyección son
+\[
+c_k = \frac{\langle f,\varphi_k\rangle_w}{\|\varphi_k\|_w^2},
+\]
+y la proyección de orden $n$ correspondiente es
+\[
+S_n f = \sum_{k=0}^n c_k\,\varphi_k.
+\]
+\end{definition}
 
-Para cada $N\in\mathbb{N}$, la base de exponenciales complejas es:
+\begin{example}[Exponenciales complejas y series de Fourier]
+Definimos el sistema de funciones $\{e_k\}_{k\in\mathbb Z}$ por
 \begin{equation}\label{bn_complex}
-B_N^{\mathbb{C}} = \left\{ e^{ikx} : k\in\mathbb{Z},\;|k|\le N \right\} \subset C^\infty_{per}([0,2\pi]).
+e_k(x):=e^{ikx},\qquad k\in\mathbb Z.
 \end{equation}
-
-\begin{theorem}[Ortogonalidad de la base exponencial]\label{thm:ortog_complex}
-Para $k, l\in\mathbb{Z}$:
+Para cada $N\in\mathbb N$, definimos
 \[
-(e^{ikx},\,e^{ilx}) = \int_0^{2\pi}e^{i(k-l)x}\,dx =
-\begin{cases} 2\pi & \text{si }k=l,\\ 0 & \text{si }k\ne l. \end{cases}
+V_N^{\mathbb C}:=\operatorname{span}\{e_k:\ |k|\le N\}.
 \]
-En particular, $\|e^{ikx}\|^2 = 2\pi$ para todo $k\in\mathbb{Z}$.
-\end{theorem}
+Con el producto interno estándar (sin pesos):
+\begin{equation}\label{prod_cont}
+(f,g) = \int_0^{2\pi} f(x)\,\overline{g(x)}\,dx.
+\end{equation}
+se tiene, para todo $k,l\in\mathbb{Z}$,
+\begin{equation}\label{eq:ortog_complex}
+(e_k,\,e_l) = \int_0^{2\pi}e^{i(k-l)x}\,dx =
+\begin{cases} 2\pi & \text{si }k=l,\\ 0 & \text{si }k\ne l. \end{cases}
+\end{equation}
+En particular, $\|e_k\|^2 = 2\pi$ para todo $k\in\mathbb{Z}$.
 
-\begin{proof}
-Si $k=l$: $\int_0^{2\pi}1\,dx = 2\pi$. Si $k\ne l$, sea $m=k-l\ne 0$:
+La demostración es inmediata. Si $k=l$: $\int_0^{2\pi}1\,dx = 2\pi$. Si $k\ne l$, sea $m=k-l\ne 0$:
 \[
 \int_0^{2\pi}e^{imx}\,dx = \left[\frac{e^{imx}}{im}\right]_0^{2\pi} = \frac{e^{2\pi im}-1}{im} = 0,
 \]
 pues $e^{2\pi im}=1$ para todo $m\in\mathbb{Z}$.
-\end{proof}
+\end{example}
+
+Con esta familia de funciones ortogonales, la fórmula de proyección ortogonal nos da la expresión de los coeficientes de Fourier complejos, y la serie de Fourier correspondiente a una función $f$.
 
 \begin{definition}[Coeficientes de Fourier complejos, suma parcial y serie de Fourier]\label{def:fourier_compleja}
-Sea $f\in C([0,2\pi];\mathbb{C})$. Sus coeficientes de Fourier complejos (respecto de la familia $\{e^{ikx}\}_{k\in\mathbb{Z}}$) se definen por la fórmula de proyección~\eqref{proyeccion_ortogonal_appendix}:
+Sea $f\in C([0,2\pi];\mathbb{C})$. Sus coeficientes de Fourier complejos (respecto de la familia $\{e_k\}_{k\in\mathbb{Z}}$) se definen por la fórmula de proyección~\eqref{proyeccion_ortogonal_appendix}:
 \begin{equation}\label{coef_fourier_complex}
-\hat{f}_k = \frac{(f,\,e^{ikx})}{\|e^{ikx}\|^2}
+\hat{f}_k = \frac{(f,\,e_k)}{\|e_k\|^2}
 = \frac{1}{2\pi}\int_0^{2\pi}f(x)\,e^{-ikx}\,dx,\qquad k\in\mathbb{Z}.
 \end{equation}
 La suma parcial de Fourier de orden $N$ es
@@ -3203,77 +3219,104 @@ La serie de Fourier de $f$ es
 f(x)\sim\sum_{k=-\infty}^{\infty}\hat f_k\,e^{ikx}.
 \end{equation}
 \end{definition}
-Como $S_Nf$ es la proyección ortogonal de $f$ sobre $\langle B_N^{\mathbb{C}}\rangle$, es el polinomio trigonométrico de grado $\le N$ más cercano a $f$ en norma cuadrática.
+
 
 \begin{theorem}[Propiedad de mejor aproximación]\label{thm:mejor_aprox}
-Sea $f\in C([0,2\pi];\mathbb{C})$ y $N\ge 0$. Para todo polinomio trigonométrico $p=\sum_{|k|\le N}c_k e^{ikx}$:
+Sea $u\in V$ y sea $V_N:=\operatorname{span}\{e_1,\dots,e_N\}$. Entonces, para todo $v\in V_N$:
 \[
-\|f - S_N f\|_2 \le \|f - p\|_2,
+\|u-S_Nu\|\le \|u-v\|.
 \]
-donde $\|\cdot\|_2$ es la norma cuadrática asociada a \eqref{prod_cont}.
 \end{theorem}
 
 \begin{proof}
-Escribimos $p = S_N f + q$ con $q = p - S_N f \in \langle B_N^{\mathbb{C}}\rangle$. Como $f - S_N f \perp \langle B_N^{\mathbb{C}}\rangle$ por construcción de $S_Nf$ como proyección ortogonal, la identidad de Pitágoras da:
+Escribimos $v=S_Nu+q$ con $q\in V_N$. Por ortonormalidad,
 \[
-\|f-p\|_2^2 = \|f-S_N f\|_2^2 + \|q\|_2^2 \ge \|f-S_N f\|_2^2. \qedhere
+\langle u-S_Nu,e_j\rangle=0,\qquad j=1,\dots,N,
+\]
+y por lo tanto $u-S_Nu\perp V_N$. Aplicando Pitágoras:
+\[
+\|u-v\|^2=\|u-S_Nu\|^2+\|q\|^2\ge \|u-S_Nu\|^2.
 \]
 \end{proof}
 
-\begin{theorem}[Equivalencia entre densidad, convergencia en $L^2$ y Parseval]
-Sea $f\in C([0,2\pi];\mathbb C)$. Son equivalentes:
+
+\begin{theorem}[Equivalencia entre densidad, convergencia en norma e identidad de Parseval]\label{thm:equiv_densidad_parseval_general}
+Sea $\{e_k\}_{k\ge 1}$ un sistema ortonormal en un espacio de pre-Hilbert $V$. Son equivalentes:
 \begin{enumerate}
-\item Para todo $\varepsilon>0$ existe un polinomio trigonométrico $p$ tal que $\|f-p\|_2<\varepsilon$.
-\item $\|f-S_Nf\|_2\xrightarrow[N\to\infty]{}0$.
-\item Identidad de Parseval: \[\|f\|_2^2 = 2\pi\sum_{k\in\mathbb Z}|\hat f_k|^2.\]
+\item Densidad: $\overline{\operatorname{span}\{e_k:\ k\ge1\}}=V$.
+\item Convergencia de sumas parciales: para todo $u\in V$, $\|u-S_Nu\|\xrightarrow[N\to\infty]{}0$.
+\item Parseval: para todo $u\in V$, \[\|u\|^2=\sum_{k=1}^{\infty}|\widehat u_k|^2.\]
 \end{enumerate}
 \end{theorem}
 
 \begin{proof}
-\textbf{(1) $\Rightarrow$ (2).} Sea $\varepsilon>0$ y tome $p(x)=\sum_{|k|\le m}c_k e^{ikx}$ con $\|f-p\|_2<\varepsilon$. Para $N\ge m$, como $p\in\mathcal T_N$, por el Teorema~\ref{thm:mejor_aprox}:
+\textbf{(1) $\Rightarrow$ (2).} Sea $u\in V$ y $\varepsilon>0$. Por densidad, existe
 \[
-\|f-S_Nf\|_2\le \|f-p\|_2<\varepsilon.
+v=\sum_{k=1}^m a_ke_k
 \]
-Luego $\|f-S_Nf\|_2\to 0$.
+tal que $\|u-v\|<\varepsilon$. Para $N\ge m$, se tiene $v\in V_N$, y por el Teorema~\ref{thm:mejor_aprox}:
+\[
+\|u-S_Nu\|\le \|u-v\|<\varepsilon.
+\]
+Luego $\|u-S_Nu\|\to 0$.
 
-\textbf{(2) $\Rightarrow$ (3).} Para cada $N$, por ortogonalidad de los exponentiales:
+\textbf{(2) $\Rightarrow$ (3).} Para cada $u\in V$ y cada $N$, como
 \[
-\|f\|_2^2 = 2\pi\sum_{|k|\le N}|\hat f_k|^2 + \|f-S_Nf\|_2^2.
+S_Nu\in V_N:=\operatorname{span}\{e_1,\dots,e_N\},\qquad u-S_Nu\perp V_N,
 \]
-Si $\|f-S_Nf\|_2\to 0$, al pasar al límite se obtiene Parseval.
+y por lo tanto $u-S_Nu\perp S_Nu$. Entonces, por Pit\'agoras,
+\[
+\|u\|^2=\|S_Nu\|^2+\|u-S_Nu\|^2.
+\]
+Adem\'as, como $\{e_k\}$ es ortonormal y $S_Nu=\sum_{k=1}^N\widehat u_k e_k$,
+\[
+\|S_Nu\|^2=\sum_{k=1}^N|\widehat u_k|^2.
+\]
+Sustituyendo, obtenemos la identidad finita de Parseval:
+\[
+\|u\|^2=\sum_{k=1}^N|\widehat u_k|^2+\|u-S_Nu\|^2.
+\]
+Si $\|u-S_Nu\|\to0$, al pasar al límite resulta Parseval.
 
 \textbf{(3) $\Rightarrow$ (2).} De la misma identidad finita,
 \[
-\|f-S_Nf\|_2^2 = \|f\|_2^2 - 2\pi\sum_{|k|\le N}|\hat f_k|^2.
+\|u-S_Nu\|^2 = \|u\|^2-\sum_{k=1}^N|\widehat u_k|^2.
 \]
-Bajo (3), el segundo término converge a $\|f\|_2^2$, luego $\|f-S_Nf\|_2\to 0$.
-
-Finalmente, (2) implica (1) tomando $p=S_Nf$ para $N$ grande.
+Bajo (3), el segundo término converge a $\|u\|^2$, luego $\|u-S_Nu\|\to0$.
+Finalmente, (2) implica (1) porque $S_Nu\in\operatorname{span}\{e_1,\dots,e_N\}$ para todo $N$.
 \end{proof}
 
 \begin{corollary}[Identidad de Parseval para el error de truncamiento]\label{cor:parseval_error_truncamiento}
-Bajo las hipótesis equivalentes del teorema anterior, para todo $N\ge 0$ se cumple
-\begin{equation}\label{eq:parseval_error_truncamiento}
-\|f-S_Nf\|_2^2 = 2\pi\sum_{|k|>N}|\hat f_k|^2.
-\end{equation}
+Bajo las hipótesis del Teorema~\ref{thm:equiv_densidad_parseval_general}, para todo $u\in V$ y todo $N\ge1$ se cumple
+\[
+\|u-S_Nu\|^2=\sum_{k>N}|\widehat u_k|^2.
+\]
 \end{corollary}
 
 \begin{proof}
-Para cada $N$, la identidad finita del teorema anterior da
+La identidad general se obtiene restando
 \[
-\|f\|_2^2 = 2\pi\sum_{|k|\le N}|\hat f_k|^2 + \|f-S_Nf\|_2^2.
-\]
-Usando Parseval,
-\[
-\|f\|_2^2 = 2\pi\sum_{k\in\mathbb Z}|\hat f_k|^2,
-\]
-y restando término a término se obtiene
-\[
-\|f-S_Nf\|_2^2 = 2\pi\sum_{|k|>N}|\hat f_k|^2.
+\|u\|^2=\sum_{k=1}^{\infty}|\widehat u_k|^2
+\quad\text{y}\quad
+\|u\|^2=\sum_{k=1}^{N}|\widehat u_k|^2+\|u-S_Nu\|^2.
 \]
 \end{proof}
 
-En particular, admitiendo la densidad trigonométrica en $L^2$ del Apéndice~\ref{app_convergencia_fourier} (Teorema~\ref{thm:densidad_trig_L2_riemann}), las tres propiedades valen para toda $f$ continua a trozos.
+
+\section{Series de Fourier de funciones suaves periódicas}\label{sec:series_fourier_suaves}
+
+Para caracterizar el error de truncamiento de la serie de Fourier, es necesario imponer condiciones de suavidad a la función $f$. Para ello, introducimos el espacio de funciones periódicas con derivadas continuas.
+
+\begin{definition}[Espacio $C^n_{per}$ complejo periódico]
+Sea $n\in\mathbb{N}\cup\{0\}$. Diremos que $f:[0,2\pi]\to\mathbb{C}$ pertenece a $C^n_{per}([0,2\pi];\mathbb{C})$ si, al escribir $f=u+iv$ con $u,v:[0,2\pi]\to\mathbb{R}$, se cumple $u,v\in C^n([0,2\pi])$ y
+\[
+f^{(p)}(0)=f^{(p)}(2\pi),\qquad 0\le p\le n-1,
+\]
+donde $f^{(p)}:=u^{(p)}+iv^{(p)}$.
+\end{definition}
+
+La condición de periodicidad hasta orden $n-1$ garantiza que la extensión periódica de $f$ a todo $\mathbb{R}$ es de clase $C^{n-1}$.
+
 
 \subsection{La serie trigonométrica real}
 
@@ -3318,7 +3361,7 @@ S_N(f)(x) = \frac{a_0}{2} + \sum_{k=1}^N \bigl(a_k\cos(kx)+b_k\sin(kx)\bigr).
 La equivalencia con la suma parcial compleja es inmediata de \eqref{eq:grouping}: para $f$ real, $S_Nf(x) = \hat{f}_0 + \sum_{k=1}^N[\hat{f}_k e^{ikx}+\hat{f}_{-k}e^{-ikx}] = \frac{a_0}{2}+\sum_{k=1}^N[a_k\cos(kx)+b_k\sin(kx)]$.
 
 \begin{remark}
-La ortogonalidad del conjunto $\{1,\cos(x),\sin(x),\ldots,\cos(Nx),\sin(Nx)\}$ con el producto interno \eqref{prod_cont} se obtiene sin verificación adicional: es una consecuencia del Teorema~\ref{thm:ortog_complex} y del cambio de base \eqref{eq:grouping}. El Teorema~\ref{thm:mejor_aprox} se extiende también al caso real: para $f$ real, $S_N(f)$ es el polinomio trigonométrico real de grado $\le N$ más cercano a $f$ en norma cuadrática.
+La ortogonalidad del conjunto $\{1,\cos(x),\sin(x),\ldots,\cos(Nx),\sin(Nx)\}$ con el producto interno \eqref{prod_cont} se obtiene sin verificación adicional: es una consecuencia de la identidad \eqref{eq:ortog_complex} y del cambio de base \eqref{eq:grouping}. El Teorema~\ref{thm:mejor_aprox} se extiende también al caso real: para $f$ real, $S_N(f)$ es el polinomio trigonométrico real de grado $\le N$ más cercano a $f$ en norma cuadrática.
 \end{remark}
 
 \subsection{Decaimiento de los coeficientes de Fourier y regularidad}
@@ -3425,24 +3468,52 @@ Dividiendo por $2\pi$ obtenemos exactamente la fórmula anunciada.
 La efectividad de esta aproximación para funciones periódicas se apoya en una ortogonalidad discreta elemental de los modos exponenciales. En lo que sigue, cuando discutamos exactitud de orden, tomaremos la convención $M=2N+1$.
 
 \begin{lemma}[Exactitud de la cuadratura trapezoidal para exponenciales complejas]\label{lem:trap_exp}
-Sea $M \geq 1$ entero, $h = 2\pi/M$ y $x_j = jh$ para $j=0,\ldots,M-1$.  Entonces:
+Sea $M \geq 1$ entero, $h = 2\pi/M$ y $x_j = jh$ para $j=0,\ldots,M-1$. Para cada $\ell\in\mathbb Z$, definimos
 \[
-\frac{1}{M}\sum_{j=0}^{M-1} e^{i\ell x_j} = \begin{cases} 1 & \text{si $\ell$ es múltiplo de } M, \\ 0 & \text{en caso contrario.}\end{cases}
+I_\ell:=\int_0^{2\pi}e^{i\ell x}\,dx,
+\qquad
+Q_\ell^{(M)}:=\frac{2\pi}{M}\sum_{j=0}^{M-1}e^{i\ell x_j}.
 \]
-Es decir, la regla del trapecio periódica integra \textbf{exactamente} a $e^{i\ell x}$ siempre que $\ell$ no sea múltiplo no nulo de $M$. En particular, tomando $M=2N+1$ se obtiene exactitud para
+Entonces
 \[
-0\le k<2N+1\quad(\text{equivalentemente }k\le 2N),
+I_\ell=
+\begin{cases}
+2\pi,& \ell=0,\\
+0,& \ell\neq 0,
+\end{cases}
+\qquad
+Q_\ell^{(M)}=
+\begin{cases}
+2\pi,& \ell\equiv 0\pmod M,\\
+0,& \ell\not\equiv 0\pmod M.
+\end{cases}
 \]
-y no para $k=2N+1$.
+En particular,
+\[
+Q_\ell^{(M)}=I_\ell
+\quad\Longleftrightarrow\quad
+\ell=0\ \text{o}\ \ell\not\equiv 0\pmod M.
+\]
+Es decir, la trapezoidal periódica falla sólo en los modos resonantes no nulos $\ell=mM$ ($m\in\mathbb Z\setminus\{0\}$). Si $M=2N+1$, la regla es exacta para todo $|\ell|\le 2N$ y falla por primera vez en $\ell=\pm(2N+1)$.
 \end{lemma}
 \begin{proof}
-Si $\ell \equiv 0 \pmod{M}$, cada sumando vale $e^{i\ell \cdot 2\pi j/M} = e^{2\pi i j \cdot (\ell/M)} = 1$, y la suma da $M/M = 1$.
+Para la integral exacta,
+\[
+I_\ell=\left[\frac{e^{i\ell x}}{i\ell}\right]_0^{2\pi}=0\quad(\ell\neq 0),
+\qquad
+I_0=\int_0^{2\pi}1\,dx=2\pi.
+\]
 
-Si $\ell \not\equiv 0 \pmod{M}$, definimos $w = e^{2\pi i \ell/M} \neq 1$ y sumamos la serie geométrica:
+Para la trapezoidal compuesta, escribimos
+\[
+\frac{1}{M}\sum_{j=0}^{M-1}e^{i\ell x_j}
+=\frac{1}{M}\sum_{j=0}^{M-1}e^{2\pi i\ell j/M}.
+\]
+Si $\ell\equiv 0\pmod M$, cada término vale $1$ y la suma es $1$. Si $\ell\not\equiv 0\pmod M$, tomando $w=e^{2\pi i\ell/M}\neq 1$,
 \[
 \sum_{j=0}^{M-1} w^j = \frac{w^M - 1}{w - 1} = \frac{e^{2\pi i \ell} - 1}{w - 1} = 0,
 \]
-ya que $e^{2\pi i \ell} = 1$ para todo $\ell \in \mathbb{Z}$.
+ya que $e^{2\pi i \ell} = 1$. Multiplicando por $2\pi$ se obtiene la fórmula para $Q_\ell^{(M)}$.
 \end{proof}
 
 \begin{proposition}[Aliasing de los coeficientes discretos]\label{prop:aliasing_coef_discretos}
@@ -3469,8 +3540,23 @@ Para la fórmula de aliasing, expandimos $f$ en serie de Fourier. Como $f\in C^2
 Esta convergencia absoluta es la que permite intercambiar la suma infinita en $\ell$ con la suma finita en $j$:
 \[
 \tilde f_k^{(M)}
+=\frac1M\sum_{j=0}^{M-1} f(x_j)e^{-ikx_j}
+=\frac1M\sum_{j=0}^{M-1}\left(\sum_{\ell\in\mathbb Z}\hat f_\ell e^{i\ell x_j}\right)e^{-ikx_j}
+=\frac1M\sum_{j=0}^{M-1}\sum_{\ell\in\mathbb Z}\hat f_\ell\,e^{i\ell x_j}e^{-ikx_j}.
+\]
+Como
+\[
+e^{i\ell x_j}e^{-ikx_j}=e^{i(\ell-k)x_j},
+\]
+se obtiene
+\[
+\tilde f_k^{(M)}
 =\frac1M\sum_{j=0}^{M-1}\sum_{\ell\in\mathbb Z}\hat f_\ell e^{i(\ell-k)x_j}
-=\sum_{\ell\in\mathbb Z}\hat f_\ell\left(\frac1M\sum_{j=0}^{M-1}e^{i(\ell-k)x_j}\right).
+=\sum_{\ell\in\mathbb Z}\hat f_\ell\left(\frac1M\sum_{j=0}^{M-1}e^{i(\ell-k)x_j}\right),
+\]
+y, usando $x_j=2\pi j/M$,
+\[
+e^{i(\ell-k)x_j}=e^{i(\ell-k)2\pi j/M}.
 \]
 Por el Lema~\ref{lem:trap_exp}, el paréntesis vale $1$ si $\ell-k$ es múltiplo de $M$ y $0$ en caso contrario. Entonces sobreviven exactamente los índices $\ell=k+mM$:
 \[
@@ -3502,6 +3588,7 @@ Del Teorema de decaimiento, $|\hat{f}_k| \leq C/|k|^n$.  Entonces:
 \[
 \left|\sum_{m\neq 0}\hat{f}_{m(2N+1)}\right| \leq \sum_{m\neq 0}\frac{C}{|m(2N+1)|^n} = \frac{C}{(2N+1)^n}\cdot 2\sum_{m=1}^{\infty}\frac{1}{m^n} = \frac{2C\,\zeta(n)}{(2N+1)^n} = O\big((2N+1)^{-n}\big). \qedhere
 \]
+Aquí $\zeta(n):=\sum_{m=1}^{\infty}m^{-n}$ es la función zeta de Riemann (bien definida para $n>1$).
 \end{proof}
 
 \begin{remark}[Contraste con funciones no periódicas]
@@ -4167,48 +4254,7 @@ Es la propiedad general de las cuadraturas de Gauss: con $N$ nodos, la regla aso
 
 \section{Polinomios Ortogonales}
 
-En las secciones anteriores obtuvimos dos resultados de aproximación notablemente similares:
-\begin{itemize}
-\item \textbf{Series de Fourier:} expansión en la base $\{e^{ikx}\}$, ortogonal respecto al producto interno
-\[
-\langle f, g \rangle = \frac{1}{2\pi} \int_0^{2\pi} f(x)\overline{g(x)}\,dx,
-\]
-con convergencia espectral: si $f \in C^m_{\mathrm{per}}$, los coeficientes decaen como $|\hat{f}_k| = O(|k|^{-m})$ (Teorema~\ref{thm:decaimiento_fourier}).
-
-\item \textbf{Series de Chebyshev:} expansión en la base $\{T_k\}$, ortogonal respecto al producto interno con peso
-\[
-(f, g)_w = \int_{-1}^1 f(x)\,g(x)\,\frac{dx}{\sqrt{1-x^2}},
-\]
-con la misma convergencia espectral: si $f \in C^m([-1,1])$, los coeficientes decaen como $|\tilde{f}_k| = O(k^{-m})$ (Teorema~\ref{thm:decaimiento_chebyshev}).
-\end{itemize}
-La similitud no es casual.  En ambos casos, la estructura es idéntica: un \emph{producto interno}, una \emph{base ortogonal}, \emph{coeficientes de proyección} y un \emph{decaimiento controlado por la suavidad} de $f$.  Esto sugiere un marco general que contenga a ambos como casos particulares: las \textbf{series de Fourier generalizadas}, es decir, expansiones en bases ortogonales asociadas a distintos productos internos con peso.  Cada elección de peso produce una familia de polinomios ortogonales ---Chebyshev, Legendre, Laguerre, Hermite, entre otras--- con sus propias ventajas según el dominio y el tipo de función, pero que comparten la misma arquitectura teórica.
-
-\subsection{Marco general: espacios con producto interno}
-
-Recordemos las nociones de álgebra lineal que unifican los ejemplos anteriores.
-
-\begin{definition}[Producto interno con peso]
-Dado un intervalo $(a,b)$ y una función de peso $w(x) > 0$ integrable, el \textbf{producto interno con peso} es
-\[
-(f,g)_w = \int_a^b f(x)\,g(x)\,w(x)\,dx.
-\]
-La norma asociada es $\|f\|_w = \sqrt{(f,f)_w}$.  Denotamos $L^2_w(a,b)$ al espacio de funciones con $\|f\|_w < \infty$.
-\end{definition}
-
-\begin{definition}[Base ortogonal y coeficientes de proyección]
-Una familia $\{\varphi_k\}_{k=0}^\infty$ en $L^2_w(a,b)$ es \textbf{ortogonal} si $(\varphi_j, \varphi_k)_w = 0$ para $j \neq k$.  Dada $f \in C([a,b])$, sus \textbf{coeficientes de proyección} son
-\[
-c_k = \frac{(f, \varphi_k)_w}{\|\varphi_k\|_w^2},
-\]
-y la \textbf{proyección de orden $n$} (o \textbf{suma parcial}) es
-\[
-S_n f = \sum_{k=0}^n c_k\,\varphi_k.
-\]
-\end{definition}
-
-Estas definiciones recuperan ambos casos conocidos: para Fourier, $\varphi_k(x) = e^{ikx}$ con peso uniforme en $[0,2\pi]$; para Chebyshev, $\varphi_k(x) = T_k(x)$ con peso $(1-x^2)^{-1/2}$ en $[-1,1]$.
-
-Para poder identificar el resto con una cola infinita de coeficientes hace falta, además de ortogonalidad, una hipótesis de densidad/completitud. En el caso de polinomios ortogonales sobre intervalos compactos, esa densidad se obtiene con Stone-Weierstrass.
+Para poder identificar el resto con una cola infinita de coeficientes hace falta, además de ortogonalidad, una hipótesis de densidad. En el caso de polinomios ortogonales sobre intervalos compactos, esa densidad se obtiene con Stone-Weierstrass.
 
 \begin{theorem}[Densidad de polinomios en norma $L^2_w$ para funciones continuas]\label{thm:densidad_polinomios_stone_w}
 Sea $[a,b]$ compacto y sea $w\in L^1(a,b)$ con $w(x)>0$ para todo $x\in(a,b)$. Entonces, para toda $f\in C([a,b])$ y todo $\varepsilon>0$, existe un polinomio algebraico $p$ tal que
@@ -7109,110 +7155,100 @@ Estas tres referencias marcan una frontera conceptual \`util: desde el punto de 
 
 
 
-\chapter{Espacios de Hilbert}
+% \chapter{Espacios de Hilbert}
 
-\section{Definiciones y Ejemplos}
+% \section{Definiciones y Ejemplos}
 
-\begin{definition}[Espacio de Hilbert]
-Un espacio de pre-Hilbert $(H, (\cdot, \cdot))$ se dice \textbf{espacio de Hilbert} si es completo respecto a la norma inducida $\|u\| = \sqrt{(u,u)}$. Es decir, toda sucesión de Cauchy en $H$ converge a un elemento de $H$.
-\end{definition}
+% \begin{definition}[Espacio de Hilbert]
+% Un espacio de pre-Hilbert $(H, (\cdot, \cdot))$ se dice \textbf{espacio de Hilbert} si es completo respecto a la norma inducida $\|u\| = \sqrt{(u,u)}$. Es decir, toda sucesión de Cauchy en $H$ converge a un elemento de $H$.
+% \end{definition}
 
-\begin{definition}[Separabilidad]
-Un espacio de Hilbert $H$ se dice \textbf{separable} si posee un subconjunto denso que es numerable. Es decir, existe un conjunto $D = \{d_n\}_{n=1}^\infty \subset H$ tal que $\overline{D} = H$.
-\end{definition}
+% \begin{definition}[Separabilidad]
+% Un espacio de Hilbert $H$ se dice \textbf{separable} si posee un subconjunto denso que es numerable. Es decir, existe un conjunto $D = \{d_n\}_{n=1}^\infty \subset H$ tal que $\overline{D} = H$.
+% \end{definition}
 
-La separabilidad es una propiedad técnica crucial que garantiza la existencia de bases ortonormales numerables.
+% La separabilidad es una propiedad técnica crucial que garantiza la existencia de bases ortonormales numerables.
 
-\begin{example}[El espacio $\ell^2$]
-El espacio de sucesiones de cuadrado sumable $\ell^2$ es el prototipo de espacio de Hilbert separable. La base canónica $e_n = (0, \dots, 1, \dots)$ es una base ortonormal.
-\end{example}
+% \begin{example}[El espacio $\ell^2$]
+% El espacio de sucesiones de cuadrado sumable $\ell^2$ es el prototipo de espacio de Hilbert separable. La base canónica $e_n = (0, \dots, 1, \dots)$ es una base ortonormal.
+% \end{example}
 
-\begin{example}[El espacio $L^2$]
-El espacio $L^2([0, 2\pi])$ es separable. El sistema trigonométrico $\{ \frac{1}{\sqrt{2\pi}} e^{ikx} \}_{k \in \mathbb{Z}}$ es una base ortonormal.
-\end{example}
+% \begin{example}[El espacio $L^2$]
+% El espacio $L^2([0, 2\pi])$ es separable. El sistema trigonométrico $\{ \frac{1}{\sqrt{2\pi}} e^{ikx} \}_{k \in \mathbb{Z}}$ es una base ortonormal.
+% \end{example}
 
-\section{Bases Ortonormales}
+% \section{Bases Ortonormales}
 
-En dimensión infinita, la noción de base algebraica (base de Hamel) es menos útil que la de base topológica u ortonormal.
+% En dimensión infinita, la noción de base algebraica (base de Hamel) es menos útil que la de base topológica u ortonormal.
 
-\begin{definition}[Sistema Ortonormal]
-Un subconjunto $S = \{e_k\}_{k \in I} \subset H$ es un \textbf{sistema ortonormal} si $(e_j, e_k) = \delta_{jk}$ para todos $j, k \in I$.
-\end{definition}
+% \begin{definition}[Sistema Ortonormal]
+% Un subconjunto $S = \{e_k\}_{k \in I} \subset H$ es un \textbf{sistema ortonormal} si $(e_j, e_k) = \delta_{jk}$ para todos $j, k \in I$.
+% \end{definition}
 
-\begin{theorem}[Desigualdad de Bessel]\label{thm:bessel}
-Sea $\{e_k\}_{k=1}^\infty$ un sistema ortonormal en $H$. Para cualquier $u \in H$, se cumple:
-\[ \sum_{k=1}^\infty |(u, e_k)|^2 \leq \|u\|^2. \]
-\end{theorem}
+% \begin{theorem}[Desigualdad de Bessel]\label{thm:bessel}
+% Sea $\{e_k\}_{k=1}^\infty$ un sistema ortonormal en $H$. Para cualquier $u \in H$, se cumple:
+% \[ \sum_{k=1}^\infty |(u, e_k)|^2 \leq \|u\|^2. \]
+% \end{theorem}
 
-\begin{proof}
-Para cada $N \in \mathbb{N}$, definimos $S_N = \sum_{k=1}^N (u, e_k)\, e_k$. Expandimos la norma:
-\begin{align*}
-0 \leq \|u - S_N\|^2 &= (u - S_N,\, u - S_N) \\
-	&= \|u\|^2 - \sum_{k=1}^N (u, e_k)\overline{(u, e_k)} - \sum_{k=1}^N \overline{(u, e_k)}(u, e_k) + \sum_{j,k=1}^N (u, e_j)\overline{(u, e_k)}\underbrace{(e_j, e_k)}_{\delta_{jk}} \\
-	&= \|u\|^2 - 2\sum_{k=1}^N |(u, e_k)|^2 + \sum_{k=1}^N |(u, e_k)|^2 = \|u\|^2 - \sum_{k=1}^N |(u, e_k)|^2.
-\end{align*}
-Por lo tanto, $\sum_{k=1}^N |(u, e_k)|^2 \leq \|u\|^2$ para todo $N \in \mathbb{N}$. Como la sucesión de sumas parciales es monótona creciente y acotada superiormente por $\|u\|^2$, la serie converge y
-\[ \sum_{k=1}^\infty |(u, e_k)|^2 \leq \|u\|^2. \qedhere \]
-\end{proof}
+% \begin{proof}
+% Para cada $N \in \mathbb{N}$, definimos $S_N = \sum_{k=1}^N (u, e_k)\, e_k$. Expandimos la norma:
+% \begin{align*}
+% 0 \leq \|u - S_N\|^2 &= (u - S_N,\, u - S_N) \\
+% 	&= \|u\|^2 - \sum_{k=1}^N (u, e_k)\overline{(u, e_k)} - \sum_{k=1}^N \overline{(u, e_k)}(u, e_k) + \sum_{j,k=1}^N (u, e_j)\overline{(u, e_k)}\underbrace{(e_j, e_k)}_{\delta_{jk}} \\
+% 	&= \|u\|^2 - 2\sum_{k=1}^N |(u, e_k)|^2 + \sum_{k=1}^N |(u, e_k)|^2 = \|u\|^2 - \sum_{k=1}^N |(u, e_k)|^2.
+% \end{align*}
+% Por lo tanto, $\sum_{k=1}^N |(u, e_k)|^2 \leq \|u\|^2$ para todo $N \in \mathbb{N}$. Como la sucesión de sumas parciales es monótona creciente y acotada superiormente por $\|u\|^2$, la serie converge y
+% \[ \sum_{k=1}^\infty |(u, e_k)|^2 \leq \|u\|^2. \qedhere \]
+% \end{proof}
 
-\begin{definition}[Base Ortonormal]
-Un sistema ortonormal $\{e_k\}_{k=1}^\infty$ en un espacio de Hilbert $H$ se llama \textbf{base ortonormal} (o base de Hilbert) si el subespacio generado por $\{e_k\}$ es denso en $H$.
-\end{definition}
+% \begin{definition}[Base Ortonormal]
+% Un sistema ortonormal $\{e_k\}_{k=1}^\infty$ en un espacio de Hilbert $H$ se llama \textbf{base ortonormal} (o base de Hilbert) si el subespacio generado por $\{e_k\}$ es denso en $H$.
+% \end{definition}
 
-El siguiente teorema conecta la separabilidad con la existencia de bases.
+% El siguiente teorema conecta la separabilidad con la existencia de bases.
 
-\begin{theorem}[Existencia de Bases Ortonormales]
-Sea $H$ un espacio de Hilbert de dimensión infinita. Entonces $H$ es separable si y solo si posee una base ortonormal numerable.
-\end{theorem}
+% \begin{theorem}[Existencia de Bases Ortonormales]
+% Sea $H$ un espacio de Hilbert de dimensión infinita. Entonces $H$ es separable si y solo si posee una base ortonormal numerable.
+% \end{theorem}
 
-\begin{proof}
-($\Leftarrow$) Si $\{e_n\}$ es una base ortonormal numerable, el conjunto de combinaciones lineales finitas con coeficientes racionales (en $\mathbb{Q} + i\mathbb{Q}$) es denso en $H$ y es numerable.
-($\Rightarrow$) Sea $D = \{d_n\}_{n=1}^\infty$ un conjunto denso numerable. Aplicando el proceso de Gram-Schmidt a la sucesión $\{d_n\}$ (descartando los linealmente dependientes), obtenemos un sistema ortonormal $\{e_n\}$. El espacio generado por $\{e_n\}$ coincide con el generado por $\{d_n\}$, que es denso en $H$. Por tanto, $\{e_n\}$ es una base ortonormal.
-\end{proof}
+% \begin{proof}
+% ($\Leftarrow$) Si $\{e_n\}$ es una base ortonormal numerable, el conjunto de combinaciones lineales finitas con coeficientes racionales (en $\mathbb{Q} + i\mathbb{Q}$) es denso en $H$ y es numerable.
+% ($\Rightarrow$) Sea $D = \{d_n\}_{n=1}^\infty$ un conjunto denso numerable. Aplicando el proceso de Gram-Schmidt a la sucesión $\{d_n\}$ (descartando los linealmente dependientes), obtenemos un sistema ortonormal $\{e_n\}$. El espacio generado por $\{e_n\}$ coincide con el generado por $\{d_n\}$, que es denso en $H$. Por tanto, $\{e_n\}$ es una base ortonormal.
+% \end{proof}
 
-\begin{theorem}[Caracterizaciones de Bases Ortonormales]
-Sea $\{e_k\}_{k=1}^\infty$ un sistema ortonormal en $H$. Las siguientes afirmaciones son equivalentes:
-\begin{enumerate}
-    \item $\{e_k\}$ es una base ortonormal (es completo).
-    \item (Identidad de Parseval) Para todo $u \in H$, $\|u\|^2 = \sum_{k=1}^\infty |(u, e_k)|^2$.
-    \item Para todo $u \in H$, $u = \sum_{k=1}^\infty (u, e_k) e_k$ (convergencia en norma).
-    \item Si $(u, e_k) = 0$ para todo $k$, entonces $u = 0$.
-\end{enumerate}
-\end{theorem}
+% \section{Teoremas de Proyección y Representación de Riesz}
 
-\section{Teoremas de Proyección y Representación de Riesz}
+% Una de las propiedades geométricas más importantes de los espacios de Hilbert es la posibilidad de proyectar ortogonalmente sobre subespacios cerrados.
 
-Una de las propiedades geométricas más importantes de los espacios de Hilbert es la posibilidad de proyectar ortogonalmente sobre subespacios cerrados.
+% \begin{theorem}[Teorema de la Proyección]
+% Sea $H$ un espacio de Hilbert y $M$ un subespacio cerrado de $H$. Entonces, para todo $x \in H$, existen únicos vectores $m \in M$ y $z \in M^\perp$ tales que
+% \[ x = m + z. \]
+% Además, $\|x - m\| = \inf_{y \in M} \|x - y\|$, es decir, $m$ es la mejor aproximación de $x$ en $M$.
+% \end{theorem}
 
-\begin{theorem}[Teorema de la Proyección]
-Sea $H$ un espacio de Hilbert y $M$ un subespacio cerrado de $H$. Entonces, para todo $x \in H$, existen únicos vectores $m \in M$ y $z \in M^\perp$ tales que
-\[ x = m + z. \]
-Además, $\|x - m\| = \inf_{y \in M} \|x - y\|$, es decir, $m$ es la mejor aproximación de $x$ en $M$.
-\end{theorem}
+% \begin{proof}
+% Sea $d = \inf_{y \in M} \|x - y\|$. Existe una sucesión $\{y_n\} \subset M$ tal que $\|x - y_n\| \to d$. Usando la identidad del paralelogramo:
+% \[ \|a+b\|^2 + \|a-b\|^2 = 2\|a\|^2 + 2\|b\|^2, \]
+% aplicada a $a = x - y_n$ y $b = x - y_m$, se puede demostrar que $\{y_n\}$ es una sucesión de Cauchy. Como $M$ es cerrado y $H$ es completo, $\{y_n\}$ converge a un $m \in M$.
+% Para ver que $x - m \in M^\perp$, sea $y \in M$ arbitrario. La función $f(t) = \|x - (m + ty)\|^2$ tiene un mínimo en $t=0$, lo que implica que la derivada en $0$ es nula, resultando en $\text{Re}(x-m, y) = 0$. Considerando $iy$, se obtiene la parte imaginaria.
+% La unicidad se sigue de que $M \cap M^\perp = \{0\}$.
+% \end{proof}
 
-\begin{proof}
-Sea $d = \inf_{y \in M} \|x - y\|$. Existe una sucesión $\{y_n\} \subset M$ tal que $\|x - y_n\| \to d$. Usando la identidad del paralelogramo:
-\[ \|a+b\|^2 + \|a-b\|^2 = 2\|a\|^2 + 2\|b\|^2, \]
-aplicada a $a = x - y_n$ y $b = x - y_m$, se puede demostrar que $\{y_n\}$ es una sucesión de Cauchy. Como $M$ es cerrado y $H$ es completo, $\{y_n\}$ converge a un $m \in M$.
-Para ver que $x - m \in M^\perp$, sea $y \in M$ arbitrario. La función $f(t) = \|x - (m + ty)\|^2$ tiene un mínimo en $t=0$, lo que implica que la derivada en $0$ es nula, resultando en $\text{Re}(x-m, y) = 0$. Considerando $iy$, se obtiene la parte imaginaria.
-La unicidad se sigue de que $M \cap M^\perp = \{0\}$.
-\end{proof}
+% Este teorema permite identificar el espacio dual de un espacio de Hilbert con el espacio mismo.
 
-Este teorema permite identificar el espacio dual de un espacio de Hilbert con el espacio mismo.
+% \begin{theorem}[Teorema de Representación de Riesz]
+% Sea $H$ un espacio de Hilbert y sea $L: H \to \mathbb{C}$ un funcional lineal continuo (o acotado). Entonces existe un único vector $u \in H$ tal que
+% \[ L(v) = (v, u) \quad \text{para todo } v \in H. \]
+% Además, la norma del funcional coincide con la norma del vector: $\|L\|_{H^*} = \|u\|_H$.
+% \end{theorem}
 
-\begin{theorem}[Teorema de Representación de Riesz]
-Sea $H$ un espacio de Hilbert y sea $L: H \to \mathbb{C}$ un funcional lineal continuo (o acotado). Entonces existe un único vector $u \in H$ tal que
-\[ L(v) = (v, u) \quad \text{para todo } v \in H. \]
-Además, la norma del funcional coincide con la norma del vector: $\|L\|_{H^*} = \|u\|_H$.
-\end{theorem}
-
-\begin{proof}
-Si $L = 0$, tomamos $u = 0$. Si $L \neq 0$, sea $M = \ker(L)$. Como $L$ es continuo, $M$ es cerrado. Por el Teorema de la Proyección, $H = M \oplus M^\perp$. Como $L \neq 0$, $M^\perp \neq \{0\}$. Existe $z \in M^\perp$ con $\|z\| = 1$.
-Para cualquier $v \in H$, el vector $w = L(v)z - L(z)v$ está en $\ker(L) = M$, pues $L(w) = L(v)L(z) - L(z)L(v) = 0$.
-Como $z \perp M$, tenemos $(w, z) = 0$.
-\[ 0 = (L(v)z - L(z)v, z) = L(v)(z,z) - L(z)(v,z) = L(v) - (v, \overline{L(z)}z). \]
-Despejando $L(v)$, obtenemos $L(v) = (v, u)$ con $u = \overline{L(z)}z$.
-\end{proof}
+% \begin{proof}
+% Si $L = 0$, tomamos $u = 0$. Si $L \neq 0$, sea $M = \ker(L)$. Como $L$ es continuo, $M$ es cerrado. Por el Teorema de la Proyección, $H = M \oplus M^\perp$. Como $L \neq 0$, $M^\perp \neq \{0\}$. Existe $z \in M^\perp$ con $\|z\| = 1$.
+% Para cualquier $v \in H$, el vector $w = L(v)z - L(z)v$ está en $\ker(L) = M$, pues $L(w) = L(v)L(z) - L(z)L(v) = 0$.
+% Como $z \perp M$, tenemos $(w, z) = 0$.
+% \[ 0 = (L(v)z - L(z)v, z) = L(v)(z,z) - L(z)(v,z) = L(v) - (v, \overline{L(z)}z). \]
+% Despejando $L(v)$, obtenemos $L(v) = (v, u)$ con $u = \overline{L(z)}z$.
+% \end{proof}
 
 % \chapter{Espacios de Sobolev}
 
