@@ -6942,101 +6942,117 @@ En $C(\mathbb T;\mathbb C)$ consideramos la sub\'algebra
 Contiene constantes, es cerrada por conjugaci\'on porque $\overline{z^k}=z^{-k}$ en $\mathbb T$, y separa puntos porque $z\mapsto z$ separa puntos en $\mathbb T$. Por el Teorema~\ref{thm:stone_weierstrass_complejo}, $\mathcal A$ es densa en $C(\mathbb T;\mathbb C)$. Volviendo a la variable $x$, esto es exactamente la densidad uniforme de $\mathcal T$ en $C_{per}([0,2\pi];\mathbb C)$.
 \end{proof}
 
-Con la densidad uniforme establecida en $C_{per}$, el paso siguiente es llevar la aproximaci\'on al marco $L^2$ para funciones continuas a trozos, que es el entorno natural en que vamos a formular Parseval.
+Con la densidad uniforme establecida en $C_{per}$, el paso siguiente es llevar la aproximaci\'on al marco $L^2$ para funciones Riemann integrables. Para esto usamos un operador de promediado local (argumento de Lyapunov, 1898), que regulariza la función y converge a ella en norma $L^2$.
+
+\begin{lemma}[Promediado local de Lyapunov en $L^2$]\label{lem:lyapunov_promedio_L2}
+Sea $f:[0,2\pi]\to\mathbb C$ una función $2\pi$-periódica y Riemann integrable. Para $0<h<\pi$, definimos
+\[
+(\mathcal L_h f)(x):=\frac1{2h}\int_{x-h}^{x+h} f(t)\,dt,
+\]
+donde la integral se toma sobre la extensión $2\pi$-periódica de $f$.
+Entonces:
+\begin{enumerate}
+\item $\mathcal L_h f\in C_{per}([0,2\pi];\mathbb C)$;
+\item $\|\mathcal L_h f-f\|_{L^2}\xrightarrow[h\downarrow 0]{}0$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Sea $\widetilde f$ la extensión periódica de $f$ a $\mathbb R$ y definamos
+\[
+F(x):=\int_0^x \widetilde f(t)\,dt.
+\]
+Como $\widetilde f$ es Riemann integrable y acotada en compactos, $F$ es continua. Además,
+\[
+(\mathcal L_h f)(x)=\frac{F(x+h)-F(x-h)}{2h},
+\]
+que es continua en $x$. La periodicidad se obtiene de $F(x+2\pi)=F(x)+C$, pues al tomar la diferencia centrada la constante $C$ se cancela.
+
+Para la convergencia en $L^2$, sea $\tau_t f(x):=f(x-t)$. Escribimos
+\[
+\mathcal L_h f-f=\frac1{2h}\int_{-h}^{h}(\tau_t f-f)\,dt.
+\]
+Aplicando Cauchy--Schwarz en la variable $t$,
+\[
+\left|\frac1{2h}\int_{-h}^{h}(\tau_t f(x)-f(x))\,dt\right|^2
+\le
+\frac1{2h}\int_{-h}^{h}|\tau_t f(x)-f(x)|^2\,dt.
+\]
+Integrando en $x$ y usando Fubini,
+\[
+\|\mathcal L_h f-f\|_{L^2}^2
+\le
+\frac1{2h}\int_{-h}^{h}\|\tau_t f-f\|_{L^2}^2\,dt.
+\]
+Basta entonces probar que $\|\tau_t f-f\|_{L^2}\to0$ cuando $t\to0$.
+
+Fijado $\varepsilon>0$, como $f$ es Riemann integrable en compacto, existe una función escalonada periódica $s$ tal que
+\[
+\|f-s\|_{L^2}<\varepsilon.
+\]
+Por invarianza traslacional de la norma $L^2$,
+\[
+\|\tau_t f-f\|_{L^2}
+\le \|\tau_t(f-s)\|_{L^2}+\|\tau_t s-s\|_{L^2}+\|s-f\|_{L^2}
+\le 2\varepsilon+\|\tau_t s-s\|_{L^2}.
+\]
+Si $s$ tiene saltos en $\xi_1,\dots,\xi_m$ y $\|s\|_\infty\le A$, entonces $\tau_t s-s$ sólo puede ser no nula en la unión de intervalos de longitud total $\le 2m|t|$, y allí
+\[
+|\tau_t s-s|\le 2A.
+\]
+Por lo tanto,
+\[
+\|\tau_t s-s\|_{L^2}^2\le (2A)^2\,2m|t|=8A^2m|t|,
+\]
+de donde $\|\tau_t s-s\|_{L^2}\to0$ cuando $t\to0$.
+
+Concluimos que existe $\delta>0$ tal que, si $|t|<\delta$,
+\[
+\|\tau_t f-f\|_{L^2}<3\varepsilon.
+\]
+Volviendo a la cota de promedio,
+\[
+\|\mathcal L_h f-f\|_{L^2}^2
+\le
+\frac1{2h}\int_{-h}^{h}\|\tau_t f-f\|_{L^2}^2\,dt
+\le (3\varepsilon)^2
+\quad (0<h<\delta),
+\]
+y por tanto
+\[
+\|\mathcal L_h f-f\|_{L^2}\xrightarrow[h\downarrow0]{}0.
+\]
+\end{proof}
 
 \begin{theorem}[Densidad trigonom\'etrica en $L^2$ (marco Riemann)]\label{thm:densidad_trig_L2_riemann}
-Sea $f:[0,2\pi]\to\mathbb C$ una funci\'on $2\pi$-peri\'odica y continua a trozos. Entonces, para todo $\varepsilon>0$, existe $p\in\mathcal T$ tal que
+Sea $f:[0,2\pi]\to\mathbb C$ una función $2\pi$-periódica y Riemann integrable. Entonces, para todo $\varepsilon>0$, existe $p\in\mathcal T$ tal que
 \[
 \|f-p\|_{L^2}<\varepsilon.
 \]
 \end{theorem}
 
 \begin{proof}
-Como $f$ es continua a trozos en un intervalo compacto, es acotada: existe $M>0$ con $|f(x)|\le M$.
-
-Sean $x_1,\dots,x_m$ los puntos de discontinuidad de $f$ (finitos). Dado $\delta>0$, elegimos intervalos abiertos disjuntos $I_j$ centrados en $x_j$ tales que
+Por el Lema~\ref{lem:lyapunov_promedio_L2}, existe $h>0$ tal que
 \[
-\sum_{j=1}^m |I_j|<\delta.
+\|f-\mathcal L_h f\|_{L^2}<\frac{\varepsilon}{2},
 \]
-Definimos $h:[0,2\pi]\to\mathbb C$ as\'i: $h=f$ fuera de $\bigcup_j I_j$, y en cada $I_j$ conectamos linealmente los valores de $f$ en los extremos de $I_j$. Entonces $h\in C_{per}([0,2\pi];\mathbb C)$ y
-\[
-|f-h|\le 2M,
-\qquad
-\operatorname{supp}(f-h)\subset\bigcup_{j=1}^m I_j.
-\]
-Por lo tanto,
-\[
-\|f-h\|_{L^2}^2=\int_0^{2\pi}|f-h|^2
-\le 4M^2\sum_{j=1}^m|I_j|<4M^2\delta.
-\]
-Tomando $\delta<\varepsilon^2/(16M^2)$ obtenemos
-\[
-\|f-h\|_{L^2}<\frac{\varepsilon}{2}.
-\]
+y además $\mathcal L_h f\in C_{per}([0,2\pi];\mathbb C)$.
 
 Por el Corolario~\ref{cor:densidad_trig_uniforme_stone}, existe $p\in\mathcal T$ tal que
 \[
-\|h-p\|_\infty<\frac{\varepsilon}{2\sqrt{2\pi}}.
+\|\mathcal L_h f-p\|_\infty<\frac{\varepsilon}{2\sqrt{2\pi}}.
 \]
 Luego
 \[
-\|h-p\|_{L^2}\le \sqrt{2\pi}\,\|h-p\|_\infty<\frac{\varepsilon}{2}.
+\|\mathcal L_h f-p\|_{L^2}\le \sqrt{2\pi}\,\|\mathcal L_h f-p\|_\infty<\frac{\varepsilon}{2}.
 \]
 Finalmente,
 \[
-\|f-p\|_{L^2}\le \|f-h\|_{L^2}+\|h-p\|_{L^2}<\varepsilon.
+\|f-p\|_{L^2}\le \|f-\mathcal L_h f\|_{L^2}+\|\mathcal L_h f-p\|_{L^2}<\varepsilon.
 \]
 \end{proof}
 
 Esta densidad en norma $L^2$ es exactamente la pieza que faltaba: combinada con la propiedad de proyecci\'on ortogonal, permite hacer desaparecer el resto en la identidad de energ\'ia y llegar a Parseval.
-
-\begin{theorem}[Parseval para funciones continuas a trozos]\label{thm:parseval_C1_per}
-Sea $f:[0,2\pi]\to\mathbb C$ una funci\'on $2\pi$-peri\'odica y continua a trozos. Definimos
-\[
-S_Nf(x)=\sum_{|k|\le N}\hat f_k e^{ikx},
-\qquad
-\hat f_k=\frac{1}{2\pi}\int_0^{2\pi}f(x)e^{-ikx}\,dx.
-\]
-Entonces
-\[
-\|f\|_{L^2}^2=2\pi\sum_{k\in\mathbb Z}|\hat f_k|^2.
-\]
-\end{theorem}
-
-\begin{proof}
-Sea
-\[
-\mathcal T_N:=\operatorname{span}\{e^{ikx}:|k|\le N\}.
-\]
-La interpretaci\'on de $S_N f$ como proyecci\'on ortogonal sobre $\mathcal T_N$ y su propiedad de mejor aproximaci\'on ya fueron demostradas en el Teorema~\ref{thm:mejor_aprox}. En particular, para todo $p\in\mathcal T_N$,
-\[
-\|f-p\|_{L^2}^2=\|f-S_Nf\|_{L^2}^2+\|S_Nf-p\|_{L^2}^2\ge \|f-S_Nf\|_{L^2}^2.
-\]
-
-Adem\'as, por ortogonalidad de los exponentiales complejos,
-\[
-\|S_Nf\|_{L^2}^2=2\pi\sum_{|k|\le N}|\hat f_k|^2,
-\]
-y por Pit\'agoras para la descomposici\'on ortogonal $f=S_Nf+(f-S_Nf)$,
-\[
-\|f\|_{L^2}^2=2\pi\sum_{|k|\le N}|\hat f_k|^2+\|f-S_Nf\|_{L^2}^2.
-\]
-
-Sea ahora $\varepsilon>0$. Por el Teorema~\ref{thm:densidad_trig_L2_riemann}, existe un polinomio trigonom\'etrico
-\[
-p(x)=\sum_{|k|\le m}c_k e^{ikx}
-\]
-tal que $\|f-p\|_{L^2}<\varepsilon$. Para $N\ge m$, se tiene $p\in\mathcal T_N$, y por la propiedad anterior
-\[
-\|f-S_Nf\|_{L^2}\le \|f-p\|_{L^2}<\varepsilon.
-\]
-Por lo tanto, $\|f-S_Nf\|_{L^2}\to 0$.
-
-Pasando al l\'imite en la igualdad anterior, obtenemos
-\[
-\|f\|_{L^2}^2=2\pi\sum_{k\in\mathbb Z}|\hat f_k|^2.
-\]
-\end{proof}
 
 \section{Derivación término a término de la serie de Fourier}
 
@@ -7188,7 +7204,7 @@ S_Nf(x)\to \frac{f(x^+)+f(x^-)}{2}
 \item Este umbral es esencialmente óptimo: existe $f\in L^1([0,2\pi])$ cuya serie de Fourier diverge casi en todo punto (Kolmogorov).
 \end{itemize}
 
-Estas tres referencias marcan una frontera conceptual \`util: desde el punto de vista num\'erico, nuestras hip\'otesis de suavidad son naturales y productivas; desde el punto de vista anal\'itico, el comportamiento de las series de Fourier en baja regularidad exige herramientas mucho m\'as finas.
+Estas tres referencias marcan una frontera conceptual \`util: desde el punto de vista num\'erico, nuestras hip\'otesis de suavidad son naturales y productivas; desde el punto de vista anal\'itico, el comportamiento de las series de Fourier en baja regularidad exige herramientas m\'as finas.
 
 
 
