@@ -3982,13 +3982,15 @@ Como $g$ es par, la serie solo tiene términos cosenos:
 \[
 g(\theta) = \frac{a_0}{2} + \sum_{k=1}^\infty a_k \cos(k\theta),
 \]
-con coeficientes $a_k = \frac{2}{\pi}\int_0^{\pi} g(\theta)\cos(k\theta)\,d\theta$.  Cuando volvemos a la variable original $x = \cos\theta$, se obtienen los polinomios de Chebyshev $T_k(x) = \cos(k\arccos x)$, y la serie de Fourier en cosenos se traduce en la serie de Chebyshev.
+con coeficientes $a_k = \frac{2}{\pi}\int_0^{\pi} g(\theta)\cos(k\theta)\,d\theta$.  
 
 \begin{remark}
 La demostración del lema \ref{lem:suavidad_chebyshev} muestra que no hay nada especial en la función coseno: cualquier función suave y periódica, con imagen en $[-1,1]$, serviría para evitar el fenómeno de Gibbs. Sin embargo, el coseno es la elección natural por su simplicidad y por las propiedades adicionales que veremos a continuación.
 \end{remark}
 
 \subsection{Los polinomios de Chebyshev y la serie de Chebyshev}
+
+Cuando volvemos a la variable original $x = \cos\theta$, se obtienen los polinomios de Chebyshev $T_k(x) = \cos(k\arccos x)$, y la serie de Fourier en cosenos se traduce en la serie de Chebyshev.
 
 \begin{definition}[Polinomios de Chebyshev]\label{def:chebyshev}
 Para cada entero $k \geq 0$, definimos el \textbf{polinomio de Chebyshev} $T_k : [-1,1] \to \mathbb{R}$ por:
@@ -3998,16 +4000,6 @@ T_k(x) = \cos(k\arccos x).
 \end{definition}
 
 La definición es natural: $T_k$ es simplemente la función $\cos(k\theta)$ expresada en la variable $x = \cos\theta$.  En otras palabras, $T_k(\cos\theta) = \cos(k\theta)$.  Con esta notación, la serie de Fourier en cosenos de $g(\theta) = f(\cos\theta)$ se reescribe directamente en la variable original:
-
-La razón por la que aparecen sólo cosenos es la siguiente. Como $g$ es par, en su serie de Fourier real
-\[
-g(\theta)=\frac{a_0}{2}+\sum_{k=1}^{\infty}\big(a_k\cos(k\theta)+b_k\sin(k\theta)\big),
-\]
-los coeficientes seno satisfacen
-\[
-b_k=\frac{1}{\pi}\int_{-\pi}^{\pi} g(\theta)\sin(k\theta)\,d\theta=0,
-\]
-porque $g$ es par, $\sin(k\theta)$ es impar y el producto es impar. Luego la expansión de Fourier de $g$ contiene únicamente términos coseno.
 
 \begin{definition}[Serie de Chebyshev]\label{def:serie_chebyshev}
 Dada $f \in C([-1,1])$, su \textbf{serie de Chebyshev} es:
