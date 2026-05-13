@@ -2166,66 +2166,6 @@ La fórmula~\eqref{eq:error_interpolacion} separa dos contribuciones al error:
 Para nodos \emph{equiespaciados}, $\|\omega_{n+1}\|_\infty$ crece factorialmente con $n$, lo que explica el \textbf{fenómeno de Runge}: la interpolación equiespaciada puede diverger aunque $f$ sea analítica.
 \end{remark}
 
-\subsection{Nodos equiespaciados y el fenómeno de Runge}
-
-\begin{definition}[Nodos equiespaciados]
-En el intervalo $[a,b]$, los \textbf{nodos equiespaciados} se definen como:
-\[
-x_k = a + k \frac{b-a}{n}, \quad k = 0, 1, \ldots, n.
-\]
-\end{definition}
-
-Los nodos equiespaciados son la elección más natural y se usan frecuentemente en aplicaciones prácticas. Sin embargo, como veremos, pueden llevar a problemas de convergencia serios.
-
-\begin{theorem}[Fenómeno de Runge]
-Existen funciones $C^\infty$ para las cuales la interpolación polinomial en nodos equiespaciados diverge cuando $n \to \infty$.
-\end{theorem}
-
-\begin{example}[Función de Runge]
-Consideremos la función
-\[
-f(x) = \frac{1}{1 + 25x^2}
-\]
-en el intervalo $[-1,1]$. Esta función es $C^\infty(\mathbb{R})$ y perfectamente suave.
-
-Para nodos equiespaciados $x_k = -1 + \frac{2k}{n}$, $k = 0, \ldots, n$, los polinomios interpolantes $p_n(x)$ satisfacen:
-\begin{itemize}
-\item $p_n(x) \to f(x)$ uniformemente en $[-1/2, 1/2]$ cuando $n \to \infty$.
-\item $p_n(x)$ diverge cerca de los extremos $x = \pm 1$, con oscilaciones de amplitud creciente.
-\end{itemize}
-\end{example}
-
-\begin{proof}[Demostración de divergencia para la función de Runge]
-Sea
-\[
-\omega_{n+1}(x):=\prod_{k=0}^n\bigl(x-x_k\bigr),
-\qquad x_k=-1+\frac{2k}{n}.
-\]
-Como $f$ es meromorfa en $\mathbb C$ con polos simples en $\pm i/5$, la fórmula integral de Hermite para el error de interpolación da, para $x\in(-1,1)$,
-\[
-f(x)-p_n(x)=\frac{\omega_{n+1}(x)}{2\pi i}\int_\Gamma\frac{f(z)}{(z-x)\,\omega_{n+1}(z)}\,dz,
-\]
-donde $\Gamma$ rodea $[-1,1]$ y los polos de $f$. Evaluando por residuos en $z=\pm i/5$ se obtiene la identidad exacta
-\[
-f(x)-p_n(x)=\frac{\omega_{n+1}(x)}{10i}\left(
-\frac{1}{(x-i/5)\,\omega_{n+1}(i/5)}
--
-\frac{1}{(x+i/5)\,\omega_{n+1}(-i/5)}
-\right).
-\]
-Para nodos reales, $\omega_{n+1}(-i/5)=\overline{\omega_{n+1}(i/5)}$. Además, las estimaciones clásicas de Runge para malla equiespaciada implican que existen $\delta\in(0,1)$, $c>1$ y $C>0$ tales que
-\[
-\max_{x\in[1-\delta,\,1]}\left|\frac{\omega_{n+1}(x)}{\omega_{n+1}(i/5)}\right|
-\ge C\,c^n
-\qquad (n\ \text{grande}).
-\]
-Como $|(x\pm i/5)^{-1}|$ está uniformemente acotado y separado de cero en $[1-\delta,1]$, de la identidad anterior se deduce
-\[
-\max_{x\in[1-\delta,\,1]}|f(x)-p_n(x)|\ge C_1\,c^n\xrightarrow[n\to\infty]{}\infty.
-\]
-Por simetría ocurre lo mismo en $[-1,-1+\delta]$. Esto prueba la divergencia cerca de los extremos para la función de Runge.
-\end{proof}
-
 \begin{example}[Error de la interpolación lineal]\label{ex:error_interpolacion_lineal}
 Sea $f\in C^2([a,a+h])$ y $p_1\in\mathcal{P}_1$ el polinomio que interpola $f$ en los extremos $x_0=a$ y $x_1=a+h$.  Aplicamos el Teorema~\ref{thm:error_interpolacion} con $n=1$: para todo $x\in[a,a+h]$ existe $\xi\in(a,a+h)$ tal que
 \[
@@ -3788,7 +3728,7 @@ Si $f\in C^\infty_{per}([0,2\pi])$, para todo $q\in\mathbb N$ puede repetirse el
 \end{proof}
 
 \begin{remark}[Mejora adicional bajo regularidad Hölder]
-Si además $f^{(n)}$ es Hölder (de exponente $\alpha\in(0,1]$), los coeficientes de Fourier decaen más rápido que en el caso meramente $C^n$. Insertando ese decaimiento mejorado en la misma estrategia (cota de cola + aliasing) se gana orden adicional; en particular, se obtiene al menos medio orden extra respecto de $O(N^{\frac12-n})$ (es decir, $O(N^{-n})$ o mejor, según $\alpha$).
+Si además $f^{(n)}$ es Hölder (de exponente $\alpha\in(0,1]$), los coeficientes de Fourier decaen más rápido que en el caso meramente $C^n$. Insertando ese decaimiento mejorado en la misma estrategia (cota de cola + aliasing) se gana orden adicional, según $\alpha$.
 \end{remark}
 
 
@@ -4087,87 +4027,6 @@ De la identidad $T_k(\cos\theta) = \cos(k\theta)$ se deducen inmediatamente:
 \end{enumerate}
 \end{remark}
 
-\begin{proposition}[Aliasing en interpolación de Chebyshev]\label{prop:aliasing_chebyshev}
-Sea $f\in C([-1,1])$, $g(\theta)=f(\cos\theta)$ y
-\[
-g(\theta)=\frac{a_0}{2}+\sum_{k\ge1}a_k\cos(k\theta).
-\]
-Sea $I_N^{Ch}f$ el interpolante de Chebyshev en los nodos $x_j=\cos(j\pi/N)$ ($j=0,\dots,N$), y escribamos
-\[
-I_N^{Ch}f(\cos\theta)=\frac{\tilde a_0}{2}+\sum_{k=1}^{N}\tilde a_k\cos(k\theta).
-\]
-Entonces, para $0\le k\le N$, los coeficientes satisfacen la fórmula de aliasing
-\[
-\tilde a_k
-=a_k+\sum_{m\ge1}\bigl(a_{2mN+k}+a_{|2mN-k|}\bigr),
-\]
-y en particular
-\[
-\|f-I_N^{Ch}f\|_\infty\le 3\sum_{k>N}|a_k|.
-\]
-Es decir, el error de interpolación queda controlado por la misma cola que el error de proyección (truncamiento de la serie de Chebyshev).
-\end{proposition}
-
-\begin{proof}
-Sea $\theta_j=j\pi/N$ y escribamos
-\[
-p_N(\theta):=I_N^{Ch}f(\cos\theta)=\frac{\tilde a_0}{2}+\sum_{k=1}^N\tilde a_k\cos(k\theta).
-\]
-Para todo $m\ge1$, $0\le k\le N$ y todo nodo $\theta_j$ vale
-\[
-\cos\bigl((2mN+k)\theta_j\bigr)=\cos(k\theta_j),
-\qquad
-\cos\bigl((2mN-k)\theta_j\bigr)=\cos(k\theta_j),
-\]
-porque $\theta_j=j\pi/N$. Definimos entonces
-\[
-b_k:=a_k+\sum_{m\ge1}\bigl(a_{2mN+k}+a_{|2mN-k|}\bigr),\qquad 0\le k\le N,
-\]
-y
-\[
-q_N(\theta):=\frac{b_0}{2}+\sum_{k=1}^N b_k\cos(k\theta).
-\]
-Reagrupando en cada nodo los modos de $g(\theta_j)$ por clases de alias módulo $2N$, se obtiene $q_N(\theta_j)=g(\theta_j)$ para $j=0,\dots,N$. Como $q_N(\theta)$ y $p_N(\theta)$ son dos polinomios en cosenos de grado $\le N$ que interpolan los mismos $N+1$ datos en los nodos de Chebyshev--Lobatto, por unicidad de la interpolación se concluye $q_N\equiv p_N$, y por lo tanto $\tilde a_k=b_k$.
-
-Para la cota de error,
-\[
-g(\theta)-p_N(\theta)=\sum_{k>N}a_k\cos(k\theta)-\sum_{k=0}^N(\tilde a_k-a_k)\cos(k\theta),
-\]
-y entonces
-\[
-\|f-I_N^{Ch}f\|_\infty=\|g-p_N\|_\infty
-\le \sum_{k>N}|a_k|+\sum_{k=0}^N|\tilde a_k-a_k|.
-\]
-Además, por la fórmula de aliasing y desigualdad triangular,
-\[
-\sum_{k=0}^N|\tilde a_k-a_k|
-\le \sum_{k=0}^N\sum_{m\ge1}\Bigl(|a_{2mN+k}|+|a_{|2mN-k|}|\Bigr).
-\]
-Cada índice $j>N$ aparece a lo sumo una vez en la familia $2mN+k$ y a lo sumo una vez en la familia $|2mN-k|$, de modo que
-\[
-\sum_{k=0}^N|\tilde a_k-a_k|\le 2\sum_{j>N}|a_j|.
-\]
-Sustituyendo en la desigualdad anterior,
-\[
-\|f-I_N^{Ch}f\|_\infty\le 3\sum_{k>N}|a_k|.
-\]
-\end{proof}
-
-\begin{corollary}[Cota por decaimiento de coeficientes de Chebyshev]\label{cor:error_interp_chebyshev_aliasing}
-Si $|a_k|=O(k^{-m})$ con $m>1$, entonces
-\[
-\|f-I_N^{Ch}f\|_\infty=O(N^{1-m}).
-\]
-En particular, si los coeficientes decaen super-algebraicamente, también lo hace el error de interpolación de Chebyshev.
-\end{corollary}
-
-\begin{proof}
-La primera afirmación es inmediata de la Proposición~\ref{prop:aliasing_chebyshev} y de
-\[
-\sum_{k>N}k^{-m}=O(N^{1-m}).
-\]
-La segunda se obtiene repitiendo el mismo argumento para todo exponente $m$.
-\end{proof}
 
 \subsection{Interpolación baricéntrica y matriz de diferenciación de Chebyshev}
 
@@ -4697,6 +4556,184 @@ w_k = \mu_0\,(\hat{v}_{k,1})^2. \qedhere
 
 \begin{remark}
 El método es extremadamente robusto y bastante eficiente ($O(n^2)$ con el algoritmo QR para matrices tridiagonales simétricas), y permite calcular reglas de cuadratura para cualquier peso cuyos coeficientes de recurrencia $\alpha_k, \beta_k$ se conozcan.  Para las familias clásicas estos tienen fórmulas cerradas; para pesos generales pueden obtenerse por un algoritmo que se debe a Stieltjes.
+\end{remark}
+
+
+
+\section{Error de interpolación}
+
+En varios puntos del capítulo aparecieron cotas escritas en términos del error de interpolación (por ejemplo, al acotar errores de cuadratura mediante la diferencia entre $f$ y su interpolante). Por eso, cerramos con un bloque conceptual único que explique cómo controlar ese error de manera sistemática.
+
+La idea central es separar dos efectos: por un lado, la regularidad de la función, que controla la cola de su expansión espectral; por otro, la elección de nodos, que entra a través de la constante de Lebesgue (equivalentemente, la norma del interpolante). Esta separación permite reutilizar de inmediato cualquier resultado de decaimiento de coeficientes ya probado en el capítulo.
+
+El esquema de esta sección final es: primero, un lema abstracto sobre la constante de Lebesgue y la alcanzabilidad de la cota; luego, una cota universal del error de interpolación por cola espectral; finalmente, la especialización a Chebyshev, donde $\Lambda_N^{Ch}=O(\log N)$ y se obtiene una estimación explícita.
+
+
+\begin{lemma}[Constante de Lebesgue y alcanzabilidad]\label{lem:lebesgue}
+Sea $[a,b]$ un intervalo compacto y sean $x_0,\dots,x_N\in[a,b]$ nodos distintos. Si
+\[
+I_Nf(x)=\sum_{j=0}^N f(x_j)\,\ell_j(x)
+\]
+es el interpolante de Lagrange asociado, definimos
+\[
+\lambda_N(x):=\sum_{j=0}^N|\ell_j(x)|,
+\qquad
+\Lambda_N:=\max_{x\in[a,b]}\lambda_N(x).
+\]
+Entonces, para todo $f\in C([a,b])$,
+\[
+\|I_Nf\|_\infty\le \Lambda_N\,\|f\|_\infty.
+\]
+Además, la cota es óptima: existe $f^\ast\in C([a,b])$, con $\|f^\ast\|_\infty\le1$, tal que
+\[
+\|I_Nf^\ast\|_\infty=\Lambda_N.
+\]
+\end{lemma}
+
+\begin{proof}
+Para todo $x\in[a,b]$,
+\[
+|I_Nf(x)|
+\le \sum_{j=0}^N |f(x_j)|\,|\ell_j(x)|
+\le \|f\|_\infty\sum_{j=0}^N|\ell_j(x)|
+=\|f\|_\infty\,\lambda_N(x)
+\le \Lambda_N\,\|f\|_\infty.
+\]
+Tomando supremo en $x$ obtenemos la desigualdad.
+
+Como $\lambda_N$ es continua en el compacto $[a,b]$, existe $x^\ast$ tal que $\lambda_N(x^\ast)=\Lambda_N$. Definimos
+\[
+\sigma_j:=\operatorname{sgn}(\ell_j(x^\ast))\in\{-1,1\}
+\]
+(si $\ell_j(x^\ast)=0$, elegimos cualquiera de los dos signos), y tomamos $f^\ast\in C([a,b])$ con $f^\ast(x_j)=\sigma_j$ para todo $j$ y $\|f^\ast\|_\infty\le1$ (por ejemplo, una función lineal a trozos entre nodos ordenados).
+Entonces
+\[
+I_Nf^\ast(x^\ast)
+=\sum_{j=0}^N \sigma_j\,\ell_j(x^\ast)
+=\sum_{j=0}^N |\ell_j(x^\ast)|
+=\Lambda_N,
+\]
+y por lo tanto
+\[
+\|I_Nf^\ast\|_\infty\ge\Lambda_N.
+\]
+Combinando con la desigualdad general aplicada a $f^\ast$, concluimos
+\[
+\|I_Nf^\ast\|_\infty=\Lambda_N.
+\]
+\end{proof}
+
+En el caso de nodos de Chebyshev--Lobatto en $[-1,1]$, escribiremos
+\[
+\Lambda_N^{Ch}:=\Lambda_N.
+\]
+
+\begin{theorem}[Cota universal por constante de Lebesgue y cola espectral]\label{thm:cota_universal_lebesgue_cola}
+Sea $[a,b]$ compacto y sea $\{\phi_k\}_{k\ge0}\subset C([a,b])$ una familia de funciones (en particular, puede ser una base ortonormal) tal que existe $M>0$ con
+\[
+\|\phi_k\|_\infty\le M\qquad\forall k\ge0.
+\]
+Para cada $N$, sea $V_N:=\operatorname{span}\{\phi_0,\dots,\phi_N\}$ y sea $I_N:C([a,b])\to V_N$ un interpolante lineal exacto en $V_N$ (es decir, $I_Np=p$ para todo $p\in V_N$), con constante de Lebesgue $\Lambda_N:=\|I_N\|_{\infty\to\infty}$. Si
+\[
+f(x)=\sum_{k=0}^{\infty}a_k\phi_k(x)
+\]
+convergente uniformemente en $[a,b]$, entonces
+\[
+\|f-I_Nf\|_\infty
+\le (1+\Lambda_N)\,\|f-S_Nf\|_\infty
+\le (1+\Lambda_N)\,M\sum_{k>N}|a_k|,
+\]
+donde $S_Nf:=\sum_{k=0}^{N}a_k\phi_k$.
+\end{theorem}
+
+\begin{proof}
+Como $I_N$ es exacto en $V_N$, se tiene $I_NS_Nf=S_Nf$. Luego
+\[
+f-I_Nf=(f-S_Nf)-I_N(f-S_Nf).
+\]
+Tomando norma supremo y usando $\|I_N\|_{\infty\to\infty}=\Lambda_N$,
+\[
+\|f-I_Nf\|_\infty
+\le \|f-S_Nf\|_\infty+\|I_N(f-S_Nf)\|_\infty
+\le (1+\Lambda_N)\,\|f-S_Nf\|_\infty.
+\]
+Además,
+\[
+f-S_Nf=\sum_{k>N}a_k\phi_k,
+\]
+y por desigualdad triangular,
+\[
+\|f-S_Nf\|_\infty
+\le \sum_{k>N}|a_k|\,\|\phi_k\|_\infty
+\le M\sum_{k>N}|a_k|.
+\]
+Combinando ambas desigualdades se obtiene la cota.
+\end{proof}
+
+\begin{remark}[Caso Chebyshev]
+Aplicando el Teorema~\ref{thm:cota_universal_lebesgue_cola} con la familia de Chebyshev clásica $\phi_k=T_k$ (para la cual $\|T_k\|_\infty\le1$), se recupera la Proposición~\ref{prop:error_interp_cheb_sin_aliasing}.
+\end{remark}
+
+\begin{proposition}[Cota del error de interpolación sin aliasing]\label{prop:error_interp_cheb_sin_aliasing}
+Sea
+\[
+S_N^{Ch}f(x):=\frac{a_0}{2}+\sum_{k=1}^{N}a_kT_k(x)
+\]
+el truncamiento de la serie de Chebyshev de $f$. Entonces
+\[
+\|f-I_N^{Ch}f\|_\infty
+\le (1+\Lambda_N^{Ch})\,\|f-S_N^{Ch}f\|_\infty
+\le (1+\Lambda_N^{Ch})\sum_{k>N}|a_k|.
+\]
+\end{proposition}
+
+\begin{proof}
+Como $I_N^{Ch}(S_N^{Ch}f)=S_N^{Ch}f$, se tiene
+\[
+f-I_N^{Ch}f=(f-S_N^{Ch}f)-I_N^{Ch}(f-S_N^{Ch}f).
+\]
+Tomando norma supremo y aplicando el Lema~\ref{lem:lebesgue},
+\[
+\|f-I_N^{Ch}f\|_\infty
+\le \|f-S_N^{Ch}f\|_\infty+\|I_N^{Ch}(f-S_N^{Ch}f)\|_\infty
+\le (1+\Lambda_N^{Ch})\,\|f-S_N^{Ch}f\|_\infty.
+\]
+Además,
+\[
+f(x)-S_N^{Ch}f(x)=\sum_{k>N}a_kT_k(x),
+\]
+y como $|T_k(x)|\le1$ en $[-1,1]$,
+\[
+\|f-S_N^{Ch}f\|_\infty\le\sum_{k>N}|a_k|.
+\]
+Juntando ambas desigualdades se obtiene la cota.
+\end{proof}
+
+\begin{corollary}[Cota con factor logarítmico]\label{cor:error_interp_chebyshev_lebesgue}
+Si $|a_k|=O(k^{-m})$ con $m>1$ y se usa el crecimiento clásico
+\[
+\Lambda_N^{Ch}=O(\log N),
+\]
+entonces
+\[
+\|f-I_N^{Ch}f\|_\infty=O\bigl(N^{1-m}\log N\bigr).
+\]
+\end{corollary}
+
+\begin{proof}
+Por la Proposición~\ref{prop:error_interp_cheb_sin_aliasing},
+\[
+\|f-I_N^{Ch}f\|_\infty
+\le (1+\Lambda_N^{Ch})\sum_{k>N}|a_k|.
+\]
+Como $\sum_{k>N}|a_k|=O(N^{1-m})$ y $\Lambda_N^{Ch}=O(\log N)$, resulta
+\[
+\|f-I_N^{Ch}f\|_\infty=O\bigl(N^{1-m}\log N\bigr).
+\]
+\end{proof}
+
+\begin{remark}[No optimalidad de la cota y mejora tipo Jackson]
+La cota anterior es elemental y útil, pero no es ajustada en general. En teoría de aproximación, resultados tipo Jackson mejoran un orden en $N$ respecto de esta estimación; en particular, bajo hipótesis de regularidad más finas se obtiene una tasa del tipo $O(N^{-m}\log N)$ (y, según el marco y regularidad adicional, puede mejorarse aún más).
 \end{remark}
 
 
@@ -7075,101 +7112,117 @@ En $C(\mathbb T;\mathbb C)$ consideramos la sub\'algebra
 Contiene constantes, es cerrada por conjugaci\'on porque $\overline{z^k}=z^{-k}$ en $\mathbb T$, y separa puntos porque $z\mapsto z$ separa puntos en $\mathbb T$. Por el Teorema~\ref{thm:stone_weierstrass_complejo}, $\mathcal A$ es densa en $C(\mathbb T;\mathbb C)$. Volviendo a la variable $x$, esto es exactamente la densidad uniforme de $\mathcal T$ en $C_{per}([0,2\pi];\mathbb C)$.
 \end{proof}
 
-Con la densidad uniforme establecida en $C_{per}$, el paso siguiente es llevar la aproximaci\'on al marco $L^2$ para funciones continuas a trozos, que es el entorno natural en que vamos a formular Parseval.
+Con la densidad uniforme establecida en $C_{per}$, el paso siguiente es llevar la aproximaci\'on al marco $L^2$ para funciones Riemann integrables. Para esto usamos un operador de promediado local (argumento de Lyapunov, 1898), que regulariza la función y converge a ella en norma $L^2$.
+
+\begin{lemma}[Promediado local de Lyapunov en $L^2$]\label{lem:lyapunov_promedio_L2}
+Sea $f:[0,2\pi]\to\mathbb C$ una función $2\pi$-periódica y Riemann integrable. Para $0<h<\pi$, definimos
+\[
+(\mathcal L_h f)(x):=\frac1{2h}\int_{x-h}^{x+h} f(t)\,dt,
+\]
+donde la integral se toma sobre la extensión $2\pi$-periódica de $f$.
+Entonces:
+\begin{enumerate}
+\item $\mathcal L_h f\in C_{per}([0,2\pi];\mathbb C)$;
+\item $\|\mathcal L_h f-f\|_{L^2}\xrightarrow[h\downarrow 0]{}0$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Sea $\widetilde f$ la extensión periódica de $f$ a $\mathbb R$ y definamos
+\[
+F(x):=\int_0^x \widetilde f(t)\,dt.
+\]
+Como $\widetilde f$ es Riemann integrable y acotada en compactos, $F$ es continua. Además,
+\[
+(\mathcal L_h f)(x)=\frac{F(x+h)-F(x-h)}{2h},
+\]
+que es continua en $x$. La periodicidad se obtiene de $F(x+2\pi)=F(x)+C$, pues al tomar la diferencia centrada la constante $C$ se cancela.
+
+Para la convergencia en $L^2$, sea $\tau_t f(x):=f(x-t)$. Escribimos
+\[
+\mathcal L_h f-f=\frac1{2h}\int_{-h}^{h}(\tau_t f-f)\,dt.
+\]
+Aplicando Cauchy--Schwarz en la variable $t$,
+\[
+\left|\frac1{2h}\int_{-h}^{h}(\tau_t f(x)-f(x))\,dt\right|^2
+\le
+\frac1{2h}\int_{-h}^{h}|\tau_t f(x)-f(x)|^2\,dt.
+\]
+Integrando en $x$ y usando Fubini,
+\[
+\|\mathcal L_h f-f\|_{L^2}^2
+\le
+\frac1{2h}\int_{-h}^{h}\|\tau_t f-f\|_{L^2}^2\,dt.
+\]
+Basta entonces probar que $\|\tau_t f-f\|_{L^2}\to0$ cuando $t\to0$.
+
+Fijado $\varepsilon>0$, como $f$ es Riemann integrable en compacto, existe una función escalonada periódica $s$ tal que
+\[
+\|f-s\|_{L^2}<\varepsilon.
+\]
+Por invarianza traslacional de la norma $L^2$,
+\[
+\|\tau_t f-f\|_{L^2}
+\le \|\tau_t(f-s)\|_{L^2}+\|\tau_t s-s\|_{L^2}+\|s-f\|_{L^2}
+\le 2\varepsilon+\|\tau_t s-s\|_{L^2}.
+\]
+Si $s$ tiene saltos en $\xi_1,\dots,\xi_m$ y $\|s\|_\infty\le A$, entonces $\tau_t s-s$ sólo puede ser no nula en la unión de intervalos de longitud total $\le 2m|t|$, y allí
+\[
+|\tau_t s-s|\le 2A.
+\]
+Por lo tanto,
+\[
+\|\tau_t s-s\|_{L^2}^2\le (2A)^2\,2m|t|=8A^2m|t|,
+\]
+de donde $\|\tau_t s-s\|_{L^2}\to0$ cuando $t\to0$.
+
+Concluimos que existe $\delta>0$ tal que, si $|t|<\delta$,
+\[
+\|\tau_t f-f\|_{L^2}<3\varepsilon.
+\]
+Volviendo a la cota de promedio,
+\[
+\|\mathcal L_h f-f\|_{L^2}^2
+\le
+\frac1{2h}\int_{-h}^{h}\|\tau_t f-f\|_{L^2}^2\,dt
+\le (3\varepsilon)^2
+\quad (0<h<\delta),
+\]
+y por tanto
+\[
+\|\mathcal L_h f-f\|_{L^2}\xrightarrow[h\downarrow0]{}0.
+\]
+\end{proof}
 
 \begin{theorem}[Densidad trigonom\'etrica en $L^2$ (marco Riemann)]\label{thm:densidad_trig_L2_riemann}
-Sea $f:[0,2\pi]\to\mathbb C$ una funci\'on $2\pi$-peri\'odica y continua a trozos. Entonces, para todo $\varepsilon>0$, existe $p\in\mathcal T$ tal que
+Sea $f:[0,2\pi]\to\mathbb C$ una función $2\pi$-periódica y Riemann integrable. Entonces, para todo $\varepsilon>0$, existe $p\in\mathcal T$ tal que
 \[
 \|f-p\|_{L^2}<\varepsilon.
 \]
 \end{theorem}
 
 \begin{proof}
-Como $f$ es continua a trozos en un intervalo compacto, es acotada: existe $M>0$ con $|f(x)|\le M$.
-
-Sean $x_1,\dots,x_m$ los puntos de discontinuidad de $f$ (finitos). Dado $\delta>0$, elegimos intervalos abiertos disjuntos $I_j$ centrados en $x_j$ tales que
+Por el Lema~\ref{lem:lyapunov_promedio_L2}, existe $h>0$ tal que
 \[
-\sum_{j=1}^m |I_j|<\delta.
+\|f-\mathcal L_h f\|_{L^2}<\frac{\varepsilon}{2},
 \]
-Definimos $h:[0,2\pi]\to\mathbb C$ as\'i: $h=f$ fuera de $\bigcup_j I_j$, y en cada $I_j$ conectamos linealmente los valores de $f$ en los extremos de $I_j$. Entonces $h\in C_{per}([0,2\pi];\mathbb C)$ y
-\[
-|f-h|\le 2M,
-\qquad
-\operatorname{supp}(f-h)\subset\bigcup_{j=1}^m I_j.
-\]
-Por lo tanto,
-\[
-\|f-h\|_{L^2}^2=\int_0^{2\pi}|f-h|^2
-\le 4M^2\sum_{j=1}^m|I_j|<4M^2\delta.
-\]
-Tomando $\delta<\varepsilon^2/(16M^2)$ obtenemos
-\[
-\|f-h\|_{L^2}<\frac{\varepsilon}{2}.
-\]
+y además $\mathcal L_h f\in C_{per}([0,2\pi];\mathbb C)$.
 
 Por el Corolario~\ref{cor:densidad_trig_uniforme_stone}, existe $p\in\mathcal T$ tal que
 \[
-\|h-p\|_\infty<\frac{\varepsilon}{2\sqrt{2\pi}}.
+\|\mathcal L_h f-p\|_\infty<\frac{\varepsilon}{2\sqrt{2\pi}}.
 \]
 Luego
 \[
-\|h-p\|_{L^2}\le \sqrt{2\pi}\,\|h-p\|_\infty<\frac{\varepsilon}{2}.
+\|\mathcal L_h f-p\|_{L^2}\le \sqrt{2\pi}\,\|\mathcal L_h f-p\|_\infty<\frac{\varepsilon}{2}.
 \]
 Finalmente,
 \[
-\|f-p\|_{L^2}\le \|f-h\|_{L^2}+\|h-p\|_{L^2}<\varepsilon.
+\|f-p\|_{L^2}\le \|f-\mathcal L_h f\|_{L^2}+\|\mathcal L_h f-p\|_{L^2}<\varepsilon.
 \]
 \end{proof}
 
 Esta densidad en norma $L^2$ es exactamente la pieza que faltaba: combinada con la propiedad de proyecci\'on ortogonal, permite hacer desaparecer el resto en la identidad de energ\'ia y llegar a Parseval.
-
-\begin{theorem}[Parseval para funciones continuas a trozos]\label{thm:parseval_C1_per}
-Sea $f:[0,2\pi]\to\mathbb C$ una funci\'on $2\pi$-peri\'odica y continua a trozos. Definimos
-\[
-S_Nf(x)=\sum_{|k|\le N}\hat f_k e^{ikx},
-\qquad
-\hat f_k=\frac{1}{2\pi}\int_0^{2\pi}f(x)e^{-ikx}\,dx.
-\]
-Entonces
-\[
-\|f\|_{L^2}^2=2\pi\sum_{k\in\mathbb Z}|\hat f_k|^2.
-\]
-\end{theorem}
-
-\begin{proof}
-Sea
-\[
-\mathcal T_N:=\operatorname{span}\{e^{ikx}:|k|\le N\}.
-\]
-La interpretaci\'on de $S_N f$ como proyecci\'on ortogonal sobre $\mathcal T_N$ y su propiedad de mejor aproximaci\'on ya fueron demostradas en el Teorema~\ref{thm:mejor_aprox}. En particular, para todo $p\in\mathcal T_N$,
-\[
-\|f-p\|_{L^2}^2=\|f-S_Nf\|_{L^2}^2+\|S_Nf-p\|_{L^2}^2\ge \|f-S_Nf\|_{L^2}^2.
-\]
-
-Adem\'as, por ortogonalidad de los exponentiales complejos,
-\[
-\|S_Nf\|_{L^2}^2=2\pi\sum_{|k|\le N}|\hat f_k|^2,
-\]
-y por Pit\'agoras para la descomposici\'on ortogonal $f=S_Nf+(f-S_Nf)$,
-\[
-\|f\|_{L^2}^2=2\pi\sum_{|k|\le N}|\hat f_k|^2+\|f-S_Nf\|_{L^2}^2.
-\]
-
-Sea ahora $\varepsilon>0$. Por el Teorema~\ref{thm:densidad_trig_L2_riemann}, existe un polinomio trigonom\'etrico
-\[
-p(x)=\sum_{|k|\le m}c_k e^{ikx}
-\]
-tal que $\|f-p\|_{L^2}<\varepsilon$. Para $N\ge m$, se tiene $p\in\mathcal T_N$, y por la propiedad anterior
-\[
-\|f-S_Nf\|_{L^2}\le \|f-p\|_{L^2}<\varepsilon.
-\]
-Por lo tanto, $\|f-S_Nf\|_{L^2}\to 0$.
-
-Pasando al l\'imite en la igualdad anterior, obtenemos
-\[
-\|f\|_{L^2}^2=2\pi\sum_{k\in\mathbb Z}|\hat f_k|^2.
-\]
-\end{proof}
 
 \section{Derivación término a término de la serie de Fourier}
 
@@ -7321,7 +7374,7 @@ S_Nf(x)\to \frac{f(x^+)+f(x^-)}{2}
 \item Este umbral es esencialmente óptimo: existe $f\in L^1([0,2\pi])$ cuya serie de Fourier diverge casi en todo punto (Kolmogorov).
 \end{itemize}
 
-Estas tres referencias marcan una frontera conceptual \`util: desde el punto de vista num\'erico, nuestras hip\'otesis de suavidad son naturales y productivas; desde el punto de vista anal\'itico, el comportamiento de las series de Fourier en baja regularidad exige herramientas mucho m\'as finas.
+Estas tres referencias marcan una frontera conceptual \`util: desde el punto de vista num\'erico, nuestras hip\'otesis de suavidad son naturales y productivas; desde el punto de vista anal\'itico, el comportamiento de las series de Fourier en baja regularidad exige herramientas m\'as finas.
 
 
 
