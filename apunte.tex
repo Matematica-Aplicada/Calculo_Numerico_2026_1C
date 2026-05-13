@@ -3242,6 +3242,39 @@ La identidad general se obtiene restando
 \]
 \end{proof}
 
+\begin{theorem}[Unicidad de los coeficientes de Fourier]\label{thm:unicidad_coeficientes_fourier}
+Sea $n\in\mathbb N\cup\{0\}$ y sea $f\in C^n_{per}([0,2\pi];\mathbb C)$. Si $(c_k)_{k\in\mathbb Z}\subset\mathbb C$ satisface
+\[
+f=\sum_{k\in\mathbb Z} c_k e^{ikx}
+\]
+donde la convergencia es en el sentido de la norma 2, es decir $\| S_Nf - f \|_2 \to 0$. Entonces
+\[
+c_k=\hat f_k\qquad\text{para todo }k\in\mathbb Z.
+\]
+\end{theorem}
+
+\begin{proof}
+Para $N\ge |m|$, por ortogonalidad de las exponenciales complejas,
+\[
+(S_N,e_m)=\sum_{|k|\le N}c_k(e_k,e_m)=2\pi c_m.
+\]
+Además, la continuidad del producto interno respecto de la norma (Cauchy--Schwarz) da
+\[
+|(f,e_m)-(S_N,e_m)|=|(f-S_N,e_m)|
+\le \|f-S_N\|_2\,\|e_m\|_2\xrightarrow[N\to\infty]{}0,
+\]
+de donde
+\[
+(f,e_m)=\lim_{N\to\infty}(S_N,e_m)=2\pi c_m.
+\]
+Por la definición de coeficiente de Fourier complejo,
+\[
+\hat f_m=\frac{(f,e_m)}{2\pi}=c_m.
+\]
+Como $m$ es arbitrario, vale para todo índice.
+\end{proof}
+
+
 
 \section{Series de Fourier de funciones suaves periódicas}\label{sec:series_fourier_suaves}
 
@@ -3836,12 +3869,53 @@ Aquí $\lambda_k=k^2+V_0\sim k^2$ (es decir, $m=2$). Por el Teorema~\ref{thm:dec
 \]
 \end{proof}
 
+\begin{proposition}[Convoluci\'on peri\'odica y producto de coeficientes de Fourier]\label{prop:convolucion_periodica_producto}
+Sean $k,u\in C_{per}([0,2\pi];\mathbb{C})$ y definamos
+\[
+(k*u)(x):=\frac{1}{2\pi}\int_0^{2\pi}k(x-t)u(t)\,dt.
+\]
+Entonces, para todo $n\in\mathbb{Z}$,
+\[
+\widehat{(k*u)}_n=\hat k_n\,\hat u_n.
+\]
+En particular, la serie de Fourier de $k*u$ es
+\[
+(k*u)(x)\sim\sum_{n\in\mathbb{Z}}\hat k_n\,\hat u_n\,e^{inx}.
+\]
+\end{proposition}
+
+\begin{proof}
+Usando la definici\'on de coeficiente de Fourier y Fubini (en dominio compacto e integrando continuo),
+\[
+\widehat{(k*u)}_n
+=\frac{1}{2\pi}\int_0^{2\pi}\!\left(\frac{1}{2\pi}\int_0^{2\pi}k(x-t)u(t)\,dt\right)e^{-inx}\,dx
+=\frac{1}{2\pi}\int_0^{2\pi}u(t)\left(\frac{1}{2\pi}\int_0^{2\pi}k(x-t)e^{-inx}\,dx\right)dt.
+\]
+En la integral interna hacemos el cambio $y=x-t$; por periodicidad,
+\[
+\frac{1}{2\pi}\int_0^{2\pi}k(x-t)e^{-inx}\,dx
+=\frac{1}{2\pi}\int_0^{2\pi}k(y)e^{-in(y+t)}\,dy
+=e^{-int}\,\hat k_n.
+\]
+Sustituyendo,
+\[
+\widehat{(k*u)}_n
+=\hat k_n\,\frac{1}{2\pi}\int_0^{2\pi}u(t)e^{-int}\,dt
+=\hat k_n\,\hat u_n.
+\]
+Esto prueba la identidad modal, y la expresi\'on de la serie resulta inmediata al reemplazar los coeficientes de Fourier de $k*u$.
+\end{proof}
+
 \begin{remark}[Convolución periódica]
 Para la ecuación integral $Ku=f$ con
 \[
 (Ku)(x)=\frac1{2\pi}\int_0^{2\pi}k(x-t)u(t)\,dt,
 \]
-se tiene $\hat u_n=\hat f_n/\hat k_n$, y por Parseval
+por la Proposición~\ref{prop:convolucion_periodica_producto} se tiene
+\[
+\widehat{Ku}_n=\hat k_n\,\hat u_n.
+\]
+Por lo tanto, si $\hat k_n\neq 0$, entonces $\hat u_n=\hat f_n/\hat k_n$, y por Parseval
 \[
 \|u-u_N\|_2^2=2\pi\sum_{|n|>N}\frac{|\hat f_n|^2}{|\hat k_n|^2}.
 \]
