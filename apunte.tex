@@ -3465,7 +3465,7 @@ Pero $g$ es $2\pi$-periódica (producto de funciones $2\pi$-periódicas), de mod
 Dividiendo por $2\pi$ obtenemos exactamente la fórmula anunciada.
 \end{proof}
 
-La efectividad de esta aproximación para funciones periódicas se apoya en una ortogonalidad discreta elemental de los modos exponenciales. En lo que sigue, cuando discutamos exactitud de orden, tomaremos la convención $M=2N+1$.
+La efectividad de esta aproximación para funciones periódicas se apoya en una ortogonalidad discreta elemental de los modos exponenciales. 
 
 \begin{lemma}[Exactitud de la cuadratura trapezoidal para exponenciales complejas]\label{lem:trap_exp}
 Sea $M \geq 1$ entero, $h = 2\pi/M$ y $x_j = jh$ para $j=0,\ldots,M-1$. Para cada $\ell\in\mathbb Z$, definimos
@@ -3494,7 +3494,6 @@ Q_\ell^{(M)}=I_\ell
 \quad\Longleftrightarrow\quad
 \ell=0\ \text{o}\ \ell\not\equiv 0\pmod M.
 \]
-Es decir, la trapezoidal periódica falla sólo en los modos resonantes no nulos $\ell=mM$ ($m\in\mathbb Z\setminus\{0\}$). Si $M=2N+1$, la regla es exacta para todo $|\ell|\le 2N$ y falla por primera vez en $\ell=\pm(2N+1)$.
 \end{lemma}
 \begin{proof}
 Para la integral exacta,
@@ -3514,6 +3513,22 @@ Si $\ell\equiv 0\pmod M$, cada término vale $1$ y la suma es $1$. Si $\ell\not\
 \sum_{j=0}^{M-1} w^j = \frac{w^M - 1}{w - 1} = \frac{e^{2\pi i \ell} - 1}{w - 1} = 0,
 \]
 ya que $e^{2\pi i \ell} = 1$. Multiplicando por $2\pi$ se obtiene la fórmula para $Q_\ell^{(M)}$.
+\end{proof}
+
+\begin{corollary}[Exactitud de trapecios para polinomios trigonométricos acotados en frecuencia]\label{cor:trap_exactitud_grado_d}
+Sea $N\ge 1$ y $x_j=\frac{2\pi j}{N}$, $j=0,\dots,N-1$. Entonces la regla trapezoidal periódica de $N$ puntos es exacta para todo
+\[
+p(x)=\sum_{|k|\le d} c_k e^{ikx}
+\]
+tal que $d\le N-1$, es decir,
+\[
+\int_0^{2\pi}p(x)\,dx
+=\frac{2\pi}{N}\sum_{j=0}^{N-1}p(x_j).
+\]
+\end{corollary}
+
+\begin{proof}
+Se aplica el Lema~\ref{lem:trap_exp} con $M=N$: para cada modo $e^{ikx}$ con $|k|\le d\le N-1$, si $k\neq 0$ entonces $k\not\equiv 0\pmod N$, y por lo tanto $Q_k^{(N)}=I_k$. Para $k=0$, también vale $Q_0^{(N)}=I_0=2\pi$. Por linealidad en la suma finita de modos, se obtiene la igualdad anunciada.
 \end{proof}
 
 \begin{proposition}[Aliasing de los coeficientes discretos]\label{prop:aliasing_coef_discretos}
@@ -3564,6 +3579,96 @@ Por el Lema~\ref{lem:trap_exp}, el paréntesis vale $1$ si $\ell-k$ es múltiplo
 \]
 \end{proof}
 
+\begin{proposition}[Primera cota del error trapezoidal vía proyección]\label{prop:trapecio_cota_proyeccion}
+Sea $f\in C_{per}([0,2\pi])$, sea $N\ge 1$ y definamos
+\[
+Q_N(f):=\frac{2\pi}{N}\sum_{j=0}^{N-1}f\!\left(\frac{2\pi j}{N}\right),
+\qquad
+S_{N-1}f(x):=\sum_{|k|\le N-1}\hat f_k e^{ikx}.
+\]
+Entonces
+\[
+\left|\int_0^{2\pi} f(x)\,dx-Q_N(f)\right|
+\le 4\pi\,\|f-S_{N-1}f\|_\infty.
+\]
+En particular,
+\[
+\left|\int_0^{2\pi} f(x)\,dx-Q_N(f)\right|
+\le 4\pi\sum_{|k|\ge N}|\hat f_k|.
+\]
+\end{proposition}
+
+\begin{proof}
+Como
+\[
+S_{N-1}f(x)=\sum_{|k|\le N-1}\hat f_k e^{ikx},
+\]
+aplicamos el Corolario~\ref{cor:trap_exactitud_grado_d} con $d:=N-1$. La regla de $N$ puntos es exacta para $S_{N-1}f$:
+\[
+Q_N(S_{N-1}f)=\int_0^{2\pi}S_{N-1}f(x)\,dx.
+\]
+Restando, con $r_{N-1}:=f-S_{N-1}f$,
+\[
+\int_0^{2\pi} f(x)\,dx-Q_N(f)
+=\int_0^{2\pi} r_{N-1}(x)\,dx-Q_N(r_{N-1}).
+\]
+Luego
+\[
+\left|\int_0^{2\pi} r_{N-1}\right|\le 2\pi\|r_{N-1}\|_\infty,
+\qquad
+|Q_N(r_{N-1})|\le \frac{2\pi}{N}\sum_{j=0}^{N-1}\|r_{N-1}\|_\infty=2\pi\|r_{N-1}\|_\infty,
+\]
+y por desigualdad triangular
+\[
+\left|\int_0^{2\pi} f-Q_N(f)\right|\le 4\pi\|r_{N-1}\|_\infty=4\pi\|f-S_{N-1}f\|_\infty.
+\]
+La segunda desigualdad se obtiene de
+\[
+\|f-S_{N-1}f\|_\infty=\left\|\sum_{|k|\ge N}\hat f_k e^{ikx}\right\|_\infty
+\le \sum_{|k|\ge N}|\hat f_k|.\qedhere
+\]
+\end{proof}
+
+\begin{corollary}[Cota explícita del error usando $|\hat f_k|=O(|k|^{-n})$]\label{cor:trap_cota_cola_fourier}
+Sea $f\in C_{per}([0,2\pi])$ y supongamos que existen $n>1$ y $C_n>0$ tales que
+\[
+|\hat f_k|\le C_n\,|k|^{-n},\qquad k\neq 0.
+\]
+Entonces, para todo $N\ge 2$,
+\[
+\left|\int_0^{2\pi} f(x)\,dx-Q_N(f)\right|
+\le 8\pi C_n\sum_{k=N}^{\infty}k^{-n}
+\le \frac{8\pi C_n}{n-1}(N-1)^{1-n}
+=O\big(N^{1-n}\big).
+\]
+\end{corollary}
+
+\begin{proof}
+Por la Proposición~\ref{prop:trapecio_cota_proyeccion},
+\[
+\left|\int_0^{2\pi} f-Q_N(f)\right|
+\le 4\pi\sum_{|k|\ge N}|\hat f_k|.
+\]
+Usando la hipótesis de decaimiento y simetría de índices,
+\[
+\sum_{|k|\ge N}|\hat f_k|
+\le C_n\sum_{|k|\ge N}|k|^{-n}
+=2C_n\sum_{k=N}^{\infty}k^{-n}.
+\]
+Luego
+\[
+\left|\int_0^{2\pi} f-Q_N(f)\right|
+\le 8\pi C_n\sum_{k=N}^{\infty}k^{-n}.
+\]
+Finalmente, por comparación integral para $n>1$,
+\[
+\sum_{k=N}^{\infty}k^{-n}
+\le \int_{N-1}^{\infty}x^{-n}\,dx
+=\frac{(N-1)^{1-n}}{n-1},
+\]
+y se obtiene la cota anunciada.\qedhere
+\end{proof}
+
 \begin{theorem}[Convergencia espectral del trapecio periódico]\label{thm:trap_espectral}
 Sea $f \in C^n_{per}([0,2\pi])$ con $n \geq 2$ y sea
 \[
@@ -3576,6 +3681,8 @@ Entonces el error de la regla del trapecio periódica con $2N+1$ nodos satisface
 Para $f \in C^\infty_{per}$, la convergencia es más rápida que cualquier potencia de $1/N$ (\textbf{convergencia espectral}).
 \end{theorem}
 \begin{proof}
+La Proposición~\ref{prop:trapecio_cota_proyeccion} ya da una primera estimación del error en términos del resto de proyección. A continuación usamos aliasing para obtener una cota más ajustada: en lugar de sumar toda la cola $|k|>N$, sólo intervienen los modos resonantes $k=m(2N+1)$.
+
 Por la Proposición~\ref{prop:aliasing_coef_discretos} con $M=2N+1$ y $k=0$:
 \[
 \tilde f_0^{(2N+1)}=\sum_{m\in\mathbb Z}\hat f_{m(2N+1)}=\hat f_0+\sum_{m\neq 0}\hat f_{m(2N+1)}.
@@ -3823,49 +3930,63 @@ Definimos una nueva función $g(\theta)$ compuesta:
 \[
 g(\theta) = f(\cos(\theta)).
 \]
-Esta función $g(\theta)$ tiene propiedades notables:
-\begin{enumerate}
-\item Está definida en $[0, \pi]$.
-\item Podemos extenderla a $[-\pi, \pi]$ como una función par ($g(-\theta) = f(\cos(-\theta)) = f(\cos(\theta)) = g(\theta)$).
-\item Podemos extenderla a todo $\mathbb{R}$ como una función $2\pi$-periódica.
-\end{enumerate}
+Esta función $g(\theta)$ es $2\pi$-periódica, y además es suave si $f$ es suave, como muestra el siguiente Lema.
 
-\begin{lemma}[Suavidad de la extensión periódica]\label{lem:suavidad_chebyshev}
-Sea $f \in C^m([-1,1])$ con $m \geq 0$.  Entonces la función $g(\theta) = f(\cos\theta)$, extendida a todo $\mathbb{R}$ por paridad y $2\pi$-periodicidad, pertenece a $C^m_{per}(\mathbb{R})$.  En particular, $g$ es suave en los puntos de pegado $\theta = k\pi$ ($k \in \mathbb{Z}$) sin imponer ninguna condición de periodicidad sobre~$f$.
+\begin{lemma}[Suavidad y periodicidad en el intervalo $(-\pi,\pi)$ con pegado en $\pm\pi$]\label{lem:suavidad_chebyshev}
+Sea $f \in C^m([-1,1])$ con $m \geq 0$, y definamos
+\[
+g(\theta):=f(\cos\theta),\qquad \theta\in[-\pi,\pi].
+\]
+Entonces $g\in C^m([-\pi,\pi])$ y, para todo $0\le j\le m$,
+\[
+g^{(j)}(-\pi)=g^{(j)}(\pi).
+\]
 \end{lemma}
 
 \begin{proof}
-Definimos directamente, para todo $\theta\in\mathbb R$,
+Primero, en el interior $(-\pi,\pi)$ tenemos $\cos\theta\in(-1,1)$. Como $f\in C^m([-1,1])$, aplicando iteradamente la regla de la cadena (Teorema~\ref{thm:regla_cadena_appendix}) y la regla del producto, concluimos que $g\in C^m((-\pi,\pi))$. Para justificar la suavidad en los bordes, un camino muy directo consiste en construir una extensión suave de $f$ a todo $\mathbb{R}$ que coincida con $f$ en $[-1,1]$. Luego, al componer con el coseno, obtendremos una función periódica suave que coincide con $g$ en $[-\pi,\pi]$. En una dimensión, una construcción simple es pegar los polinomios de Taylor de orden $m$ en $\pm1$:
 \[
-g(\theta):=f(\cos\theta).
+P_{-1}(x):=\sum_{k=0}^m \frac{f^{(k)}(-1)}{k!}(x+1)^k,
+\qquad
+P_1(x):=\sum_{k=0}^m \frac{f^{(k)}(1)}{k!}(x-1)^k,
 \]
-Esta definición coincide con la extensión por paridad y $2\pi$-periodicidad porque $\cos$ es par y $2\pi$-periódica. En $(0,\pi)$, $g=f\circ\cos$ es $C^m$ por regla de la cadena. El punto a chequear es el pegado en $0$ y $\pi$. 
+\[
+\tilde f(x):=
+\begin{cases}
+P_{-1}(x), & x<-1,\\
+f(x), & -1\le x\le 1,\\
+P_1(x), & x>1.
+\end{cases}
+\]
+Definimos entonces
+\[
+G(\theta):=\tilde f(\cos\theta),\qquad \theta\in\mathbb R.
+\]
+De nuevo por regla de la cadena, $G\in C^m(\mathbb R)$. Además, como $\cos(\theta+2\pi)=\cos\theta$, se tiene $G(\theta+2\pi)=G(\theta)$, y por lo tanto
+\[
+G^{(j)}(\theta+2\pi)=G^{(j)}(\theta),\qquad 0\le j\le m.
+\]
 
-La primera derivada es explícita:
+Finalmente, en $[-\pi,\pi]$ vale $\cos\theta\in[-1,1]$, luego
 \[
-g'(\theta)=-f'(\cos\theta)\sin\theta.
+g(\theta)=f(\cos\theta)=\tilde f(\cos\theta)=G(\theta).
 \]
-Luego $g'(0)=g'(\pi)=0$ (porque $\sin 0=\sin\pi=0$), y por tanto no hay salto en esos puntos. Para órdenes superiores, las primeras expresiones son
+Así, $g$ es la restricción de $G$ a $[-\pi,\pi]$, en particular $g\in C^m([\-\pi,\pi])$, y
 \[
-g''(\theta)=f''(\cos\theta)\sin^2\theta-f'(\cos\theta)\cos\theta,
+g^{(j)}(-\pi)=G^{(j)}(-\pi)=G^{(j)}(\pi)=g^{(j)}(\pi),\qquad 0\le j\le m.
 \]
-\[
-g'''(\theta)=-f'''(\cos\theta)\sin^3\theta+3f''(\cos\theta)\sin\theta\cos\theta+f'(\cos\theta)\sin\theta,
-\]
-y, en general (por derivación iterada/Faa di Bruno),
-\[
-g^{(j)}(\theta)=\sum_{r=1}^{j} f^{(r)}(\cos\theta)\,P_{j,r}(\sin\theta,\cos\theta),\qquad j\le m,
-\]
-donde cada $P_{j,r}$ es un polinomio. Así, cada término tiene límite finito cuando $\theta\to0$ o $\theta\to\pi$, ya que $f^{(r)}$ es continua en $[-1,1]$ y $\sin,\cos$ son continuas. Además, como $g$ es par, se cumple $g^{(j)}(-\theta)=(-1)^j g^{(j)}(\theta)$: para $j$ impar, $g^{(j)}(0)=0$; para $j$ par, los límites laterales en $0$ coinciden. En $\pi$ se razona igual escribiendo $h(\varphi):=g(\pi+\varphi)=f(-\cos\varphi)$ y aplicando el mismo argumento en $\varphi=0$. Concluimos que $g\in C^m$ en $[-\pi,\pi]$ y, como los valores y derivadas hasta orden $m$ coinciden en $-\pi$ y $\pi$, su extensión $2\pi$-periódica pertenece a $C^m_{per}(\mathbb R)$.
 \end{proof}
+Este lema es la razón fundamental por la que las series de Chebyshev evitan el fenómeno de Gibbs: la composición con el coseno convierte cualquier función suave en $[-1,1]$ en una función suave y periódica en $[-\pi,\pi]$, a la cual podemos aplicar la teoría de Fourier sin problemas de convergencia.
 
-Este lema es la razón fundamental por la que las series de Chebyshev evitan el fenómeno de Gibbs: la composición con el coseno convierte cualquier función suave en $[-1,1]$ en una función periódica igualmente suave, sin introducir discontinuidades artificiales en los puntos de pegado.
-
-Por el Lema~\ref{lem:suavidad_chebyshev}, $g \in C^m_{per}(\mathbb{R})$ y podemos desarrollarla en serie de Fourier.  Como $g$ es par, la serie solo tiene términos cosenos:
+Como $g$ es par, la serie solo tiene términos cosenos:
 \[
 g(\theta) = \frac{a_0}{2} + \sum_{k=1}^\infty a_k \cos(k\theta),
 \]
-con coeficientes $a_k = \frac{2}{\pi}\int_0^{\pi} g(\theta)\cos(k\theta)\,d\theta$.  Para volver a la variable original $x = \cos\theta$, introducimos la siguiente notación.
+con coeficientes $a_k = \frac{2}{\pi}\int_0^{\pi} g(\theta)\cos(k\theta)\,d\theta$.  Cuando volvemos a la variable original $x = \cos\theta$, se obtienen los polinomios de Chebyshev $T_k(x) = \cos(k\arccos x)$, y la serie de Fourier en cosenos se traduce en la serie de Chebyshev.
+
+\begin{remark}
+La demostración del lema \ref{lem:suavidad_chebyshev} muestra que no hay nada especial en la función coseno: cualquier función suave y periódica, con imagen en $[-1,1]$, serviría para evitar el fenómeno de Gibbs. Sin embargo, el coseno es la elección natural por su simplicidad y por las propiedades adicionales que veremos a continuación.
+\end{remark}
 
 \subsection{Los polinomios de Chebyshev y la serie de Chebyshev}
 
@@ -3877,6 +3998,16 @@ T_k(x) = \cos(k\arccos x).
 \end{definition}
 
 La definición es natural: $T_k$ es simplemente la función $\cos(k\theta)$ expresada en la variable $x = \cos\theta$.  En otras palabras, $T_k(\cos\theta) = \cos(k\theta)$.  Con esta notación, la serie de Fourier en cosenos de $g(\theta) = f(\cos\theta)$ se reescribe directamente en la variable original:
+
+La razón por la que aparecen sólo cosenos es la siguiente. Como $g$ es par, en su serie de Fourier real
+\[
+g(\theta)=\frac{a_0}{2}+\sum_{k=1}^{\infty}\big(a_k\cos(k\theta)+b_k\sin(k\theta)\big),
+\]
+los coeficientes seno satisfacen
+\[
+b_k=\frac{1}{\pi}\int_{-\pi}^{\pi} g(\theta)\sin(k\theta)\,d\theta=0,
+\]
+porque $g$ es par, $\sin(k\theta)$ es impar y el producto es impar. Luego la expansión de Fourier de $g$ contiene únicamente términos coseno.
 
 \begin{definition}[Serie de Chebyshev]\label{def:serie_chebyshev}
 Dada $f \in C([-1,1])$, su \textbf{serie de Chebyshev} es:
@@ -3896,7 +4027,7 @@ Si $f \in C^m([-1,1])$ con $m \geq 1$, entonces sus coeficientes de Chebyshev sa
 \end{theorem}
 
 \begin{proof}
-Por el Lema~\ref{lem:suavidad_chebyshev}, $g(\theta) = f(\cos\theta) \in C^m_{per}(\mathbb{R})$.  Los coeficientes $a_k$ son exactamente los coeficientes de Fourier en cosenos de $g$.  El Teorema~\ref{thm:decaimiento_fourier} aplicado a $g$ da $|a_k| = O(k^{-m})$.
+Por el Lema~\ref{lem:suavidad_chebyshev}, $g(\theta)=f(\cos\theta)$ es $C^m$ en $[-\pi,\pi]$ y satisface periodicidad de borde hasta orden $m$. Definiendo $\widetilde g(t):=g(t-\pi)$ en $[0,2\pi]$, se tiene $\widetilde g\in C^m_{per}([0,2\pi])$. Los coeficientes $a_k$ son los coeficientes de Fourier en cosenos de $g$ (equivalentemente, de $\widetilde g$ tras corrimiento). Aplicando el Teorema~\ref{thm:decaimiento_fourier} a $\widetilde g$, obtenemos $|a_k|=O(k^{-m})$.
 \end{proof}
 
 Esto significa que para funciones suaves (pero no necesariamente periódicas), la serie de Chebyshev converge tan rápido como la serie de Fourier para funciones periódicas de la misma regularidad. 
@@ -5916,6 +6047,53 @@ f'(c)=\frac{f(b)-f(a)}{b-a}.
 \]
 \end{proof}
 
+\section{Regla de la cadena}
+
+\begin{theorem}[Regla de la cadena en una variable]\label{thm:regla_cadena_appendix}
+Sean $I$ y $J$ dos intervalos abiertos de $\mathbb R$,
+\[
+g:I\to\mathbb R,\qquad f:J\to\mathbb R,
+\]
+con $g(I)\subset J$, y sea $a\in I$.
+
+Si $g$ es derivable en $a$ y $f$ es derivable en $g(a)$, entonces la composición $f\circ g$ es derivable en $a$ y
+\[
+(f\circ g)'(a)=f'(g(a))\,g'(a),
+\]
+donde el producto es el usual en $\mathbb R$.
+\end{theorem}
+
+\begin{proof}
+Para $x\neq a$, escribimos
+\[
+\frac{f(g(x))-f(g(a))}{x-a}
+=\frac{f(g(x))-f(g(a))}{g(x)-g(a)}\cdot\frac{g(x)-g(a)}{x-a},
+\]
+cuando $g(x)\neq g(a)$. Si $g(x)=g(a)$, el cociente de la izquierda vale $0$ y la identidad siguiente sigue siendo válida definiendo
+\[
+\Phi(y):=
+\begin{cases}
+\dfrac{f(y)-f(g(a))}{y-g(a)}, & y\neq g(a),\\[1ex]
+f'(g(a)), & y=g(a).
+\end{cases}
+\]
+Como $f$ es derivable en $g(a)$, se tiene $\Phi(y)\to f'(g(a))$ cuando $y\to g(a)$; en particular,
+\[
+\frac{f(g(x))-f(g(a))}{x-a}=\Phi(g(x))\,\frac{g(x)-g(a)}{x-a}.
+\]
+Al hacer $x\to a$, por continuidad de $g$ en $a$ (derivabilidad implica continuidad),
+\[
+\Phi(g(x))\to f'(g(a)),
+\qquad
+\frac{g(x)-g(a)}{x-a}\to g'(a).
+\]
+Por lo tanto,
+\[
+\lim_{x\to a}\frac{f(g(x))-f(g(a))}{x-a}=f'(g(a))\,g'(a),
+\]
+que prueba la derivabilidad de $f\circ g$ en $a$ y la fórmula anunciada.
+\end{proof}
+
 \section{Teorema del valor medio para integrales}
 
 \begin{theorem}[Teorema del valor medio para integrales --- primera forma]\label{thm:valor_medio_integral}
@@ -7185,21 +7363,21 @@ Estas tres referencias marcan una frontera conceptual \`util: desde el punto de 
 % Un subconjunto $S = \{e_k\}_{k \in I} \subset H$ es un \textbf{sistema ortonormal} si $(e_j, e_k) = \delta_{jk}$ para todos $j, k \in I$.
 % \end{definition}
 
-% \begin{theorem}[Desigualdad de Bessel]\label{thm:bessel}
-% Sea $\{e_k\}_{k=1}^\infty$ un sistema ortonormal en $H$. Para cualquier $u \in H$, se cumple:
-% \[ \sum_{k=1}^\infty |(u, e_k)|^2 \leq \|u\|^2. \]
-% \end{theorem}
+\begin{theorem}[Desigualdad de Bessel]\label{thm:bessel}
+Sea $\{e_k\}_{k=1}^\infty$ un sistema ortonormal en $H$. Para cualquier $u \in H$, se cumple:
+\[ \sum_{k=1}^\infty |(u, e_k)|^2 \leq \|u\|^2. \]
+\end{theorem}
 
-% \begin{proof}
-% Para cada $N \in \mathbb{N}$, definimos $S_N = \sum_{k=1}^N (u, e_k)\, e_k$. Expandimos la norma:
-% \begin{align*}
-% 0 \leq \|u - S_N\|^2 &= (u - S_N,\, u - S_N) \\
-% 	&= \|u\|^2 - \sum_{k=1}^N (u, e_k)\overline{(u, e_k)} - \sum_{k=1}^N \overline{(u, e_k)}(u, e_k) + \sum_{j,k=1}^N (u, e_j)\overline{(u, e_k)}\underbrace{(e_j, e_k)}_{\delta_{jk}} \\
-% 	&= \|u\|^2 - 2\sum_{k=1}^N |(u, e_k)|^2 + \sum_{k=1}^N |(u, e_k)|^2 = \|u\|^2 - \sum_{k=1}^N |(u, e_k)|^2.
-% \end{align*}
-% Por lo tanto, $\sum_{k=1}^N |(u, e_k)|^2 \leq \|u\|^2$ para todo $N \in \mathbb{N}$. Como la sucesión de sumas parciales es monótona creciente y acotada superiormente por $\|u\|^2$, la serie converge y
-% \[ \sum_{k=1}^\infty |(u, e_k)|^2 \leq \|u\|^2. \qedhere \]
-% \end{proof}
+\begin{proof}
+Para cada $N \in \mathbb{N}$, definimos $S_N = \sum_{k=1}^N (u, e_k)\, e_k$. Expandimos la norma:
+\begin{align*}
+0 \leq \|u - S_N\|^2 &= (u - S_N,\, u - S_N) \\
+&= \|u\|^2 - \sum_{k=1}^N (u, e_k)\overline{(u, e_k)} - \sum_{k=1}^N \overline{(u, e_k)}(u, e_k) + \sum_{j,k=1}^N (u, e_j)\overline{(u, e_k)}\underbrace{(e_j, e_k)}_{\delta_{jk}} \\
+&= \|u\|^2 - 2\sum_{k=1}^N |(u, e_k)|^2 + \sum_{k=1}^N |(u, e_k)|^2 = \|u\|^2 - \sum_{k=1}^N |(u, e_k)|^2.
+\end{align*}
+Por lo tanto, $\sum_{k=1}^N |(u, e_k)|^2 \leq \|u\|^2$ para todo $N \in \mathbb{N}$. Como la sucesión de sumas parciales es monótona creciente y acotada superiormente por $\|u\|^2$, la serie converge y
+\[ \sum_{k=1}^\infty |(u, e_k)|^2 \leq \|u\|^2. \qedhere \]
+\end{proof}
 
 % \begin{definition}[Base Ortonormal]
 % Un sistema ortonormal $\{e_k\}_{k=1}^\infty$ en un espacio de Hilbert $H$ se llama \textbf{base ortonormal} (o base de Hilbert) si el subespacio generado por $\{e_k\}$ es denso en $H$.
