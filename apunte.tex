@@ -17,7 +17,6 @@
 \newtheorem{remark}[theorem]{Observación}
 \renewcommand{\proofname}{Demostración}
 
-%opening
 \title{Elementos de Cálculo Numérico}
 \author{Martín D. Maas}
 \date{\today}
@@ -30,9 +29,6 @@
 \begin{document}
 
 \maketitle
-
-\tableofcontents
-
 \chapter*{Introducción}
 \addcontentsline{toc}{chapter}{Introducción}
 
@@ -44,7 +40,6 @@
 \vspace{1em}
 
 El cálculo numérico se ocupa de resolver problemas matemáticos mediante algoritmos, es decir, de la ``construcción efectiva'' de soluciones a problemas matemáticos, y se preocupa por la precisión y la eficiencia de los métodos desarrollados.
-
 El cálculo numérico parte de la realización concreta de la visión de la matemática constructiva: la filosofía según la cual un objeto matemático existe cuando disponemos de un algoritmo para construirlo. En el Capítulo~1 veremos que esta idea está lejos de ser trivial, mostrando que el conjunto de números ``efectivamente computables'' es apenas \textit{numerable} --- con lo cual, para la inmensa mayoría de los números reales no puede existir un algoritmo capaz de aproximarlos. También en ese capítulo introduciremos la noción de complejidad computacional, que cuantifica los recursos necesarios para resolver un problema.
 
 Uno de los hilos centrales del apunte es el problema de representar y aproximar funciones, y un tópico recurrente para abordar este problema es el de la ortogonalidad. 
@@ -3243,35 +3238,54 @@ La identidad general se obtiene restando
 \end{proof}
 
 \begin{theorem}[Unicidad de los coeficientes de Fourier]\label{thm:unicidad_coeficientes_fourier}
-Sea $n\in\mathbb N\cup\{0\}$ y sea $f\in C^n_{per}([0,2\pi];\mathbb C)$. Si $(c_k)_{k\in\mathbb Z}\subset\mathbb C$ satisface
+Bajo las hipótesis del Teorema~\ref{thm:equiv_densidad_parseval_general}, sea $u\in V$. Si existen dos sucesiones $(a_k)_{k\ge1},(b_k)_{k\ge1}\subset\mathbb C$ tales que
 \[
-f=\sum_{k\in\mathbb Z} c_k e^{ikx}
+u=\sum_{k=1}^{\infty} a_k e_k
+\qquad\text{y}\qquad
+u=\sum_{k=1}^{\infty} b_k e_k
 \]
-Donde la convergencia se entiende en norma $2$ (es decir, $\|f-S_N\|\to0$), entonces los coeficientes $c_k$ coinciden con los coeficientes de Fourier complejos de $f$:
+con convergencia en la norma de $V$, entonces los coeficientes coinciden uno a uno:
 \[
-c_k=\hat f_k\qquad\text{para todo }k\in\mathbb Z.
+a_k=b_k\qquad\text{para todo }k\ge1.
 \]
 \end{theorem}
 
 \begin{proof}
-Para $N\ge |m|$, por ortogonalidad de las exponenciales complejas,
+Sea $m\ge1$ fijo. Para $N\ge m$, por ortonormalidad se tiene
 \[
-(S_N,e_m)=\sum_{|k|\le N}c_k(e_k,e_m)=2\pi c_m.
+(S_N^{(a)},e_m)=\sum_{k=1}^{N}a_k(e_k,e_m)=a_m,
+\qquad
+(S_N^{(b)},e_m)=\sum_{k=1}^{N}b_k(e_k,e_m)=b_m,
 \]
-Además, la linealidad del producto interno y la desigualdad de Cauchy--Schwarz, da
+donde
 \[
-|(f,e_m)-(S_N,e_m)|=|(f-S_N,e_m)|
-\le \|f-S_N\|_2\,\|e_m\|_2\xrightarrow[N\to\infty]{}0,
+S_N^{(a)}:=\sum_{k=1}^{N}a_k e_k,
+\qquad
+S_N^{(b)}:=\sum_{k=1}^{N}b_k e_k.
 \]
-de donde
+Como $S_N^{(a)}\to u$ y $S_N^{(b)}\to u$ en $V$, por Cauchy--Schwarz:
 \[
-(f,e_m)=\lim_{N\to\infty}(S_N,e_m)=2\pi c_m.
+|(u,e_m)-(S_N^{(a)},e_m)|\le \|u-S_N^{(a)}\|\,\|e_m\|\xrightarrow[N\to\infty]{}0,
 \]
-Por la definición de coeficiente de Fourier complejo,
+y análogamente
 \[
-\hat f_m=\frac{(f,e_m)}{2\pi}=c_m.
+|(u,e_m)-(S_N^{(b)},e_m)|\le \|u-S_N^{(b)}\|\,\|e_m\|\xrightarrow[N\to\infty]{}0.
 \]
-Como $m$ es arbitrario, vale para todo índice.
+Por lo tanto,
+\[
+(u,e_m)=\lim_{N\to\infty}(S_N^{(a)},e_m)=\lim_{N\to\infty}(S_N^{(b)},e_m).
+\]
+Además, para $N\ge m$ ya vimos que $(S_N^{(a)},e_m)=a_m$ y $(S_N^{(b)},e_m)=b_m$, luego
+\[
+\lim_{N\to\infty}(S_N^{(a)},e_m)=a_m,
+\qquad
+\lim_{N\to\infty}(S_N^{(b)},e_m)=b_m.
+\]
+Concluimos
+\[
+a_m=(u,e_m)=b_m,
+\]
+y por tanto $a_m=b_m$. Como $m$ es arbitrario, vale para todo $m\ge1$.
 \end{proof}
 
 
@@ -3371,6 +3385,11 @@ Sea $f \in C^n_{per}([0,2\pi])$ con $n \ge 1$. Entonces, para todo $k \in \mathb
 \hat{f}_k = \frac{\widehat{f^{(n)}}_k}{(ik)^n}, \qquad |\hat{f}_k| \leq \frac{C}{|k|^n},
 \]
 donde $C = \frac{1}{2\pi}\int_0^{2\pi}|f^{(n)}(x)|\,dx$.
+
+En particular, se tiene 
+\[
+|\hat f_k|=O(|k|^{-n})
+\]
 \end{theorem}
 
 \begin{proof}
@@ -3387,21 +3406,63 @@ Finalmente,
 \]
 \end{proof}
 
-\begin{corollary}[Decaimiento algebraico por regularidad finita]\label{cor:decaimiento_O_nk}
-Si $f\in C^k_{per}([0,2\pi])$ con $k\ge 1$, entonces
-\[
-|\hat f_n|=O(|n|^{-k}) \qquad (|n|\to\infty).
-\]
-Más precisamente, existe $C_k>0$ tal que $|\hat f_n|\le C_k/|n|^k$ para todo $n\neq 0$.
-\end{corollary}
-
-\begin{proof}
-Es el Teorema~\ref{thm:decaimiento_fourier} aplicado con $n=k$.
-\end{proof}
-
 \begin{corollary}
 Si $f \in C^\infty_{per}([0,2\pi])$, entonces para todo $n \in \mathbb{N}$ existe $C_n > 0$ tal que $|\hat{f}_k| \leq C_n/|k|^n$. Esto se conoce como \textit{decaimiento espectral} o \textit{super-algebraico}.
 \end{corollary}
+
+\begin{corollary}[Convergencia uniforme de la serie de Fourier para $C^2_{per}$]\label{cor:conv_uniforme_c2_per}
+Si $f\in C^2_{per}([0,2\pi])$, entonces su serie de Fourier converge uniformemente a $f$ en $[0,2\pi]$.
+\end{corollary}
+
+\begin{proof}
+Consideremos la función
+\[
+g(x):=\sum_{k\in\mathbb Z}\hat f_k e^{ikx}.
+\]
+Veamos primero que queda bien definida para cada $x$, es decir, que la serie converge puntualmente. Para eso, mostremos que la serie de los módulos converge (convergencia absoluta): 
+\[
+\sum_{k\in\mathbb Z}|\hat f_k e^{ikx}|
+=|\hat f_0|+\sum_{k\neq 0}|\hat f_k|
+\le |\hat f_0|+ 2 \sum_{k=1}^{\infty}|\hat f_k|
+\]
+Por el Teorema~\ref{thm:decaimiento_fourier} (con $n=2$), existe $C>0$ tal que
+\[
+|\hat f_k|\le \frac{C}{|k|^2},\qquad k\neq 0.
+\]
+y por lo tanto la serie de m\'odulos converge. Esto prueba que la serie de Fourier converge puntualmente para cada $x$ y, que $g$ queda bien definida.
+
+Ahora bien, tambi\'en podemos acotar la diferencia con la suma parcial por la cola de la serie:
+\[
+|g(x)-S_Nf(x)|
+=\left|\sum_{|k|>N}\hat f_k e^{ikx}\right|
+\le \sum_{|k|>N}|\hat f_k|.
+\]
+Tomando supremo sobre $x\in[0,2\pi]$,
+\[
+\|g-S_Nf\|_\infty\le \sum_{|k|>N}|\hat f_k|\xrightarrow[N\to\infty]{}0.
+\]
+Luego $S_Nf\to g$ uniformemente (es decir, independientemente de $x$). 
+
+Para identificar el l\'imite, escribimos
+\[
+f-g=(f-S_Nf)+(S_Nf-g).
+\]
+Aplicando desigualdad triangular en norma $2$,
+\[
+\|f-g\|_2\le \|f-S_Nf\|_2+\|S_Nf-g\|_2.
+\]
+El primer t\'ermino tiende a $0$ por la convergencia en norma de las sumas parciales de Fourier (Teorema~\ref{thm:equiv_densidad_parseval_general}, ítem (2), aplicado al sistema ortonormal considerado). Para el segundo, usamos
+\[
+\|S_Nf-g\|_2\le 2\pi\,\|S_Nf-g\|_\infty\xrightarrow[N\to\infty]{}0,
+\]
+porque ya probamos convergencia uniforme. En consecuencia,
+\[
+\|f-g\|_2=0.
+\]
+Por propiedades de la norma, esto implica $f=g$. Por lo tanto, $S_Nf\to f$ uniformemente.
+\end{proof}
+
+
 
 \subsection{Cuadratura de funciones suaves y periódicas}
 
