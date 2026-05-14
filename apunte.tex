@@ -3462,6 +3462,18 @@ porque ya probamos convergencia uniforme. En consecuencia,
 Por propiedades de la norma, esto implica $f=g$. Por lo tanto, $S_Nf\to f$ uniformemente.
 \end{proof}
 
+\begin{remark}
+Puede demostrarse un resultado más ajustado que el anterior: si
+\(f\in C^1_{per}([0,2\pi])\), entonces su serie de Fourier tambi\'en
+converge uniformemente a \(f\). Esto se obtiene del
+Teorema~\ref{thm:convergencia_uniforme_fourier} del
+Ap\'endice~\ref{app_convergencia_fourier}, donde se prueba
+en particular que
+\[
+\|f-S_Nf\|_\infty \le \frac{\|f'\|_{L^2}}{\sqrt{\pi}}\,\frac{1}{\sqrt{N}}
+\xrightarrow[N\to\infty]{}0.
+\]
+\end{remark}
 
 
 \subsection{Cuadratura de funciones suaves y periódicas}
