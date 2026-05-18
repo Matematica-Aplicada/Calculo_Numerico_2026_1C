@@ -3423,7 +3423,6 @@ Veamos primero que queda bien definida para cada $x$, es decir, que la serie con
 \[
 \sum_{k\in\mathbb Z}|\hat f_k e^{ikx}|
 =|\hat f_0|+\sum_{k\neq 0}|\hat f_k|
-\le |\hat f_0|+ 2 \sum_{k=1}^{\infty}|\hat f_k|
 \]
 Por el Teorema~\ref{thm:decaimiento_fourier} (con $n=2$), existe $C>0$ tal que
 \[
@@ -3453,7 +3452,7 @@ Aplicando desigualdad triangular en norma $2$,
 \]
 El primer t\'ermino tiende a $0$ por la convergencia en norma de las sumas parciales de Fourier (Teorema~\ref{thm:equiv_densidad_parseval_general}, ítem (2), aplicado al sistema ortonormal considerado). Para el segundo, usamos
 \[
-\|S_Nf-g\|_2\le 2\pi\,\|S_Nf-g\|_\infty\xrightarrow[N\to\infty]{}0,
+\|S_Nf-g\|_2\le \sqrt{2\pi}\,\|S_Nf-g\|_\infty\xrightarrow[N\to\infty]{}0,
 \]
 porque ya probamos convergencia uniforme. En consecuencia,
 \[
@@ -4405,58 +4404,6 @@ Entonces
 y por tanto $\|f-p\|_w<\varepsilon$.
 \end{proof}
 
-Las propiedades fundamentales de la proyección ortogonal (en el caso de familias de polinomios ortogonales) son:
-
-\begin{theorem}[Mejor aproximación e identidad de Parseval para el resto]\label{thm:mejor_aprox_parseval}
-Sea $[a,b]$ compacto, $w\in L^1(a,b)$ con $w>0$ en $(a,b)$ y sea $\{P_k\}_{k\ge 0}$ la familia de polinomios ortogonales obtenida por ortogonalizar $\{1,x,x^2,\ldots\}$ en $L_w^2(a,b)$. Dada $f\in C([a,b])$, definimos
-\[
-c_k=\frac{(f,P_k)_w}{\|P_k\|_w^2},\qquad S_n f=\sum_{k=0}^n c_kP_k.
-\]
-Entonces:
-\begin{enumerate}
-\item \textbf{Mejor aproximación:} $S_n f$ minimiza $\|f-g\|_w$ entre todos los polinomios $g\in\mathbb P_n$.
-\item \textbf{Identidad de Parseval para el resto:}
-\begin{equation}\label{eq:parseval_resto}
-\|f - S_n f\|_w^2 = \sum_{k=n+1}^\infty |c_k|^2\,\|P_k\|_w^2.
-\end{equation}
-\end{enumerate}
-\end{theorem}
-
-\begin{proof}
-Como $\mathrm{span}\{P_0,\ldots,P_n\}=\mathbb P_n$, basta considerar $g=\sum_{k=0}^n a_kP_k\in\mathbb P_n$. Entonces:
-\[
-\|f - g\|_w^2 = \Big\|f - S_n f + \sum_{k=0}^n (c_k - a_k)P_k\Big\|_w^2
-= \|f - S_n f\|_w^2 + \sum_{k=0}^n |c_k - a_k|^2\,\|P_k\|_w^2,
-\]
-porque $(f-S_nf,P_j)_w=0$ para $j\le n$. Esto prueba (1).
-
-Por el Teorema~\ref{thm:densidad_polinomios_stone_w}, para todo $\varepsilon>0$ existe $p\in\mathbb P$ con $\|f-p\|_w<\varepsilon$. Si $\deg p=m$, para todo $n\ge m$, por mejor aproximación,
-\[
-\|f-S_nf\|_w\le \|f-p\|_w<\varepsilon,
-\]
-de donde $\|f-S_nf\|_w\to 0$.
-
-Fijado $n$ y para $M>n$, por ortogonalidad y Pitágoras:
-\[
-\|f-S_nf\|_w^2 = \|f-S_Mf\|_w^2 + \|S_Mf-S_nf\|_w^2,
-\]
-y
-\[
-\|S_Mf-S_nf\|_w^2 = \left\|\sum_{k=n+1}^M c_kP_k\right\|_w^2
-= \sum_{k=n+1}^M |c_k|^2\|P_k\|_w^2.
-\]
-Luego
-\[
-\|f-S_nf\|_w^2 = \|f-S_Mf\|_w^2 + \sum_{k=n+1}^M |c_k|^2\|P_k\|_w^2.
-\]
-Pasando al límite $M\to\infty$ y usando $\|f-S_Mf\|_w\to 0$, resulta
-\[
-\|f-S_nf\|_w^2 = \sum_{k=n+1}^{\infty}|c_k|^2\|P_k\|_w^2.
-\]
-Esto prueba (2).
-\end{proof}
-
-La consecuencia central es que \textbf{el error de proyección está completamente determinado por la velocidad de decaimiento de los coeficientes} $c_k$.  Si podemos demostrar que $|c_k| = O(k^{-m})$ para una base ortogonal dada, la ecuación~\eqref{eq:parseval_resto} traduce inmediatamente esta información en una cota del error.
 
 \subsection{Familias clásicas de polinomios ortogonales}
 
@@ -4599,57 +4546,61 @@ Definimos el \textbf{error de cuadratura} de una función $f$ como
 \[
 E_n(f) = \int_a^b f(x)\,w(x)\,dx - Q_n(f).
 \]
-El Teorema~\ref{thm:exactitud_gauss} dice que $E_n(p) = 0$ para $p \in \Pi_{2n-1}$.  En particular, $E_n(p) = 0$ para todo $p \in \Pi_{n-1}$.  Esto permite conectar el error de cuadratura con el error de la \textbf{proyección ortogonal} $S_{n-1}f = \sum_{k=0}^{n-1} c_k P_k$.
+El Teorema~\ref{thm:exactitud_gauss} dice que $E_n(p) = 0$ para $p \in \Pi_{2n-1}$.  Por lo tanto, para acotar $E_n(f)$ conviene intercalar directamente la \textbf{proyección ortogonal de orden $2n-1$},
+\[
+S_{2n-1}f = \sum_{k=0}^{2n-1} c_k P_k,
+\]
+que explota toda la exactitud disponible de la regla gaussiana.
 
-\begin{theorem}[Cota del error en términos de la proyección]\label{thm:error_gauss_proj}
+\begin{theorem}[Cota del error usando proyección de orden $2n{-}1$]\label{thm:error_gauss_proj}
 Para toda $f\in C([a,b])$, el error de la cuadratura de Gauss satisface:
 \[
-|E_n(f)| \leq C_n\,\|f - S_{n-1}f\|_w,
+|E_n(f)| \leq 2\mu_0\,\|f - S_{2n-1}f\|_{\infty},
 \]
-donde $C_n = \sqrt{\sum_{k=1}^n w_k} = \sqrt{\mu_0}$, con $\mu_0 = \int_a^b w(x)\,dx$.
+donde $\mu_0 = \int_a^b w(x)\,dx = \sum_{k=1}^n w_k$.
 \end{theorem}
 
 \begin{proof}
-Como $E_n(p) = 0$ para todo $p \in \Pi_{n-1}$, y $S_{n-1}f \in \Pi_{n-1}$, tenemos
+Como $E_n(p) = 0$ para todo $p \in \Pi_{2n-1}$, y $S_{2n-1}f \in \Pi_{2n-1}$, tenemos
 \[
-E_n(f) = E_n(f - S_{n-1}f).
+E_n(f) = E_n(f - S_{2n-1}f).
 \]
-Sea $g = f - S_{n-1}f$.  Entonces:
+Sea $g = f - S_{2n-1}f$.  Entonces:
 \[
 E_n(g) = \int_a^b g(x)\,w(x)\,dx - \sum_{k=1}^n w_k\,g(x_k).
 \]
 Acotamos cada término por separado.
 
-\textbf{Término integral.}\;  Por Cauchy-Schwarz:
+\textbf{Término integral.}\; Como $w\ge 0$:
 \[
-\left|\int_a^b g\,w\right| = \left|(g, 1)_w\right| \leq \|g\|_w\,\|1\|_w = \sqrt{\mu_0}\,\|g\|_w.
+\left|\int_a^b g\,w\right| \leq \int_a^b |g|\,w \leq \|g\|_{\infty}\int_a^b w = \mu_0\,\|g\|_{\infty}.
 \]
 
-\textbf{Término de cuadratura.}\;  Por Cauchy-Schwarz discreto, usando $w_k > 0$:
+\textbf{Término de cuadratura.}\; Como $w_k>0$:
 \[
-\left|\sum_{k=1}^n w_k\,g(x_k)\right| \leq \left(\sum_{k=1}^n w_k\right)^{1/2}\left(\sum_{k=1}^n w_k\,g(x_k)^2\right)^{1/2} = \sqrt{\mu_0}\left(\sum_{k=1}^n w_k\,g(x_k)^2\right)^{1/2}.
-\]
-La suma $\sum_{k=1}^n w_k\,g(x_k)^2 = Q_n(g^2)$ es la cuadratura de Gauss aplicada a $g^2$.  Como los pesos son positivos:
-\[
-Q_n(g^2) \leq \int_a^b g(x)^2\,w(x)\,dx = \|g\|_w^2,
-\]
-donde la desigualdad se obtiene notando que $Q_n(g^2)$ es una evaluación numérica con pesos positivos y $g^2 \geq 0$; para funciones $g$ con desarrollo en $\{P_k\}$, la cuadratura subestima $\|g\|_w^2$ porque las frecuencias altas ($k \geq n$) sufren aliasing.  Así:
-\[
-\left|\sum_{k=1}^n w_k\,g(x_k)\right| \leq \sqrt{\mu_0}\,\|g\|_w.
+\left|\sum_{k=1}^n w_k\,g(x_k)\right| \leq \sum_{k=1}^n w_k\,|g(x_k)| \leq \|g\|_{\infty}\sum_{k=1}^n w_k = \mu_0\,\|g\|_{\infty}.
 \]
 
 \textbf{Conclusión:}
 \[
-|E_n(f)| = |E_n(g)| \leq 2\sqrt{\mu_0}\,\|g\|_w = 2\sqrt{\mu_0}\,\|f - S_{n-1}f\|_w. \qedhere
+|E_n(f)| = |E_n(g)| \leq 2\mu_0\,\|g\|_{\infty} = 2\mu_0\,\|f - S_{2n-1}f\|_{\infty}. \qedhere
 \]
 \end{proof}
 
 \begin{remark}[Interpretación y consecuencias]
-El Teorema~\ref{thm:error_gauss_proj} dice que el error de cuadratura gaussiana hereda directamente la velocidad de convergencia de la proyección ortogonal.  Combinando con la identidad de Parseval~\eqref{eq:parseval_resto} y el decaimiento $|c_k| = O(k^{-m})$, si $f \in C^m([a,b])$:
+El Teorema~\ref{thm:error_gauss_proj} muestra la mejora estructural de Gauss: con $n$ nodos, la cota queda gobernada por un error de aproximación de grado $2n-1$ (no de grado $n-1$).  En forma compacta,
 \[
-|E_n(f)| \leq C\,\|f - S_{n-1}f\|_w = O(n^{(1-2m)/2}),
+|E_n(f)| \le 2\mu_0\,\mathcal E_{2n-1}(f),
 \]
-que tiende a cero más rápido que cualquier potencia de $n$ si $f$ es $C^\infty$.  Esto es la \textbf{convergencia espectral de la cuadratura de Gauss}: para funciones muy suaves, agregar un solo nodo puede ganar varios órdenes de precisión.
+donde $\mathcal E_m(f)=\inf_{p\in\Pi_m}\|f-p\|_\infty$.
+
+Comparado con reglas interpolatorias de $n$ nodos (típicamente controladas por $\mathcal E_{n-1}(f)$), Gauss ``duplica'' el grado efectivo de aproximación para el mismo número de evaluaciones.  Por eso, para alcanzar una precisión dada, suele requerir aproximadamente la mitad de nodos.
+
+Si $\mathcal E_m(f)=O(m^{-s})$ (regularidad algebraica), entonces
+\[
+|E_n(f)| = O\big((2n)^{-s}\big).
+\]
+Si $f$ es analítica y $\mathcal E_m(f)$ decae exponencialmente, el beneficio en $n$ es aún más marcado.
 \end{remark}
 
 \subsection{Cálculo de nodos y pesos: Método de Golub-Welsch}
@@ -4713,7 +4664,7 @@ En varios puntos del capítulo aparecieron cotas escritas en términos del error
 
 La idea central es separar dos efectos: por un lado, la regularidad de la función, que controla la cola de su expansión espectral; por otro, la elección de nodos, que entra a través de la constante de Lebesgue (equivalentemente, la norma del interpolante). Esta separación permite reutilizar de inmediato cualquier resultado de decaimiento de coeficientes ya probado en el capítulo.
 
-El esquema de esta sección final es: primero, un lema abstracto sobre la constante de Lebesgue y la alcanzabilidad de la cota; luego, una cota universal del error de interpolación por cola espectral; finalmente, la especialización a Chebyshev, donde $\Lambda_N^{Ch}=O(\log N)$ y se obtiene una estimación explícita.
+El esquema de esta sección final es: primero, un lema abstracto sobre la constante de Lebesgue y la alcanzabilidad de la cota; luego, una cota del error de interpolación por cola espectral; finalmente, la especialización a Chebyshev, donde $\Lambda_N^{Ch}=O(\log N)$ y se obtiene una estimación explícita.
 
 
 \begin{lemma}[Constante de Lebesgue y alcanzabilidad]\label{lem:lebesgue}
@@ -4775,7 +4726,7 @@ En el caso de nodos de Chebyshev--Lobatto en $[-1,1]$, escribiremos
 \Lambda_N^{Ch}:=\Lambda_N.
 \]
 
-\begin{theorem}[Cota universal por constante de Lebesgue y cola espectral]\label{thm:cota_universal_lebesgue_cola}
+\begin{theorem}[Cota por constante de Lebesgue y cola espectral]\label{thm:cota_universal_lebesgue_cola}
 Sea $[a,b]$ compacto y sea $\{\phi_k\}_{k\ge0}\subset C([a,b])$ una familia de funciones (en particular, puede ser una base ortonormal) tal que existe $M>0$ con
 \[
 \|\phi_k\|_\infty\le M\qquad\forall k\ge0.
@@ -4821,7 +4772,7 @@ Combinando ambas desigualdades se obtiene la cota.
 Aplicando el Teorema~\ref{thm:cota_universal_lebesgue_cola} con la familia de Chebyshev clásica $\phi_k=T_k$ (para la cual $\|T_k\|_\infty\le1$), se recupera la Proposición~\ref{prop:error_interp_cheb_sin_aliasing}.
 \end{remark}
 
-\begin{proposition}[Cota del error de interpolación sin aliasing]\label{prop:error_interp_cheb_sin_aliasing}
+\begin{proposition}[Cota del error de interpolación]\label{prop:error_interp_cheb_sin_aliasing}
 Sea
 \[
 S_N^{Ch}f(x):=\frac{a_0}{2}+\sum_{k=1}^{N}a_kT_k(x)
