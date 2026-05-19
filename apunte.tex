@@ -4837,6 +4837,696 @@ La cota anterior es elemental y útil, pero no es ajustada en general. En teorí
 
 
 
+\chapter{Métodos de diferencias finitas}
+
+En este capítulo estudiamos métodos numéricos para tres clases de ecuaciones diferenciales:
+
+\begin{enumerate}
+\item \textbf{Problema de valores iniciales (PVI).} Dada $f:[t_0,T]\times\mathbb R\to\mathbb R$, buscar $y:[t_0,T]\to\mathbb R$ tal que
+\[
+  y'(t)=f(t,y(t)),\qquad y(t_0)=y_0.
+\]
+\item \textbf{Problema de valores de contorno (PVC).} Dado un operador diferencial $\mathcal L$ y condiciones en los extremos, buscar $u:(0,1)\to\mathbb R$ tal que
+\[
+  \mathcal L\,u(x)=f(x),\quad x\in(0,1).
+\]
+El caso prototípico es $\mathcal L\,u=-u''+\sigma u$ con $\sigma>0$.
+\item \textbf{Ecuaciones en derivadas parciales (EDP).} Por ejemplo, la ecuación del calor:
+\[
+  u_t(x,t)=\kappa\,u_{xx}(x,t),\qquad x\in[0,1],\ t>0,
+\]
+con condición inicial $u(x,0)=u_0(x)$ y condiciones de borde.
+\end{enumerate}
+
+En todos los casos la estrategia es la misma: introducir una malla de puntos $\{t_n=t_0+nh\}$ y/o $\{x_j=jh\}$, y reemplazar cada derivada por una \emph{fórmula de diferencias finitas}: una combinación lineal de valores de la función en puntos vecinos de la malla. Aplicando esta sustitución al problema diferencial obtenemos un sistema algebraico cuya solución $\{y_n\}$, $\{u_j\}$ o $\{U_j^n\}$ queremos que aproxime la solución exacta cuando el paso $h\to0$.
+
+\section{Problemas de valores iniciales}\label{sec:ecuacion_test_new}
+
+Para fijar ideas y comparar métodos, empecemos con el problema más sencillo posible:
+\[
+  y'(t)=\alpha\,y(t),\qquad y(0)=y_0,\qquad\alpha\in\mathbb R,
+\]
+cuya solución exacta es $y(t)=e^{\alpha t}y_0$. Si $\alpha<0$ la solución decae exponencialmente; si $\alpha>0$ crece. Aplicaremos los dos métodos de diferencias finitas más elementales.
+
+\subsubsection*{Euler explícito}
+
+La fórmula de diferencias forward aproxima $y'(t_n)\approx\frac{y_{n+1}-y_n}{h}$. Evaluando el lado derecho en $t_n$:
+\[
+  \frac{y_{n+1}-y_n}{h}=\alpha y_n\quad\Longrightarrow\quad y_{n+1}=(1+h\alpha)\,y_n.
+\]
+Llamamos $z:=h\alpha$ y $R_E:=1+z$. Por inducción, $y_n=R_E^n\,y_0=(1+h\alpha)^n y_0$.
+
+Fijemos $t=t_n=nh$. Cuando $h\to0$ con $t$ fijo ($n=t/h\to\infty$):
+\[
+  y_n=(1+h\alpha)^{t/h}\,y_0\;\xrightarrow{\;h\to0\;}\;e^{\alpha t}\,y_0=y(t).
+\]
+
+\paragraph{Comportamiento cualitativo para $h$ fijo.}
+La solución numérica es $y_n=(1+h\alpha)^n y_0$, y crece o decae según $|1+h\alpha|$ sea mayor o menor que~1. Para $\alpha<0$:
+\begin{itemize}
+  \item Si $h<2/|\alpha|$: $|1+h\alpha|<1$ y $|y_n|\to0$. El método reproduce el decaimiento. 
+  \item Si $h=2/|\alpha|$: $1+h\alpha=-1$, y $y_n=(-1)^n y_0$ oscila indefinidamente. 
+  \item Si $h>2/|\alpha|$: $|1+h\alpha|>1$ y $|y_n|\to\infty$, aunque la solución exacta decae. 
+\end{itemize}
+Por ejemplo, con $\alpha=-10$ y $h=0.3>2/10$: $1+h\alpha=-2$, y $y_n=(-2)^n y_0$ diverge en módulo. La convergencia asintótica ($h\to0$) no garantiza un comportamiento correcto para pasos finitos.
+
+\subsubsection*{Euler implícito}
+
+La fórmula de diferencias backward evalúa el lado derecho en $t_{n+1}$:
+\[
+  \frac{y_{n+1}-y_n}{h}=\alpha y_{n+1}\quad\Longrightarrow\quad y_{n+1}=\frac{1}{1-h\alpha}\,y_n=:R_I\,y_n.
+\]
+Por inducción, $y_n=R_I^n\,y_0=\left(\dfrac{1}{1-h\alpha}\right)^n y_0$.
+
+\paragraph{Convergencia cuando $h\to0$.}
+Con $t=nh$, análogamente al caso explícito, $\log(1/(1-h\alpha))=h\alpha+O(h^2)$, luego
+\[
+  y_n=\left(\frac{1}{1-h\alpha}\right)^{t/h} y_0\;\xrightarrow{\;h\to0\;}\;e^{\alpha t}\,y_0=y(t).
+\]
+
+\paragraph{Comportamiento cualitativo para $h$ fijo.}
+Para $\alpha<0$ y \emph{cualquier} $h>0$: $1-h\alpha>1>0$, luego
+\[
+  |R_I|=\frac{1}{1-h\alpha}=\frac{1}{1+h|\alpha|}<1.
+\]
+Entonces $|y_n|=|R_I|^n|y_0|\to0$ para todo $h>0$: Euler implícito reproduce el decaimiento de la solución exacta sin ninguna restricción sobre el paso.
+
+\bigskip
+\begin{remark}
+Ambos métodos convergen cuando $h\to0$, pero difieren cualitativamente para $h$ fijo: Euler explícito puede producir soluciones divergentes si el paso supera el umbral $2/|\alpha|$, mientras que Euler implícito siempre decae. Este contraste se vuelve algorítmicamente crítico cuando $|\alpha|\gg1$ (problemas rígidos), obligando al método explícito a usar pasos extremadamente pequeños. Este fenómeno se estudia en la Sección~\ref{sec:stiff_new}.
+\end{remark}
+
+\subsection{Métodos de un paso}\label{sec:metodos_pvi_new}
+
+Seguimos con el PVI $y'=f(t,y)$, $y(t_0)=y_0$ sobre la malla $\{t_n=t_0+nh\}_{n=0}^N$ con $Nh=T-t_0$.
+
+\subsubsection*{Taylor de orden 2 y la familia RK2}
+
+El método de Euler explícito tiene orden~1: el error global es $O(h)$. Para obtener orden~2 expandimos la solución exacta dos pasos de Taylor:
+\[
+  y(t_{n+1})=y(t_n)+h\,y'(t_n)+\frac{h^2}{2}\,y''(t_n)+O(h^3).
+\]
+Como $y'=f$ y $y''=f_t+f_y\,f$ (regla de la cadena), el \emph{método de Taylor de orden~2} es
+\[
+  y_{n+1}=y_n+h\,f(t_n,y_n)+\frac{h^2}{2}\bigl(f_t(t_n,y_n)+f_y(t_n,y_n)\,f(t_n,y_n)\bigr).
+\]
+Su ventaja es la precisión; su desventaja es que requiere calcular las derivadas parciales $f_t$ y $f_y$.
+
+\paragraph{Familia Runge-Kutta de 2 etapas (RK2).}
+Para evitar diferenciar $f$, se aproxima el término de orden $h^2$ evaluando $f$ en un punto auxiliar. Se propone el esquema
+\begin{align*}
+  k_1&=f(t_n,\,y_n),\\
+  k_2&=f(t_n+c_2 h,\,y_n+a_{21}h k_1),\\
+  y_{n+1}&=y_n+h\,(b_1k_1+b_2k_2),
+\end{align*}
+con cuatro parámetros libres $b_1,b_2,c_2,a_{21}$. Expandiendo $k_2$ en Taylor alrededor de $(t_n,y_n)$:
+\[
+  k_2 = f + c_2 h\,f_t + a_{21} h k_1 f_y + O(h^2) = f + h(c_2 f_t + a_{21} f\,f_y)+O(h^2).
+\]
+Entonces $y_{n+1}=y_n+h(b_1+b_2)f+h^2 b_2(c_2 f_t+a_{21}f\,f_y)+O(h^3)$. Comparando con Taylor:
+\[
+  b_1+b_2=1,\qquad b_2\,c_2=\tfrac{1}{2},\qquad b_2\,a_{21}=\tfrac{1}{2}.
+\]
+Hay una familia uniparamétrica de soluciones. Dos casos especiales:
+\begin{itemize}
+  \item \textbf{Método de Heun}: $b_1=b_2=\tfrac{1}{2}$, $c_2=a_{21}=1$.
+  Equivalentemente: $k_1=f(t_n,y_n)$, $k_2=f(t_n+h,\,y_n+hk_1)$, $y_{n+1}=y_n+\tfrac{h}{2}(k_1+k_2)$.
+  \item \textbf{Punto medio explícito}: $b_1=0$, $b_2=1$, $c_2=a_{21}=\tfrac{1}{2}$.
+  Equivalentemente: $k_1=f(t_n,y_n)$, $y_{n+1}=y_n+h\,f(t_n+\tfrac{h}{2},\,y_n+\tfrac{h}{2}k_1)$.
+\end{itemize}
+
+\subsection{La función de incremento $\Phi$}
+
+Todos los ejemplos anteriores tienen la estructura
+\begin{equation}\label{eq:one_step_general}
+  y_{n+1} = y_n + h\,\Phi(t_n,\,y_n,\,h),
+\end{equation}
+donde $\Phi:[t_0,T]\times\mathbb{R}\times[0,h_{\max}]\to\mathbb{R}$ es la \emph{función de incremento} que caracteriza al método. La tabla siguiente resume los métodos vistos hasta aquí.
+
+\bigskip
+\begin{center}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+\textbf{Método} & \textbf{Función de incremento $\Phi(t,y,h)$} & \textbf{Orden} & \textbf{Tipo} \\
+\midrule
+Euler explícito & $f(t,y)$ & 1 & expl.\ \\[4pt]
+Euler implícito & $\tilde{y}$ tal que $\tilde{y}=f\!\left(t+h,\,y+h\tilde{y}\right)$ & 1 & impl.\ \\[4pt]
+Taylor orden~2  & $f(t,y)+\dfrac{h}{2}\!\left(f_t(t,y)+f_y(t,y)\,f(t,y)\right)$ & 2 & expl.\ \\[8pt]
+Heun (RK2)      & $\dfrac{1}{2}\!\left[f(t,y)+f\!\left(t+h,\,y+hf(t,y)\right)\right]$ & 2 & expl.\ \\[6pt]
+Punto medio     & $f\!\left(t+\tfrac{h}{2},\,y+\tfrac{h}{2}f(t,y)\right)$ & 2 & expl.\ \\[4pt]
+\bottomrule
+\end{tabular}
+\end{center}
+\bigskip
+
+\begin{remark}
+Para Euler implícito, $\Phi$ está definida \emph{implícitamente}: en cada paso hay que resolver la ecuación escalar
+\[
+  \tilde y = f(t_{n+1}, y_n+h\tilde y).
+\]
+En problemas lineales, por ejemplo si $f(t,y)=a(t)y+b(t)$, la ecuación se resuelve explícitamente:
+\[
+  \tilde y = a(t_{n+1})(y_n+h\tilde y)+b(t_{n+1})
+  \quad\Longrightarrow\quad
+  \tilde y = \frac{a(t_{n+1})y_n+b(t_{n+1})}{1-ha(t_{n+1})},
+\]
+siempre que $1-ha(t_{n+1})\neq0$.
+\end{remark}
+
+\subsection{Convergencia de métodos de un paso}\label{sec:conv_pvi_new}
+
+Dado el esquema~\eqref{eq:one_step_general}, preguntamos: ¿cuándo aproxima bien la solución exacta?
+
+\begin{definition}[Convergencia]\label{def:conv_pvi_new}
+El método es \textbf{convergente} en $[t_0,T]$ si
+\[
+  \max_{\substack{0\le n\le N\\t_n\le T}}|y_n-y(t_n)|\;\xrightarrow{\;h\to0\;}\;0
+\]
+para todo dato $y_0$ y toda función $f$ Lipschitz en $y$.
+\end{definition}
+
+\begin{definition}[Error de truncamiento y consistencia]\label{def:consist_pvi_new}
+El \textbf{error de truncamiento local} en el paso $n+1$ es
+\[
+  \tau_{n+1}(h)\;:=\;\frac{y(t_{n+1})-y(t_n)}{h}-\Phi\!\bigl(t_n,\,y(t_n),\,h\bigr).
+\]
+El método es \textbf{consistente} si $\|\tau(h)\|_\infty:=\max_n|\tau_{n+1}(h)|\to0$ cuando $h\to0$. Si $\|\tau(h)\|_\infty=O(h^p)$, decimos que tiene \textbf{orden~$p$}.
+
+Equivalentemente, el método es consistente si y solo si $\Phi(t,y,0)=f(t,y)$ para todo $(t,y)$.
+\end{definition}
+
+La condición $\Phi(t,y,0)=f(t,y)$ es inmediata para Euler explícito ($\Phi=f$). Para RK2 se verifica sustituyendo $h=0$: $k_2\to f(t,y)=k_1$ y $\Phi\to b_1 k_1+b_2 k_2=(b_1+b_2)f=f$.
+
+\begin{definition}[Estabilidad de un método de un paso]\label{def:estab_datos_new}
+El método es \textbf{estable} en $[t_0,T]$ si existen $h_0>0$ y $C_T>0$ independientes de $h$ tales que, para todo $0<h\le h_0$, toda pareja de datos $y_0,\tilde y_0$ y todo $n$ con $t_n\le T$,
+\[
+  |y_n - \tilde y_n| \le C_T\,|y_0 - \tilde y_0|,
+\]
+donde $\{y_n\}$ y $\{\tilde y_n\}$ son las soluciones del método con datos iniciales $y_0$ y $\tilde y_0$ respectivamente.
+\end{definition}
+
+\begin{remark}[Lipschitz en $\Phi$ implica estabilidad]
+Si $\Phi$ es Lipschitz en $y$ con constante $K$ (uniformemente en $t$ y $h$), entonces el método es estable con $C_T = e^{KT}$. En efecto, sea $\delta_n := y_n - \tilde y_n$ la diferencia de dos soluciones numéricas con datos distintos. Ambas satisfacen el mismo esquema, luego
+\[
+  \delta_{n+1} = \delta_n + h\bigl[\Phi(t_n,y_n,h) - \Phi(t_n,\tilde y_n,h)\bigr],
+\]
+y la condición de Lipschitz da $|\delta_{n+1}| \le (1+hK)|\delta_n|$. Iterando y aplicando el Lema~\ref{lem:exp_bound_new}: $|\delta_n| \le (1+hK)^n|\delta_0| \le e^{hKn}|\delta_0| \le e^{KT}|y_0-\tilde y_0|$.
+
+Para los métodos de la tabla: Euler explícito tiene $\Phi=f$, por lo que $K=L$ (la constante de Lipschitz de $f$). Euler implícito tiene $K_I(h)=L/(1+hL)<L$. Para los métodos RK2, $\Phi$ hereda el Lipschitz de $f$ con una constante explícitamente computable. En todos los casos, si $f$ es Lipschitz entonces $\Phi$ también lo es, y la estabilidad queda garantizada \emph{sin verificación adicional}.
+\end{remark}
+
+\begin{lemma}\label{lem:exp_bound_new}
+Para todo $x\ge 0$ se tiene $1+x\le e^x$.
+\end{lemma}
+\begin{proof}
+Considérese $g(x):=e^x-(1+x)$. Entonces $g(0)=0$ y $g'(x)=e^x-1\ge 0$ para todo $x\ge 0$. Por lo tanto $g$ es creciente en $[0,\infty)$ y, como $g(0)=0$, se sigue que $g(x)\ge 0$ para todo $x\ge 0$.
+\end{proof}
+
+\begin{theorem}[Consistencia $\Leftrightarrow$ convergencia para métodos de un paso]\label{thm:one_step_lax_new}
+Sea $y'=f(t,y)$ con $f$ Lipschitz en $y$ con constante $L$ en $[t_0,T]\times\mathbb{R}$. Supongamos que $\Phi$ es Lipschitz en $y$ con constante $K$ uniformemente en $t$ y $h$. Entonces:
+\begin{enumerate}
+  \item \emph{(Consistencia $\Rightarrow$ convergencia, con orden.)} Si $|\tau_n(h)|\le Ch^p$ para todo $n$, entonces
+  \[
+    \max_{0\le n\le N}|y(t_n)-y_n|\le \frac{e^{K(T-t_0)}-1}{K}\,Ch^p.
+  \]
+  En particular, el método es convergente.
+  \item \emph{(Convergencia $\Rightarrow$ consistencia.)} Si el método es convergente para toda $f$ Lipschitz, entonces es consistente.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\textit{(1)} Sea $e_n:=y(t_n)-y_n$. Entonces $e_0=0$ y
+\[
+  e_{n+1}=y(t_{n+1})-y_{n+1}
+  =\underbrace{\bigl[y(t_{n+1})-y(t_n)-h\,\Phi(t_n,y(t_n),h)\bigr]}_{h\,\tau_{n+1}}
+  +h\bigl[\Phi(t_n,y(t_n),h)-\Phi(t_n,y_n,h)\bigr].
+\]
+Por la condición de Lipschitz sobre $\Phi$: $|e_{n+1}|\le (1+hK)|e_n|+h|\tau_{n+1}|$. Como $e_0=0$, iterando y usando el Lema~\ref{lem:exp_bound_new} con $x=hK$:
+\[
+  |e_n|\le h\sum_{j=1}^{n}e^{hK(n-j)}|\tau_j|\le nh\cdot e^{hKn}\cdot Ch^p\le T\,e^{KT}\cdot Ch^p.
+\]
+
+\textit{(2)} La consistencia es la condición $\Phi(t,y,0)=f(t,y)$. Si el método converge para la ecuación $y'=f$, en particular la solución numérica $y_1=y_0+h\Phi(t_0,y_0,h)$ satisface $y_1\to y(t_0+h)=y_0+hf(t_0,y_0)+O(h^2)$ cuando $h\to0$. Dividiendo por $h$ y tomando $h\to0$: $\Phi(t_0,y_0,0)=f(t_0,y_0)$, que es la consistencia.
+\end{proof}
+
+\begin{remark}
+La dirección (1) es la más importante para la práctica: basta verificar que el error local es $O(h^{p+1})$ (es decir, que el método tiene orden~$p$) para concluir que el error global es $O(h^p)$. La constante de la cota es $C' = \frac{e^{K(T-t_0)}-1}{K}\,C$, donde $K$ es la constante de Lipschitz de $\Phi$ cuya existencia garantiza la estabilidad (Definición~\ref{def:estab_datos_new} y el remark anterior).
+\end{remark}
+
+\subsection{Problemas rígidos o ``stiff''}\label{sec:stiff_new}
+
+En la Sección~\ref{sec:ecuacion_test_new} vimos que Euler explícito e implícito difieren cualitativamente en la ecuación $y'=\alpha y$ para $h$ fijo: el método explícito diverge si $h>2/|\alpha|$, mientras que el implícito decae para cualquier $h>0$. Aquí usamos el Teorema~\ref{thm:one_step_lax_new} para entender de manera más precisa qué paso impone cada método.
+
+Consideremos la ecuación test
+\[
+  y'=\lambda y,\qquad y(0)=y_0,\quad \lambda<0,
+\]
+con solución exacta $y(t)=e^{\lambda t}y_0$. Calculamos la constante de Lipschitz de la función de incremento $\Phi$ de cada método y la cota resultante.
+
+\paragraph{Euler explícito.}
+$\Phi_E(t,y,h)=\lambda y$, que es lineal en $y$:
+\[
+  |\Phi_E(t,y_1,h)-\Phi_E(t,y_2,h)|=|\lambda|\,|y_1-y_2|.
+\]
+La constante de Lipschitz es $K_E=|\lambda|$. El Teorema~\ref{thm:one_step_lax_new} da
+\[
+  \max_n|e_n|\;\le\;T\,e^{|\lambda|T}\,Ch,
+\]
+donde $C=|\lambda|^2/2$ viene del error de truncamiento $|\tau_n|=\frac{h\lambda^2}{2}|y(t_n)|\le\frac{h\lambda^2}{2}|y_0|$. La cota crece \emph{exponencialmente} con $|\lambda|$. Para garantizar error $<\epsilon$ con esta estimación se necesitaría
+\[
+  h\;<\;\frac{2\epsilon}{\lambda^2 T\,e^{|\lambda|T}},
+\]
+un paso astronómicamente pequeño para $|\lambda|\gg1$.
+
+\paragraph{Euler implícito.}
+El esquema resuelve $y_{n+1}=y_n+h\lambda y_{n+1}$, dando $y_{n+1}=y_n/(1-h\lambda)$. La función de incremento es
+\[
+  \Phi_I(t,y,h)=\frac{\lambda y}{1-h\lambda},
+\]
+también lineal en $y$, con constante de Lipschitz
+\[
+  K_I(h)=\frac{|\lambda|}{1-h\lambda}=\frac{|\lambda|}{1+h|\lambda|}.
+\]
+Nótese que $K_I(h)<|\lambda|=K_E$ para todo $h>0$. Más importante: $K_I$ es acotada superiormente por $1/h$, independientemente de $|\lambda|$:
+\[
+  K_I(h)=\frac{|\lambda|}{1+h|\lambda|}\;\le\;\frac{1}{h},
+\]
+con $K_I(h)\to 1/h$ cuando $|\lambda|\to\infty$ con $h$ fijo. Aplicando el Teorema~\ref{thm:one_step_lax_new} con esta cota:
+\[
+  \max_n|e_n|\;\le\;T\,e^{K_I(h)\,T}\,Ch\;\le\;T\,e^{T/h}\,Ch.
+\]
+Esta cota es independiente de $|\lambda|$: para cualquier valor de la rigidez, el error de Euler implícito queda controlado sin restringir $h$ en función de $|\lambda|$.
+
+\begin{remark}
+El contraste entre los dos métodos se resume así: la cota del Teorema~\ref{thm:one_step_lax_new} para Euler explícito tiene el factor $e^{|\lambda|T}$ que crece sin límite con la rigidez; la cota para Euler implícito tiene el factor $e^{T/h}$ que solo depende del paso y del intervalo, no de $|\lambda|$. En la práctica, la restricción de paso de Euler explícito ($h\lesssim 2/|\lambda|$) no proviene de la exactitud sino de la \emph{estabilidad}: para $h>2/|\lambda|$ la solución numérica diverge (como vimos en la Sección~\ref{sec:ecuacion_test_new}), mientras que Euler implícito es estable para todo $h>0$.
+
+Esta distinción motiva la noción de \textbf{A-estabilidad}: un método es A-estable si su región de estabilidad absoluta contiene el semiplano $\{\mathrm{Re}(z)\le0\}$. Euler explícito no es A-estable; Euler implícito sí lo es (al igual que el método del trapecio).
+\end{remark}
+
+
+\section{Problema de valores de contorno}
+
+En problemas de contorno no se avanza paso a paso en el tiempo: la discretización espacial conduce a un sistema lineal
+\[
+  A^h u^h = F^h,
+\]
+y la estabilidad se estudia en términos de la invertibilidad de $A^h$ y del tamaño de $(A^h)^{-1}$.
+
+Para vectores de malla $v=(v_1,\dots,v_m)^T$ usaremos la norma discreta
+\[
+  \|v\|_{2,h}:=\Bigl(h\sum_{j=1}^{m}|v_j|^2\Bigr)^{1/2}.
+\]
+La norma inducida sobre matrices coincide con la norma espectral usual $\|\cdot\|_2$, pues el factor $\sqrt h$ aparece en ambos lados.
+
+\begin{definition}[Estabilidad en norma 2]
+Una familia de discretizaciones $A^h u^h=F^h$ es \textbf{estable en norma 2} si existe $C>0$, independiente de $h$, tal que $A^h$ es invertible y
+\[
+  \|(A^h)^{-1}\|_2\le C.
+\]
+Equivalente y más instructivamente: para todo vector $v^h$,
+\[
+  \|v^h\|_{2,h}\le C\,\|A^h v^h\|_{2,h}.
+\]
+\end{definition}
+
+Si $u|_h$ denota la restricción de la solución exacta a la malla y $\tau^h$ el error de truncamiento definido por
+\[
+  A^h(u|_h)=F^h+\tau^h,
+\]
+entonces el error global $E^h:=u|_h-u^h$ satisface
+\[
+  A^h E^h = \tau^h,
+\]
+y por lo tanto
+\[
+  \|E^h\|_{2,h}\le \|(A^h)^{-1}\|_2\,\|\tau^h\|_{2,h}.
+\]
+En consecuencia, para problemas lineales estacionarios la convergencia se obtiene combinando \emph{consistencia} ($\tau^h\to0$) y \emph{estabilidad en norma 2}.
+
+\begin{proposition}[Fórmula centrada para $u''$]\label{prop:centered_second_derivative_new}
+Si $u\in C^4([0,1])$, entonces para todo nodo interior $x_j$ existe $\xi_j\in(x_{j-1},x_{j+1})$ tal que
+\[
+  \frac{u(x_{j-1})-2u(x_j)+u(x_{j+1})}{h^2}
+  =u''(x_j)+\frac{h^2}{12}u^{(4)}(\xi_j).
+\]
+En particular, la aproximación centrada de la segunda derivada tiene error $O(h^2)$.
+\end{proposition}
+
+\begin{proof}
+Taylor alrededor de $x_j$ da
+\[
+  u(x_{j\pm1})=u(x_j)\pm h u'(x_j)+\frac{h^2}{2}u''(x_j)\pm\frac{h^3}{6}u^{(3)}(x_j)+\frac{h^4}{24}u^{(4)}(\xi_j^{\pm}).
+\]
+Sumando ambas expresiones se cancelan los términos impares y queda
+\[
+  u(x_{j-1})-2u(x_j)+u(x_{j+1})
+  =h^2u''(x_j)+\frac{h^4}{24}\bigl(u^{(4)}(\xi_j^-)+u^{(4)}(\xi_j^+)\bigr).
+\]
+Dividiendo por $h^2$ y absorbiendo el promedio de las derivadas cuartas en un punto intermedio $\xi_j$ se obtiene la fórmula.
+\end{proof}
+
+\subsection{Dirichlet con reacción: esquema centrado y convergencia}
+
+Sea
+\[
+-u''(x)+\sigma u(x)=f(x),\quad x\in(0,1),\quad u(0)=\alpha,\ u(1)=\beta,\ \sigma>0.
+\]
+Tomamos la malla uniforme $x_j=jh$, $j=0,1,\dots,m+1$, con $h=1/(m+1)$, y buscamos aproximaciones $u_j\approx u(x_j)$ para los nodos interiores $j=1,\dots,m$. La discretización centrada interior es
+\[
+-\frac{u_{j-1}-2u_j+u_{j+1}}{h^2}+\sigma u_j=f(x_j),\qquad j=1,\dots,m.
+\]
+Las condiciones de borde se imponen fijando directamente $u_0=\alpha$ y $u_{m+1}=\beta$. Por lo tanto, en las ecuaciones para $j=1$ y $j=m$ esos valores se trasladan al lado derecho. El sistema para el vector incógnita
+\[
+  u^h=(u_1,\dots,u_m)^T
+\]
+toma la forma
+\[
+  A^h u^h=F^h,
+\]
+con
+\[
+  A^h=
+  \begin{pmatrix}
+    \frac{2}{h^2}+\sigma & -\frac{1}{h^2} & 0 & \cdots & 0\\
+    -\frac{1}{h^2} & \frac{2}{h^2}+\sigma & -\frac{1}{h^2} & \ddots & \vdots\\
+    0 & \ddots & \ddots & \ddots & 0\\
+    \vdots & \ddots & -\frac{1}{h^2} & \frac{2}{h^2}+\sigma & -\frac{1}{h^2}\\
+    0 & \cdots & 0 & -\frac{1}{h^2} & \frac{2}{h^2}+\sigma
+  \end{pmatrix},
+\qquad
+  F^h=
+  \begin{pmatrix}
+    f(x_1)+\frac{\alpha}{h^2}\\
+    f(x_2)\\
+    \vdots\\
+    f(x_{m-1})\\
+    f(x_m)+\frac{\beta}{h^2}
+  \end{pmatrix}.
+\]
+
+\begin{theorem}[Dirichlet con reacción: consistencia + estabilidad + convergencia]\label{thm:dirichlet_reaction_new}
+Si $u\in C^4([0,1])$, entonces el esquema centrado anterior es consistente de orden 2, estable en norma 2 y converge con
+\[
+  \|E^h\|_{2,h}\le Ch^2.
+\]
+\end{theorem}
+
+\begin{proof}
+Aplicando la Proposición~\ref{prop:centered_second_derivative_new} a la solución exacta en cada nodo interior obtenemos
+\[
+  -\frac{u(x_{j-1})-2u(x_j)+u(x_{j+1})}{h^2}+\sigma u(x_j)=f(x_j)-\frac{h^2}{12}u^{(4)}(\xi_j).
+\]
+Por lo tanto, el error de truncamiento local satisface $|\tau_j|\le Ch^2$, y de aquí
+\[
+  \|\tau^h\|_{2,h}\le Ch^2.
+\]
+
+Para la estabilidad, observamos que $A^h$ es una matriz real simétrica; en consecuencia, todos sus autovalores son reales. Además, cada fila tiene centro
+\[
+  c_j=\frac{2}{h^2}+\sigma
+\]
+y radio de Gershgorin
+\[
+  r_j\le \frac{2}{h^2}.
+\]
+Por el teorema de Gershgorin, todo autovalor $\lambda$ de $A^h$ pertenece al intervalo
+\[
+  \left[\sigma,\,\frac{4}{h^2}+\sigma\right].
+\]
+En particular,
+\[
+  \lambda_{\min}(A^h)\ge \sigma>0.
+\]
+Como $A^h$ es simétrica definida positiva,
+\[
+  \|(A^h)^{-1}\|_2=\frac{1}{\lambda_{\min}(A^h)}\le \frac{1}{\sigma},
+\]
+que es exactamente la estabilidad en norma 2.
+
+Finalmente,
+\[
+  A^hE^h=\tau^h
+  \qquad\Longrightarrow\qquad
+  \|E^h\|_{2,h}\le \|(A^h)^{-1}\|_2\,\|\tau^h\|_{2,h}
+  \le \frac{C}{\sigma}h^2.
+\]
+\end{proof}
+
+\subsection{Caso periódico y diagonalización de Fourier}
+
+Para
+\[
+-u''(x)+\sigma u(x)=f(x),\qquad u(0)=u(1),\ u'(0)=u'(1),
+\]
+toda la información de estabilidad puede leerse directamente del operador discreto mediante Fourier. Tomamos la malla uniforme $x_j=jh$, $j=0,1,\dots,N-1$, con $h=1/N$, e imponemos índices módulo $N$. El esquema es
+\[
+  -\frac{u_{j-1}-2u_j+u_{j+1}}{h^2}+\sigma u_j=f(x_j),
+  \qquad j=0,1,\dots,N-1,
+\]
+que incorpora automáticamente las condiciones de borde periódicas mediante las identificaciones $u_{-1}=u_{N-1}$ y $u_N=u_0$. Para cada $k=0,1,\dots,N-1$ consideramos el modo de Fourier discreto
+\[
+  w_j^{(k)}=e^{2\pi i kj/N}.
+\]
+Estos modos satisfacen las condiciones periódicas, pues
+\[
+  w_N^{(k)}=e^{2\pi i k}=w_0^{(k)},
+  \qquad
+  w_{-1}^{(k)}=e^{-2\pi i k/N}=w_{N-1}^{(k)}.
+\]
+Sustituyendo directamente en las ecuaciones del esquema obtenemos
+\[
+  (L_h w^{(k)})_j
+  =\left(\sigma+\frac{2}{h^2}\right)w_j^{(k)}
+   -\frac{1}{h^2}w_{j-1}^{(k)}
+   -\frac{1}{h^2}w_{j+1}^{(k)}.
+\]
+Como
+\[
+  w_{j\pm1}^{(k)}=e^{\pm 2\pi i k/N}\,w_j^{(k)},
+\]
+obtenemos
+\[
+  (L_h w^{(k)})_j
+  =\left[\sigma+\frac{2}{h^2}-\frac{1}{h^2}\left(e^{2\pi i k/N}+e^{-2\pi i k/N}\right)\right]w_j^{(k)}.
+\]
+Por lo tanto $w^{(k)}$ es autofunción del operador discreto $L_h$ con autovalor
+\[
+  \lambda_k=\sigma+\frac{2}{h^2}-\frac{1}{h^2}\left(e^{2\pi i k/N}+e^{-2\pi i k/N}\right).
+\]
+Usando las identidades trigonométricas
+\[
+  e^{i\theta}+e^{-i\theta}=2\cos\theta,
+  \qquad
+  1-\cos\theta=2\sin^2\!\left(\frac{\theta}{2}\right),
+\]
+con $\theta=2\pi k/N$, llegamos a
+\[
+  \lambda_k
+  =\sigma+\frac{2}{h^2}\bigl(1-\cos(2\pi k/N)\bigr)
+  =\sigma+\frac{4}{h^2}\sin^2\!\left(\frac{\pi k}{N}\right).
+\]
+En particular, $\lambda_k\ge\sigma>0$ para todo $k$. Como los modos de Fourier discretos forman una base ortogonal de $\mathbb C^N$, el operador discreto queda diagonalizado en esa base y por lo tanto
+\[
+  \|(A_N)^{-1}\|_2=\frac{1}{\min_k\lambda_k}\le\frac{1}{\sigma}.
+\]
+La estabilidad en norma 2 es entonces uniforme en $h$ y, combinada con la consistencia de orden 2 de la fórmula centrada, da convergencia de orden 2.
+
+\begin{remark}
+Si se escribe el sistema lineal asociado, la matriz $A_N$ resulta ser circulante:
+\[
+  A_N=
+  \begin{pmatrix}
+    \frac{2}{h^2}+\sigma & -\frac{1}{h^2} & 0 & \cdots & 0 & -\frac{1}{h^2}\\
+    -\frac{1}{h^2} & \frac{2}{h^2}+\sigma & -\frac{1}{h^2} & \ddots & & 0\\
+    0 & \ddots & \ddots & \ddots & \ddots & \vdots\\
+    \vdots & \ddots & -\frac{1}{h^2} & \frac{2}{h^2}+\sigma & -\frac{1}{h^2} & 0\\
+    0 & & \ddots & -\frac{1}{h^2} & \frac{2}{h^2}+\sigma & -\frac{1}{h^2}\\
+    -\frac{1}{h^2} & 0 & \cdots & 0 & -\frac{1}{h^2} & \frac{2}{h^2}+\sigma
+  \end{pmatrix}.
+\]
+Esta observación explica por qué Fourier diagonaliza el problema, pero no es necesaria para el cálculo anterior: basta reemplazar directamente los modos $w^{(k)}$ en las ecuaciones discretas.
+\end{remark}
+
+\begin{proposition}[No suficiencia en bordes generales]
+La cota del símbolo interior no garantiza estabilidad con condiciones de borde arbitrarias.
+\end{proposition}
+
+\begin{proof}
+Para $-u''=f$ con Neumann puro $u'(0)=u'(1)=0$, el símbolo es $\frac{4}{h^2}\sin^2(\theta/2)\ge0$, pero la matriz discreta tiene núcleo no trivial (el vector constante) y no es invertible.
+\end{proof}
+
+\section{Ecuaciones en Derivadas Parciales}
+
+Estudiamos la ecuación del calor
+\[
+  u_t=\kappa u_{xx},\qquad x\in(0,1),\ t>0,
+\]
+con malla uniforme $x_j=jh$, $t_n=n\Delta t$, y parámetro
+\[
+  \mu:=\frac{\kappa\Delta t}{h^2}.
+\]
+
+\subsection{Discretización espacial centrada + Euler en tiempo}
+
+En espacio usamos la diferencia centrada
+\[
+  \delta_{xx}U_j^n:=\frac{U_{j-1}^n-2U_j^n+U_{j+1}^n}{h^2},
+\]
+de orden 2.
+
+\paragraph{Euler explícito en tiempo.}
+\[
+  \frac{U_j^{n+1}-U_j^n}{\Delta t}=\kappa\,\delta_{xx}U_j^n
+  \quad\Longleftrightarrow\quad
+  U_j^{n+1}=\mu U_{j-1}^n+(1-2\mu)U_j^n+\mu U_{j+1}^n.
+\]
+Si hay condiciones de Dirichlet, en cada paso $U_0^n$ y $U_{m+1}^n$ son datos conocidos; entonces $U^{n+1}$ se obtiene con una sola barrida sobre los nodos interiores. Costo por paso: $O(m)$ operaciones y sin resolver sistemas lineales.
+
+\paragraph{Euler implícito en tiempo.}
+\[
+  \frac{U_j^{n+1}-U_j^n}{\Delta t}=\kappa\,\delta_{xx}U_j^{n+1}
+  \quad\Longleftrightarrow\quad
+  -\mu U_{j-1}^{n+1}+(1+2\mu)U_j^{n+1}-\mu U_{j+1}^{n+1}=U_j^n.
+\]
+Para Dirichlet, en cada tiempo queda un sistema tridiagonal
+\[
+  A_h U^{n+1}=b^n.
+\]
+Se resuelve en costo $O(m)$ con el algoritmo de Thomas (eliminación gaussiana para matrices tridiagonales), con memoria lineal y buen comportamiento numérico en este caso SPD.
+
+\subsection{Consistencia y estabilidad de Lax--Richtmyer}
+
+En el caso lineal homogéneo escribimos el esquema como
+\[
+  U^{n+1}=S_hU^n,
+\]
+y usamos la norma discreta
+\[
+  \|v\|_{2,h}:=\Bigl(h\sum_j|v_j|^2\Bigr)^{1/2}.
+\]
+
+\begin{definition}[Consistencia del esquema]
+Sea $u_h^n$ la restricción de la solución exacta a la malla en $t_n$. El error de truncamiento $\tau_h^n$ se define por $u_h^{n+1}=S_hu_h^n+\Delta t\,\tau_h^n$. El esquema es \textbf{consistente} si $\max_{n\Delta t\le T}\|\tau_h^n\|_{2,h}\to0$ cuando $h,\Delta t\to0$.
+\end{definition}
+
+\begin{definition}[Estabilidad de Lax--Richtmyer]
+El esquema es \textbf{estable} en $[0,T]$ si existe $C_T$ independiente de $h,\Delta t$ tal que $\|S_h^n\|_{2,h\to2,h}\le C_T$ para $0\le n\Delta t\le T$.
+\end{definition}
+
+\subsection{Factores de amplificación de Fourier (borde periódico)}
+
+A partir de aquí suponemos \textbf{condiciones de borde periódicas}:
+\[
+  U_{j+N}^n = U_j^n \quad \text{para todo } j\in\mathbb{Z}.
+\]
+Esto hace que el operador de actualización $S_h$ sea una \textbf{matriz circulante} de tamaño $N\times N$: cada fila es un desplazamiento cíclico de la anterior. Las matrices circulantes son diagonalizadas por la transformada de Fourier discreta (DFT), cuyos modos son las sucesiones periódicas
+\[
+  v_j^{(k)}=e^{i\theta_k j},\qquad \theta_k=\frac{2\pi k}{N},\quad k=0,\dots,N-1.
+\]
+
+Para cualquier operador de diferencias de coeficientes constantes $L_h$ (es decir, para el cual $(L_h v)_j$ sólo depende de traslaciones de $v$), cada modo $v^{(k)}$ es autofunción:
+\[
+  (L_h v^{(k)})_j = \widehat{L_h}(\theta_k)\, v_j^{(k)}
+\]
+para cierto escalar $\widehat{L_h}(\theta_k)\in\mathbb{C}$. La función $\theta\mapsto\widehat{L_h}(\theta)$ se llama el \textbf{símbolo} de $L_h$: es la representación en frecuencia del operador, obtenida evaluándolo en un modo puro $e^{i\theta j}$.
+
+\begin{example}[Símbolo de la segunda diferencia centrada]
+Aplicando $\delta_{xx}$ al modo $v^{(k)}$:
+\[
+  (\delta_{xx}\,v^{(k)})_j
+  = \frac{e^{i\theta_k(j-1)}-2e^{i\theta_k j}+e^{i\theta_k(j+1)}}{h^2}
+  = e^{i\theta_k j}\,\frac{e^{-i\theta_k}-2+e^{i\theta_k}}{h^2}.
+\]
+Usando $e^{i\theta}+e^{-i\theta}=2\cos\theta$ y $1-\cos\theta=2\sin^2(\theta/2)$, el símbolo resulta
+\[
+  \widehat{\delta_{xx}}(\theta_k)
+  =\frac{2(\cos\theta_k-1)}{h^2}
+  =-\frac{4}{h^2}\sin^2\!\left(\frac{\theta_k}{2}\right)\le 0.
+\]
+\end{example}
+
+El \textbf{factor de amplificación} $G_h(\theta_k)$ es el símbolo del operador de actualización $S_h$:
+\[
+  S_h\,v^{(k)}=G_h(\theta_k)\,v^{(k)}.
+\]
+Interpretación: en cada paso de tiempo, la componente de frecuencia $k$ queda multiplicada por $G_h(\theta_k)$. Tras $n$ pasos queda multiplicada por $G_h(\theta_k)^n$, de modo que la estabilidad de la frecuencia $k$ equivale a $|G_h(\theta_k)|\le C$ (con $C$ independiente de $h$ y $\Delta t$).
+
+\begin{proposition}[Equivalencia con estabilidad de Fourier]
+Si $S_h$ es circulante con factores de amplificación $G_h(\theta_k)$, entonces
+\[
+\|S_h^n\|_{2,h\to2,h}=\max_k|G_h(\theta_k)|^n.
+\]
+En particular, estabilidad de Lax--Richtmyer $\Leftrightarrow$ $\sup_{h,k}|G_h(\theta_k)|\le C$.
+\end{proposition}
+
+\begin{proof}
+$S_h=F_h^{-1}\operatorname{diag}(G_h(\theta_k))F_h$ con $F_h$ unitario en $\ell^2_h$ (Teorema~\ref{thm:dft_unitary}). Las potencias $S_h^n$ se diagonalizan igual, y la norma operador es el máximo módulo.
+\end{proof}
+
+\subsection{Análisis de estabilidad de Fourier: explícito e implícito}
+
+\paragraph{Euler explícito.}
+Aquí
+\[
+  S_h^{E}=I+\kappa\Delta t\,\delta_{xx},
+\]
+por lo que
+\[
+  G_E(\theta)=1+\kappa\Delta t\,\widehat{\delta_{xx}}(\theta)
+  =1-4\mu\sin^2\!\left(\frac{\theta}{2}\right).
+\]
+La condición $|G_E(\theta)|\le1$ para todo $\theta$ equivale a
+\[
+  0\le 4\mu\sin^2\!\left(\frac{\theta}{2}\right)\le 2\quad\forall\theta
+  \quad\Longleftrightarrow\quad
+  \mu\le\frac{1}{2}.
+\]
+Por lo tanto, Euler explícito es estable sólo bajo la condición $\mu\le1/2$.
+
+\paragraph{Euler implícito.}
+Aquí
+\[
+  (I-\kappa\Delta t\,\delta_{xx})U^{n+1}=U^n,
+\]
+y por Fourier
+\[
+  G_I(\theta)=\frac{1}{1-\kappa\Delta t\,\widehat{\delta_{xx}}(\theta)}
+  =\frac{1}{1+4\mu\sin^2\!\left(\frac{\theta}{2}\right)}.
+\]
+Entonces $0<G_I(\theta)\le1$ para todo $\mu>0$ y todo $\theta$: Euler implícito es incondicionalmente estable en el sentido de Fourier (y por la proposición, en el sentido de Lax--Richtmyer periódico).
+
+\begin{theorem}[Lax--Richtmyer, versión periódica lineal]\label{thm:lax_periodico_new}
+Para un esquema lineal consistente de coeficientes constantes con borde periódico,
+\[
+\text{convergencia en }\ell^2_h
+\quad\Longleftrightarrow\quad
+\text{consistencia}+\text{estabilidad}.
+\]
+\end{theorem}
+
+\begin{proof}
+Sea $e^n=u_h^n-U^n$. De la definición de $\tau_h^n$ y el esquema:
+$e^{n+1}=S_he^n+\Delta t\,\tau_h^n$, $e^0=0$.
+
+\textbf{($\Leftarrow$)}  Iterando: $e^n=\Delta t\sum_{m=0}^{n-1}S_h^{n-1-m}\tau_h^m$. Tomando norma,
+\[
+\|e^n\|_{2,h}\le C_T\,T\max_{m}\|\tau_h^m\|_{2,h}\xrightarrow{h,\Delta t\to0}0.
+\]
+
+\textbf{($\Rightarrow$)}  En el caso periódico lineal circulante la implicación inversa se prueba modo a modo.  Sea $v^{(k)}$ el $k$-ésimo modo discreto (norma 1). Como $S_h$ es circulante, $S_h^nv^{(k)}=G_h(\theta_k)^nv^{(k)}$. El problema continuo tiene solución modal $e^{\lambda(\theta_k)t}e^{i\theta_k x}$ con $|e^{\lambda(\theta_k)t}|\le e^{\omega T}$ (bien-puesta uniforme en $k$). La convergencia aplicada al dato modal da
+\[
+|G_h(\theta_k)^n-e^{\lambda(\theta_k)t_n}|\to0,
+\]
+luego para $h$ suficientemente fino, $|G_h(\theta_k)|^n\le e^{\omega T}+1$. Maximizando en $k$: $\|S_h^n\|\le e^{\omega T}+1$, que es la estabilidad.
+\end{proof}
+
+\begin{remark}
+Fuera del caso periódico lineal, Fourier no diagonaliza el operador completo: el control del borde requiere análisis adicional (como en el Teorema~\ref{thm:dirichlet_reaction_new} para Dirichlet).
+\end{remark}
+
+
+
+\iffalse
 \chapter{Ecuaciones Diferenciales Ordinarias}
 
 \section{Discretización de derivadas mediante diferencias finitas}
@@ -5796,6 +6486,7 @@ El método espectral alcanza precisión de máquina con $N = 20$, mientras que d
 En resumen, los métodos espectrales son la herramienta de elección cuando la solución es suave y la geometría es simple. Su precisión superior (convergencia exponencial vs algebraica) los hace indispensables en simulaciones de fluidos, ondas, y otros problemas donde la resolución fina de estructuras suaves es crítica.
 
 
+\fi
 \chapter{Sistemas No Lineales y Optimización Numérica}
 
 Este capítulo aborda dos problemas íntimamente relacionados:

@@ -19,7 +19,7 @@
 
 \begin{document}
 \centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
- 
+
  \vskip 0.2cm
  \hrulefill
  \vskip 0.2cm
@@ -30,314 +30,256 @@
  \hrulefill
 
  \bigskip
- \centerline{\bf Práctica N$^\circ$ 5: Ecuaciones Diferenciales Ordinarias}
+ \centerline{\bf Práctica N$^\circ$ 5: Métodos de diferencias finitas}
  \bigskip
 
-\section*{Discretización de derivadas mediante diferencias finitas}
+\section*{Ejercicios de métodos de un paso}
 
-\begin{exercise}[Análisis de error en aproximaciones de derivadas]\label{ej_difer}
-Para las siguientes discretizaciones de la derivada primera, halle una expresión para el error local y señale las hipótesis de suavidad necesarias sobre la función $u$ para que el orden de precisión sea el indicado en cada caso.
+\begin{exercise}[Método del punto medio sobre una EDO lineal]
+Considere el problema
 \[
-\begin{array}{r l c l}
- u'(x) \sim  &  \frac{u(x+h)-u(x)}{h}  &  \mbox{(diferencia forward)} & O(h) \\[0.25cm]
- u'(x) \sim  &  \frac{u(x)-u(x-h)}{h}  &  \mbox{(diferencia backward)} & O(h) \\[0.25cm]
- u'(x) \sim  &  \frac{u(x+h)-u(x-h)}{2h}  &  \mbox{(diferencia centrada)} & O(h^2)
-\end{array}
+  y'(t)=-y(t),\qquad y(0)=1,
 \]
-
-Repita el análisis para la discretización con diferencias centradas de la derivada segunda:
+y el método del punto medio
 \[
-u''(x) \sim \frac{u(x+h)-2u(x)+u(x-h)}{h^2}, \quad \quad \mbox{de orden} \; O(h^2).
+  y_{n+1}=y_n+h\,f\!\left(t_n+\frac{h}{2},\,y_n+\frac{h}{2}f(t_n,y_n)\right).
 \]
-¿Qué hipótesis de suavidad es necesaria en este último caso?
-\end{exercise}
-
-\begin{exercise}[Diferencias finitas de orden alto]\label{x+2h}
-Las siguientes son versiones de orden 2 de las diferencias forward o backward, que utilizan nodos a un solo lado de $x$.
-\begin{enumerate}
-\item Verifique que la siguiente fórmula para la derivada primera tiene orden $O(h^2)$:
+\begin{enumerate}[(a)]
+\item Escriba la función de transición $\Phi(t,y,h)$ del método.
+\item Calcule el error de truncamiento local
 \[
-u'(x) \sim -\frac{1}{h}\left( \frac{3}{2}u(x)-2u(x+h)+\frac{1}{2}u(x+2h) \right).
+  \tau_{n+1}(h)=\frac{y(t_{n+1})-y(t_n)}{h}-\Phi(t_n,y(t_n),h)
 \]
-\item Halle una fórmula de aproximación para la derivada segunda $u''(x)$ que utilice los valores de $u$ en $x$, $x+h$ y $x+2h$. ¿Cuál es el orden que resulta en este caso?
+y determine su orden.
+\item Halle la constante de Lipschitz de $\Phi$ respecto de la variable $y$ y deduzca una cota uniforme para $0<h\le 1$.
+\item Use el teorema de convergencia de métodos de un paso del apunte para hallar un paso $h$ que garantice
+\[
+  \max_{t_n\le 10}|y(t_n)-y_n|<10^{-3}.
+\]
 \end{enumerate}
 \end{exercise}
 
-\section*{Problemas de valores iniciales}
-
-\begin{exercise}
-Dada una constante $a>0$, considere el problema de valores iniciales para $t>0$:
+\begin{exercise}[Euler implícito sobre una EDO lineal]
+Considere nuevamente
 \[
-y'(t) = -a y(t), \quad \quad  y(0)=1.
+  y'(t)=-y(t),\qquad y(0)=1,
 \]
-Para cada paso temporal $\Delta t$ fijo se consideran las discretizaciones:
+y el método de Euler implícito
 \[
-\begin{array}{r l l}
-      \frac{y^{n+1} - y^n}{\Delta t} = & -a y^n & \mbox{Euler explícito} \\[0.5cm]
-      \frac{y^{n+1} - y^n}{\Delta t} = & -a y^{n+1} & \mbox{Euler implícito} \\[0.5cm]
-      \frac{y^{n+1} - y^n}{\Delta t} = & -a \left( \frac{1}{2} y^{n+1} + \frac{1}{2} y^{n} \right) & \mbox{Adams-Moulton de 1 paso}
-\end{array}
+  y_{n+1}=y_n-hy_{n+1}.
 \]
-Demuestre que:
 \begin{enumerate}[(a)]
-\item La solución exacta verifica $y(t) \to 0$ cuando $t \to \infty$.
-\item Para Euler explícito se tiene $|y_n| \to 0$ si $\Delta t < 2/a$, e $|y^n| \to \infty$ si $\Delta t > 2/a$.
-\item Para Euler implícito y el método de Adams-Moulton de 1 paso, $y_n \to 0$ para todo $h$.
-\item Probar que todos los métodos son consistentes y por lo tanto convergentes.
+\item Escriba la función de transición $\Phi(t,y,h)$ del método.
+\item Calcule el error de truncamiento local y determine su orden.
+\item Calcule la constante de Lipschitz de $\Phi$ respecto de $y$.
+\item Use el teorema de convergencia de métodos de un paso para hallar un paso $h$ que garantice
+\[
+  \max_{t_n\le 10}|y(t_n)-y_n|<10^{-3}.
+\]
+\item Compare el paso obtenido aquí con el del ejercicio anterior.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}
-Dada la ecuación $y' = f(t,y)$:
-\begin{enumerate}[(a)]
-\item Deduzca el método de Taylor de orden 2.
-\item Considere ahora la familia de métodos de Runge-Kutta de 2 etapas (RK2):
+\begin{exercise}[Método de Heun]
+Considere la EDO
+\[
+  y'(t)=-y(t)+t,\qquad y(0)=1,
+\]
+y el método de Heun
 \begin{align*}
-k_1 &= f(t_n, y_n) \\
-k_2 &= f(t_n + \alpha h, y_n + \beta h k_1) \\
-y_{n+1} &= y_n + h(b_1 k_1 + b_2 k_2)
+  k_1&=f(t_n,y_n),\\
+  k_2&=f(t_n+h,\,y_n+hk_1),\\
+  y_{n+1}&=y_n+\frac{h}{2}(k_1+k_2).
 \end{align*}
-Determine los coeficientes $\alpha, \beta, b_1, b_2$ para que el método coincida con el desarrollo de Taylor de orden 2.
-\item Demuestre que el método resultante es consistente de orden 2.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Problema stiff]
-Considere el PVI $y' = \lambda(y - \cos(t)) - \sin(t)$ con $y(0) = 1$ y $\lambda > 0$.
 \begin{enumerate}[(a)]
-\item Compruebe que la solución exacta es $y(t) = \cos(t)$.
-\item Identifique la constante de Lipschitz de la función $f(t,y) = \lambda(y - \cos(t)) - \sin(t)$.
-\item Utilizando la cota de error para el método de Euler explícito:
-\[
-|e_n| \leq \frac{M h}{2L} (e^{L(t_n - t_0)} - 1),
-\]
-discuta qué sucede con la fiabilidad de la cota cuando $L \to \infty$.
-\item ¿Significa una $L$ grande que el método no converge? Justifique.
-\end{enumerate}
-\textbf{Nota}: Aquí se nota que aunque el método sea convergente ($h \to 0$), para un $h$ práctico, el error puede ser enorme si $L$ es grande.
-\end{exercise}
-
-\bej
-Demuestre que al aplicar el método de Euler explícito a la ecuación $y' = \sqrt{y}$ con $y(0)=0$ el método resultante es consistente pero no es estable. 
-\fej
-
-\begin{exercise}[Condición de la raíz para estabilidad]
-Dada la ecuación cuadrática $z^2 + b z +c =0$ con $b$ y $c$ en $\mathbb{R}$, demuestre que las raíces están en el círculo unitario si y solo si $|c| \leq 1$ y $|b| \leq 1+c$. \textbf{Nota}: Este resultado facilita el análisis de estabilidad de esquemas multipaso de 2 pasos.
-\end{exercise}
-
-\begin{exercise}[Método de Adams-Bashforth]
-Analizar la convergencia y calcular el órden del siguiente método de Adams-Bashforth:
-\[
-y_{n+3}-y_{n+2}=\frac{h}{12}(23f_{n+2}-16f_{n+1}+5f_{n})
-\]
-\end{exercise}
-
-
-\begin{exercise}[Método BDF de orden 2]
-Los métodos BDF (Backward Differentiation Formulas) se construyen aproximando la derivada $y'(t_{n+1})$ mediante un polinomio interpolador que pasa por $y_{n+1}$ y pasos anteriores.
-\begin{enumerate}
-\item Usando el resultado del Ejercicio~\ref{x+2h} (adaptando la fórmula de diferencias finitas hacia atrás), deduzca la fórmula del método BDF de 2 pasos:
-\[
-\frac{3}{2} y_{n+1} - 2 y_n + \frac{1}{2} y_{n-1} = h f(t_{n+1}, y_{n+1}).
-\]
-\item Muestre que el método es implícito y tiene orden de consistencia 2.
-\item Analice la 0-estabilidad del método hallando las raíces del polinomio característico asociado.
-\item (Opcional) Determine la región de estabilidad absoluta del método.
+\item Escriba la función de transición $\Phi(t,y,h)$.
+\item Halle el orden del error de truncamiento local.
+\item Calcule una constante de Lipschitz de $\Phi$ en la variable $y$ para $0<h\le 1$.
+\item Use el teorema del apunte para obtener un paso $h$ que garantice error global menor que $10^{-3}$ en el intervalo $[0,10]$.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Oscilador armónico discreto]
-Considere el problema:
+\begin{exercise}[Problema rígido: Euler explícito e implícito]
+Considere el problema
 \[
-y''(t) = -a y(t), \quad \quad y(0)=1, \quad y'(0)=0, \quad \quad 0<t<T_f,
+  y'=-20\bigl(y-\cos t\bigr)-\sin t,\qquad y(0)=1.
 \]
-y la discretización explícita de 2 pasos:
-\[
-\frac{y^{n+1} -2y^n + y^{n-1}}{(\Delta t)^2} = -a y^n.
-\]
-Muestre que $|y^n| \to \infty$ si $\Delta t>2/\sqrt{a}$, y que en caso contrario $|y^n|$ permanece acotado. \textbf{Sugerencia}: Reemplace $y_n = \lambda^n$ y resuelva una ecuación de recurrencia para $\lambda$.
+\begin{enumerate}[(a)]
+\item Verifique que la solución exacta es $y(t)=\cos t$.
+\item Escriba las funciones de transición $\Phi_E$ y $\Phi_I$ de Euler explícito e implícito.
+\item Calcule las constantes de Lipschitz de $\Phi_E$ y $\Phi_I$ respecto de $y$.
+\item Explique, usando la cota del teorema de convergencia de un paso, por qué el método explícito se deteriora cuando la constante de Lipschitz es grande.
+\item Compare este análisis con el comportamiento cualitativo de ambos métodos sobre la ecuación test $y'=\lambda y$ con $\lambda<0$.
+\end{enumerate}
 \end{exercise}
+
 
 \section*{Problemas de valores de contorno}
 
-\begin{exercise}\label{ejer_dirichlet}
-Dado $\sigma>0$, se desea resolver numéricamente la ecuación de Reacción-Difusión (lineal) en una dimensión con condiciones de borde de tipo Dirichlet:
-\begin{equation}
-\label{laplaciano_dirichlet_ej}
-\left\lbrace
-  \begin{array}{r l c}
-      -u_{xx}(x) + \sigma u(x) = & f(x), & \mbox{para } x \in (0,1) \\
-      u(0) = & \alpha & \\
-      u(1) = & \beta. &
-      \end{array}
-    \right.
-\end{equation}
-Para ello se considera la malla uniforme $\{ x_j = hj, \; j=0,1,2,\ldots, m+1 \}$ con $h=1/(m+1)$.
-Para los puntos de la malla $x_j \in (0,1)$, el esquema de diferencias centradas para la derivada segunda (Ejercicio~\ref{ej_difer}) conduce al sistema de ecuaciones:
+\begin{exercise}[Transporte-reacción periódico]
+Considere el problema periódico
 \[
--\frac{u_{j-1} - 2u_{j} + u_{j+1}}{h^2} + \sigma u_j = f(x_j) \quad \mbox{para} \; j=1,2,3,\ldots, m.
+  b\,u'(x)+\sigma u(x)=f(x),\qquad x\in(0,1),\qquad u(0)=u(1),\quad u'(0)=u'(1),
 \]
-Utilizando las condiciones de borde $u_0 = \alpha$, $u_{m+1}=\beta$ se obtiene el sistema lineal $A^h u^h = F^h$,
-donde $u^h=[u_1,u_2,\ldots,u_m]^T$ es el vector de incógnitas.
-
-\begin{enumerate}[(a)]
-\item Escriba explícitamente la matriz $A^h$ y el vector $F^h$. Verifique que $A^h$ es simétrica y tridiagonal.
-\item Se define el error de truncamiento local $\tau^h \in \mathbb{R}^m$ como el residuo al insertar la solución exacta $u(x)$ en el esquema numérico:
+con $b\in\R$ y $\sigma>0$. En la malla uniforme $x_j=jh$, $h=1/N$, use diferencia centrada para $u'$:
 \[
-\tau^h_j =  \left( -\frac{u(x_{j-1}) - 2u(x_j) + u(x_{j+1})}{h^2} + \sigma u(x_j) \right) - f(x_j).
-\]
-Demuestre que si $u \in C^4[0,1]$, entonces existe $C > 0$ tal que $\|\tau^h\|_\infty \leq C h^2$.
-
-\item Demuestre que la matriz $A^h$ es estrictamente diagonal dominante (por filas) si $\sigma > 0$.
-\item Utilice el teorema de los círculos de Gershgorin para mostrar que los autovalores de $A^h$ son positivos y están acotados inferiormente por $\sigma$. Concluya que $\| (A^h)^{-1} \|_\infty \leq 1/\sigma$.
-\item Combinando los resultados anteriores, demuestre la convergencia del método, es decir, que el error global $E^h_j = u(x_j) - u^h_j$ satisface $\| E^h \|_\infty \to 0$ cuando $h \to 0$.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Condiciones de Neumann]
-Se desea resolver numéricamente la ecuación de Poisson en una dimensión con condiciones de Neumann en $x=0$ y de Dirichlet en $x=1$:
-\begin{equation}
-\label{laplaciano_neumann_ej}
-\left\lbrace
-  \begin{array}{r l r}
-      u_{xx}(x) = & f(x), & \mbox{para } x \in (0,1) \\
-      u_x(0) = & 0 & \\
-      u(1) = & 0. &
-      \end{array}
-    \right.
-\end{equation}
-Obtenga matrices para el problema discreto, si para la condición de Neumann $u_x(0)=0$ se realizan las siguientes aproximaciones:
-\begin{enumerate}
-\item $u_1 - u_0 = 0$ (diferencias forward)
-\item $\frac{3}{2}u_0 - 2u_1 + \frac{1}{2}u_2 = 0$ (diferencias forward de orden 2 del Ejercicio~\ref{x+2h})
-\end{enumerate}
-
-¿Cuál es el orden del error de truncamiento en el interior y en el punto $x=0$ en cada caso?
-\end{exercise}
-
-\begin{exercise}[Estabilidad por análisis de Fourier]\label{ej_estabilidad_norma2}
-Dado $\sigma > 0$, considere la ecuación de reacción-difusión con condiciones periódicas:
-\[
-\left\lbrace
-  \begin{array}{r l c}
-      -u''(x) + \sigma u(x) = & f(x), & \mbox{para } x \in (0,1), \\
-      u(0) = u(1), & \quad u'(0) = u'(1). &
-  \end{array}
-\right.
-\]
-Se toma la malla uniforme $x_j = jh$, $j=0,1,\ldots,N-1$, con $h=1/N$.
-\begin{enumerate}[(a)]
-\item Aplicando diferencias centradas para $u''(x_j)$, muestre que el esquema numérico equivale a
-\[
-\frac{-u_{j-1} + 2\, u_j - u_{j+1}}{h^2} + \sigma\, u_j = f(x_j), \quad j=0,1,\ldots,N-1,
-\]
-con índices tomados módulo $N$ (es decir, $u_{-1} = u_{N-1}$ y $u_N = u_0$).
-
-\item Para hallar los autovalores de la matriz $A_N$ del sistema resultante $A_N u^h = F^h$, proponga el modo de Fourier discreto $w^{(k)}_j = e^{2\pi i kj/N}$ como autovector. Sustituyendo en la ecuación homogénea y usando la identidad $e^{i\theta}+e^{-i\theta} = 2\cos\theta$, demuestre que $w^{(k)}$ es autovector con autovalor
-\[
-\lambda_k = \frac{4}{h^2}\sin^2\!\left(\frac{\pi k}{N}\right) + \sigma, \quad k=0,1,\ldots,N-1.
-\]
-
-\item Dado que $A_N$ es simétrica real, $\|A_N^{-1}\|_2 = 1/\lambda_{\min}$. Muestre que $\lambda_{\min} = \sigma$ y concluya que existe $C > 0$ independiente de $h$ tal que $\|A_N^{-1}\|_2 \leq C$, lo que prueba la estabilidad.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Ecuación de advección-reacción-difusión periódica]
-Dados $b \in \R$ y $\sigma > 0$, considere la ecuación de advección-reacción-difusión con condiciones periódicas:
-\[
-\left\lbrace
-  \begin{array}{r l c}
-      -u''(x) + b\,u'(x) + \sigma\, u(x) = & f(x), & \mbox{para } x \in (0,1), \\
-      u(0) = u(1), & \quad u'(0) = u'(1). &
-  \end{array}
-\right.
-\]
-Se toma la malla uniforme $x_j = jh$, $j=0,1,\ldots,N-1$, con $h=1/N$.
-\begin{enumerate}[(a)]
-\item Utilizando diferencias centradas para $u''(x_j)$ y $u'(x_j)$ (Ejercicio~\ref{ej_difer}), muestre que el esquema numérico se escribe como $A_N u^h = F^h$, donde la ecuación para el nodo $j$-ésimo es
-\[
-\frac{-u_{j-1} + 2u_j - u_{j+1}}{h^2} + b\,\frac{u_{j+1}-u_{j-1}}{2h} + \sigma\, u_j = f(x_j), \quad j = 0,\ldots,N-1,
+  b\,\frac{u_{j+1}-u_{j-1}}{2h}+\sigma u_j=f(x_j),\qquad j=0,\dots,N-1,
 \]
 con índices módulo $N$.
-
-\item Aplique el método de Fourier del Ejercicio~\ref{ej_estabilidad_norma2}. Usando además la identidad $e^{i\theta}-e^{-i\theta} = 2i\sin\theta$, demuestre que $w^{(k)}$ es autovector de $A_N$ con autovalor
+\begin{enumerate}[(a)]
+\item Verifique que los modos de Fourier discretos $w_j^{(k)}=e^{2\pi i kj/N}$ satisfacen automáticamente las condiciones de borde periódicas.
+\item Muestre, por sustitución directa de $w^{(k)}$ en las ecuaciones del sistema discreto, que estos modos son autofunciones del operador de diferencias finitas y que los autovalores son
 \[
-\lambda_k = \frac{4}{h^2}\sin^2\!\left(\frac{\pi k}{N}\right) + \frac{ib}{h}\sin\!\left(\frac{2\pi k}{N}\right) + \sigma, \quad k=0,1,\ldots,N-1.
+  \lambda_k=\sigma+\frac{ib}{h}\sin\!\left(\frac{2\pi k}{N}\right).
 \]
-Observe que si $b \neq 0$, los autovalores son complejos (la matriz $A_N$ no es simétrica).
+\item Deduzca que $|\lambda_k|\ge \sigma$ para todo $k$ y concluya, por el criterio de Fourier, que $\|(A_N)^{-1}\|_2\le 1/\sigma$.
+\item Interprete este resultado como estabilidad en norma 2 del esquema discreto.
+\end{enumerate}
+\emph{Remark.} Si se escribe la matriz del sistema lineal, resulta ser circulante. Esto explica por qué los modos de Fourier discretos diagonalizan el operador, pero no es necesario usar esta observación para resolver el ejercicio.
+\end{exercise}
 
-\item Muestre que $|\lambda_k| \geq \operatorname{Re}(\lambda_k) \geq \sigma > 0$ para todo $k$. Muestre que la matriz $A_N$ es normal y que por lo tanto de modo que $\|A_N^{-1}\|_2 = 1/\min_k |\lambda_k|$. Concluya que existe $C > 0$ independiente de $h$ tal que $\|A_N^{-1}\|_2 \leq C$.
+\begin{exercise}[Advección-difusión-reacción periódica]
+Considere
+\[
+  -\nu u''(x)+b\,u'(x)+\sigma u(x)=f(x),\qquad x\in(0,1),
+\]
+con condiciones periódicas, donde $\nu>0$, $b\in\R$ y $\sigma>0$.
+\begin{enumerate}[(a)]
+\item Discretice $u''$ y $u'$ con diferencias centradas y escriba las ecuaciones del esquema con índices módulo $N$.
+\item Verifique que los modos de Fourier discretos satisfacen las condiciones de borde periódicas y úselo para diagonalizar el operador discreto.
+\item Usando Fourier discreto, pruebe que los autovalores son
+\[
+  \lambda_k=\sigma+\frac{4\nu}{h^2}\sin^2\!\left(\frac{\pi k}{N}\right)+\frac{ib}{h}\sin\!\left(\frac{2\pi k}{N}\right).
+\]
+\item Deduzca que la familia es estable en norma 2 uniformemente en $h$ y obtenga una cota explícita para $\|(A_N)^{-1}\|_2$.
+\item Compare con el caso del ejercicio anterior: ¿qué papel juegan el término de difusión y el de transporte en la parte real y en la parte imaginaria del símbolo?
+\end{enumerate}
+\emph{Remark.} La matriz asociada también es circulante, pero la vía pedida en el ejercicio es trabajar directamente con las ecuaciones discretas y los modos de Fourier.
+\end{exercise}
+
+\begin{exercise}[Helmholtz periódico]
+Considere el problema periódico
+\[
+  -u''(x)-\omega^2 u(x)=f(x),\qquad x\in(0,1),\qquad u(0)=u(1),\quad u'(0)=u'(1),
+\]
+con $\omega>0$ fijo.
+\begin{enumerate}[(a)]
+\item Discretice el problema con diferencias centradas y escriba las ecuaciones del sistema con índices módulo $N$.
+\item Muestre, por Fourier discreto, que los modos $w_j^{(k)}=e^{2\pi i kj/N}$ son autofunciones del operador discreto y que los autovalores son
+\[
+  \lambda_k=\frac{4}{h^2}\sin^2\!\left(\frac{\pi k}{N}\right)-\omega^2,
+  \qquad k=0,1,\dots,N-1.
+\]
+\item Determine para qué valores de $\omega$ y de $N$ el sistema discreto es singular.
+\item Discuta, usando únicamente el símbolo de Fourier, cuándo la familia puede ser uniformemente estable en norma 2 y cuándo no.
+\end{enumerate}
+\emph{Remark.} También aquí la matriz es circulante, pero no hace falta invocar ese hecho: el análisis pedido se obtiene directamente al reemplazar los modos de Fourier en las ecuaciones discretas.
+\end{exercise}
+
+\section*{Ecuaciones en derivadas parciales}
+
+En los siguientes ejercicios se trabaja con la ecuación del calor
+\[
+  u_t = \kappa\,u_{xx},\qquad x\in(0,1),\quad t>0,\quad \kappa>0,
+\]
+con condición inicial dada y condiciones de borde \textbf{periódicas} $u(0,t)=u(1,t)$, $u_x(0,t)=u_x(1,t)$. Se usan la malla uniforme espacial $x_j=jh$, $h=1/N$, la malla temporal $t^n=n\dt$, el parámetro $\mu:=\kappa\dt/h^2$, y la segunda diferencia centrada
+\[
+  \delta_{xx}U_j^n := \frac{U_{j-1}^n - 2U_j^n + U_{j+1}^n}{h^2}.
+\]
+
+\begin{exercise}[Euler explícito para la ecuación del calor]
+\begin{enumerate}[(a)]
+\item Aplicando la diferencia hacia adelante en tiempo y la segunda diferencia centrada en espacio, escriba el esquema de diferencias finitas y despeje $U_j^{n+1}$ en función de los valores en el nivel $t^n$. Identifique los coeficientes de $U_{j-1}^n$, $U_j^n$ y $U_{j+1}^n$.
+
+\item \textbf{Error de truncamiento en tiempo.} Fijando $x_j$ y usando la expansión de Taylor en $t$,
+\[
+  u(x_j,t^{n+1}) = u(x_j,t^n) + \dt\,\partial_t u(x_j,t^n) + \frac{\dt^2}{2}\,\partial_{tt}u(x_j,\tilde{t}),
+\]
+muestre que el cociente $\bigl[u(x_j,t^{n+1})-u(x_j,t^n)\bigr]/\dt$ aproxima $\partial_t u(x_j,t^n)$ con error $O(\dt)$.
+
+\item \textbf{Error de truncamiento en espacio.} Fijando $t^n$ y usando la expansión de Taylor en $x$,
+\[
+  u(x_j\pm h, t^n) = u(x_j,t^n) \pm h\,\partial_x u + \frac{h^2}{2}\partial_{xx}u \pm \frac{h^3}{6}\partial_{xxx}u + \frac{h^4}{24}\partial_{xxxx}u(\xi_\pm, t^n),
+\]
+muestre que $\delta_{xx}u(x_j,t^n) = \partial_{xx}u(x_j,t^n) + O(h^2)$.
+
+\item \textbf{Error de truncamiento global del esquema.} Definiendo
+\[
+  \tau_j^n := \frac{u(x_j,t^{n+1})-u(x_j,t^n)}{\dt} - \kappa\,\delta_{xx}u(x_j,t^n),
+\]
+combine los resultados anteriores y el hecho de que $u$ satisface la EDP para mostrar que $\tau_j^n = O(\dt + h^2)$.
+
+\item \textbf{Análisis de estabilidad de Fourier.} Con borde periódico el operador de actualizaci\'on es circulante. Sustituya el modo discreto $V_j^n = G^n e^{i\theta j}$ (con $\theta = 2\pi k/N$, $k=0,\dots,N-1$) en el esquema del inciso~(a) y deduzca el factor de amplificaci\'on
+\[
+  G_E(\theta) = 1 - 4\mu\sin^2\!\tfrac{\theta}{2}.
+\]
+
+\item \textbf{Condición de estabilidad.} La condición de estabilidad de Lax--Richtmyer exige $|G_E(\theta)|\le 1$ para todo $\theta$. Analice para qué valores de $\mu$ se cumple esto y concluya que el esquema es estable si y sólo si
+\[
+  \mu \le \tfrac{1}{2}.
+\]
+Interprete esta restricción como una relación entre $\dt$ y $h$.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Ecuación de Helmholtz periódica]
-Dado $\omega > 0$, considere la ecuación de Helmholtz con condiciones periódicas:
+\begin{exercise}[Euler implícito para la ecuación del calor]
+\begin{enumerate}[(a)]
+\item Aplicando la diferencia hacia adelante en tiempo y la segunda diferencia centrada \textbf{evaluada en el nivel $t^{n+1}$}, escriba el esquema de Euler implícito y reordene para mostrar que cada paso requiere resolver el sistema tridiagonal (periódico)
 \[
-\left\lbrace
-  \begin{array}{r l c}
-      -u''(x) - \omega^2 u(x) = & f(x), & \mbox{para } x \in (0,1), \\
-      u(0) = u(1), & \quad u'(0) = u'(1). &
-  \end{array}
-\right.
+  -\mu\,U_{j-1}^{n+1} + (1+2\mu)\,U_j^{n+1} - \mu\,U_{j+1}^{n+1} = U_j^n, \qquad j=0,\dots,N-1.
 \]
-Aplique el método de Fourier del Ejercicio~\ref{ej_estabilidad_norma2} a la discretización por diferencias centradas para demostrar que los autovalores son
+
+\item \textbf{Error de truncamiento en tiempo.} Desarrolle $u(x_j,t^n)$ alrededor de $t^{n+1}$:
 \[
-\lambda_k = \frac{4}{h^2}\sin^2\!\left(\frac{\pi k}{N}\right) - \omega^2, \quad k=0,1,\ldots,N-1.
+  u(x_j,t^n) = u(x_j,t^{n+1}) - \dt\,\partial_t u(x_j,t^{n+1}) + \frac{\dt^2}{2}\,\partial_{tt}u(x_j,\tilde{t}),
+\]
+y muestre que $\bigl[u(x_j,t^{n+1})-u(x_j,t^n)\bigr]/\dt = \partial_t u(x_j,t^{n+1}) + O(\dt)$.
+
+\item \textbf{Error de truncamiento global.} Definiendo
+\[
+  \tau_j^n := \frac{u(x_j,t^{n+1})-u(x_j,t^n)}{\dt} - \kappa\,\delta_{xx}u(x_j,t^{n+1}),
+\]
+use el inciso anterior y el resultado de la parte~(c) del ejercicio anterior para mostrar que $\tau_j^n = O(\dt + h^2)$.
+
+\item \textbf{Análisis de estabilidad de Fourier.} Sustituya $V_j^n = G^n e^{i\theta j}$ en el esquema del inciso~(a) y deduzca el factor de amplificación
+\[
+  G_I(\theta) = \frac{1}{1+4\mu\sin^2\!\tfrac{\theta}{2}}.
+\]
+
+\item \textbf{Estabilidad incondicional.} Muestre que $0 < G_I(\theta) \le 1$ para todo $\theta$ y todo $\mu>0$, y concluya que Euler implícito es incondicionalmente estable.
+
+\item Compare la restricción de paso en Euler explícito con la ausencia de restricción en Euler implícito para ecuaciones rígidas en espacio (mallas finas).
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Método de Crank--Nicolson para la ecuación del calor]
+El método de Crank--Nicolson promedia las discretizaciones espaciales de Euler explícito e implícito:
+\[
+  \frac{U_j^{n+1}-U_j^n}{\dt} = \frac{\kappa}{2}\left(\delta_{xx}U_j^n + \delta_{xx}U_j^{n+1}\right).
 \]
 \begin{enumerate}[(a)]
-\item Muestre que la matriz no es definida positiva. 
-\item Muestre que la matriz es singular si y solo si $\omega^2$ coincide con algún autovalor del laplaciano discreto periódico $\frac{4}{h^2}\sin^2\!\left(\frac{\pi k}{N}\right)$.
-\item Demuestre que si $\omega \neq 2n\pi$ para todo $n \in \mathbb{N}$ (es decir, $\omega$ no es autovalor de $-u''$ con condiciones periódicas en $[0,1]$), entonces existe una constante $C > 0$ independiente de $h$ tal que $\|A_N^{-1}\|_2 \leq C$.
+\item Reordene el esquema para obtener el sistema lineal que debe resolverse en cada paso de tiempo, e identifique la matriz del mismo.
+
+\item \textbf{Error de truncamiento en tiempo.} Use la expansión de la diferencia centrada en tiempo,
+\[
+  \frac{u(x_j,t^{n+1})-u(x_j,t^n)}{\dt} = \partial_t u\!\left(x_j,t^{n+\frac{1}{2}}\right) + \frac{\dt^2}{24}\,\partial_{ttt}u(x_j,\tilde{t}),
+\]
+y el promedio espacial
+\[
+  \frac{1}{2}\kappa\!\left(\delta_{xx}u(x_j,t^n)+\delta_{xx}u(x_j,t^{n+1})\right)
+  = \kappa\,\partial_{xx}u\!\left(x_j,t^{n+\frac{1}{2}}\right) + O(\dt^2) + O(h^2),
+\]
+para mostrar que el error de truncamiento satisface $\tau_j^n = O(\dt^2 + h^2)$, es decir que Crank--Nicolson es de orden 2 en tiempo y en espacio.
+
+\item \textbf{Análisis de estabilidad de Fourier.} Sustituya $V_j^n = G^n e^{i\theta j}$ en el esquema y muestre que el factor de amplificación es
+\[
+  G_{CN}(\theta) = \frac{1-2\mu\sin^2\!\tfrac{\theta}{2}}{1+2\mu\sin^2\!\tfrac{\theta}{2}}.
+\]
+
+\item \textbf{Estabilidad incondicional.} Denotando $s = 2\mu\sin^2(\theta/2) \ge 0$, pruebe que $|(1-s)/(1+s)|\le 1$ para todo $s\ge 0$ y concluya que $|G_{CN}(\theta)|\le 1$ para todo $\mu>0$ y todo $\theta$.
+
+\item Compare el orden de precisión y el costo por paso de Crank--Nicolson con el de Euler explícito e implícito. ¿En qué situaciones conviene usar cada método?
 \end{enumerate}
 \end{exercise}
-
-\begin{exercise}[Estabilidad en norma 2: caso Dirichlet]\label{ej_estabilidad_dirichlet}
-Considere la discretización por diferencias centradas de $-u''(x) = f(x)$ en $(0,1)$ con condiciones de Dirichlet $u(0) = \alpha$, $u(1) = \beta$, sobre la malla $x_j = jh$, $h = 1/(m+1)$. El sistema resultante es $A^h u^h = F^h$ con $A^h \in \R^{m \times m}$.
-
-El problema de autovalores $A^h v = \lambda v$ conduce, para $j=1,\ldots,m$, a la ecuación
-\[
--v_{j-1} + 2\, v_j - v_{j+1} = \lambda h^2\, v_j,
-\]
-con condiciones de borde $v_0 = 0$ y $v_{m+1} = 0$.
-\begin{enumerate}[(a)]
-\item Proponga el ansatz $v_j = r^j$ y obtenga la ecuación característica $r^2 - \mu\, r + 1 = 0$ con $\mu = 2 - \lambda h^2$. Deduzca que la solución general es $v_j = c_1 e^{ij\theta} + c_2 e^{-ij\theta}$ con $\cos\theta = \mu/2$.
-\item Usando $v_0 = 0$, muestre que $v_j = C \sin(j\theta)$. Imponga $v_{m+1}=0$ para obtener $\theta_k = \dfrac{k\pi}{m+1}$, $k=1,\ldots,m$, y concluya que los autovalores son
-\[
-\lambda_k = \frac{4}{h^2}\sin^2\!\left(\frac{k\pi h}{2}\right), \quad k=1,\ldots,m.
-\]
-\item Muestre que $\lambda_{\min} = \lambda_1 \to \pi^2$ cuando $h \to 0$. Concluya que existe $C > 0$ independiente de $h$ tal que $\|(A^h)^{-1}\|_2 \leq C$, lo que prueba la estabilidad en norma~2.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Partícula cuántica en un anillo: autovalores discretos vs.\ continuos]
-La ecuación de Schrödinger estacionaria para una partícula libre en un anillo de longitud $L=1$ (con $\hbar = 2m = 1$) es el problema de autovalores con condiciones periódicas:
-\[
-\left\lbrace
-  \begin{array}{r l c}
-      -u''(x) = & \lambda\, u(x), & \mbox{para } x \in (0,1), \\
-      u(0) = u(1), & \quad u'(0) = u'(1), &
-  \end{array}
-\right.
-\]
-donde los autovalores $\lambda$ representan los niveles de energía del sistema.
-\begin{enumerate}[(a)]
-\item Resuelva el problema continuo y muestre que los autovalores son $\lambda_k = (2\pi k)^2$, $k = 0, 1, 2, \ldots$, con autofunciones $u(x) = e^{\pm 2\pi i k x}$ (multiplicidad~2 para $k \geq 1$).
-
-\item Usando los resultados del Ejercicio~\ref{ej_estabilidad_norma2} y la expansión en Taylor de $\sin(\xi)$, demuestre que para cada $k$ fijo,
-\[
-\lambda_k^h = (2\pi k)^2 - \frac{(2\pi k)^4}{12}\, h^2 + O(h^4) \quad \mbox{cuando } h \to 0.
-\]
-Es decir, la aproximación de cada autovalor individual es de orden~2.
-
-\item ¿Qué sucede con la calidad de la aproximación para $k$ grande (modos de alta frecuencia)? Muestre que $\lambda_k^h \leq 4/h^2$ para todo $k$, mientras que $\lambda_k$ crece sin cota. Concluya que la discretización solo puede aproximar bien los primeros $O(N)$ autovalores.
-\end{enumerate}
-\end{exercise}
-
 
 \end{document}
-
-
-
-
-
-
