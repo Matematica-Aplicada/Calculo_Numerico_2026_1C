@@ -5394,6 +5394,50 @@ Para Dirichlet, en cada tiempo queda un sistema tridiagonal
 \]
 Se resuelve en costo $O(m)$ con el algoritmo de Thomas (eliminación gaussiana para matrices tridiagonales), con memoria lineal y buen comportamiento numérico en este caso SPD.
 
+\subsection{Error de truncamiento}
+
+\begin{proposition}[Error de truncamiento de Euler explícito e implícito]\label{prop:lte_euler_pde}
+Sea $u\in C^{2,4}([0,1]\times[0,T])$ solución de la ecuación del calor $u_t=\kappa u_{xx}$. Definimos el error de truncamiento de cada esquema como el residuo que produce la solución exacta al ser sustituida en él.
+\begin{enumerate}[(a)]
+\item \textbf{Euler explícito.} Definiendo
+\[
+  \tau_j^n := \frac{u(x_j,t^{n+1})-u(x_j,t^n)}{\Delta t} - \kappa\,\delta_{xx}u(x_j,t^n),
+\]
+se tiene $\tau_j^n = O(\Delta t + h^2)$.  Más precisamente,
+\[
+  \tau_j^n = \frac{\Delta t}{2}\partial_{tt}u(x_j,t^n)
+             - \frac{\kappa h^2}{12}\partial_{xxxx}u(x_j,t^n) + O(\Delta t^2+h^4).
+\]
+\item \textbf{Euler implícito.} Definiendo
+\[
+  \tau_j^n := \frac{u(x_j,t^{n+1})-u(x_j,t^n)}{\Delta t} - \kappa\,\delta_{xx}u(x_j,t^{n+1}),
+\]
+se tiene igualmente $\tau_j^n = O(\Delta t + h^2)$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+\textbf{(a)} Expandiendo en Taylor en $t$ alrededor de $t^n$:
+\[
+  \frac{u(x_j,t^{n+1})-u(x_j,t^n)}{\Delta t}
+  = \partial_t u(x_j,t^n) + \frac{\Delta t}{2}\partial_{tt}u(x_j,t^n) + O(\Delta t^2).
+\]
+Expandiendo en $x$ alrededor de $x_j$:
+\[
+  \delta_{xx}u(x_j,t^n)
+  = \partial_{xx}u(x_j,t^n) + \frac{h^2}{12}\partial_{xxxx}u(x_j,t^n) + O(h^4).
+\]
+Restando y usando $\partial_t u = \kappa\partial_{xx}u$:
+\[
+  \tau_j^n
+  = (\partial_t u - \kappa\partial_{xx}u)
+  + \frac{\Delta t}{2}\partial_{tt}u
+  - \frac{\kappa h^2}{12}\partial_{xxxx}u + O(\Delta t^2+h^4)
+  = \frac{\Delta t}{2}\partial_{tt}u - \frac{\kappa h^2}{12}\partial_{xxxx}u + O(\Delta t^2+h^4).
+\]
+\textbf{(b)} Se expande $u(x_j,t^n)$ alrededor de $t^{n+1}$: la diferencia cociente da $\partial_t u(x_j,t^{n+1}) + O(\Delta t)$, y $\delta_{xx}u(x_j,t^{n+1}) = \partial_{xx}u(x_j,t^{n+1}) + O(h^2)$. El resultado sigue de $\partial_t u = \kappa\partial_{xx}u$ evaluado en $t^{n+1}$.
+\end{proof}
+
 \subsection{Consistencia y estabilidad de Lax--Richtmyer}
 
 En el caso lineal homogéneo escribimos el esquema como

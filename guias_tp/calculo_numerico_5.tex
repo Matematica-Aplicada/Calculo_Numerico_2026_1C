@@ -178,107 +178,128 @@ con $\omega>0$ fijo.
 
 \section*{Ecuaciones en derivadas parciales}
 
-En los siguientes ejercicios se trabaja con la ecuación del calor
+En todos los ejercicios se trabaja con condiciones de borde \textbf{periódicas} y malla uniforme $x_j=jh$, $h=1/N$, $t^n=n\dt$. Se usa la segunda diferencia centrada
 \[
-  u_t = \kappa\,u_{xx},\qquad x\in(0,1),\quad t>0,\quad \kappa>0,
+  \delta_{xx}U_j^n := \frac{U_{j-1}^n - 2U_j^n + U_{j+1}^n}{h^2}
 \]
-con condición inicial dada y condiciones de borde \textbf{periódicas} $u(0,t)=u(1,t)$, $u_x(0,t)=u_x(1,t)$. Se usan la malla uniforme espacial $x_j=jh$, $h=1/N$, la malla temporal $t^n=n\dt$, el parámetro $\mu:=\kappa\dt/h^2$, y la segunda diferencia centrada
+y la diferencia centrada de primer orden
 \[
-  \delta_{xx}U_j^n := \frac{U_{j-1}^n - 2U_j^n + U_{j+1}^n}{h^2}.
+  \delta_x U_j^n := \frac{U_{j+1}^n - U_{j-1}^n}{2h},
 \]
-
-\begin{exercise}[Euler explícito para la ecuación del calor]
-\begin{enumerate}[(a)]
-\item Aplicando la diferencia hacia adelante en tiempo y la segunda diferencia centrada en espacio, escriba el esquema de diferencias finitas y despeje $U_j^{n+1}$ en función de los valores en el nivel $t^n$. Identifique los coeficientes de $U_{j-1}^n$, $U_j^n$ y $U_{j+1}^n$.
-
-\item \textbf{Error de truncamiento en tiempo.} Fijando $x_j$ y usando la expansión de Taylor en $t$,
-\[
-  u(x_j,t^{n+1}) = u(x_j,t^n) + \dt\,\partial_t u(x_j,t^n) + \frac{\dt^2}{2}\,\partial_{tt}u(x_j,\tilde{t}),
-\]
-muestre que el cociente $\bigl[u(x_j,t^{n+1})-u(x_j,t^n)\bigr]/\dt$ aproxima $\partial_t u(x_j,t^n)$ con error $O(\dt)$.
-
-\item \textbf{Error de truncamiento en espacio.} Fijando $t^n$ y usando la expansión de Taylor en $x$,
-\[
-  u(x_j\pm h, t^n) = u(x_j,t^n) \pm h\,\partial_x u + \frac{h^2}{2}\partial_{xx}u \pm \frac{h^3}{6}\partial_{xxx}u + \frac{h^4}{24}\partial_{xxxx}u(\xi_\pm, t^n),
-\]
-muestre que $\delta_{xx}u(x_j,t^n) = \partial_{xx}u(x_j,t^n) + O(h^2)$.
-
-\item \textbf{Error de truncamiento global del esquema.} Definiendo
-\[
-  \tau_j^n := \frac{u(x_j,t^{n+1})-u(x_j,t^n)}{\dt} - \kappa\,\delta_{xx}u(x_j,t^n),
-\]
-combine los resultados anteriores y el hecho de que $u$ satisface la EDP para mostrar que $\tau_j^n = O(\dt + h^2)$.
-
-\item \textbf{Análisis de estabilidad de Fourier.} Con borde periódico el operador de actualizaci\'on es circulante. Sustituya el modo discreto $V_j^n = G^n e^{i\theta j}$ (con $\theta = 2\pi k/N$, $k=0,\dots,N-1$) en el esquema del inciso~(a) y deduzca el factor de amplificaci\'on
-\[
-  G_E(\theta) = 1 - 4\mu\sin^2\!\tfrac{\theta}{2}.
-\]
-
-\item \textbf{Condición de estabilidad.} La condición de estabilidad de Lax--Richtmyer exige $|G_E(\theta)|\le 1$ para todo $\theta$. Analice para qué valores de $\mu$ se cumple esto y concluya que el esquema es estable si y sólo si
-\[
-  \mu \le \tfrac{1}{2}.
-\]
-Interprete esta restricción como una relación entre $\dt$ y $h$.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Euler implícito para la ecuación del calor]
-\begin{enumerate}[(a)]
-\item Aplicando la diferencia hacia adelante en tiempo y la segunda diferencia centrada \textbf{evaluada en el nivel $t^{n+1}$}, escriba el esquema de Euler implícito y reordene para mostrar que cada paso requiere resolver el sistema tridiagonal (periódico)
-\[
-  -\mu\,U_{j-1}^{n+1} + (1+2\mu)\,U_j^{n+1} - \mu\,U_{j+1}^{n+1} = U_j^n, \qquad j=0,\dots,N-1.
-\]
-
-\item \textbf{Error de truncamiento en tiempo.} Desarrolle $u(x_j,t^n)$ alrededor de $t^{n+1}$:
-\[
-  u(x_j,t^n) = u(x_j,t^{n+1}) - \dt\,\partial_t u(x_j,t^{n+1}) + \frac{\dt^2}{2}\,\partial_{tt}u(x_j,\tilde{t}),
-\]
-y muestre que $\bigl[u(x_j,t^{n+1})-u(x_j,t^n)\bigr]/\dt = \partial_t u(x_j,t^{n+1}) + O(\dt)$.
-
-\item \textbf{Error de truncamiento global.} Definiendo
-\[
-  \tau_j^n := \frac{u(x_j,t^{n+1})-u(x_j,t^n)}{\dt} - \kappa\,\delta_{xx}u(x_j,t^{n+1}),
-\]
-use el inciso anterior y el resultado de la parte~(c) del ejercicio anterior para mostrar que $\tau_j^n = O(\dt + h^2)$.
-
-\item \textbf{Análisis de estabilidad de Fourier.} Sustituya $V_j^n = G^n e^{i\theta j}$ en el esquema del inciso~(a) y deduzca el factor de amplificación
-\[
-  G_I(\theta) = \frac{1}{1+4\mu\sin^2\!\tfrac{\theta}{2}}.
-\]
-
-\item \textbf{Estabilidad incondicional.} Muestre que $0 < G_I(\theta) \le 1$ para todo $\theta$ y todo $\mu>0$, y concluya que Euler implícito es incondicionalmente estable.
-
-\item Compare la restricción de paso en Euler explícito con la ausencia de restricción en Euler implícito para ecuaciones rígidas en espacio (mallas finas).
-\end{enumerate}
-\end{exercise}
+con índices módulo $N$.
 
 \begin{exercise}[Método de Crank--Nicolson para la ecuación del calor]
-El método de Crank--Nicolson promedia las discretizaciones espaciales de Euler explícito e implícito:
+Consideramos la ecuación del calor
+\[
+  u_t = \kappa\,u_{xx},\qquad \kappa>0,
+\]
+con condiciones de borde periódicas y parámetro $\mu:=\kappa\dt/h^2$.
+El método de Crank--Nicolson promedia las discretizaciones espaciales explícita e implícita:
 \[
   \frac{U_j^{n+1}-U_j^n}{\dt} = \frac{\kappa}{2}\left(\delta_{xx}U_j^n + \delta_{xx}U_j^{n+1}\right).
 \]
 \begin{enumerate}[(a)]
-\item Reordene el esquema para obtener el sistema lineal que debe resolverse en cada paso de tiempo, e identifique la matriz del mismo.
+\item Reordene el esquema para obtener el sistema lineal que debe resolverse en cada paso de tiempo e identifique la matriz del mismo.
 
-\item \textbf{Error de truncamiento en tiempo.} Use la expansión de la diferencia centrada en tiempo,
+\item \textbf{Error de truncamiento.} Use la expansión
 \[
-  \frac{u(x_j,t^{n+1})-u(x_j,t^n)}{\dt} = \partial_t u\!\left(x_j,t^{n+\frac{1}{2}}\right) + \frac{\dt^2}{24}\,\partial_{ttt}u(x_j,\tilde{t}),
+  \frac{u(x_j,t^{n+1})-u(x_j,t^n)}{\dt} = \partial_t u\!\left(x_j,t^{n+\frac{1}{2}}\right) + O(\dt^2)
 \]
 y el promedio espacial
 \[
-  \frac{1}{2}\kappa\!\left(\delta_{xx}u(x_j,t^n)+\delta_{xx}u(x_j,t^{n+1})\right)
+  \tfrac{1}{2}\kappa\!\left(\delta_{xx}u(x_j,t^n)+\delta_{xx}u(x_j,t^{n+1})\right)
   = \kappa\,\partial_{xx}u\!\left(x_j,t^{n+\frac{1}{2}}\right) + O(\dt^2) + O(h^2),
 \]
-para mostrar que el error de truncamiento satisface $\tau_j^n = O(\dt^2 + h^2)$, es decir que Crank--Nicolson es de orden 2 en tiempo y en espacio.
+para concluir que $\tau_j^n = O(\dt^2 + h^2)$.
 
-\item \textbf{Análisis de estabilidad de Fourier.} Sustituya $V_j^n = G^n e^{i\theta j}$ en el esquema y muestre que el factor de amplificación es
+\item \textbf{Análisis de estabilidad de Fourier.} Sustituya el modo $V_j^n = G^n e^{i\theta j}$ en el esquema y deduzca el factor de amplificación
 \[
   G_{CN}(\theta) = \frac{1-2\mu\sin^2\!\tfrac{\theta}{2}}{1+2\mu\sin^2\!\tfrac{\theta}{2}}.
 \]
 
-\item \textbf{Estabilidad incondicional.} Denotando $s = 2\mu\sin^2(\theta/2) \ge 0$, pruebe que $|(1-s)/(1+s)|\le 1$ para todo $s\ge 0$ y concluya que $|G_{CN}(\theta)|\le 1$ para todo $\mu>0$ y todo $\theta$.
+\item \textbf{Estabilidad incondicional.} Denotando $s = 2\mu\sin^2(\theta/2) \ge 0$, pruebe que $|{(1-s)}/{(1+s)}|\le 1$ para todo $s\ge 0$.
 
-\item Compare el orden de precisión y el costo por paso de Crank--Nicolson con el de Euler explícito e implícito. ¿En qué situaciones conviene usar cada método?
+\item Compare el orden de precisión en $\dt$ con el de Euler explícito e implícito. ¿Qué ventaja tiene Crank--Nicolson respecto del costo adicional?
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Ecuación de difusión-reacción, Euler explícito]
+Considere la ecuación de difusión-reacción
+\[
+  u_t = \kappa\,u_{xx} - \sigma u,\qquad \kappa>0,\ \sigma>0,
+\]
+con condiciones de borde periódicas. Se denota $\mu:=\kappa\dt/h^2$.
+\begin{enumerate}[(a)]
+\item Aplique diferencia centrada en espacio y Euler explícito en tiempo. Despeje $U_j^{n+1}$ y muestre que el esquema tiene la forma
+\[
+  U_j^{n+1} = \mu\,U_{j-1}^n + (1-2\mu-\sigma\dt)\,U_j^n + \mu\,U_{j+1}^n.
+\]
+
+\item \textbf{Error de truncamiento.} Use la proposición del apunte sobre el error de truncamiento de Euler explícito para $u_t = \kappa u_{xx}$ y muestre que el término reactivo $-\sigma u$ añade una contribución $O(\dt)$. Concluya que $\tau_j^n = O(\dt + h^2)$.
+
+\item \textbf{Factor de amplificación.} Sustituya $V_j^n = G^n e^{i\theta j}$ en el esquema y deduzca
+\[
+  G_E(\theta) = 1 - 4\mu\sin^2\!\tfrac{\theta}{2} - \sigma\dt.
+\]
+Observe que $G_E$ es real.
+
+\item \textbf{Condición de estabilidad.} La condición $|G_E(\theta)|\le 1$ para todo $\theta$ se descompone en cota superior e inferior. Muestre que la cota superior se satisface automáticamente, y que la cota inferior da
+\[
+  4\mu + \sigma\dt \le 2,\qquad\text{es decir,}\qquad
+  \mu \le \frac{1-\sigma\dt/2}{2}.
+\]
+
+\item \textbf{Interpretación.} Suponga que $\sigma$ es grande (reacción rígida). ¿Qué restricción impone sobre $\dt$ independientemente de $h$? Compare con el caso $\sigma=0$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Ecuación de convección-difusión, Euler implícito]
+Considere la ecuación de convección-difusión
+\[
+  u_t + c\,u_x = \varepsilon\,u_{xx},\qquad c\in\mathbb{R},\ \varepsilon>0,
+\]
+con condiciones de borde periódicas. Se denota $\mu_\varepsilon:=\varepsilon\dt/h^2$ (número difusivo) y $\nu:=c\dt/h$ (número de Courant).
+\begin{enumerate}[(a)]
+\item Use Euler implícito en tiempo, diferencia centrada de primer orden para $u_x$ y segunda diferencia centrada para $u_{xx}$, todos evaluados en el nivel $t^{n+1}$. Reordene y muestre que el sistema en cada paso tiene la forma
+\[
+  \left(-\mu_\varepsilon - \tfrac{\nu}{2}\right)U_{j-1}^{n+1}
+  + (1+2\mu_\varepsilon)\,U_j^{n+1}
+  + \left(-\mu_\varepsilon + \tfrac{\nu}{2}\right)U_{j+1}^{n+1}
+  = U_j^n.
+\]
+
+\item \textbf{Error de truncamiento.} Argumente que el esquema es de orden $O(\dt + h^2)$ en el error de truncamiento.
+
+\item \textbf{Factor de amplificación.} Sustituya $V_j^n = G^n e^{i\theta j}$ y use $e^{i\theta}+e^{-i\theta}=2\cos\theta$, $e^{i\theta}-e^{-i\theta}=2i\sin\theta$ para mostrar que
+\[
+  G_I(\theta) = \frac{1}{1 + 4\mu_\varepsilon\sin^2\!\tfrac{\theta}{2} + i\nu\sin\theta}.
+\]
+
+\item \textbf{Estabilidad incondicional.} Calcule $|G_I(\theta)|^2$ y deduzca que $|G_I(\theta)|\le 1$ para todo $\mu_\varepsilon>0$, todo $\nu$ y todo $\theta$. Concluya que el esquema es incondicionalmente estable.
+
+\item Discuta qué rol juegan los términos de difusión y de convección en la parte real e imaginaria del denominador de $G_I$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Advección pura, Euler explícito centrado]
+Considere la ecuación de advección pura
+\[
+  u_t + c\,u_x = 0,\qquad c\ne 0,
+\]
+con condiciones de borde periódicas. Se denota $\nu:=c\dt/h$.
+\begin{enumerate}[(a)]
+\item Use Euler explícito en tiempo y diferencia centrada de primer orden en espacio para $u_x$. Despeje $U_j^{n+1}$ y escriba el esquema.
+
+\item \textbf{Error de truncamiento.} Muestre que $\tau_j^n = O(\dt + h^2)$.
+
+\item \textbf{Factor de amplificación.} Sustituya $V_j^n = G^n e^{i\theta j}$ y deduzca
+\[
+  G(\theta) = 1 - i\nu\sin\theta.
+\]
+
+\item \textbf{Inestabilidad incondicional.} Calcule $|G(\theta)|^2 = 1 + \nu^2\sin^2\theta$ y concluya que $|G(\theta)|>1$ para todo $\nu\ne 0$ y todo $\theta\ne 0,\pi$. Deduzca que el esquema es inestable para cualquier elección de $\dt$ y $h$.
+
+\item Contraste con el resultado del ejercicio anterior: ¿qué papel cumple el término de difusión $\varepsilon u_{xx}$ para recuperar la estabilidad?
 \end{enumerate}
 \end{exercise}
 
