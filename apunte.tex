@@ -5573,6 +5573,52 @@ y por Fourier
 \]
 Entonces $0<G_I(\theta)\le1$ para todo $\mu>0$ y todo $\theta$: Euler implícito es incondicionalmente estable en el sentido de Fourier (y por la proposición, en el sentido de Lax--Richtmyer periódico).
 
+\begin{lemma}[Buen planteo en $L^2$ y cota del símbolo]\label{lem:buen_planteo_lambda}
+Sea $\partial_t u = Lu$ una EDP lineal con coeficientes constantes en el dominio $[0,1]$ con condiciones de borde periódicas. Supongamos que $L$ es diagonalizado por los modos de Fourier: $L e^{2\pi ikx}=\lambda_k\,e^{2\pi ikx}$ para cada $k\in\mathbb{Z}$, con $\lambda_k\in\mathbb{C}$. Son equivalentes:
+\begin{enumerate}[(i)]
+  \item \textbf{Buen planteo en $L^2$:} existe $\omega\in\mathbb{R}$ tal que para todo dato inicial $u_0\in L^2([0,1])$ y todo $t\in[0,T]$,
+    \[
+      \|u(\cdot,t)\|_{L^2}\le e^{\omega t}\|u_0\|_{L^2}.
+    \]
+  \item \textbf{Cota uniforme del símbolo:} $\displaystyle\sup_{k\in\mathbb{Z}}\operatorname{Re}(\lambda_k)\le\omega<+\infty$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+La solución formal con dato $u_0=\sum_{k\in\mathbb{Z}}\hat{u}_0(k)\,e^{2\pi ikx}$ es
+\[
+  u(x,t)=\sum_{k\in\mathbb{Z}}\hat{u}_0(k)\,e^{\lambda_k t}\,e^{2\pi ikx},
+\]
+pues $Le^{2\pi ikx}=\lambda_k e^{2\pi ikx}$ y los modos forman una base ortonormal de $L^2([0,1])$. Por la identidad de Parseval (Teorema~\ref{thm:equiv_densidad_parseval_general}), aplicada en cada tiempo:
+\[
+  \|u(\cdot,t)\|_{L^2}^2
+  = \sum_{k\in\mathbb{Z}}|\hat{u}_0(k)|^2\,\bigl|e^{\lambda_k t}\bigr|^2
+  = \sum_{k\in\mathbb{Z}}|\hat{u}_0(k)|^2\,e^{2\operatorname{Re}(\lambda_k)\,t}.\tag{$*$}
+\]
+
+\noindent\textbf{(ii)$\Rightarrow$(i).}  Si $\operatorname{Re}(\lambda_k)\le\omega$ para todo $k$, entonces $e^{2\operatorname{Re}(\lambda_k)t}\le e^{2\omega t}$ para todo $k$. Sustituyendo en $(*)$:
+\[
+  \|u(\cdot,t)\|_{L^2}^2
+  \le e^{2\omega t}\sum_{k\in\mathbb{Z}}|\hat{u}_0(k)|^2
+  = e^{2\omega t}\|u_0\|_{L^2}^2,
+\]
+y tomando raíz cuadrada se obtiene (i).
+
+\noindent\textbf{(i)$\Rightarrow$(ii).}  Supongamos que (ii) falla, es decir $\sup_k\operatorname{Re}(\lambda_k)=+\infty$. Entonces existe una sucesión $k_j\in\mathbb{Z}$ tal que $\operatorname{Re}(\lambda_{k_j})\to+\infty$. Para cada $j$, tomamos el dato modal $u_0^{(j)}(x)=e^{2\pi ik_j x}$, que cumple $\|u_0^{(j)}\|_{L^2}=1$. La solución correspondiente es $u^{(j)}(x,t)=e^{\lambda_{k_j}t}e^{2\pi ik_jx}$, con
+\[
+  \bigl\|u^{(j)}(\cdot,t)\bigr\|_{L^2}
+  = \bigl|e^{\lambda_{k_j}t}\bigr|
+  = e^{\operatorname{Re}(\lambda_{k_j})\,t}
+  \xrightarrow{j\to\infty}+\infty
+  \quad\text{para cualquier }t>0.
+\]
+Ninguna constante $e^{\omega t}$ puede acotar esta sucesión, luego (i) falla.
+\end{proof}
+
+\begin{remark}
+La condición (ii) dice que el espectro del generador $L$ está acotado superiormente en su parte real, lo que corresponde a que la semigrupo $e^{tL}$ crece a lo sumo exponencialmente.  Para la ecuación del calor, $\lambda_k=-\kappa(2\pi k)^2\le 0$, por lo que se cumple con $\omega=0$: la energía no crece.  Para una ecuación de ondas o convección pura, $\operatorname{Re}(\lambda_k)=0$ y la energía se conserva. Si en cambio $\operatorname{Re}(\lambda_k)\to+\infty$, el problema continuo es intrínsecamente inestable (mal planteado en $L^2$).
+\end{remark}
+
 \begin{theorem}[Lax--Richtmyer, versión periódica lineal]\label{thm:lax_periodico_new}
 Para un esquema lineal consistente de coeficientes constantes con borde periódico,
 \[
@@ -5583,23 +5629,86 @@ Para un esquema lineal consistente de coeficientes constantes con borde periódi
 \end{theorem}
 
 \begin{proof}
-Sea $e^n=u_h^n-U^n$. De la definición de $\tau_h^n$ y el esquema:
-$e^{n+1}=S_he^n+\Delta t\,\tau_h^n$, $e^0=0$.
-
-\textbf{($\Leftarrow$)}  Iterando: $e^n=\Delta t\sum_{m=0}^{n-1}S_h^{n-1-m}\tau_h^m$. Tomando norma,
+Sea $e^n:=u_h^n-U^n$ el error en el paso $n$; por hipótesis $e^0=0$. De la definición de $\tau_h^n$ y del esquema numérico se obtiene la \textbf{ecuación de error}:
 \[
-\|e^n\|_{2,h}\le C_T\,T\max_{m}\|\tau_h^m\|_{2,h}\xrightarrow{h,\Delta t\to0}0.
+  e^{n+1}=S_h\,e^n+\Delta t\,\tau_h^n,\qquad e^0=0.
 \]
 
-\textbf{($\Rightarrow$)}  En el caso periódico lineal circulante la implicación inversa se prueba modo a modo.  Sea $v^{(k)}$ el $k$-ésimo modo discreto (norma 1). Como $S_h$ es circulante, $S_h^nv^{(k)}=G_h(\theta_k)^nv^{(k)}$. El problema continuo tiene solución modal $e^{\lambda(\theta_k)t}e^{i\theta_k x}$ con $|e^{\lambda(\theta_k)t}|\le e^{\omega T}$ (bien-puesta uniforme en $k$). La convergencia aplicada al dato modal da
+\medskip
+\noindent\textbf{($\Leftarrow$) Estabilidad $+$ consistencia $\Rightarrow$ convergencia.}
+
+Desarrollando la recurrencia hacia atrás (suma telescópica):
 \[
-|G_h(\theta_k)^n-e^{\lambda(\theta_k)t_n}|\to0,
+  e^n = S_h^{n-1}(\Delta t\,\tau_h^0) + S_h^{n-2}(\Delta t\,\tau_h^1) + \cdots + \Delta t\,\tau_h^{n-1}
+      = \Delta t\sum_{m=0}^{n-1}S_h^{n-1-m}\tau_h^m.
 \]
-luego para $h$ suficientemente fino, $|G_h(\theta_k)|^n\le e^{\omega T}+1$. Maximizando en $k$: $\|S_h^n\|\le e^{\omega T}+1$, que es la estabilidad.
+Aplicando desigualdad triangular y la cota de estabilidad $\|S_h^{n-1-m}\|_{2,h\to2,h}\le C_T$:
+\[
+  \|e^n\|_{2,h}
+  \le \Delta t\sum_{m=0}^{n-1}\|S_h^{n-1-m}\|_{2,h\to2,h}\,\|\tau_h^m\|_{2,h}
+  \le C_T\,\Delta t\cdot n\cdot\max_{0\le m\le n-1}\|\tau_h^m\|_{2,h}.
+\]
+Como $n\Delta t\le T$, resulta $\|e^n\|_{2,h}\le C_T\,T\max_{m}\|\tau_h^m\|_{2,h}\xrightarrow{h,\Delta t\to0}0$ por consistencia.
+
+\medskip
+\noindent\textbf{($\Rightarrow$) Convergencia $\Rightarrow$ estabilidad.}
+
+Procedemos por reducción al absurdo en dos pasos.
+
+\medskip
+\noindent\emph{Paso 1: cota de buen planteo del problema continuo, uniforme en $k$.}
+
+Por el Lema~\ref{lem:buen_planteo_lambda}, el buen planteo de la EDP en $L^2$ equivale a que exista $\omega\in\mathbb{R}$ con $\operatorname{Re}(\lambda(\theta_k))\le\omega$ para todo $k$; en particular, para $t\in[0,T]$:
+\[
+  \bigl|e^{\lambda(\theta_k)\,t}\bigr|
+  =e^{\operatorname{Re}(\lambda(\theta_k))\,t}
+  \le e^{\omega T}
+  \qquad\forall\,k.\tag{BP}
+\]
+
+\medskip
+\noindent\emph{Paso 2: argumento de contradicción.}
+
+Supongamos que el esquema \emph{no} es estable. Entonces existen sucesiones $h_j\to0^+$, índices modales $k_j$ y pasos enteros $n_j$ con $n_j\Delta t_j\le T$, tales que
+\[
+  |G_{h_j}(\theta_{k_j})|^{n_j}\xrightarrow{j\to\infty}+\infty.
+\]
+Para cada $j$, tomemos como dato inicial el modo discreto $v^{(k_j)}$, normalizado: $\|v^{(k_j)}\|_{2,h_j}=1$ (pues $h_j\cdot N_j=1$).
+
+\noindent\emph{Lado numérico.} Como $S_{h_j}$ es circulante, $S_{h_j}^nv^{(k_j)}=G_{h_j}(\theta_{k_j})^n\,v^{(k_j)}$, luego
+\[
+  \|U_j^{n_j}\|_{2,h_j}=|G_{h_j}(\theta_{k_j})|^{n_j}\to+\infty.
+\]
+
+\noindent\emph{Lado continuo.} La solución exacta de la EDP con dato $e^{i\theta_{k_j}x}$ es $u_j(x,t)=e^{\lambda(\theta_{k_j})t}\,e^{i\theta_{k_j}x}$, de modo que su restricción a la malla en el paso $n_j$ es
+\[
+  \bigl(u_j\bigr)_{h_j}^{n_j}=e^{\lambda(\theta_{k_j})t_{n_j}}\,v^{(k_j)}.
+\]
+Usando la cota (BP):
+\[
+  \Bigl\|\bigl(u_j\bigr)_{h_j}^{n_j}\Bigr\|_{2,h_j}
+  =\bigl|e^{\lambda(\theta_{k_j})t_{n_j}}\bigr|
+  \le e^{\omega T}.
+\]
+
+\noindent\emph{Contradicción.} La hipótesis de convergencia aplicada al dato $e^{i\theta_{k_j}x}$ da
+\[
+  \Bigl\|U_j^{n_j}-\bigl(u_j\bigr)_{h_j}^{n_j}\Bigr\|_{2,h_j}\to 0
+  \quad(j\to\infty).
+\]
+Pero por desigualdad triangular:
+\[
+  |G_{h_j}(\theta_{k_j})|^{n_j}
+  =\|U_j^{n_j}\|_{2,h_j}
+  \le\Bigl\|U_j^{n_j}-\bigl(u_j\bigr)_{h_j}^{n_j}\Bigr\|_{2,h_j}
+    +\Bigl\|\bigl(u_j\bigr)_{h_j}^{n_j}\Bigr\|_{2,h_j}
+  \le o(1)+e^{\omega T},
+\]
+en contradicción con $|G_{h_j}(\theta_{k_j})|^{n_j}\to+\infty$.  Queda demostrado que $\sup_{h,k,\,n\Delta t\le T}|G_h(\theta_k)|^n\le C_T<\infty$, es decir, el esquema es estable con $C_T=e^{\omega T}+1$ para $h$ suficientemente pequeño.
 \end{proof}
 
 \begin{remark}
-Fuera del caso periódico lineal, Fourier no diagonaliza el operador completo: el control del borde requiere análisis adicional (como en el Teorema~\ref{thm:dirichlet_reaction_new} para Dirichlet).
+Fuera del caso periódico lineal, Fourier no diagonaliza el operador completo: el control del borde requiere análisis adicional (como en el Teorema~\ref{thm:dirichlet_reaction_new} para Dirichlet). Sin embargo, es posible demostrar que las conclusiones del análisis de estabilidad de Fourier siguen siendo \textit{una condición necesaria} para la estabilidad de Lax--Richtmyer, aunque no sean suficientes. Por ese motivo, en la práctica se suele usar el análisis de estabilidad de Fourier como una primera prueba de estabilidad, que frecuentemente arroja resultados ajustados, aunque luego se requiere un análisis más detallado para casos con bordes generales o no lineales.
 \end{remark}
 
 
