@@ -4873,110 +4873,114 @@ cuya solución exacta es $y(t)=e^{\alpha t}y_0$. Si $\alpha<0$ la solución deca
 
 \subsubsection*{Euler explícito}
 
-La fórmula de diferencias forward aproxima $y'(t_n)\approx\frac{y_{n+1}-y_n}{h}$. Evaluando el lado derecho en $t_n$:
+La fórmula de diferencias forward aproxima $y'(t_n)\approx\frac{y_{n+1}-y_n}{\Delta t}$. Evaluando el lado derecho en $t_n$:
 \[
-  \frac{y_{n+1}-y_n}{h}=\alpha y_n\quad\Longrightarrow\quad y_{n+1}=(1+h\alpha)\,y_n.
+  \frac{y_{n+1}-y_n}{\Delta t}=\alpha y_n\quad\Longrightarrow\quad y_{n+1}=(1+\Delta t\,\alpha)\,y_n.
 \]
-Llamamos $z:=h\alpha$ y $R_E:=1+z$. Por inducción, $y_n=R_E^n\,y_0=(1+h\alpha)^n y_0$.
+Por inducción, $y_n=(1+\Delta t\,\alpha)^n y_0$.
 
-Fijemos $t=t_n=nh$. Cuando $h\to0$ con $t$ fijo ($n=t/h\to\infty$):
+Fijemos $t=t_n=n\Delta t$. Cuando $\Delta t\to0$ con $t$ fijo ($n=t/\Delta t\to\infty$):
 \[
-  y_n=(1+h\alpha)^{t/h}\,y_0\;\xrightarrow{\;h\to0\;}\;e^{\alpha t}\,y_0=y(t).
+  y_n=(1+\Delta t\,\alpha)^{t/\Delta t}\,y_0\;\xrightarrow{\;\Delta t\to0\;}\;e^{\alpha t}\,y_0=y(t).
 \]
 
-\paragraph{Comportamiento cualitativo para $h$ fijo.}
-La solución numérica es $y_n=(1+h\alpha)^n y_0$, y crece o decae según $|1+h\alpha|$ sea mayor o menor que~1. Para $\alpha<0$:
+\paragraph{Comportamiento cualitativo para $\Delta t$ fijo.}
+La solución numérica es $y_n=(1+\Delta t\,\alpha)^n y_0$, y crece o decae según $|1+\Delta t\,\alpha|$ sea mayor o menor que~1. Para $\alpha<0$:
 \begin{itemize}
-  \item Si $h<2/|\alpha|$: $|1+h\alpha|<1$ y $|y_n|\to0$. El método reproduce el decaimiento. 
-  \item Si $h=2/|\alpha|$: $1+h\alpha=-1$, y $y_n=(-1)^n y_0$ oscila indefinidamente. 
-  \item Si $h>2/|\alpha|$: $|1+h\alpha|>1$ y $|y_n|\to\infty$, aunque la solución exacta decae. 
+  \item Si $\Delta t<2/|\alpha|$: $|1+\Delta t\,\alpha|<1$ y $|y_n|\to0$. El método reproduce el decaimiento. 
+  \item Si $\Delta t=2/|\alpha|$: $1+\Delta t\,\alpha=-1$, y $y_n=(-1)^n y_0$ oscila indefinidamente. 
+  \item Si $\Delta t>2/|\alpha|$: $|1+\Delta t\,\alpha|>1$ y $|y_n|\to\infty$, aunque la solución exacta decae. 
 \end{itemize}
-Por ejemplo, con $\alpha=-10$ y $h=0.3>2/10$: $1+h\alpha=-2$, y $y_n=(-2)^n y_0$ diverge en módulo. La convergencia asintótica ($h\to0$) no garantiza un comportamiento correcto para pasos finitos.
+Por ejemplo, con $\alpha=-10$ y $\Delta t=0.3>2/10$: $1+\Delta t\,\alpha=-2$, y $y_n=(-2)^n y_0$ diverge en módulo. La convergencia asintótica ($\Delta t\to0$) no garantiza un comportamiento correcto para pasos finitos.
 
 \subsubsection*{Euler implícito}
 
 La fórmula de diferencias backward evalúa el lado derecho en $t_{n+1}$:
 \[
-  \frac{y_{n+1}-y_n}{h}=\alpha y_{n+1}\quad\Longrightarrow\quad y_{n+1}=\frac{1}{1-h\alpha}\,y_n=:R_I\,y_n.
+  \frac{y_{n+1}-y_n}{\Delta t}=\alpha y_{n+1}\quad\Longrightarrow\quad y_{n+1}=\frac{1}{1-\Delta t\,\alpha}\,y_n=:R_I\,y_n.
 \]
-Por inducción, $y_n=R_I^n\,y_0=\left(\dfrac{1}{1-h\alpha}\right)^n y_0$.
+Por inducción, $y_n=R_I^n\,y_0=\left(\dfrac{1}{1-\Delta t\,\alpha}\right)^n y_0$.
 
-\paragraph{Convergencia cuando $h\to0$.}
-Con $t=nh$, análogamente al caso explícito, $\log(1/(1-h\alpha))=h\alpha+O(h^2)$, luego
+\paragraph{Convergencia cuando $\Delta t\to0$.}
+Con $t=n\Delta t$, análogamente al caso explícito, $\log(1/(1-\Delta t\,\alpha))=\Delta t\,\alpha+O(\Delta t^2)$, luego
 \[
-  y_n=\left(\frac{1}{1-h\alpha}\right)^{t/h} y_0\;\xrightarrow{\;h\to0\;}\;e^{\alpha t}\,y_0=y(t).
+  y_n=\left(\frac{1}{1-\Delta t\,\alpha}\right)^{t/\Delta t} y_0\;\xrightarrow{\;\Delta t\to0\;}\;e^{\alpha t}\,y_0=y(t).
 \]
 
-\paragraph{Comportamiento cualitativo para $h$ fijo.}
-Para $\alpha<0$ y \emph{cualquier} $h>0$: $1-h\alpha>1>0$, luego
+\paragraph{Comportamiento cualitativo para $\Delta t$ fijo.}
+Para $\alpha<0$ y \emph{cualquier} $\Delta t>0$: $1-\Delta t\,\alpha>1>0$, luego
 \[
-  |R_I|=\frac{1}{1-h\alpha}=\frac{1}{1+h|\alpha|}<1.
+  |R_I|=\frac{1}{1-\Delta t\,\alpha}=\frac{1}{1+\Delta t\,|\alpha|}<1.
 \]
-Entonces $|y_n|=|R_I|^n|y_0|\to0$ para todo $h>0$: Euler implícito reproduce el decaimiento de la solución exacta sin ninguna restricción sobre el paso.
+Entonces $|y_n|=|R_I|^n|y_0|\to0$ para todo $\Delta t>0$: Euler implícito reproduce el decaimiento de la solución exacta sin ninguna restricción sobre el paso.
 
 \bigskip
 \begin{remark}
-Ambos métodos convergen cuando $h\to0$, pero difieren cualitativamente para $h$ fijo: Euler explícito puede producir soluciones divergentes si el paso supera el umbral $2/|\alpha|$, mientras que Euler implícito siempre decae. Este contraste se vuelve algorítmicamente crítico cuando $|\alpha|\gg1$ (problemas rígidos), obligando al método explícito a usar pasos extremadamente pequeños. Este fenómeno se estudia en la Sección~\ref{sec:stiff_new}.
+Ambos métodos convergen cuando $\Delta t\to0$, pero difieren cualitativamente para $\Delta t$ fijo: Euler explícito puede producir soluciones divergentes si el paso supera el umbral $2/|\alpha|$, mientras que Euler implícito siempre decae. Este contraste se vuelve algorítmicamente crítico cuando $|\alpha|\gg1$ (problemas rígidos), obligando al método explícito a usar pasos extremadamente pequeños. Este fenómeno se estudia en la Sección~\ref{sec:stiff_new}.
 \end{remark}
 
 \subsection{Métodos de un paso}\label{sec:metodos_pvi_new}
 
-Seguimos con el PVI $y'=f(t,y)$, $y(t_0)=y_0$ sobre la malla $\{t_n=t_0+nh\}_{n=0}^N$ con $Nh=T-t_0$.
+Seguimos con el PVI $y'=f(t,y)$, $y(t_0)=y_0$ sobre la malla $\{t_n=t_0+n\Delta t\}_{n=0}^N$ con $N\Delta t=T-t_0$.
 
 \subsubsection*{Taylor de orden 2 y la familia RK2}
 
-El método de Euler explícito tiene orden~1: el error global es $O(h)$. Para obtener orden~2 expandimos la solución exacta dos pasos de Taylor:
+El método de Euler explícito tiene orden~1: el error global es $O(\Delta t)$. Para obtener orden~2 expandimos la solución exacta dos pasos de Taylor:
 \[
-  y(t_{n+1})=y(t_n)+h\,y'(t_n)+\frac{h^2}{2}\,y''(t_n)+O(h^3).
+  y(t_{n+1})=y(t_n)+\Delta t\,y'(t_n)+\frac{\Delta t^2}{2}\,y''(t_n)+O(\Delta t^3).
 \]
-Como $y'=f$ y $y''=f_t+f_y\,f$ (regla de la cadena), el \emph{método de Taylor de orden~2} es
+Como $y'(t)=f(t,y(t))$, por la regla de la cadena
 \[
-  y_{n+1}=y_n+h\,f(t_n,y_n)+\frac{h^2}{2}\bigl(f_t(t_n,y_n)+f_y(t_n,y_n)\,f(t_n,y_n)\bigr).
+  y''(t)=\frac{d}{dt}f(t,y(t))=f_t(t,y(t))+f_y(t,y(t))\,y'(t)=f_t(t,y(t))+f_y(t,y(t))\,f(t,y(t)).
+\]
+Por lo tanto, el \emph{método de Taylor de orden~2} es
+\[
+  y_{n+1}=y_n+\Delta t\,f(t_n,y_n)+\frac{\Delta t^2}{2}\bigl(f_t(t_n,y_n)+f_y(t_n,y_n)\,f(t_n,y_n)\bigr).
 \]
 Su ventaja es la precisión; su desventaja es que requiere calcular las derivadas parciales $f_t$ y $f_y$.
 
 \paragraph{Familia Runge-Kutta de 2 etapas (RK2).}
-Para evitar diferenciar $f$, se aproxima el término de orden $h^2$ evaluando $f$ en un punto auxiliar. Se propone el esquema
+Para evitar diferenciar $f$, se aproxima el término de orden $\Delta t^2$ evaluando $f$ en un punto auxiliar. Se propone el esquema
 \begin{align*}
   k_1&=f(t_n,\,y_n),\\
-  k_2&=f(t_n+c_2 h,\,y_n+a_{21}h k_1),\\
-  y_{n+1}&=y_n+h\,(b_1k_1+b_2k_2),
+  k_2&=f(t_n+c_2\Delta t,\,y_n+a_{21}\Delta t\,k_1),\\
+  y_{n+1}&=y_n+\Delta t\,(b_1k_1+b_2k_2),
 \end{align*}
 con cuatro parámetros libres $b_1,b_2,c_2,a_{21}$. Expandiendo $k_2$ en Taylor alrededor de $(t_n,y_n)$:
 \[
-  k_2 = f + c_2 h\,f_t + a_{21} h k_1 f_y + O(h^2) = f + h(c_2 f_t + a_{21} f\,f_y)+O(h^2).
+  k_2 = f + c_2\Delta t\,f_t + a_{21}\Delta t\,k_1 f_y + O(\Delta t^2) = f + \Delta t\,(c_2 f_t + a_{21} f\,f_y)+O(\Delta t^2).
 \]
-Entonces $y_{n+1}=y_n+h(b_1+b_2)f+h^2 b_2(c_2 f_t+a_{21}f\,f_y)+O(h^3)$. Comparando con Taylor:
+Entonces $y_{n+1}=y_n+\Delta t\,(b_1+b_2)f+\Delta t^2\,b_2(c_2 f_t+a_{21}f\,f_y)+O(\Delta t^3)$. Comparando con Taylor:
 \[
   b_1+b_2=1,\qquad b_2\,c_2=\tfrac{1}{2},\qquad b_2\,a_{21}=\tfrac{1}{2}.
 \]
 Hay una familia uniparamétrica de soluciones. Dos casos especiales:
 \begin{itemize}
   \item \textbf{Método de Heun}: $b_1=b_2=\tfrac{1}{2}$, $c_2=a_{21}=1$.
-  Equivalentemente: $k_1=f(t_n,y_n)$, $k_2=f(t_n+h,\,y_n+hk_1)$, $y_{n+1}=y_n+\tfrac{h}{2}(k_1+k_2)$.
+  Equivalentemente: $k_1=f(t_n,y_n)$, $k_2=f(t_n+\Delta t,\,y_n+\Delta t\,k_1)$, $y_{n+1}=y_n+\tfrac{\Delta t}{2}(k_1+k_2)$.
   \item \textbf{Punto medio explícito}: $b_1=0$, $b_2=1$, $c_2=a_{21}=\tfrac{1}{2}$.
-  Equivalentemente: $k_1=f(t_n,y_n)$, $y_{n+1}=y_n+h\,f(t_n+\tfrac{h}{2},\,y_n+\tfrac{h}{2}k_1)$.
+  Equivalentemente: $k_1=f(t_n,y_n)$, $y_{n+1}=y_n+\Delta t\,f(t_n+\tfrac{\Delta t}{2},\,y_n+\tfrac{\Delta t}{2}k_1)$.
 \end{itemize}
 
 \subsection{La función de incremento $\Phi$}
 
 Todos los ejemplos anteriores tienen la estructura
 \begin{equation}\label{eq:one_step_general}
-  y_{n+1} = y_n + h\,\Phi(t_n,\,y_n,\,h),
+  y_{n+1} = y_n + \Delta t\,\Phi(t_n,\,y_n,\,\Delta t),
 \end{equation}
-donde $\Phi:[t_0,T]\times\mathbb{R}\times[0,h_{\max}]\to\mathbb{R}$ es la \emph{función de incremento} que caracteriza al método. La tabla siguiente resume los métodos vistos hasta aquí.
+donde $\Phi:[t_0,T]\times\mathbb{R}\times[0,\Delta t_{\max}]\to\mathbb{R}$ es la \emph{función de incremento} que caracteriza al método. La tabla siguiente resume los métodos vistos hasta aquí.
 
 \bigskip
 \begin{center}
 \begin{tabular}{@{}llcc@{}}
 \toprule
-\textbf{Método} & \textbf{Función de incremento $\Phi(t,y,h)$} & \textbf{Orden} & \textbf{Tipo} \\
+\textbf{Método} & \textbf{Función de incremento $\Phi(t,y,\Delta t)$} & \textbf{Orden} & \textbf{Tipo} \\
 \midrule
 Euler explícito & $f(t,y)$ & 1 & expl.\ \\[4pt]
-Euler implícito & $\tilde{y}$ tal que $\tilde{y}=f\!\left(t+h,\,y+h\tilde{y}\right)$ & 1 & impl.\ \\[4pt]
-Taylor orden~2  & $f(t,y)+\dfrac{h}{2}\!\left(f_t(t,y)+f_y(t,y)\,f(t,y)\right)$ & 2 & expl.\ \\[8pt]
-Heun (RK2)      & $\dfrac{1}{2}\!\left[f(t,y)+f\!\left(t+h,\,y+hf(t,y)\right)\right]$ & 2 & expl.\ \\[6pt]
-Punto medio     & $f\!\left(t+\tfrac{h}{2},\,y+\tfrac{h}{2}f(t,y)\right)$ & 2 & expl.\ \\[4pt]
+Euler implícito & $\tilde{y}$ tal que $\tilde{y}=f\!\left(t+\Delta t,\,y+\Delta t\,\tilde{y}\right)$ & 1 & impl.\ \\[4pt]
+Taylor orden~2  & $f(t,y)+\dfrac{\Delta t}{2}\!\left(f_t(t,y)+f_y(t,y)\,f(t,y)\right)$ & 2 & expl.\ \\[8pt]
+Heun (RK2)      & $\dfrac{1}{2}\!\left[f(t,y)+f\!\left(t+\Delta t,\,y+\Delta t\,f(t,y)\right)\right]$ & 2 & expl.\ \\[6pt]
+Punto medio     & $f\!\left(t+\tfrac{\Delta t}{2},\,y+\tfrac{\Delta t}{2}f(t,y)\right)$ & 2 & expl.\ \\[4pt]
 \bottomrule
 \end{tabular}
 \end{center}
@@ -4985,15 +4989,15 @@ Punto medio     & $f\!\left(t+\tfrac{h}{2},\,y+\tfrac{h}{2}f(t,y)\right)$ & 2 & 
 \begin{remark}
 Para Euler implícito, $\Phi$ está definida \emph{implícitamente}: en cada paso hay que resolver la ecuación escalar
 \[
-  \tilde y = f(t_{n+1}, y_n+h\tilde y).
+  \tilde y = f(t_{n+1}, y_n+\Delta t\,\tilde y).
 \]
 En problemas lineales, por ejemplo si $f(t,y)=a(t)y+b(t)$, la ecuación se resuelve explícitamente:
 \[
-  \tilde y = a(t_{n+1})(y_n+h\tilde y)+b(t_{n+1})
+  \tilde y = a(t_{n+1})(y_n+\Delta t\,\tilde y)+b(t_{n+1})
   \quad\Longrightarrow\quad
-  \tilde y = \frac{a(t_{n+1})y_n+b(t_{n+1})}{1-ha(t_{n+1})},
+  \tilde y = \frac{a(t_{n+1})y_n+b(t_{n+1})}{1-\Delta t\,a(t_{n+1})},
 \]
-siempre que $1-ha(t_{n+1})\neq0$.
+siempre que $1-\Delta t\,a(t_{n+1})\neq0$.
 \end{remark}
 
 \subsection{Convergencia de métodos de un paso}\label{sec:conv_pvi_new}
@@ -5003,7 +5007,7 @@ Dado el esquema~\eqref{eq:one_step_general}, preguntamos: ¿cuándo aproxima bie
 \begin{definition}[Convergencia]\label{def:conv_pvi_new}
 El método es \textbf{convergente} en $[t_0,T]$ si
 \[
-  \max_{\substack{0\le n\le N\\t_n\le T}}|y_n-y(t_n)|\;\xrightarrow{\;h\to0\;}\;0
+  \max_{\substack{0\le n\le N\\t_n\le T}}|y_n-y(t_n)|\;\xrightarrow{\;\Delta t\to0\;}\;0
 \]
 para todo dato $y_0$ y toda función $f$ Lipschitz en $y$.
 \end{definition}
@@ -5011,17 +5015,29 @@ para todo dato $y_0$ y toda función $f$ Lipschitz en $y$.
 \begin{definition}[Error de truncamiento y consistencia]\label{def:consist_pvi_new}
 El \textbf{error de truncamiento local} en el paso $n+1$ es
 \[
-  \tau_{n+1}(h)\;:=\;\frac{y(t_{n+1})-y(t_n)}{h}-\Phi\!\bigl(t_n,\,y(t_n),\,h\bigr).
+  \tau_{n+1}(\Delta t)\;:=\;\frac{y(t_{n+1})-y(t_n)}{\Delta t}-\Phi\!\bigl(t_n,\,y(t_n),\,\Delta t\bigr).
 \]
-El método es \textbf{consistente} si $\|\tau(h)\|_\infty:=\max_n|\tau_{n+1}(h)|\to0$ cuando $h\to0$. Si $\|\tau(h)\|_\infty=O(h^p)$, decimos que tiene \textbf{orden~$p$}.
+El método es \textbf{consistente} si $\|\tau(\Delta t)\|_\infty:=\max_n|\tau_{n+1}(\Delta t)|\to0$ cuando $\Delta t\to0$. Si $\|\tau(\Delta t)\|_\infty=O(\Delta t^p)$, decimos que tiene \textbf{orden~$p$}.
 
 Equivalentemente, el método es consistente si y solo si $\Phi(t,y,0)=f(t,y)$ para todo $(t,y)$.
 \end{definition}
 
-La condición $\Phi(t,y,0)=f(t,y)$ es inmediata para Euler explícito ($\Phi=f$). Para RK2 se verifica sustituyendo $h=0$: $k_2\to f(t,y)=k_1$ y $\Phi\to b_1 k_1+b_2 k_2=(b_1+b_2)f=f$.
+\begin{remark}[Defecto local del paso y error de truncamiento]
+Si definimos el \emph{defecto local del paso}
+\[
+  \eta_{n+1}(\Delta t):=y(t_{n+1})-y(t_n)-\Delta t\,\Phi\!\bigl(t_n,y(t_n),\Delta t\bigr),
+\]
+entonces, por definición de $\tau_{n+1}$,
+\[
+  \eta_{n+1}(\Delta t)=\Delta t\,\tau_{n+1}(\Delta t).
+\]
+Por eso, suponer $\eta_{n+1}=O(\Delta t^{p+1})$ es equivalente a suponer $\tau_{n+1}=O(\Delta t^p)$. En muchos textos, $\eta_{n+1}$ se llama directamente ``error local''.
+\end{remark}
+
+La condición $\Phi(t,y,0)=f(t,y)$ es inmediata para Euler explícito ($\Phi=f$). Para RK2 se verifica sustituyendo $\Delta t=0$: $k_2\to f(t,y)=k_1$ y $\Phi\to b_1 k_1+b_2 k_2=(b_1+b_2)f=f$.
 
 \begin{definition}[Estabilidad de un método de un paso]\label{def:estab_datos_new}
-El método es \textbf{estable} en $[t_0,T]$ si existen $h_0>0$ y $C_T>0$ independientes de $h$ tales que, para todo $0<h\le h_0$, toda pareja de datos $y_0,\tilde y_0$ y todo $n$ con $t_n\le T$,
+El método es \textbf{estable} en $[t_0,T]$ si existen $\Delta t_0>0$ y $C_T>0$ independientes de $\Delta t$ tales que, para todo $0<\Delta t\le \Delta t_0$, toda pareja de datos $y_0,\tilde y_0$ y todo $n$ con $t_n\le T$,
 \[
   |y_n - \tilde y_n| \le C_T\,|y_0 - \tilde y_0|,
 \]
@@ -5029,13 +5045,13 @@ donde $\{y_n\}$ y $\{\tilde y_n\}$ son las soluciones del método con datos inic
 \end{definition}
 
 \begin{remark}[Lipschitz en $\Phi$ implica estabilidad]
-Si $\Phi$ es Lipschitz en $y$ con constante $K$ (uniformemente en $t$ y $h$), entonces el método es estable con $C_T = e^{KT}$. En efecto, sea $\delta_n := y_n - \tilde y_n$ la diferencia de dos soluciones numéricas con datos distintos. Ambas satisfacen el mismo esquema, luego
+Si $\Phi$ es Lipschitz en $y$ con constante $K$ (uniformemente en $t$ y $\Delta t$), entonces el método es estable con $C_T = e^{KT}$. En efecto, sea $\delta_n := y_n - \tilde y_n$ la diferencia de dos soluciones numéricas con datos distintos. Ambas satisfacen el mismo esquema, luego
 \[
-  \delta_{n+1} = \delta_n + h\bigl[\Phi(t_n,y_n,h) - \Phi(t_n,\tilde y_n,h)\bigr],
+  \delta_{n+1} = \delta_n + \Delta t\bigl[\Phi(t_n,y_n,\Delta t) - \Phi(t_n,\tilde y_n,\Delta t)\bigr],
 \]
-y la condición de Lipschitz da $|\delta_{n+1}| \le (1+hK)|\delta_n|$. Iterando y aplicando el Lema~\ref{lem:exp_bound_new}: $|\delta_n| \le (1+hK)^n|\delta_0| \le e^{hKn}|\delta_0| \le e^{KT}|y_0-\tilde y_0|$.
+y la condición de Lipschitz da $|\delta_{n+1}| \le (1+\Delta t\,K)|\delta_n|$. Iterando y aplicando el Lema~\ref{lem:exp_bound_new}: $|\delta_n| \le (1+\Delta t\,K)^n|\delta_0| \le e^{\Delta t\,Kn}|\delta_0| \le e^{KT}|y_0-\tilde y_0|$.
 
-Para los métodos de la tabla: Euler explícito tiene $\Phi=f$, por lo que $K=L$ (la constante de Lipschitz de $f$). Euler implícito tiene $K_I(h)=L/(1+hL)<L$. Para los métodos RK2, $\Phi$ hereda el Lipschitz de $f$ con una constante explícitamente computable. En todos los casos, si $f$ es Lipschitz entonces $\Phi$ también lo es, y la estabilidad queda garantizada \emph{sin verificación adicional}.
+Para los métodos de la tabla: Euler explícito tiene $\Phi=f$, por lo que $K=L$ (la constante de Lipschitz de $f$). Euler implícito tiene $K_I(\Delta t)=L/(1+\Delta t\,L)<L$. Para los métodos RK2, $\Phi$ hereda el Lipschitz de $f$ con una constante explícitamente computable. En todos los casos, si $f$ es Lipschitz entonces $\Phi$ también lo es, y la estabilidad queda garantizada \emph{sin verificación adicional}.
 \end{remark}
 
 \begin{lemma}\label{lem:exp_bound_new}
@@ -5046,11 +5062,11 @@ Considérese $g(x):=e^x-(1+x)$. Entonces $g(0)=0$ y $g'(x)=e^x-1\ge 0$ para todo
 \end{proof}
 
 \begin{theorem}[Consistencia $\Leftrightarrow$ convergencia para métodos de un paso]\label{thm:one_step_lax_new}
-Sea $y'=f(t,y)$ con $f$ Lipschitz en $y$ con constante $L$ en $[t_0,T]\times\mathbb{R}$. Supongamos que $\Phi$ es Lipschitz en $y$ con constante $K$ uniformemente en $t$ y $h$. Entonces:
+Sea $y'=f(t,y)$ con $f$ Lipschitz en $y$ con constante $L$ en $[t_0,T]\times\mathbb{R}$. Supongamos que $\Phi$ es Lipschitz en $y$ con constante $K$ uniformemente en $t$ y $\Delta t$. Entonces:
 \begin{enumerate}
-  \item \emph{(Consistencia $\Rightarrow$ convergencia, con orden.)} Si $|\tau_n(h)|\le Ch^p$ para todo $n$, entonces
+  \item \emph{(Consistencia $\Rightarrow$ convergencia, con orden.)} Si $|\tau_{n+1}(\Delta t)|\le C\Delta t^p$ para todo $n$, entonces
   \[
-    \max_{0\le n\le N}|y(t_n)-y_n|\le \frac{e^{K(T-t_0)}-1}{K}\,Ch^p.
+    \max_{0\le n\le N}|y(t_n)-y_n|\le \frac{e^{K(T-t_0)}-1}{K}\,C\Delta t^p.
   \]
   En particular, el método es convergente.
   \item \emph{(Convergencia $\Rightarrow$ consistencia.)} Si el método es convergente para toda $f$ Lipschitz, entonces es consistente.
@@ -5058,27 +5074,42 @@ Sea $y'=f(t,y)$ con $f$ Lipschitz en $y$ con constante $L$ en $[t_0,T]\times\mat
 \end{theorem}
 
 \begin{proof}
-\textit{(1)} Sea $e_n:=y(t_n)-y_n$. Entonces $e_0=0$ y
+\textit{(1)} Sea $e_n:=y(t_n)-y_n$. Por definición del error de truncamiento y del método,
 \[
-  e_{n+1}=y(t_{n+1})-y_{n+1}
-  =\underbrace{\bigl[y(t_{n+1})-y(t_n)-h\,\Phi(t_n,y(t_n),h)\bigr]}_{h\,\tau_{n+1}}
-  +h\bigl[\Phi(t_n,y(t_n),h)-\Phi(t_n,y_n,h)\bigr].
+  y(t_{n+1})=y(t_n)+\Delta t\,\Phi(t_n,y(t_n),\Delta t)+\Delta t\,\tau_{n+1},
 \]
-Por la condición de Lipschitz sobre $\Phi$: $|e_{n+1}|\le (1+hK)|e_n|+h|\tau_{n+1}|$. Como $e_0=0$, iterando y usando el Lema~\ref{lem:exp_bound_new} con $x=hK$:
 \[
-  |e_n|\le h\sum_{j=1}^{n}e^{hK(n-j)}|\tau_j|\le nh\cdot e^{hKn}\cdot Ch^p\le T\,e^{KT}\cdot Ch^p.
+  y_{n+1}=y_n+\Delta t\,\Phi(t_n,y_n,\Delta t).
+\]
+Restando y usando que $\Phi$ es Lipschitz en $y$ con constante $K$,
+\[
+  |e_{n+1}|\le (1+K\Delta t)|e_n|+\Delta t\,|\tau_{n+1}|.
+\]
+Esto es exactamente la estimación de estabilidad Lipschitz con un término fuente de truncamiento. Tomando $\tau_{\max}:=\max_j|\tau_j|$ e iterando desde $e_0=0$:
+\[
+  |e_n|\le \Delta t\,\tau_{\max}\sum_{j=0}^{n-1}(1+K\Delta t)^j
+  =\frac{\tau_{\max}}{K}\bigl((1+K\Delta t)^n-1\bigr).
+\]
+Aplicando el Lema~\ref{lem:exp_bound_new} y usando $t_n-t_0=n\Delta t\le T-t_0$,
+\[
+  |e_n|\le \frac{\tau_{\max}}{K}\bigl(e^{K(t_n-t_0)}-1\bigr)
+  \le \frac{\tau_{\max}}{K}\bigl(e^{K(T-t_0)}-1\bigr).
+\]
+Si $|\tau_{n+1}(\Delta t)|\le C\Delta t^p$ para todo $n$, entonces $\tau_{\max}\le C\Delta t^p$ y por lo tanto
+\[
+  \max_{0\le n\le N}|y(t_n)-y_n|\le \frac{e^{K(T-t_0)}-1}{K}\,C\Delta t^p.
 \]
 
-\textit{(2)} La consistencia es la condición $\Phi(t,y,0)=f(t,y)$. Si el método converge para la ecuación $y'=f$, en particular la solución numérica $y_1=y_0+h\Phi(t_0,y_0,h)$ satisface $y_1\to y(t_0+h)=y_0+hf(t_0,y_0)+O(h^2)$ cuando $h\to0$. Dividiendo por $h$ y tomando $h\to0$: $\Phi(t_0,y_0,0)=f(t_0,y_0)$, que es la consistencia.
+\textit{(2)} La consistencia es la condición $\Phi(t,y,0)=f(t,y)$. Si el método converge para la ecuación $y'=f$, en particular la solución numérica $y_1=y_0+\Delta t\,\Phi(t_0,y_0,\Delta t)$ satisface $y_1\to y(t_0+\Delta t)=y_0+\Delta t\,f(t_0,y_0)+O(\Delta t^2)$ cuando $\Delta t\to0$. Dividiendo por $\Delta t$ y tomando $\Delta t\to0$: $\Phi(t_0,y_0,0)=f(t_0,y_0)$, que es la consistencia.
 \end{proof}
 
 \begin{remark}
-La dirección (1) es la más importante para la práctica: basta verificar que el error local es $O(h^{p+1})$ (es decir, que el método tiene orden~$p$) para concluir que el error global es $O(h^p)$. La constante de la cota es $C' = \frac{e^{K(T-t_0)}-1}{K}\,C$, donde $K$ es la constante de Lipschitz de $\Phi$ cuya existencia garantiza la estabilidad (Definición~\ref{def:estab_datos_new} y el remark anterior).
+La dirección (1) es la más importante para la práctica: basta verificar que el error local es $O(\Delta t^{p+1})$ (es decir, que el método tiene orden~$p$) para concluir que el error global es $O(\Delta t^p)$. La constante de la cota es $C' = \frac{e^{K(T-t_0)}-1}{K}\,C$, donde $K$ es la constante de Lipschitz de $\Phi$ cuya existencia garantiza la estabilidad (Definición~\ref{def:estab_datos_new} y el remark anterior).
 \end{remark}
 
 \subsection{Problemas rígidos o ``stiff''}\label{sec:stiff_new}
 
-En la Sección~\ref{sec:ecuacion_test_new} vimos que Euler explícito e implícito difieren cualitativamente en la ecuación $y'=\alpha y$ para $h$ fijo: el método explícito diverge si $h>2/|\alpha|$, mientras que el implícito decae para cualquier $h>0$. Aquí usamos el Teorema~\ref{thm:one_step_lax_new} para entender de manera más precisa qué paso impone cada método.
+En la Sección~\ref{sec:ecuacion_test_new} vimos que Euler explícito e implícito difieren cualitativamente en la ecuación $y'=\alpha y$ para $\Delta t$ fijo: el método explícito diverge si $\Delta t>2/|\alpha|$, mientras que el implícito decae para cualquier $\Delta t>0$. Aquí usamos el Teorema~\ref{thm:one_step_lax_new} para entender de manera más precisa qué paso impone cada método.
 
 Consideremos la ecuación test
 \[
@@ -5087,41 +5118,41 @@ Consideremos la ecuación test
 con solución exacta $y(t)=e^{\lambda t}y_0$. Calculamos la constante de Lipschitz de la función de incremento $\Phi$ de cada método y la cota resultante.
 
 \paragraph{Euler explícito.}
-$\Phi_E(t,y,h)=\lambda y$, que es lineal en $y$:
+$\Phi_E(t,y,\Delta t)=\lambda y$, que es lineal en $y$:
 \[
-  |\Phi_E(t,y_1,h)-\Phi_E(t,y_2,h)|=|\lambda|\,|y_1-y_2|.
+  |\Phi_E(t,y_1,\Delta t)-\Phi_E(t,y_2,\Delta t)|=|\lambda|\,|y_1-y_2|.
 \]
 La constante de Lipschitz es $K_E=|\lambda|$. El Teorema~\ref{thm:one_step_lax_new} da
 \[
-  \max_n|e_n|\;\le\;T\,e^{|\lambda|T}\,Ch,
+  \max_n|e_n|\;\le\;T\,e^{|\lambda|T}\,C\Delta t,
 \]
-donde $C=|\lambda|^2/2$ viene del error de truncamiento $|\tau_n|=\frac{h\lambda^2}{2}|y(t_n)|\le\frac{h\lambda^2}{2}|y_0|$. La cota crece \emph{exponencialmente} con $|\lambda|$. Para garantizar error $<\epsilon$ con esta estimación se necesitaría
+donde $C=|\lambda|^2/2$ viene del error de truncamiento $|\tau_n|=\frac{\Delta t\,\lambda^2}{2}|y(t_n)|\le\frac{\Delta t\,\lambda^2}{2}|y_0|$. La cota crece \emph{exponencialmente} con $|\lambda|$. Para garantizar error $<\epsilon$ con esta estimación se necesitaría
 \[
-  h\;<\;\frac{2\epsilon}{\lambda^2 T\,e^{|\lambda|T}},
+  \Delta t\;<\;\frac{2\epsilon}{\lambda^2 T\,e^{|\lambda|T}},
 \]
 un paso astronómicamente pequeño para $|\lambda|\gg1$.
 
 \paragraph{Euler implícito.}
-El esquema resuelve $y_{n+1}=y_n+h\lambda y_{n+1}$, dando $y_{n+1}=y_n/(1-h\lambda)$. La función de incremento es
+El esquema resuelve $y_{n+1}=y_n+\Delta t\,\lambda y_{n+1}$, dando $y_{n+1}=y_n/(1-\Delta t\,\lambda)$. La función de incremento es
 \[
-  \Phi_I(t,y,h)=\frac{\lambda y}{1-h\lambda},
+  \Phi_I(t,y,\Delta t)=\frac{\lambda y}{1-\Delta t\,\lambda},
 \]
 también lineal en $y$, con constante de Lipschitz
 \[
-  K_I(h)=\frac{|\lambda|}{1-h\lambda}=\frac{|\lambda|}{1+h|\lambda|}.
+  K_I(\Delta t)=\frac{|\lambda|}{1-\Delta t\,\lambda}=\frac{|\lambda|}{1+\Delta t\,|\lambda|}.
 \]
-Nótese que $K_I(h)<|\lambda|=K_E$ para todo $h>0$. Más importante: $K_I$ es acotada superiormente por $1/h$, independientemente de $|\lambda|$:
+Nótese que $K_I(\Delta t)<|\lambda|=K_E$ para todo $\Delta t>0$. Más importante: $K_I$ es acotada superiormente por $1/\Delta t$, independientemente de $|\lambda|$:
 \[
-  K_I(h)=\frac{|\lambda|}{1+h|\lambda|}\;\le\;\frac{1}{h},
+  K_I(\Delta t)=\frac{|\lambda|}{1+\Delta t\,|\lambda|}\;\le\;\frac{1}{\Delta t},
 \]
-con $K_I(h)\to 1/h$ cuando $|\lambda|\to\infty$ con $h$ fijo. Aplicando el Teorema~\ref{thm:one_step_lax_new} con esta cota:
+con $K_I(\Delta t)\to 1/\Delta t$ cuando $|\lambda|\to\infty$ con $\Delta t$ fijo. Aplicando el Teorema~\ref{thm:one_step_lax_new} con esta cota:
 \[
-  \max_n|e_n|\;\le\;T\,e^{K_I(h)\,T}\,Ch\;\le\;T\,e^{T/h}\,Ch.
+  \max_n|e_n|\;\le\;T\,e^{K_I(\Delta t)\,T}\,C\Delta t\;\le\;T\,e^{T/\Delta t}\,C\Delta t.
 \]
-Esta cota es independiente de $|\lambda|$: para cualquier valor de la rigidez, el error de Euler implícito queda controlado sin restringir $h$ en función de $|\lambda|$.
+Esta cota es independiente de $|\lambda|$: para cualquier valor de la rigidez, el error de Euler implícito queda controlado sin restringir $\Delta t$ en función de $|\lambda|$.
 
 \begin{remark}
-El contraste entre los dos métodos se resume así: la cota del Teorema~\ref{thm:one_step_lax_new} para Euler explícito tiene el factor $e^{|\lambda|T}$ que crece sin límite con la rigidez; la cota para Euler implícito tiene el factor $e^{T/h}$ que solo depende del paso y del intervalo, no de $|\lambda|$. En la práctica, la restricción de paso de Euler explícito ($h\lesssim 2/|\lambda|$) no proviene de la exactitud sino de la \emph{estabilidad}: para $h>2/|\lambda|$ la solución numérica diverge (como vimos en la Sección~\ref{sec:ecuacion_test_new}), mientras que Euler implícito es estable para todo $h>0$.
+El contraste entre los dos métodos se resume así: la cota del Teorema~\ref{thm:one_step_lax_new} para Euler explícito tiene el factor $e^{|\lambda|T}$ que crece sin límite con la rigidez; la cota para Euler implícito tiene el factor $e^{T/\Delta t}$ que solo depende del paso y del intervalo, no de $|\lambda|$. En la práctica, la restricción de paso de Euler explícito ($\Delta t\lesssim 2/|\lambda|$) no proviene de la exactitud sino de la \emph{estabilidad}: para $\Delta t>2/|\lambda|$ la solución numérica diverge (como vimos en la Sección~\ref{sec:ecuacion_test_new}), mientras que Euler implícito es estable para todo $\Delta t>0$.
 
 Esta distinción motiva la noción de \textbf{A-estabilidad}: un método es A-estable si su región de estabilidad absoluta contiene el semiplano $\{\mathrm{Re}(z)\le0\}$. Euler explícito no es A-estable; Euler implícito sí lo es (al igual que el método del trapecio).
 \end{remark}
@@ -5674,48 +5705,48 @@ Una función $f: [t_0, T] \times \mathbb{R} \to \mathbb{R}$ satisface la \textbf
 
 Si $f$ es Lipschitz en la segunda variable, el teorema de Picard-Lindelöf garantiza existencia y unicidad de la solución del PVI. La constante $L$ juega un papel central en las cotas de error de los métodos numéricos.
 
-Los métodos numéricos construyen una aproximación discreta $u_n \approx u(t_n)$ en puntos $t_n = t_0 + nh$ con paso $h > 0$.
+Los métodos numéricos construyen una aproximación discreta $u_n \approx u(t_n)$ en puntos $t_n = t_0 + n\Delta t$ con paso $\Delta t > 0$.
 
-\textbf{Método de Euler explícito.} El más simple es aproximar $u'(t_n) \approx (u_{n+1} - u_n)/h$ (diferencias forward):
+\textbf{Método de Euler explícito.} El más simple es aproximar $u'(t_n) \approx (u_{n+1} - u_n)/\Delta t$ (diferencias forward):
 \[
-u_{n+1} = u_n + h f(t_n, u_n).
+u_{n+1} = u_n + \Delta t\, f(t_n, u_n).
 \]
-Este método tiene error local $O(h^2)$ (por desarrollo de Taylor) y error global $O(h)$ tras $N = T/h$ pasos. Es fácil de implementar pero requiere $h$ pequeño para estabilidad.
+Este método tiene error local $O(\Delta t^2)$ (por desarrollo de Taylor) y error global $O(\Delta t)$ tras $N = T/\Delta t$ pasos. Es fácil de implementar pero requiere $\Delta t$ pequeño para estabilidad.
 
 \textbf{Métodos de Runge-Kutta.} Para mejorar la precisión sin usar derivadas de $f$, evaluamos $f$ en puntos intermedios. El \textbf{método RK4} (Runge-Kutta de orden 4) es:
 \begin{align*}
 k_1 &= f(t_n, u_n), \\
-k_2 &= f(t_n + h/2, u_n + hk_1/2), \\
-k_3 &= f(t_n + h/2, u_n + hk_2/2), \\
-k_4 &= f(t_n + h, u_n + hk_3), \\
-u_{n+1} &= u_n + \frac{h}{6}(k_1 + 2k_2 + 2k_3 + k_4).
+k_2 &= f(t_n + \Delta t/2, u_n + \Delta t\,k_1/2), \\
+k_3 &= f(t_n + \Delta t/2, u_n + \Delta t\,k_2/2), \\
+k_4 &= f(t_n + \Delta t, u_n + \Delta t\,k_3), \\
+u_{n+1} &= u_n + \frac{\Delta t}{6}(k_1 + 2k_2 + 2k_3 + k_4).
 \end{align*}
-Este método tiene error global $O(h^4)$, muy superior a Euler con solo 4 evaluaciones de $f$ por paso.
+Este método tiene error global $O(\Delta t^4)$, muy superior a Euler con solo 4 evaluaciones de $f$ por paso.
 
-\textbf{Estabilidad.} Para el problema lineal de prueba $u' = \lambda u$ con $\lambda < 0$ (decaimiento), un método es \textbf{A-estable} si captura el comportamiento asintótico correcto para todo $h > 0$. Euler explícito solo es estable si $|1 + h\lambda| \leq 1$, i.e., $h \leq 2/|\lambda|$ (restricción severa para problemas rígidos). Los \textbf{métodos implícitos} como el trapecio implícito:
+\textbf{Estabilidad.} Para el problema lineal de prueba $u' = \lambda u$ con $\lambda < 0$ (decaimiento), un método es \textbf{A-estable} si captura el comportamiento asintótico correcto para todo $\Delta t > 0$. Euler explícito solo es estable si $|1 + \Delta t\,\lambda| \leq 1$, i.e., $\Delta t \leq 2/|\lambda|$ (restricción severa para problemas rígidos). Los \textbf{métodos implícitos} como el trapecio implícito:
 \[
-u_{n+1} = u_n + \frac{h}{2}[f(t_n, u_n) + f(t_{n+1}, u_{n+1})]
+u_{n+1} = u_n + \frac{\Delta t}{2}[f(t_n, u_n) + f(t_{n+1}, u_{n+1})]
 \]
 son A-estables pero requieren resolver una ecuación (posiblemente no lineal) en cada paso.
 
-\textbf{Métodos adaptativos.} En la práctica, usamos esquemas que ajustan $h$ automáticamente. El par \textbf{Dormand-Prince 5(4)} (usado en \texttt{scipy.integrate.solve\_ivp} y MATLAB's \texttt{ode45}) combina dos métodos RK de órdenes 4 y 5 para estimar el error local:
+\textbf{Métodos adaptativos.} En la práctica, usamos esquemas que ajustan $\Delta t$ automáticamente. El par \textbf{Dormand-Prince 5(4)} (usado en \texttt{scipy.integrate.solve\_ivp} y MATLAB's \texttt{ode45}) combina dos métodos RK de órdenes 4 y 5 para estimar el error local:
 \[
 \text{error estimado} \approx \|u_{n+1}^{(5)} - u_{n+1}^{(4)}\|.
 \]
-Si el error excede la tolerancia, se reduce $h$; si es muy pequeño, se aumenta $h$.
+Si el error excede la tolerancia, se reduce $\Delta t$; si es muy pequeño, se aumenta $\Delta t$.
 
 \subsection{Convergencia de métodos de un paso}
 
 Los resultados previos sobre Euler y Runge-Kutta son casos particulares de una teoría general de convergencia. El siguiente teorema establece que, para métodos de un paso, el error global está controlado por el error de truncamiento local.
 
 \begin{theorem}
-Para $n \in \mathbb{N}$ y $h = (T-t_0)/n$ consideremos el método de un paso dado por
+Para $n \in \mathbb{N}$ y $\Delta t = (T-t_0)/n$ consideremos el método de un paso dado por
 \[
-u_{i+1} = u_i + h\Phi(t_i, u_i, h),
+u_{i+1} = u_i + \Delta t\,\Phi(t_i, u_i, \Delta t),
 \]
-con $\Phi$ una función Lipschitz en la segunda variable, es decir, existe una constante $K$ independiente de $t$ y $h$ tal que
+con $\Phi$ una función Lipschitz en la segunda variable, es decir, existe una constante $K$ independiente de $t$ y $\Delta t$ tal que
 \[
-|\Phi(t,x,h) - \Phi(t,y,h)| \leq K|x-y|
+|\Phi(t,x,\Delta t) - \Phi(t,y,\Delta t)| \leq K|x-y|
 \]
 para todo $x,y \in \mathbb{R}$ y $t \in [t_0, T]$. Entonces, se tiene
 \[
@@ -5725,65 +5756,66 @@ donde $\tau_{\max} = \max_{1 \leq i \leq n}\{|\tau_i|\}$ con $\tau_i$ el error d
 \end{theorem}
 
 \begin{proof}
-Sea $e_i = u(t_i) - u_i$ el error global cometido hasta el paso $i$. Consideramos la ecuación del método y la definición de $\tau_i$ (el error de truncamiento local satisface $u(t_{i+1}) = u(t_i) + h\Phi(t_i, u(t_i), h) + h\tau_i$):
+Sea $e_i = u(t_i) - u_i$ el error global cometido hasta el paso $i$. Consideramos la ecuación del método y la definición de $\tau_i$ (el error de truncamiento local satisface $u(t_{i+1}) = u(t_i) + \Delta t\,\Phi(t_i, u(t_i), \Delta t) + \Delta t\,\tau_i$):
 \begin{align*}
-u_{i+1} &= u_i + h\Phi(t_i, u_i, h), \\
-u(t_{i+1}) &= u(t_i) + h\Phi(t_i, u(t_i), h) + h\tau_i.
+u_{i+1} &= u_i + \Delta t\,\Phi(t_i, u_i, \Delta t), \\
+u(t_{i+1}) &= u(t_i) + \Delta t\,\Phi(t_i, u(t_i), \Delta t) + \Delta t\,\tau_i.
 \end{align*}
 Luego,
 \[
-e_{i+1} = u(t_{i+1}) - u_{i+1} = e_i + h\left(\Phi(t_i, u(t_i), h) - \Phi(t_i, u_i, h)\right) + h\tau_i.
+e_{i+1} = u(t_{i+1}) - u_{i+1} = e_i + \Delta t\left(\Phi(t_i, u(t_i), \Delta t) - \Phi(t_i, u_i, \Delta t)\right) + \Delta t\,\tau_i.
 \]
 Usando que $\Phi$ es Lipschitz se obtiene
 \begin{align*}
-|e_{i+1}| &\leq |e_i| + h|\Phi(t_i, u(t_i), h) - \Phi(t_i, u_i, h)| + h|\tau_i| \\
-&\leq |e_i| + hK|u(t_i) - u_i| + h|\tau_i| \\
-&\leq (1 + Kh)|e_i| + h|\tau_i|.
+|e_{i+1}| &\leq |e_i| + \Delta t\,|\Phi(t_i, u(t_i), \Delta t) - \Phi(t_i, u_i, \Delta t)| + \Delta t\,|\tau_i| \\
+&\leq |e_i| + \Delta t\,K|u(t_i) - u_i| + \Delta t\,|\tau_i| \\
+&\leq (1 + K\Delta t)|e_i| + \Delta t\,|\tau_i|.
 \end{align*}
-Como $|\tau_i| \leq \tau_{\max}$, llamando $A = 1 + Kh$, tenemos
+Como $|\tau_i| \leq \tau_{\max}$, llamando $A = 1 + K\Delta t$, tenemos
 \[
-|e_{i+1}| \leq A|e_i| + h\tau_{\max}.
+|e_{i+1}| \leq A|e_i| + \Delta t\,\tau_{\max}.
 \]
 Usando esta acotación para $i=0$ y teniendo en cuenta que $e_0 = 0$ (la condición inicial es exacta) se tiene
 \begin{align*}
-|e_1| &\leq h\tau_{\max}, \\
-|e_2| &\leq A|e_1| + h\tau_{\max} \leq Ah\tau_{\max} + h\tau_{\max} = (1+A)h\tau_{\max}, \\
-|e_3| &\leq A|e_2| + h\tau_{\max} \leq A(1+A)h\tau_{\max} + h\tau_{\max} = (1+A+A^2)h\tau_{\max}.
+|e_1| &\leq \Delta t\,\tau_{\max}, \\
+|e_2| &\leq A|e_1| + \Delta t\,\tau_{\max} \leq A\Delta t\,\tau_{\max} + \Delta t\,\tau_{\max} = (1+A)\Delta t\,\tau_{\max}, \\
+|e_3| &\leq A|e_2| + \Delta t\,\tau_{\max} \leq A(1+A)\Delta t\,\tau_{\max} + \Delta t\,\tau_{\max} = (1+A+A^2)\Delta t\,\tau_{\max}.
 \end{align*}
 Iterando el procedimiento, podemos ver que
 \[
-|e_n| \leq (1 + A + A^2 + \cdots + A^{n-1})h\tau_{\max} = h\tau_{\max}\sum_{j=0}^{n-1} A^j.
+|e_n| \leq (1 + A + A^2 + \cdots + A^{n-1})\Delta t\,\tau_{\max} = \Delta t\,\tau_{\max}\sum_{j=0}^{n-1} A^j.
 \]
 Ahora, usando la fórmula para suma de potencias tenemos
 \[
-|e_n| \leq h\tau_{\max}\frac{A^n - 1}{A - 1} = h\tau_{\max}\frac{(1+Kh)^n - 1}{Kh} = \frac{\tau_{\max}}{K}\left((1+Kh)^n - 1\right).
+|e_n| \leq \Delta t\,\tau_{\max}\frac{A^n - 1}{A - 1} = \Delta t\,\tau_{\max}\frac{(1+K\Delta t)^n - 1}{K\Delta t} = \frac{\tau_{\max}}{K}\left((1+K\Delta t)^n - 1\right).
 \]
 Como para $\alpha > 0$ se tiene $(1+\alpha)^n \leq e^{n\alpha}$, entonces
 \[
-|e_n| \leq \frac{\tau_{\max}}{K}\left(e^{nKh} - 1\right) = \frac{\tau_{\max}}{K}\left(e^{K(T-t_0)} - 1\right),
+|e_n| \leq \frac{\tau_{\max}}{K}\left(e^{nK\Delta t} - 1\right) = \frac{\tau_{\max}}{K}\left(e^{K(T-t_0)} - 1\right),
 \]
 lo que concluye la demostración.
 \end{proof}
 
 \begin{remark}
-Bajo las hipótesis del teorema anterior se deduce que un método de un paso es \textbf{convergente} (es decir, $|u(T) - u_n| \to 0$ cuando $h \to 0$) si y solo si $\lim_{h \to 0}\tau_{\max} = 0$. Esta condición se denomina \textbf{consistencia} del método. Puede demostrarse que, para un método de un paso con función de incremento $\Phi$ continua en sus tres variables, se tiene $\lim_{h \to 0}\tau_{\max} = 0$ si y solo si $\Phi(t, u, 0) = f(t, u)$. Los métodos de Euler, Taylor y Runge-Kutta satisfacen esta condición y, por lo tanto, son convergentes.
+Bajo las hipótesis del teorema anterior se deduce que un método de un paso es \textbf{convergente} (es decir, $|u(T) - u_n| \to 0$ cuando $\Delta t \to 0$) si y solo si $\lim_{\Delta t \to 0}\tau_{\max} = 0$. Esta condición se denomina \textbf{consistencia} del método. Puede demostrarse que, para un método de un paso con función de incremento $\Phi$ continua en sus tres variables, se tiene $\lim_{\Delta t \to 0}\tau_{\max} = 0$ si y solo si $\Phi(t, u, 0) = f(t, u)$. Los métodos de Euler, Taylor y Runge-Kutta satisfacen esta condición y, por lo tanto, son convergentes.
 \end{remark}
 
 \begin{corollary}[Cota de error para el método de Euler explícito]\label{cor:error_euler}
 Sea $u' = f(t,u)$ con $f$ Lipschitz en la segunda variable con constante $L$, y supongamos $u \in C^2([t_0, T])$. Si $M = \max_{t \in [t_0,T]} |u''(t)|$, entonces el error del método de Euler explícito satisface:
 \[
 |u(t_n) - u_n| \leq \frac{Mh}{2L}\left(e^{L(t_n - t_0)} - 1\right).
+|u(t_n) - u_n| \leq \frac{M\Delta t}{2L}\left(e^{L(t_n - t_0)} - 1\right).
 \]
 \end{corollary}
 
 \begin{proof}
-Para el método de Euler, $\Phi(t, u, h) = f(t, u)$, que es Lipschitz con constante $K = L$. El error de truncamiento local del paso $i$ es:
+Para el método de Euler, $\Phi(t, u, \Delta t) = f(t, u)$, que es Lipschitz con constante $K = L$. El error de truncamiento local del paso $i$ es:
 \[
-\tau_i = \frac{u(t_{i+1}) - u(t_i)}{h} - f(t_i, u(t_i)) = \frac{u(t_{i+1}) - u(t_i)}{h} - u'(t_i).
+\tau_i = \frac{u(t_{i+1}) - u(t_i)}{\Delta t} - f(t_i, u(t_i)) = \frac{u(t_{i+1}) - u(t_i)}{\Delta t} - u'(t_i).
 \]
-Por el desarrollo de Taylor, $u(t_{i+1}) = u(t_i) + h u'(t_i) + \frac{h^2}{2} u''(\xi_i)$ para algún $\xi_i \in (t_i, t_{i+1})$. Por lo tanto, $\tau_i = \frac{h}{2}u''(\xi_i)$, lo que da $\tau_{\max} \leq \frac{Mh}{2}$. Sustituyendo en el teorema general con $K = L$:
+Por el desarrollo de Taylor, $u(t_{i+1}) = u(t_i) + \Delta t\,u'(t_i) + \frac{\Delta t^2}{2} u''(\xi_i)$ para algún $\xi_i \in (t_i, t_{i+1})$. Por lo tanto, $\tau_i = \frac{\Delta t}{2}u''(\xi_i)$, lo que da $\tau_{\max} \leq \frac{M\Delta t}{2}$. Sustituyendo en el teorema general con $K = L$:
 \[
-|e_n| \leq \frac{\tau_{\max}}{L}(e^{L(t_n - t_0)} - 1) \leq \frac{Mh}{2L}(e^{L(t_n - t_0)} - 1).
+|e_n| \leq \frac{\tau_{\max}}{L}(e^{L(t_n - t_0)} - 1) \leq \frac{M\Delta t}{2L}(e^{L(t_n - t_0)} - 1).
 \]
 \end{proof}
 
@@ -5792,12 +5824,12 @@ Por el desarrollo de Taylor, $u(t_{i+1}) = u(t_i) + h u'(t_i) + \frac{h^2}{2} u'
 Para los métodos multipaso lineales (LMM), la relación entre consistencia y convergencia es más sutil que para los métodos de un paso. Mientras que para métodos de un paso (como Euler o Runge-Kutta) la consistencia implica convergencia (bajo condiciones de suavidad de $f$), para los LMM necesitamos una condición adicional de estabilidad.
 
 Consideremos el método multipaso lineal general de $k$ pasos:
-\[ \sum_{j=0}^k \alpha_j u_{n+j} = h \sum_{j=0}^k \beta_j f_{n+j}, \]
+\[ \sum_{j=0}^k \alpha_j u_{n+j} = \Delta t\sum_{j=0}^k \beta_j f_{n+j}, \]
 donde normalizamos asumiendo $\alpha_k = 1$. Asociamos a este método los polinomios característicos:
 \[ \rho(z) = \sum_{j=0}^k \alpha_j z^j, \quad \sigma(z) = \sum_{j=0}^k \beta_j z^j. \]
 
 \begin{definition}[Consistencia]
-Un LMM se dice \textbf{consistente} si tiene orden de consistencia al menos 1, es decir, si el error de truncamiento local satisface $\tau_n(h) \to 0$ cuando $h \to 0$. En términos de los polinomios característicos, esto equivale a las condiciones:
+Un LMM se dice \textbf{consistente} si tiene orden de consistencia al menos 1, es decir, si el error de truncamiento local satisface $\tau_n(\Delta t) \to 0$ cuando $\Delta t \to 0$. En términos de los polinomios característicos, esto equivale a las condiciones:
 \[ \rho(1) = 0 \quad \text{y} \quad \rho'(1) = \sigma(1). \]
 \end{definition}
 
@@ -5806,11 +5838,11 @@ La consistencia por sí sola no es suficiente. Si las raíces del polinomio $\rh
 \begin{example}[Consistencia no implica convergencia]
 Consideremos el método multipaso dado por:
 \[
-u^{n+2} - 3u^{n+1} + 2u^{n} = -h f(t_n, u^n).
+u^{n+2} - 3u^{n+1} + 2u^{n} = -\Delta t\,f(t_n, u^n).
 \]
 El error de truncamiento local resulta:
 \[
-\tau^n = \frac{1}{h} [u(t_{n+2}) - 3u(t_{n+1}) + 2u(t_{n})] + u'(t_n) = \frac{5}{2}h u''(t_n) + O(h^2),
+\tau^n = \frac{1}{\Delta t} [u(t_{n+2}) - 3u(t_{n+1}) + 2u(t_{n})] + u'(t_n) = \frac{5}{2}\Delta t\,u''(t_n) + O(\Delta t^2),
 \]
 por lo que \textbf{el método es consistente} (de orden 1).
 
@@ -5824,21 +5856,21 @@ u^n = C_1 \cdot 1^n + C_2 \cdot 2^n = C_1 + C_2 \cdot 2^n.
 \]
 Para implementar el método necesitamos \textbf{dos valores iniciales}, $u^0$ y $u^1$. Si tomamos $u^0 = u^1 = 0$, entonces $C_1 = C_2 = 0$ y el método converge a la solución exacta. Pero en la práctica, $u^1$ se obtiene con otro método (por ejemplo, Euler) y tendrá un error pequeño.
 
-Consideremos $u^0 = 0$ y $u^1 = h$ (un error del orden del paso). Las constantes satisfacen:
+Consideremos $u^0 = 0$ y $u^1 = \Delta t$ (un error del orden del paso). Las constantes satisfacen:
 \[
 \begin{cases}
 C_1 + C_2 = 0 \\
-C_1 + 2C_2 = h
+C_1 + 2C_2 = \Delta t
 \end{cases}
-\quad \Rightarrow \quad C_1 = -h, \; C_2 = h.
+\quad \Rightarrow \quad C_1 = -\Delta t, \; C_2 = \Delta t.
 \]
 Por lo tanto:
 \[
-u^n = -h + h \cdot 2^n = h(2^n - 1).
+u^n = -\Delta t + \Delta t \cdot 2^n = \Delta t\,(2^n - 1).
 \]
-En el tiempo final $T$, con $n = T/h$:
+En el tiempo final $T$, con $n = T/\Delta t$:
 \[
-u^n = h(2^{T/h} - 1) \to \infty \quad \text{cuando } h \to 0.
+u^n = \Delta t\,(2^{T/\Delta t} - 1) \to \infty \quad \text{cuando } \Delta t \to 0.
 \]
 A pesar de ser consistente, \textbf{el método diverge exponencialmente} debido a la raíz $|z_2| = 2 > 1$.
 \end{example}
@@ -5865,37 +5897,37 @@ Supongamos que el método es convergente. Consideremos la ecuación diferencial 
 \[ \sum_{j=0}^k \alpha_j u_{n+j} = 0. \]
 La solución general de esta recurrencia se puede expresar en términos de las raíces $z_1, \dots, z_m$ de $\rho(z)$. Si $z_i$ es una raíz de multiplicidad $\mu_i$, los términos asociados son $z_i^n, n z_i^n, \dots, n^{\mu_i-1} z_i^n$.
 \begin{itemize}
-    \item Si existiera una raíz con $|z_i| > 1$, el término $z_i^n$ crecería exponencialmente en magnitud con $n$. Dado que $n = T/h$, cuando $h \to 0$, $n \to \infty$, y $|u_n| \to \infty$ para casi cualquier condición inicial (errores de redondeo infinitesimales excitarían este modo). Esto contradice la convergencia a 0.
-    \item Si existiera una raíz con $|z_i| = 1$ y multiplicidad $\mu_i > 1$, la solución contendría un término de la forma $n^{\mu_i-1} z_i^n$. Su magnitud crece polinomialmente con $n$. Nuevamente, como $n \to \infty$ cuando $h \to 0$, el error no acotado impide la convergencia.
+    \item Si existiera una raíz con $|z_i| > 1$, el término $z_i^n$ crecería exponencialmente en magnitud con $n$. Dado que $n = T/\Delta t$, cuando $\Delta t \to 0$, $n \to \infty$, y $|u_n| \to \infty$ para casi cualquier condición inicial (errores de redondeo infinitesimales excitarían este modo). Esto contradice la convergencia a 0.
+    \item Si existiera una raíz con $|z_i| = 1$ y multiplicidad $\mu_i > 1$, la solución contendría un término de la forma $n^{\mu_i-1} z_i^n$. Su magnitud crece polinomialmente con $n$. Nuevamente, como $n \to \infty$ cuando $\Delta t \to 0$, el error no acotado impide la convergencia.
 \end{itemize}
 Por lo tanto, para que el método sea convergente, es necesario que todas las raíces satisfagan $|z| \leq 1$ y las de módulo 1 sean simples.
 
 \textbf{Suficiencia ($\Leftarrow$):}
 Supongamos que el método es consistente y 0-estable. Sea $e_n = u(t_n) - u_n$ el error global.
 La solución exacta satisface el esquema numérico salvo por el error de truncamiento local $\tau_n$:
-\[ \sum_{j=0}^k \alpha_j u(t_{n+j}) = h \sum_{j=0}^k \beta_j f(t_{n+j}, u(t_{n+j})) + h \tau_{n+k}. \]
-Restando la ecuación del método numérico $\sum_{j=0}^k \alpha_j u_{n+j} = h \sum_{j=0}^k \beta_j f(t_{n+j}, u_{n+j})$, obtenemos la ecuación para el error:
-\[ \sum_{j=0}^k \alpha_j e_{n+j} = h \sum_{j=0}^k \beta_j [f(t_{n+j}, u(t_{n+j})) - f(t_{n+j}, u_{n+j})] + h \tau_{n+k}. \]
+\[ \sum_{j=0}^k \alpha_j u(t_{n+j}) = \Delta t\sum_{j=0}^k \beta_j f(t_{n+j}, u(t_{n+j})) + \Delta t\,\tau_{n+k}. \]
+Restando la ecuación del método numérico $\sum_{j=0}^k \alpha_j u_{n+j} = \Delta t\sum_{j=0}^k \beta_j f(t_{n+j}, u_{n+j})$, obtenemos la ecuación para el error:
+\[ \sum_{j=0}^k \alpha_j e_{n+j} = \Delta t\sum_{j=0}^k \beta_j [f(t_{n+j}, u(t_{n+j})) - f(t_{n+j}, u_{n+j})] + \Delta t\,\tau_{n+k}. \]
 Usando la condición de Lipschitz para $f$ con constante $L$, tenemos $|f(t, u) - f(t, v)| \leq L |u - v|$. Sea $g_n$ tal que la diferencia de las $f$ es $g_n e_{n+j}$ con $|g_n| \leq L$. Podemos reescribir la ecuación como:
-\[ \sum_{j=0}^k \alpha_j e_{n+j} = \gamma_n, \quad \text{donde } \gamma_n = h \sum_{j=0}^k \beta_j g_{n+j} e_{n+j} + h \tau_{n+k}. \]
+\[ \sum_{j=0}^k \alpha_j e_{n+j} = \gamma_n, \quad \text{donde } \gamma_n = \Delta t\sum_{j=0}^k \beta_j g_{n+j} e_{n+j} + \Delta t\,\tau_{n+k}. \]
 Esta es una ecuación en diferencias lineal inhomogénea para $e_n$. Debido a la 0-estabilidad, las raíces de $\rho(z)$ se comportan bien, lo que implica que el operador inverso es estable. Existe una constante $K$ (que depende solo de los coeficientes $\alpha_j$) tal que la solución de $\sum \alpha_j e_{n+j} = \gamma_n$ está acotada por:
 \[ |e_n| \leq K \left( \sum_{i=0}^{k-1} |e_i| + \sum_{m=0}^{n-k} |\gamma_m| \right). \]
 Sustituyendo $\gamma_m$:
-\[ |e_n| \leq K \left( \sum_{i=0}^{k-1} |e_i| + \sum_{m=0}^{n-k} \left( h L \sum_{j=0}^k |\beta_j| |e_{m+j}| + h |\tau_{m+k}| \right) \right). \]
-Sea $B = \sum |\beta_j|$ y supongamos que el método es consistente de orden $p$, tal que $|\tau_m| \leq C h^p$. Asumimos también que los errores iniciales son del orden adecuado $\sum_{i=0}^{k-1} |e_i| \leq C_0 h^p$.
-\[ |e_n| \leq K C_0 h^p + K h \sum_{m=0}^{n-k} C h^p + K h L B \sum_{m=0}^{n-k} \sum_{j=0}^k |e_{m+j}|. \]
-El término de la suma de $\tau$ es $\approx n \cdot h \cdot h^p \approx T h^p$. Reorganizando los términos de la suma doble, podemos acotar por una suma simple sobre los errores pasados (ajustando la constante $K'$):
-\[ |e_n| \leq C' h^p + K' h \sum_{m=0}^{n-1} |e_m|. \]
+\[ |e_n| \leq K \left( \sum_{i=0}^{k-1} |e_i| + \sum_{m=0}^{n-k} \left( \Delta t\,L \sum_{j=0}^k |\beta_j| |e_{m+j}| + \Delta t\,|\tau_{m+k}| \right) \right). \]
+Sea $B = \sum |\beta_j|$ y supongamos que el método es consistente de orden $p$, tal que $|\tau_m| \leq C\Delta t^p$. Asumimos también que los errores iniciales son del orden adecuado $\sum_{i=0}^{k-1} |e_i| \leq C_0\Delta t^p$.
+\[ |e_n| \leq K C_0\Delta t^p + K\Delta t\sum_{m=0}^{n-k} C\Delta t^p + K\Delta t\,L B \sum_{m=0}^{n-k} \sum_{j=0}^k |e_{m+j}|. \]
+El término de la suma de $\tau$ es $\approx n \cdot \Delta t \cdot \Delta t^p \approx T\Delta t^p$. Reorganizando los términos de la suma doble, podemos acotar por una suma simple sobre los errores pasados (ajustando la constante $K'$):
+\[ |e_n| \leq C'\Delta t^p + K'\Delta t\sum_{m=0}^{n-1} |e_m|. \]
 Esta es la forma discreta de la desigualdad de Grönwall. Su resolución implica:
-\[ |e_n| \leq C' h^p \exp(K' n h) = C' h^p \exp(K' T). \]
-Como $T$ es fijo, esto demuestra que $|e_n| \to 0$ cuando $h \to 0$, y además que el orden de convergencia es $p$.
+\[ |e_n| \leq C'\Delta t^p \exp(K' n\Delta t) = C'\Delta t^p \exp(K' T). \]
+Como $T$ es fijo, esto demuestra que $|e_n| \to 0$ cuando $\Delta t \to 0$, y además que el orden de convergencia es $p$.
 \end{proof}
 
 \begin{example}[Análisis de estabilidad]
 \begin{itemize}
     \item \textbf{Método de Adams-Bashforth (2 pasos)}: $u_{n+2} - u_{n+1} = \dots$. $\rho(z) = z^2 - z = z(z-1)$. Raíces: $0, 1$. Ambas $\leq 1$, $1$ es simple. \textbf{Es 0-estable}.
     \item \textbf{Método inestable}: $u_{n+2} + 4u_{n+1} - 5u_n = \dots$. $\rho(z) = z^2 + 4z - 5 = (z+5)(z-1)$. Raíces: $1, -5$. Como $|-5| > 1$, \textbf{no es 0-estable} y no convergerá.
-    \item \textbf{Diferencias centradas para $u' = f$}: El método $\frac{u^{n+1} - u^{n-1}}{2h} = f(t_n, u^n)$ tiene $\rho(z) = z^2 - 1 = (z-1)(z+1)$. Raíces: $\pm 1$. Ambas sobre el círculo unitario, pero la raíz $-1$ genera oscilaciones espurias. Aunque es 0-estable, su comportamiento numérico es pobre.
+    \item \textbf{Diferencias centradas para $u' = f$}: El método $\frac{u^{n+1} - u^{n-1}}{2\Delta t} = f(t_n, u^n)$ tiene $\rho(z) = z^2 - 1 = (z-1)(z+1)$. Raíces: $\pm 1$. Ambas sobre el círculo unitario, pero la raíz $-1$ genera oscilaciones espurias. Aunque es 0-estable, su comportamiento numérico es pobre.
 \end{itemize}
 \end{example}
 
@@ -5927,16 +5959,16 @@ Esta ecuación es fundamental porque captura el comportamiento de sistemas linea
 \begin{definition}[Función de estabilidad para métodos multipaso]
 Aplicando un método multipaso a la ecuación de prueba $u' = \lambda u$, obtenemos:
 \[
-\sum_{j=0}^k \alpha_j u_{n+j} = h\lambda \sum_{j=0}^k \beta_j u_{n+j}.
+\sum_{j=0}^k \alpha_j u_{n+j} = \Delta t\,\lambda \sum_{j=0}^k \beta_j u_{n+j}.
 \]
 
 Buscando soluciones de la forma $u_n = r^n$, donde $r$ es un número complejo, llegamos a:
 \[
-\sum_{j=0}^k \alpha_j r^j = h\lambda \sum_{j=0}^k \beta_j r^j,
+\sum_{j=0}^k \alpha_j r^j = \Delta t\,\lambda \sum_{j=0}^k \beta_j r^j,
 \]
 o equivalentemente:
 \[
-\rho(r) = h\lambda \sigma(r),
+\rho(r) = \Delta t\,\lambda \,\sigma(r),
 \]
 donde $\rho(z) = \sum_{j=0}^k \alpha_j z^j$ y $\sigma(z) = \sum_{j=0}^k \beta_j z^j$ son los polinomios característicos del método.
 \end{definition}
@@ -5947,7 +5979,7 @@ La \textbf{región de estabilidad absoluta} $S$ de un método multipaso es el co
 S = \left\{ z \in \mathbb{C} : \text{todas las raíces } r \text{ de } \rho(r) - z\sigma(r) = 0 \text{ satisfacen } |r| \leq 1 \right\}.
 \]
 
-Alternativamente, $S$ es el conjunto de valores $z = h\lambda$ para los cuales el método produce soluciones acotadas.
+Alternativamente, $S$ es el conjunto de valores $z = \Delta t\,\lambda$ para los cuales el método produce soluciones acotadas.
 \end{definition}
 
 \begin{definition}[A-estabilidad]
@@ -5958,7 +5990,7 @@ S \supseteq \{ z \in \mathbb{C} : \text{Re}(z) < 0 \}.
 \end{definition}
 
 \begin{remark}[Interpretación física]
-Un método A-estable preserva la propiedad cualitativa de la solución exacta (decaimiento para $\text{Re}(\lambda) < 0$) para cualquier tamaño de paso $h > 0$. Esto es especialmente importante para \textbf{problemas rígidos} (stiff), donde diferentes componentes de la solución decaen a tasas muy diferentes.
+Un método A-estable preserva la propiedad cualitativa de la solución exacta (decaimiento para $\text{Re}(\lambda) < 0$) para cualquier tamaño de paso $\Delta t > 0$. Esto es especialmente importante para \textbf{problemas rígidos} (stiff), donde diferentes componentes de la solución decaen a tasas muy diferentes.
 \end{remark}
 
 \begin{theorem}[Primer teorema de barrera de Dahlquist]
@@ -5976,7 +6008,7 @@ Para $z \to -\infty$ (que está en el semiplano izquierdo), al menos una de esta
 \begin{theorem}[Segundo teorema de barrera de Dahlquist]
 El orden máximo de un método multipaso lineal A-estable es 2. Además, el método de orden 2 con menor error asintótico es la \textbf{regla del trapecio}:
 \[
-u_{n+1} - u_n = \frac{h}{2}(f_{n+1} + f_n).
+u_{n+1} - u_n = \frac{\Delta t}{2}(f_{n+1} + f_n).
 \]
 \end{theorem}
 
@@ -5995,28 +6027,28 @@ La demostración completa utiliza técnicas de análisis complejo y teoría de p
 \begin{example}[Análisis de estabilidad: Euler explícito vs. Euler implícito]
 Comparemos el comportamiento de los métodos de Euler en la ecuación de prueba $u' = \lambda u$ con $\text{Re}(\lambda) < 0$.
 
-\textbf{Euler explícito}: $u_{n+1} = u_n + h\lambda u_n = (1 + h\lambda) u_n = R(h\lambda) u_n$.
+\textbf{Euler explícito}: $u_{n+1} = u_n + \Delta t\,\lambda u_n = (1 + \Delta t\,\lambda) u_n = R(\Delta t\,\lambda) u_n$.
 
-La función de estabilidad es $R(z) = 1 + z$. Para estabilidad, requerimos $|1 + z| \leq 1$. Escribiendo $z = h\lambda = h(\alpha + i\beta)$ con $\alpha < 0$:
+La función de estabilidad es $R(z) = 1 + z$. Para estabilidad, requerimos $|1 + z| \leq 1$. Escribiendo $z = \Delta t\,\lambda = \Delta t(\alpha + i\beta)$ con $\alpha < 0$:
 \[
-|1 + h\alpha + ih\beta|^2 = (1 + h\alpha)^2 + h^2\beta^2 \leq 1.
+|1 + \Delta t\,\alpha + i\Delta t\,\beta|^2 = (1 + \Delta t\,\alpha)^2 + \Delta t^2\beta^2 \leq 1.
 \]
 
-Expandiendo: $1 + 2h\alpha + h^2(\alpha^2 + \beta^2) \leq 1$, es decir:
+Expandiendo: $1 + 2\Delta t\,\alpha + \Delta t^2(\alpha^2 + \beta^2) \leq 1$, es decir:
 \[
-h \leq \frac{-2\alpha}{\alpha^2 + \beta^2} = \frac{2|\text{Re}(\lambda)|}{|\lambda|^2}.
+\Delta t \leq \frac{-2\alpha}{\alpha^2 + \beta^2} = \frac{2|\text{Re}(\lambda)|}{|\lambda|^2}.
 \]
 
 Si $\lambda$ es real negativo ($\lambda = \alpha < 0$), esto se reduce a:
 \[
-h < \frac{2}{|\lambda|}.
+\Delta t < \frac{2}{|\lambda|}.
 \]
 
 \textbf{Conclusión}: El método de Euler explícito requiere una \emph{restricción sobre el paso temporal} para ser estable. No es A-estable.
 
-\textbf{Euler implícito}: $u_{n+1} = u_n + h\lambda u_{n+1}$, de donde:
+\textbf{Euler implícito}: $u_{n+1} = u_n + \Delta t\,\lambda u_{n+1}$, de donde:
 \[
-u_{n+1}(1 - h\lambda) = u_n \quad \Rightarrow \quad u_{n+1} = \frac{1}{1 - h\lambda} u_n = R(h\lambda) u_n.
+u_{n+1}(1 - \Delta t\,\lambda) = u_n \quad \Rightarrow \quad u_{n+1} = \frac{1}{1 - \Delta t\,\lambda} u_n = R(\Delta t\,\lambda) u_n.
 \]
 
 La función de estabilidad es $R(z) = \frac{1}{1 - z}$. Para $\text{Re}(z) < 0$, escribimos $z = x + iy$ con $x < 0$:
@@ -6029,37 +6061,37 @@ Como $x < 0$, tenemos $1 - x > 1$, por lo que $(1-x)^2 > 1$, y así:
 |R(z)|^2 < 1 \quad \text{para todo } \text{Re}(z) < 0.
 \]
 
-\textbf{Conclusión}: El método de Euler implícito es A-estable. No hay restricción sobre $h$ para estabilidad (aunque la precisión puede degradarse con $h$ grande).
+\textbf{Conclusión}: El método de Euler implícito es A-estable. No hay restricción sobre $\Delta t$ para estabilidad (aunque la precisión puede degradarse con $\Delta t$ grande).
 \end{example}
 
 \begin{remark}[Implicaciones para problemas rígidos]
 La diferencia entre Euler explícito e implícito es dramática para \textbf{problemas rígidos} (stiff), donde el sistema tiene autovalores $\lambda$ con $|\text{Re}(\lambda)| \gg 1$. Por ejemplo, si $\lambda = -1000$:
 \begin{itemize}
-    \item Euler explícito requiere $h < 0.002$ para estabilidad, forzando pasos muy pequeños.
+    \item Euler explícito requiere $\Delta t < 0.002$ para estabilidad, forzando pasos muy pequeños.
     \item Euler implícito permite pasos grandes arbitrarios sin inestabilidad numérica.
 \end{itemize}
 Aunque el costo por paso del método implícito es mayor (resolver sistema lineal), puede compensarse con pasos mucho mayores.
 \end{remark}
 
 \begin{example}[Verificación de A-estabilidad de la regla del trapecio]
-Para la regla del trapecio: $u_{n+1} - u_n = \frac{h}{2}(f_{n+1} + f_n)$.
+Para la regla del trapecio: $u_{n+1} - u_n = \frac{\Delta t}{2}(f_{n+1} + f_n)$.
 
 Aplicando a $u' = \lambda u$:
 \[
-u_{n+1} - u_n = \frac{h\lambda}{2}(u_{n+1} + u_n).
+u_{n+1} - u_n = \frac{\Delta t\,\lambda}{2}(u_{n+1} + u_n).
 \]
 
 Reorganizando:
 \[
-u_{n+1}\left(1 - \frac{h\lambda}{2}\right) = u_n\left(1 + \frac{h\lambda}{2}\right),
+u_{n+1}\left(1 - \frac{\Delta t\,\lambda}{2}\right) = u_n\left(1 + \frac{\Delta t\,\lambda}{2}\right),
 \]
 de donde:
 \[
-u_{n+1} = \frac{1 + \frac{h\lambda}{2}}{1 - \frac{h\lambda}{2}} u_n = R(h\lambda) u_n,
+u_{n+1} = \frac{1 + \frac{\Delta t\,\lambda}{2}}{1 - \frac{\Delta t\,\lambda}{2}} u_n = R(\Delta t\,\lambda) u_n,
 \]
 donde $R(z) = \frac{1 + z/2}{1 - z/2}$ es la función de estabilidad.
 
-Para estabilidad, necesitamos $|R(z)| \leq 1$. Si $z = h\lambda$ con $\text{Re}(z) < 0$, escribamos $z = x + iy$ con $x < 0$:
+Para estabilidad, necesitamos $|R(z)| \leq 1$. Si $z = \Delta t\,\lambda$ con $\text{Re}(z) < 0$, escribamos $z = x + iy$ con $x < 0$:
 \[
 |R(z)|^2 = \left|\frac{1 + z/2}{1 - z/2}\right|^2 = \frac{|1 + x/2 + iy/2|^2}{|1 - x/2 - iy/2|^2} = \frac{(1 + x/2)^2 + y^2/4}{(1 - x/2)^2 + y^2/4}.
 \]
