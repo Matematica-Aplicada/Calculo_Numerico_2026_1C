@@ -30,10 +30,10 @@
  \hrulefill
 
  \bigskip
- \centerline{\bf Práctica N$^\circ$ 5: Métodos de diferencias finitas}
+ \centerline{\bf Práctica N$^\circ$ 5: Diferencias Finitas}
  \bigskip
 
-\section*{Ejercicios de métodos de un paso}
+\section*{Métodos de un paso}
 
 \begin{exercise}[Método del punto medio sobre una EDO lineal]
 Considere el problema
@@ -52,7 +52,7 @@ y el método del punto medio
 \]
 y determine su orden.
 \item Halle la constante de Lipschitz de $\Phi$ respecto de la variable $y$ y deduzca una cota uniforme para $0<h\le 1$.
-\item Use el teorema de convergencia de métodos de un paso del apunte para hallar un paso $h$ que garantice
+\item Use el teorema de convergencia de métodos de un paso para hallar un paso $h$ que garantice
 \[
   \max_{t_n\le 10}|y(t_n)-y_n|<10^{-3}.
 \]
@@ -95,14 +95,14 @@ y el método de Heun
 \item Escriba la función de transición $\Phi(t,y,h)$.
 \item Halle el orden del error de truncamiento local.
 \item Calcule una constante de Lipschitz de $\Phi$ en la variable $y$ para $0<h\le 1$.
-\item Use el teorema del apunte para obtener un paso $h$ que garantice error global menor que $10^{-3}$ en el intervalo $[0,10]$.
+\item Use el teorema de convergencia de métodos de un paso para obtener un paso $h$ que garantice error global menor que $10^{-3}$ en el intervalo $[0,10]$.
 \end{enumerate}
 \end{exercise}
 
-\begin{exercise}[Problema rígido: Euler explícito e implícito]
+\begin{exercise}[Problema stiff: Euler explícito e implícito]
 Considere el problema
 \[
-  y'=-20\bigl(y-\cos t\bigr)-\sin t,\qquad y(0)=1.
+  y'=-100\bigl(y-\cos t\bigr)-\sin t,\qquad y(0)=1.
 \]
 \begin{enumerate}[(a)]
 \item Verifique que la solución exacta es $y(t)=\cos t$.
@@ -127,15 +127,14 @@ con $b\in\R$ y $\sigma>0$. En la malla uniforme $x_j=jh$, $h=1/N$, use diferenci
 \]
 con índices módulo $N$.
 \begin{enumerate}[(a)]
-\item Verifique que los modos de Fourier discretos $w_j^{(k)}=e^{2\pi i kj/N}$ satisfacen automáticamente las condiciones de borde periódicas.
+\item Verifique que los modos de Fourier discretos $w_j^{(k)}=e^{2\pi i kj/N}$ satisfacen las condiciones de borde periódicas.
 \item Muestre, por sustitución directa de $w^{(k)}$ en las ecuaciones del sistema discreto, que estos modos son autofunciones del operador de diferencias finitas y que los autovalores son
 \[
   \lambda_k=\sigma+\frac{ib}{h}\sin\!\left(\frac{2\pi k}{N}\right).
 \]
-\item Deduzca que $|\lambda_k|\ge \sigma$ para todo $k$ y concluya, por el criterio de Fourier, que $\|(A_N)^{-1}\|_2\le 1/\sigma$.
-\item Interprete este resultado como estabilidad en norma 2 del esquema discreto.
+\item Deduzca que $|\lambda_k|\ge \sigma$ para todo $k$ y concluya que $\|(A_N)^{-1}\|_2\le 1/\sigma$.
+\item Muestre que si $f\in C^2([0,1])$, el error de truncamiento es $O(h^2)$ y que por ende la convergencia también es $O(h^2)$.
 \end{enumerate}
-\emph{Remark.} Si se escribe la matriz del sistema lineal, resulta ser circulante. Esto explica por qué los modos de Fourier discretos diagonalizan el operador, pero no es necesario usar esta observación para resolver el ejercicio.
 \end{exercise}
 
 \begin{exercise}[Advección-difusión-reacción periódica]
@@ -146,15 +145,13 @@ Considere
 con condiciones periódicas, donde $\nu>0$, $b\in\R$ y $\sigma>0$.
 \begin{enumerate}[(a)]
 \item Discretice $u''$ y $u'$ con diferencias centradas y escriba las ecuaciones del esquema con índices módulo $N$.
-\item Verifique que los modos de Fourier discretos satisfacen las condiciones de borde periódicas y úselo para diagonalizar el operador discreto.
+\item Muestre que si $f\in C^2([0,1])$ el error de truncamiento es $O(h^2)$.
 \item Usando Fourier discreto, pruebe que los autovalores son
 \[
   \lambda_k=\sigma+\frac{4\nu}{h^2}\sin^2\!\left(\frac{\pi k}{N}\right)+\frac{ib}{h}\sin\!\left(\frac{2\pi k}{N}\right).
 \]
-\item Deduzca que la familia es estable en norma 2 uniformemente en $h$ y obtenga una cota explícita para $\|(A_N)^{-1}\|_2$.
-\item Compare con el caso del ejercicio anterior: ¿qué papel juegan el término de difusión y el de transporte en la parte real y en la parte imaginaria del símbolo?
+\item Deduzca que la familia es estable en norma 2 uniformemente en $h$ y obtenga una cota explícita para $\|(A_N)^{-1}\|_2$. Concluya que la convergencia es $O(h^2)$.
 \end{enumerate}
-\emph{Remark.} La matriz asociada también es circulante, pero la vía pedida en el ejercicio es trabajar directamente con las ecuaciones discretas y los modos de Fourier.
 \end{exercise}
 
 \begin{exercise}[Helmholtz periódico]
@@ -173,7 +170,6 @@ con $\omega>0$ fijo.
 \item Determine para qué valores de $\omega$ y de $N$ el sistema discreto es singular.
 \item Discuta, usando únicamente el símbolo de Fourier, cuándo la familia puede ser uniformemente estable en norma 2 y cuándo no.
 \end{enumerate}
-\emph{Remark.} También aquí la matriz es circulante, pero no hace falta invocar ese hecho: el análisis pedido se obtiene directamente al reemplazar los modos de Fourier en las ecuaciones discretas.
 \end{exercise}
 
 \section*{Ecuaciones en derivadas parciales}
@@ -235,7 +231,7 @@ con condiciones de borde periódicas. Se denota $\mu:=\kappa\dt/h^2$.
   U_j^{n+1} = \mu\,U_{j-1}^n + (1-2\mu-\sigma\dt)\,U_j^n + \mu\,U_{j+1}^n.
 \]
 
-\item \textbf{Error de truncamiento.} Use la proposición del apunte sobre el error de truncamiento de Euler explícito para $u_t = \kappa u_{xx}$ y muestre que el término reactivo $-\sigma u$ añade una contribución $O(\dt)$. Concluya que $\tau_j^n = O(\dt + h^2)$.
+\item \textbf{Error de truncamiento.} Muestre que $\tau_j^n = O(\dt + h^2)$.
 
 \item \textbf{Factor de amplificación.} Sustituya $V_j^n = G^n e^{i\theta j}$ en el esquema y deduzca
 \[
@@ -243,13 +239,46 @@ con condiciones de borde periódicas. Se denota $\mu:=\kappa\dt/h^2$.
 \]
 Observe que $G_E$ es real.
 
-\item \textbf{Condición de estabilidad.} La condición $|G_E(\theta)|\le 1$ para todo $\theta$ se descompone en cota superior e inferior. Muestre que la cota superior se satisface automáticamente, y que la cota inferior da
+\item \textbf{Condición de estabilidad fuerte.} La condición de estabilidad fuerte $|G_E(\theta)|\le 1$ para todo $\theta$ se descompone en cota superior e inferior. Muestre que la cota superior se satisface automáticamente, y que la cota inferior da
 \[
   4\mu + \sigma\dt \le 2,\qquad\text{es decir,}\qquad
   \mu \le \frac{1-\sigma\dt/2}{2}.
 \]
 
 \item \textbf{Interpretación.} Suponga que $\sigma$ es grande (reacción rígida). ¿Qué restricción impone sobre $\dt$ independientemente de $h$? Compare con el caso $\sigma=0$.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Ecuación de difusión-reacción, Euler implícito]
+Considere la ecuación de difusión-reacción
+\[
+  u_t = \kappa\,u_{xx} - \sigma u,\qquad \kappa>0,\ \sigma>0,
+\]
+con condiciones de borde periódicas. Se denota $\mu:=\kappa\dt/h^2$.
+\begin{enumerate}[(a)]
+\item Aplique diferencia centrada en espacio y Euler implícito en tiempo. Reordene y muestre que el sistema a resolver en cada paso es
+\[
+  -\mu\,U_{j-1}^{n+1} + (1+2\mu+\sigma\dt)\,U_j^{n+1} - \mu\,U_{j+1}^{n+1} = U_j^n.
+\]
+
+\item \textbf{Error de truncamiento.} Muestre que $\tau_j^n = O(\dt + h^2)$.
+
+\item \textbf{Factor de amplificación.} Sustituya $V_j^n = G^n e^{i\theta j}$ y deduzca
+\[
+  G_I(\theta) = \frac{1}{1 + 4\mu\sin^2\!\tfrac{\theta}{2} + \sigma\dt}.
+\]
+
+\item \textbf{Estabilidad incondicional.} Use que $\mu\ge 0$, $\sigma\dt\ge 0$ y $\sin^2(\theta/2)\ge 0$ para concluir que
+\[
+  0 < G_I(\theta) \le 1\qquad\text{para todo }\theta,
+\]
+y por tanto el esquema es incondicionalmente estable.
+
+\item \textbf{Comparación con Euler explícito.} Compare este resultado con la condición
+\[
+  4\mu + \sigma\dt \le 2
+\]
+del esquema explícito. Discuta qué ocurre cuando $\sigma$ es grande (reacción rígida).
 \end{enumerate}
 \end{exercise}
 

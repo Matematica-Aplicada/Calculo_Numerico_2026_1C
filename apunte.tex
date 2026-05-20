@@ -29,6 +29,9 @@
 \begin{document}
 
 \maketitle
+
+\tableofcontents
+
 \chapter*{Introducción}
 \addcontentsline{toc}{chapter}{Introducción}
 
@@ -4839,7 +4842,7 @@ La cota anterior es elemental y útil, pero no es ajustada en general. En teorí
 
 \chapter{Métodos de diferencias finitas}
 
-En este capítulo estudiamos métodos numéricos para tres clases de ecuaciones diferenciales:
+En este capítulo estudiamos métodos numéricos basados en diferencias finitas para tres clases de ecuaciones diferenciales:
 
 \begin{enumerate}
 \item \textbf{Problema de valores iniciales (PVI).} Dada $f:[t_0,T]\times\mathbb R\to\mathbb R$, buscar $y:[t_0,T]\to\mathbb R$ tal que
@@ -4858,7 +4861,7 @@ El caso prototípico es $\mathcal L\,u=-u''+\sigma u$ con $\sigma>0$.
 con condición inicial $u(x,0)=u_0(x)$ y condiciones de borde.
 \end{enumerate}
 
-En todos los casos la estrategia es la misma: introducir una malla de puntos $\{t_n=t_0+nh\}$ y/o $\{x_j=jh\}$, y reemplazar cada derivada por una \emph{fórmula de diferencias finitas}: una combinación lineal de valores de la función en puntos vecinos de la malla. Aplicando esta sustitución al problema diferencial obtenemos un sistema algebraico cuya solución $\{y_n\}$, $\{u_j\}$ o $\{U_j^n\}$ queremos que aproxime la solución exacta cuando el paso $h\to0$.
+En todos los casos la estrategia es la misma: introducir una malla de puntos $\{t_n=t_0+n \Delta t\}$ y/o $\{x_j=j \Delta x\}$, y reemplazar cada derivada por una \emph{fórmula de diferencias finitas}: una combinación lineal de valores de la función en puntos vecinos de la malla. Aplicando esta sustitución al problema diferencial obtenemos un sistema algebraico cuya solución $\{y_n\}$, $\{u_j\}$ o $\{U_j^n\}$ queremos que aproxime la solución exacta cuando los pasos espaciales y temporales $\Delta x, \Delta t \to 0$.
 
 \section{Problemas de valores iniciales}\label{sec:ecuacion_test_new}
 
