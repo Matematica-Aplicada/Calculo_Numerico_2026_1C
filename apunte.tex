@@ -2129,9 +2129,7 @@ p(x) = \frac{\displaystyle\sum_{k=0}^n \frac{w_k}{x-x_k}\,y_k}{\displaystyle\sum
 
 \section{Interpolación sobre $\mathbb{R}$}\label{sec:interpolacion_R}
 
-Cuando los nodos y los datos son reales, podemos estimar cuánto difiere el interpolante de la función original.  El resultado fundamental es el \textbf{teorema del error de interpolación}, que expresa $f(x)-p_n(x)$ en términos de la derivada de orden $n+1$ de~$f$.
-
-Un estudio más profundo del error ---que requiere las herramientas de la teoría de aproximación--- se realizará en el Capítulo~4.
+Cuando los nodos y los datos son reales, podemos estimar cuánto difiere el interpolante de la función original. Un resultado elemental expresa $f(x)-p_n(x)$ en términos de la derivada de orden $n+1$ de~$f$. Un estudio más profundo del error se realizará en el Capítulo~4.
 
 \subsection{Error de interpolación}\label{subsec:error_interpolacion}
 
@@ -3579,54 +3577,6 @@ tal que $d\le N-1$, es decir,
 Se aplica el Lema~\ref{lem:trap_exp} con $M=N$: para cada modo $e^{ikx}$ con $|k|\le d\le N-1$, si $k\neq 0$ entonces $k\not\equiv 0\pmod N$, y por lo tanto $Q_k^{(N)}=I_k$. Para $k=0$, también vale $Q_0^{(N)}=I_0=2\pi$. Por linealidad en la suma finita de modos, se obtiene la igualdad anunciada.
 \end{proof}
 
-\begin{proposition}[Aliasing de los coeficientes discretos]\label{prop:aliasing_coef_discretos}
-Sea $f\in C^2_{per}([0,2\pi])$. Para $M\ge 1$ y $|k|\le M-1$ se cumple:
-\begin{equation}\label{aliasing_fourier_trap}
-\tilde f_k^{(M)} = \sum_{m\in\mathbb Z}\hat f_{k+mM}.
-\end{equation}
-En particular, $\tilde f_{k+M}^{(M)}=\tilde f_k^{(M)}$.
-\end{proposition}
-
-\begin{proof}
-La periodicidad discreta en frecuencia es inmediata de la definición:
-\[
-\tilde f_{k+M}^{(M)} = \frac1M\sum_{j=0}^{M-1} f(x_j)e^{-i(k+M)x_j}
-= \frac1M\sum_{j=0}^{M-1} f(x_j)e^{-ikx_j}e^{-iMx_j}
-=\tilde f_k^{(M)},
-\]
-porque $Mx_j=2\pi j$.
-
-Para la fórmula de aliasing, expandimos $f$ en serie de Fourier. Como $f\in C^2_{per}$, por el Teorema~\ref{thm:convergencia_uniforme_fourier} del Apéndice~\ref{app_convergencia_fourier}, la serie converge absoluta y uniformemente; en particular,
-\[
-\sum_{\ell\in\mathbb Z}|\hat f_\ell|<\infty.
-\]
-Esta convergencia absoluta es la que permite intercambiar la suma infinita en $\ell$ con la suma finita en $j$:
-\[
-\tilde f_k^{(M)}
-=\frac1M\sum_{j=0}^{M-1} f(x_j)e^{-ikx_j}
-=\frac1M\sum_{j=0}^{M-1}\left(\sum_{\ell\in\mathbb Z}\hat f_\ell e^{i\ell x_j}\right)e^{-ikx_j}
-=\frac1M\sum_{j=0}^{M-1}\sum_{\ell\in\mathbb Z}\hat f_\ell\,e^{i\ell x_j}e^{-ikx_j}.
-\]
-Como
-\[
-e^{i\ell x_j}e^{-ikx_j}=e^{i(\ell-k)x_j},
-\]
-se obtiene
-\[
-\tilde f_k^{(M)}
-=\frac1M\sum_{j=0}^{M-1}\sum_{\ell\in\mathbb Z}\hat f_\ell e^{i(\ell-k)x_j}
-=\sum_{\ell\in\mathbb Z}\hat f_\ell\left(\frac1M\sum_{j=0}^{M-1}e^{i(\ell-k)x_j}\right),
-\]
-y, usando $x_j=2\pi j/M$,
-\[
-e^{i(\ell-k)x_j}=e^{i(\ell-k)2\pi j/M}.
-\]
-Por el Lema~\ref{lem:trap_exp}, el paréntesis vale $1$ si $\ell-k$ es múltiplo de $M$ y $0$ en caso contrario. Entonces sobreviven exactamente los índices $\ell=k+mM$:
-\[
-\tilde f_k^{(M)}=\sum_{m\in\mathbb Z}\hat f_{k+mM}.
-\]
-\end{proof}
-
 \begin{proposition}[Primera cota del error trapezoidal vía proyección]\label{prop:trapecio_cota_proyeccion}
 Sea $f\in C_{per}([0,2\pi])$, sea $N\ge 1$ y definamos
 \[
@@ -3676,6 +3626,56 @@ La segunda desigualdad se obtiene de
 \le \sum_{|k|\ge N}|\hat f_k|.\qedhere
 \]
 \end{proof}
+
+\begin{proposition}[Aliasing de los coeficientes discretos]\label{prop:aliasing_coef_discretos}
+Sea $f\in C^2_{per}([0,2\pi])$. Para $M\ge 1$ y $|k|\le M-1$ se cumple:
+\begin{equation}\label{aliasing_fourier_trap}
+\tilde f_k^{(M)} = \sum_{m\in\mathbb Z}\hat f_{k+mM}.
+\end{equation}
+En particular, $\tilde f_{k+M}^{(M)}=\tilde f_k^{(M)}$.
+\end{proposition}
+
+\begin{proof}
+La periodicidad discreta en frecuencia es inmediata de la definición:
+\[
+\tilde f_{k+M}^{(M)} = \frac1M\sum_{j=0}^{M-1} f(x_j)e^{-i(k+M)x_j}
+= \frac1M\sum_{j=0}^{M-1} f(x_j)e^{-ikx_j}e^{-iMx_j}
+=\tilde f_k^{(M)},
+\]
+porque $Mx_j=2\pi j$.
+
+Para la fórmula de aliasing, expandimos $f$ en serie de Fourier. Como $f\in C^2_{per}$, por el Teorema~\ref{thm:convergencia_uniforme_fourier} del Apéndice~\ref{app_convergencia_fourier}, la serie converge absoluta y uniformemente; en particular,
+\[
+\sum_{\ell\in\mathbb Z}|\hat f_\ell|<\infty.
+\]
+Esta convergencia absoluta es la que permite intercambiar la suma infinita en $\ell$ con la suma finita en $j$:
+\[
+\tilde f_k^{(M)}
+=\frac1M\sum_{j=0}^{M-1} f(x_j)e^{-ikx_j}
+=\frac1M\sum_{j=0}^{M-1}\left(\sum_{\ell\in\mathbb Z}\hat f_\ell e^{i\ell x_j}\right)e^{-ikx_j}
+=\frac1M\sum_{j=0}^{M-1}\sum_{\ell\in\mathbb Z}\hat f_\ell\,e^{i\ell x_j}e^{-ikx_j}.
+\]
+Como
+\[
+e^{i\ell x_j}e^{-ikx_j}=e^{i(\ell-k)x_j},
+\]
+se obtiene
+\[
+\tilde f_k^{(M)}
+=\frac1M\sum_{j=0}^{M-1}\sum_{\ell\in\mathbb Z}\hat f_\ell e^{i(\ell-k)x_j}
+=\sum_{\ell\in\mathbb Z}\hat f_\ell\left(\frac1M\sum_{j=0}^{M-1}e^{i(\ell-k)x_j}\right),
+\]
+y, usando $x_j=2\pi j/M$,
+\[
+e^{i(\ell-k)x_j}=e^{i(\ell-k)2\pi j/M}.
+\]
+Por el Lema~\ref{lem:trap_exp}, el paréntesis vale $1$ si $\ell-k$ es múltiplo de $M$ y $0$ en caso contrario. Entonces sobreviven exactamente los índices $\ell=k+mM$:
+\[
+\tilde f_k^{(M)}=\sum_{m\in\mathbb Z}\hat f_{k+mM}.
+\]
+\end{proof}
+
+
 
 \begin{corollary}[Cota explícita del error usando $|\hat f_k|=O(|k|^{-n})$]\label{cor:trap_cota_cola_fourier}
 Sea $f\in C_{per}([0,2\pi])$ y supongamos que existen $n>1$ y $C_n>0$ tales que
@@ -4553,7 +4553,10 @@ El Teorema~\ref{thm:exactitud_gauss} dice que $E_n(p) = 0$ para $p \in \Pi_{2n-1
 \[
 S_{2n-1}f = \sum_{k=0}^{2n-1} c_k P_k,
 \]
-que explota toda la exactitud disponible de la regla gaussiana.
+y usar que la regla es exacta en $\Pi_{2n-1}$, es decir,
+\[
+\int_a^b S_{2n-1}f(x)\,w(x)\,dx = Q_n(S_{2n-1}f).
+\]
 
 \begin{theorem}[Cota del error usando proyección de orden $2n{-}1$]\label{thm:error_gauss_proj}
 Para toda $f\in C([a,b])$, el error de la cuadratura de Gauss satisface:
@@ -4564,29 +4567,38 @@ donde $\mu_0 = \int_a^b w(x)\,dx = \sum_{k=1}^n w_k$.
 \end{theorem}
 
 \begin{proof}
-Como $E_n(p) = 0$ para todo $p \in \Pi_{2n-1}$, y $S_{2n-1}f \in \Pi_{2n-1}$, tenemos
+Sea $S = S_{2n-1}f \in \Pi_{2n-1}$. Intercalamos simultáneamente los términos $\int_a^b S\,w$ y $Q_n(S)$ (equivalentemente, sumamos y restamos ambos):
 \[
-E_n(f) = E_n(f - S_{2n-1}f).
+\begin{aligned}
+E_n(f)
+&= \int_a^b f\,w - Q_n(f) \\
+&= \left(\int_a^b f\,w - \int_a^b S\,w\right)
+ + \left(\int_a^b S\,w - Q_n(S)\right)
+ + \left(Q_n(S)-Q_n(f)\right).
+\end{aligned}
 \]
-Sea $g = f - S_{2n-1}f$.  Entonces:
+Como $S\in\Pi_{2n-1}$ y la regla de Gauss es exacta en $\Pi_{2n-1}$, el término central es nulo. Luego, por linealidad de la integral y de $Q_n$, queda
 \[
-E_n(g) = \int_a^b g(x)\,w(x)\,dx - \sum_{k=1}^n w_k\,g(x_k).
+E_n(f)=\int_a^b (f-S)\,w - Q_n(f-S).
 \]
 Acotamos cada término por separado.
 
 \textbf{Término integral.}\; Como $w\ge 0$:
 \[
-\left|\int_a^b g\,w\right| \leq \int_a^b |g|\,w \leq \|g\|_{\infty}\int_a^b w = \mu_0\,\|g\|_{\infty}.
+\left|\int_a^b (f-S)\,w\right| \leq \int_a^b |f-S|\,w \leq \|f-S\|_{\infty}\int_a^b w = \mu_0\,\|f-S\|_{\infty}.
 \]
 
 \textbf{Término de cuadratura.}\; Como $w_k>0$:
 \[
-\left|\sum_{k=1}^n w_k\,g(x_k)\right| \leq \sum_{k=1}^n w_k\,|g(x_k)| \leq \|g\|_{\infty}\sum_{k=1}^n w_k = \mu_0\,\|g\|_{\infty}.
+\left|Q_n(f-S)\right| = \left|\sum_{k=1}^n w_k\,(f-S)(x_k)\right|
+\leq \sum_{k=1}^n w_k\,|(f-S)(x_k)|
+\leq \|f-S\|_{\infty}\sum_{k=1}^n w_k
+= \mu_0\,\|f-S\|_{\infty}.
 \]
 
 \textbf{Conclusión:}
 \[
-|E_n(f)| = |E_n(g)| \leq 2\mu_0\,\|g\|_{\infty} = 2\mu_0\,\|f - S_{2n-1}f\|_{\infty}. \qedhere
+|E_n(f)| \leq 2\mu_0\,\|f-S\|_{\infty} = 2\mu_0\,\|f - S_{2n-1}f\|_{\infty}. \qedhere
 \]
 \end{proof}
 
