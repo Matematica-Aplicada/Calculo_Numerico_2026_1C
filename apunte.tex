@@ -7072,38 +7072,78 @@ Geométricamente, $x_{k+1}$ es la intersección con el eje $x$ de la recta
 que pasa por $(x_{k-1},f(x_{k-1}))$ y $(x_k,f(x_k))$.
 \end{definition}
 
+\begin{remark}
+La fórmula de la secante es análoga a la de Newton,
+\[
+x_{k+1}=x_k-\frac{f(x_k)}{f'(x_k)},
+\]
+con la derivada $f'(x_k)$ reemplazada por el cociente incremental
+\[
+\frac{f(x_k)-f(x_{k-1})}{x_k-x_{k-1}}\approx f'(x_k).
+\]
+La ventaja es que no es necesario calcular $f'$, lo cual es especialmente valioso
+cuando la derivada es difícil de obtener analíticamente o costosa de evaluar.
+\end{remark}
+
 \begin{theorem}[Convergencia superlineal de la secante]\label{thm:secante_conv}
 Sea $f\in C^2$ con $f(x^*)=0$ y $f'(x^*)\ne 0$.
 Existen $\delta>0$ y $C>0$ tales que, si $x_0,x_1\in(x^*-\delta,x^*+\delta)$,
 \[
-|x_{k+1}-x^*|\le C\,|x_k-x^*|^{\varphi},\qquad
+\frac{|x_{k+1}-x^*|}{|x_k-x^*|^{\varphi}}\to C,\qquad
 \varphi=\frac{1+\sqrt{5}}{2}\approx 1.618.
 \]
-El orden de convergencia es el número áureo $\varphi$: superlineal pero sublineal
+En particular la convergencia es de orden $\varphi$: superlineal pero sublineal
 respecto del orden cuadrático de Newton.
 \end{theorem}
 
 \begin{proof}
-Denotamos $e_k=x_k-x^*$.  Usando la expansión de Taylor $f(x_k)=f'(x^*)e_k+\tfrac12 f''(x^*)e_k^2+O(e_k^3)$
-(y análogamente para $f(x_{k-1})$) y la fórmula de diferencias divididas
+Escribimos $e_k=x^*-x_k$, $f'_*=f'(x^*)$, $f''_*=f''(x^*)$ y $c_\infty=f''_*/(2f'_*)$.
+
+\textit{Paso 1: relación de recurrencia $e_{k+1}=-c_k e_k e_{k-1}$.}
+De $f(x^*)=0$ y la definición de la secante,
 \[
-\frac{f(x_k)-f(x_{k-1})}{x_k-x_{k-1}}=f'(x^*)+\tfrac12 f''(x^*)(e_k+e_{k-1})+O(e_k^2+e_{k-1}^2),
+e_{k+1}=\frac{e_{k-1}f(x_k)-e_k f(x_{k-1})}{f(x_k)-f(x_{k-1})}.
 \]
-se obtiene, tras simplificar los términos dominantes:
+Expandiendo por Taylor, $f(x_j)=-f'_* e_j+\tfrac12 f''_* e_j^2+O(e_j^3)$.
+Los términos en $f'_*$ se cancelan exactamente en el numerador:
 \[
-e_{k+1}\;\approx\;\frac{f''(x^*)}{2f'(x^*)}\,e_k\,e_{k-1}.
+e_{k-1}f(x_k)-e_k f(x_{k-1})
+=\underbrace{(-f'_*e_ke_{k-1}+f'_*e_ke_{k-1})}_{=\,0}
++\tfrac12 f''_* e_ke_{k-1}(e_k-e_{k-1})
++O\bigl(|e_ke_{k-1}|(|e_k|+|e_{k-1}|)^2\bigr).
 \]
-Sea $C_0=|f''(x^*)/(2f'(x^*))|$ y $M_k=C_0|e_k|$.  La relación anterior se convierte en
-$M_{k+1}\approx M_k M_{k-1}$; tomando logaritmos con $u_k=\log M_k$:
+El denominador, en cambio, retiene el término lineal:
 \[
-u_{k+1}=u_k+u_{k-1}.
+f(x_k)-f(x_{k-1})=-(e_k-e_{k-1})\bigl(f'_*+O(|e_k|+|e_{k-1}|)\bigr).
 \]
-La ecuación característica de esta recurrencia lineal es $\lambda^2=\lambda+1$, con raíces
-$\varphi=(1+\sqrt5)/2\approx1.618$ y $\hat\varphi=(1-\sqrt5)/2\approx-0.618$.
-Si la sucesión converge ($u_k\to-\infty$), la componente en $\varphi^k$ domina y
-$u_k\sim A\varphi^k$, lo que da $|e_k|\sim \exp(A\varphi^k)$.
-En particular, $|e_{k+1}|\approx|e_k|^\varphi$, que es exactamente la cota del enunciado
-(para una demostración rigurosa ver, e.g., Stoer-Bulirsch).
+Dividiendo, los factores $(e_k-e_{k-1})$ se cancelan y se obtiene
+\[
+e_{k+1}=-c_k\,e_k e_{k-1},\qquad c_k\;\xrightarrow{k\to\infty}\;c_\infty.
+\]
+
+\textit{Paso 2: convergencia (argumento de contracción).}
+De la relación anterior existe $\mathcal{C}>0$ tal que
+$|e_{k+1}|\le\mathcal{C}|e_k||e_{k-1}|$ para $x_k,x_{k-1}$ suficientemente
+cerca de $x^*$.
+Eligiendo $\varepsilon$ con $\lambda:=\mathcal{C}\varepsilon<1$,
+si $|e_0|,|e_1|<\varepsilon$ entonces $|e_{k+1}|\le\lambda|e_k|$:
+la iteración es una contracción y $|e_k|\to0$.
+
+\textit{Paso 3: orden de convergencia.}
+Definamos $y_k=|e_{k+1}|/|e_k|^p$ para $p>0$ a determinar.
+De $|e_{k-1}|=(|e_k|/y_{k-1})^{1/p}$:
+\[
+y_k=|c_k|\,|e_k|^{1-p+1/p}\,y_{k-1}^{-1/p}.
+\]
+Para que $y_k$ tenga límite finito y no nulo debe cancelarse el exponente de $|e_k|$:
+$1-p+1/p=0$, es decir $p^2-p-1=0$, cuya raíz positiva es $p=\varphi=(1+\sqrt5)/2$.
+Con esta elección, $y_k=|c_k|y_{k-1}^{-1/\varphi}$ converge al punto fijo de
+$h(y)=|c_\infty|y^{-1/\varphi}$, que es $\bar y=|c_\infty|^{1/\varphi}$
+(usando $1+1/\varphi=\varphi$, propiedad del número áureo).
+En consecuencia,
+\[
+\frac{|e_{k+1}|}{|e_k|^\varphi}\;\to\;\left|\frac{f''(x^*)}{2f'(x^*)}\right|^{1/\varphi}>0.\qedhere
+\]
 \end{proof}
 
 \begin{remark}[Comparación de métodos]
