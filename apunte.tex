@@ -6689,321 +6689,338 @@ En resumen, los métodos espectrales son la herramienta de elección cuando la s
 \fi
 \chapter{Sistemas No Lineales y Optimización Numérica}
 
-Este capítulo aborda dos problemas íntimamente relacionados:
+Este capítulo está organizado en tres clases:
 \begin{enumerate}
-\item \textbf{Ecuaciones no lineales:} hallar $x$ tal que $f(x) = 0$ (una variable) o $F(x) = 0$ (varias variables).
-\item \textbf{Optimización:} hallar $x$ que minimice un funcional $\varphi(x)$.
+\item \textbf{Clase 1:} métodos básicos en $\mathbb{R}$ (punto fijo, bisección, Newton en una variable).
+\item \textbf{Clase 2:} optimización y descenso por gradiente.
+\item \textbf{Clase 3:} método de Newton en $\mathbb{R}^n$ para sistemas y optimización.
 \end{enumerate}
-A diferencia de los sistemas lineales, donde existe una solución alcanzable en un número finito de operaciones, aquí solo podemos \emph{aproximarnos} al resultado mediante iteración.  Desarrollamos los métodos fundamentales en orden de sofisticación creciente: bisección (simple y robusto), Newton en una variable (convergencia cuadrática), Newton en dimensión $n$, y descenso por gradiente para optimización.
+El hilo conductor es siempre el mismo: construir una iteración
+\[
+x^{(k+1)} = G(x^{(k)})
+\]
+y entender cuándo converge, con qué velocidad y a qué solución converge.
 
+
+\section{Clase 1: Métodos básicos en $\mathbb{R}$}
+
+\subsection{Motivación: ajuste de parámetros de modelos contra datos}
+
+Partimos de un problema unificador: tenemos datos $(t_i,y_i)$ y un modelo $m(t;\theta)$ con parámetros $\theta\in\mathbb R^p$. Queremos ajustar $\theta$ para que el modelo reproduzca los datos.
+
+Usaremos la pérdida cuadrática
+\[
+\Phi(\theta)=\frac{1}{2}\sum_{i=1}^N\big(m(t_i;\theta)-y_i\big)^2.
+\]
+Los puntos críticos satisfacen
+\[
+\nabla\Phi(\theta)=0,
+\]
+que en general es un sistema no lineal.  Si $p=1$, queda una ecuación no lineal en una variable.
+
+\begin{example}[Oscilador amortiguado]
+En mecánica, un modelo clásico es
+\[
+x(t;A,\beta,\omega,\varphi)=A\,e^{-\beta t}\cos(\omega t+\varphi).
+\]
+Si disponemos de datos $(t_i,x_i^{\mathrm{obs}})$, el ajuste por mínimos cuadrados se plantea como
+\[
+\Phi(A,\beta,\omega,\varphi)=\frac{1}{2}\sum_{i=1}^N\Big(Ae^{-\beta t_i}\cos(\omega t_i+\varphi)-x_i^{\mathrm{obs}}\Big)^2.
+\]
+El ajuste de $(A,\beta,\omega,\varphi)$ por mínimos cuadrados es no lineal: los parámetros aparecen en productos, exponentes y funciones trigonométricas, y no existe un cambio simple que lo reduzca a un problema lineal en todos los parámetros simultáneamente.
+\end{example}
+
+\begin{example}[Termodinámica: ley de desplazamiento de Wien]
+La ley de Planck para la radiancia espectral en función de la longitud de onda es
+\[
+I(\lambda;T)=\frac{2hc^2}{\lambda^5}\,\frac{1}{e^{hc/(\lambda k_B T)}-1}.
+\]
+Si queremos ubicar, para una temperatura fija $T$, la longitud de onda de máxima emisión $\lambda_{\max}$, derivamos respecto de $\lambda$ e imponemos
+\[
+\frac{\partial I}{\partial \lambda}(\lambda;T)=0.
+\]
+Introduciendo la variable adimensional
+\[
+x=\frac{hc}{\lambda k_B T},
+\]
+la ecuación de primer orden se reduce a la trascendente
+\[
+5-x=5e^{-x}.
+\]
+Es una ecuación no lineal en una dimensión para $x\in\mathbb R$, sin forma cerrada elemental, y se resuelve numéricamente. Su solución relevante es
+\[
+x\approx 4.965114.
+\]
+Por lo tanto,
+\[
+\lambda_{\max}T=\frac{hc}{xk_B}\approx 2.897\times 10^{-3}\;\mathrm{m\cdot K}.
+\]
+Esta constante permite estimar la temperatura de estrellas a partir de su color (pico de emisión), y es la base de instrumentos como pirómetros ópticos y cámaras térmicas.
+\end{example}
+
+\begin{example}[Caída con arrastre cuadrático]
+Para caída vertical con fuerza de arrastre proporcional a $v^2$, una forma del modelo para la velocidad es
+\[
+v(t;v_\infty)=v_\infty\tanh\!\left(\frac{gt}{v_\infty}\right).
+\]
+Si medimos pares $(t_i,v_i^{\mathrm{obs}})$, minimizamos
+\[
+\Phi(v_\infty)=\frac{1}{2}\sum_{i=1}^N\big(v(t_i;v_\infty)-v_i^{\mathrm{obs}}\big)^2.
+\]
+Ajustar $v_\infty$ contra datos experimentales también produce una ecuación no lineal.
+\end{example}
+
+\begin{example}[Modelo sigmoideo para probabilidad]
+Si queremos modelar una probabilidad en función de una variable $z$, usamos
+\[
+p(z;w,b)=\sigma(wz+b),\qquad \sigma(s)=\frac{1}{1+e^{-s}}.
+\]
+Con datos $(z_i,y_i)$, $y_i\in\{0,1\}$, podemos ajustar $(w,b)$ con pérdida cuadrática:
+\[
+\Phi(w,b)=\frac{1}{2}\sum_{i=1}^N\big(\sigma(wz_i+b)-y_i\big)^2.
+\]
+Las ecuaciones de primer orden son no lineales por la presencia de la sigmoide.
+\end{example}
+
+\begin{remark}[Red neuronal de una neurona y generalizaciones]
+El modelo sigmoideo anterior es exactamente una \textbf{red neuronal de una neurona}.
+
+En dimensión $d$, el escalar $wz+b$ se reemplaza por un producto interno:
+\[
+p(x;w,b)=\sigma(w^Tx+b),\qquad w\in\mathbb R^d.
+\]
+Esto sigue siendo una neurona, ahora con entrada vectorial.
+
+Una red de varias neuronas en una capa escribe
+\[
+F(x)=\sum_{j=1}^m \alpha_j\,\sigma(w_j^Tx+b_j),
+\]
+y una red multicapa se obtiene por \textbf{composición de funciones}:
+\[
+F(x)=F_L\circ F_{L-1}\circ\cdots\circ F_1(x).
+\]
+\end{remark}
+
+\begin{remark}[Elección de la pérdida y regularización]
+En muchas aplicaciones no se usa pérdida cuadrática, sino otras métricas de error (por ejemplo entropía cruzada o pérdidas de tipo Huber), y con frecuencia se añaden términos de regularización como Tychonoff ($\ell_2$) o norma $\ell_1$.
+
+Estas elecciones suelen surgir de consideraciones probabilísticas/estadísticas y de robustez.  Históricamente, la pérdida cuadrática se usa mucho porque es la opción más simple analíticamente y conduce a derivaciones transparentes.
+\end{remark}
+
+\subsection{Iteraciones de punto fijo}
+
+\begin{definition}[Método de punto fijo]\label{def:punto_fijo}
+Dada una función $g:I\to I$, la iteración de punto fijo es
+\[
+x_{k+1}=g(x_k), \qquad k\ge 0.
+\]
+Buscamos $x^*$ tal que $x^*=g(x^*)$.
+\end{definition}
+
+\begin{theorem}[Contracción en $\mathbb{R}$]
+Sea $I=[a,b]$ y $g:I\to I$ derivable con
+\[
+\sup_{x\in I}|g'(x)|\le q<1.
+\]
+Entonces existe un único punto fijo $x^*\in I$ y, para todo $x_0\in I$, la sucesión converge linealmente:
+\[
+|x_{k}-x^*|\le q^k|x_0-x^*|.
+\]
+\end{theorem}
+
+\begin{example}[Punto fijo del coseno]
+La ecuación $x=\cos x$ equivale a un problema de punto fijo con $g(x)=\cos x$.  En $I=[0,1]$ vale $g(I)\subset I$ y
+\[
+|g'(x)|=|\sin x|\le \sin(1)<1,
+\]
+de modo que la iteración $x_{k+1}=\cos(x_k)$ converge al único punto fijo.
+\end{example}
 
 \section{El método de la bisección}\label{sec:biseccion}
 
-El método más elemental para resolver $f(x) = 0$ explota únicamente el \textbf{teorema del valor intermedio} (Teorema~\ref{thm:bolzano}): si $f$ es continua en $[a,b]$ y $f(a)\,f(b) < 0$, entonces $f$ tiene al menos una raíz en $(a,b)$.
+El método de bisección usa solo continuidad y cambio de signo.
 
 \begin{definition}[Método de la bisección]\label{def:biseccion}
-Dados $a_0 < b_0$ con $f(a_0)\,f(b_0) < 0$, el método genera intervalos $[a_k, b_k]$ encajados con $f(a_k)\,f(b_k) \leq 0$:
-\begin{enumerate}
-\item Calcular el punto medio $m_k = \tfrac{a_k + b_k}{2}$.
-\item Si $f(m_k) = 0$, terminamos.
-\item Si $f(a_k)\,f(m_k) < 0$, definimos $a_{k+1} = a_k$, $b_{k+1} = m_k$.
-\item Si $f(m_k)\,f(b_k) < 0$, definimos $a_{k+1} = m_k$, $b_{k+1} = b_k$.
-\end{enumerate}
+Dados $a_0<b_0$ con $f(a_0)f(b_0)<0$, definimos
+\[
+m_k=\frac{a_k+b_k}{2}
+\]
+y elegimos el subintervalo donde hay cambio de signo.
 \end{definition}
 
-\begin{theorem}[Convergencia de la bisección]\label{thm:convergencia_biseccion}
-Sea $f \in C([a,b])$ con $f(a)\,f(b) < 0$.  El método de la bisección genera una sucesión de intervalos $[a_k, b_k]$ que contienen al menos una raíz $x^*$ de $f$, y satisface:
+\begin{theorem}[Convergencia de bisección]\label{thm:convergencia_biseccion}
+Si $f\in C([a,b])$ y $f(a)f(b)<0$, entonces
 \[
-|m_k - x^*| \leq \frac{b - a}{2^{k+1}}.
+|m_k-x^*|\le \frac{b-a}{2^{k+1}},
 \]
-En particular, para obtener un error menor que $\varepsilon$ se necesitan $k = \lceil \log_2\!\big(\tfrac{b-a}{\varepsilon}\big) \rceil$ iteraciones.
+para alguna raíz $x^*\in[a,b]$.
 \end{theorem}
 
-\begin{proof}
-Por inducción, $b_k - a_k = (b-a)/2^k$ y $f(a_k)\,f(b_k) \leq 0$ en cada paso.  Por el teorema del valor intermedio, existe $x^* \in [a_k, b_k]$, y por lo tanto $|m_k - x^*| \leq (b_k - a_k)/2 = (b-a)/2^{k+1}$.
-\end{proof}
-
-\begin{remark}[Ventajas y limitaciones]
-La bisección:
-\begin{itemize}
-\item \textbf{Siempre converge} (no requiere diferenciabilidad, solo continuidad y cambio de signo).
-\item Agrega un bit de precisión por iteración: convergencia \textbf{lineal} con tasa $1/2$.
-\item No generaliza directamente a dimensión $n > 1$.
-\end{itemize}
-La convergencia lineal es lenta: para obtener 16 dígitos se necesitan $\sim 53$ iteraciones.  Esto motiva buscar métodos con convergencia más rápida, a costa de hipótesis más fuertes.
-\end{remark}
-
+La convergencia es lineal (factor $1/2$), robusta y lenta.
 
 \section{El método de Newton en una variable}\label{sec:newton_1d}
 
-\subsection{Derivación como aproximación cuadrática}
-
-Sea $f: \mathbb{R} \to \mathbb{R}$ una función dos veces diferenciable.  Queremos resolver $f(x) = 0$.  Si tenemos una aproximación $x_k$, desarrollamos $f$ en Taylor alrededor de $x_k$:
+\begin{definition}[Newton en $\mathbb{R}$]\label{def:newton_1d}
+Para resolver $f(x)=0$:
 \[
-f(x) = f(x_k) + f'(x_k)(x - x_k) + \frac{f''(\xi)}{2}(x - x_k)^2
-\]
-para algún $\xi$ entre $x$ y $x_k$.  Si $x_k$ está cerca de una raíz $x^*$ y $f'(x_k) \neq 0$, el término dominante del error es el lineal.  Descartando el término cuadrático y resolviendo la ecuación lineal $f(x_k) + f'(x_k)(x - x_k) = 0$, obtenemos la nueva aproximación:
-
-\begin{definition}[Método de Newton en una variable]\label{def:newton_1d}
-Dado $x_0 \in \mathbb{R}$, la \textbf{iteración de Newton} es:
-\[
-x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)}, \qquad k = 0, 1, 2, \ldots
+x_{k+1}=x_k-\frac{f(x_k)}{f'(x_k)}.
 \]
 \end{definition}
 
-\textbf{Interpretación geométrica:} en cada paso, reemplazamos la gráfica de $f$ por su recta tangente en $(x_k, f(x_k))$ y tomamos la raíz de esa tangente como nueva aproximación.
-
-\subsection{Convergencia cuadrática local}
+\begin{proposition}[Newton como punto fijo]
+Definiendo
+\[
+g(x)=x-\frac{f(x)}{f'(x)},
+\]
+la iteración de Newton es $x_{k+1}=g(x_k)$.  Si $x^*$ es raíz simple de $f$, entonces
+\[
+g'(x^*)=0,
+\]
+lo que explica su orden cuadrático.
+\end{proposition}
 
 \begin{theorem}[Convergencia cuadrática de Newton en 1D]\label{thm:newton_1d_conv}
-Sea $f \in C^2([a,b])$ con una raíz $x^* \in (a,b)$ tal que $f'(x^*) \neq 0$.  Entonces existe $\delta > 0$ tal que, si $|x_0 - x^*| < \delta$, la sucesión de Newton converge a $x^*$ y satisface:
+Si $f\in C^2$ y $x^*$ es raíz simple, existe $\delta>0$ tal que, si $|x_0-x^*|<\delta$,
 \[
-|x_{k+1} - x^*| \leq C\,|x_k - x^*|^2, \qquad C = \frac{|f''(x^*)|}{2|f'(x^*)|}.
+|x_{k+1}-x^*|\le C|x_k-x^*|^2.
 \]
 \end{theorem}
 
-\begin{proof}
-Como $f(x^*) = 0$ y $f \in C^2$, el desarrollo de Taylor de $f$ alrededor de $x_k$ evaluado en $x^*$ da:
-\[
-0 = f(x^*) = f(x_k) + f'(x_k)(x^* - x_k) + \frac{f''(\xi_k)}{2}(x^* - x_k)^2,
-\]
-para algún $\xi_k$ entre $x_k$ y $x^*$.  Dividiendo por $f'(x_k) \neq 0$ (que vale en una vecindad de $x^*$ por continuidad):
-\[
-0 = \frac{f(x_k)}{f'(x_k)} + (x^* - x_k) + \frac{f''(\xi_k)}{2f'(x_k)}(x^* - x_k)^2.
-\]
-Recordando que $x_{k+1} = x_k - f(x_k)/f'(x_k)$ y por lo tanto $f(x_k)/f'(x_k) = x_k - x_{k+1}$:
-\[
-0 = (x_k - x_{k+1}) + (x^* - x_k) + \frac{f''(\xi_k)}{2f'(x_k)}(x^* - x_k)^2 = -(x_{k+1} - x^*) + \frac{f''(\xi_k)}{2f'(x_k)}(x_k - x^*)^2.
-\]
-Despejando:
-\[
-x_{k+1} - x^* = \frac{f''(\xi_k)}{2f'(x_k)}(x_k - x^*)^2.
-\]
-Tomando valor absoluto y usando la continuidad de $f''$ y $f'$:
-\[
-|x_{k+1} - x^*| = \frac{|f''(\xi_k)|}{2|f'(x_k)|}|x_k - x^*|^2 \leq C\,|x_k - x^*|^2,
-\]
-con $C = \sup_{|t-x^*|<\delta} \frac{|f''(t)|}{2|f'(t)|}$, que es finito para $\delta$ suficientemente pequeño.
 
-Para garantizar la convergencia, elegimos $\delta$ tal que $C\delta < 1$.  Entonces $|x_1 - x^*| \leq C|x_0 - x^*|^2 < C\delta \cdot |x_0 - x^*| < |x_0 - x^*|$, y por inducción la sucesión converge a $x^*$.
-\end{proof}
+\section{Clase 2: Optimización y descenso por gradiente}
+\label{sec:descenso_gradiente}
 
-\begin{remark}[Raíces múltiples]\label{rem:raices_multiples}
-La hipótesis $f'(x^*) \neq 0$ (raíz simple) es esencial.  Si $x^*$ es una raíz de multiplicidad $m \geq 2$, es decir $f(x) = (x - x^*)^m g(x)$ con $g(x^*) \neq 0$, entonces $f'(x^*) = 0$ y el teorema no aplica.  En este caso, Newton sigue convergiendo, pero solo \textbf{linealmente} con tasa $1 - 1/m$.  Se puede recuperar la convergencia cuadrática usando la iteración modificada:
+\subsection{Dirección de máximo crecimiento y método}
+
+Para $\varphi:\mathbb{R}^n\to\mathbb{R}$ diferenciable, el gradiente apunta en la dirección de crecimiento máximo.  Por eso descendemos en $-\nabla\varphi(x)$.
+
+\begin{definition}[Descenso por gradiente]\label{def:descenso_gradiente}
+Con paso constante $\alpha>0$:
 \[
-x_{k+1} = x_k - m\,\frac{f(x_k)}{f'(x_k)},
+x_{k+1}=x_k-\alpha\nabla\varphi(x_k).
 \]
-siempre que se conozca la multiplicidad $m$.
-\end{remark}
-
-\begin{remark}[Convergencia cuadrática: duplicación de dígitos]
-La convergencia cuadrática $|e_{k+1}| \leq C|e_k|^2$ significa que el número de dígitos correctos se \textbf{duplica} en cada iteración.  Partiendo de 1 dígito correcto:
-\begin{center}
-\begin{tabular}{c|cccccc}
-$k$ & 0 & 1 & 2 & 3 & 4 \\ \hline
-dígitos correctos & 1 & 2 & 4 & 8 & 16
-\end{tabular}
-\end{center}
-Cuatro iteraciones de Newton equivalen a $\sim 53$ iteraciones de bisección.  Este es el \emph{precio de la diferenciabilidad}: a cambio de pedir $f \in C^2$ y $f'(x^*) \neq 0$, la convergencia es enormemente más rápida.
-\end{remark}
-
-\begin{example}[Cálculo de $\sqrt{2}$]\label{ex:newton_sqrt2}
-Para calcular $\sqrt{2}$, aplicamos Newton a $f(x) = x^2 - 2$ con $f'(x) = 2x$:
-\[
-x_{k+1} = x_k - \frac{x_k^2 - 2}{2x_k} = \frac{x_k}{2} + \frac{1}{x_k}.
-\]
-Partiendo de $x_0 = 1$:
-\begin{center}
-\begin{tabular}{c|ll}
-$k$ & $x_k$ & $|x_k - \sqrt{2}|$ \\ \hline
-0 & 1 & $4.1 \times 10^{-1}$ \\
-1 & 1.5 & $8.6 \times 10^{-2}$ \\
-2 & $1.41\overline{6}$ & $2.5 \times 10^{-3}$ \\
-3 & $1.41421568\ldots$ & $1.0 \times 10^{-6}$ \\
-4 & $1.41421356237\ldots$ & $1.6 \times 10^{-12}$
-\end{tabular}
-\end{center}
-Los dígitos correctos se duplican en cada paso, como predice el teorema.
-\end{example}
-
-\begin{remark}[Método de la secante]\label{rem:secante}
-El método de Newton requiere evaluar $f'(x_k)$ en cada paso.  Cuando la derivada es costosa o no está disponible en forma cerrada, se la puede aproximar por una diferencia dividida, obteniendo el \textbf{método de la secante}:
-\[
-x_{k+1} = x_k - f(x_k)\,\frac{x_k - x_{k-1}}{f(x_k) - f(x_{k-1})}.
-\]
-Geométricamente, en lugar de trazar la tangente a $f$ en $x_k$, se traza la \emph{secante} que pasa por $(x_{k-1}, f(x_{k-1}))$ y $(x_k, f(x_k))$.  El método necesita dos puntos iniciales $x_0, x_1$, y cada iteración requiere solo una evaluación de $f$ (sin derivada).  Puede demostrarse que el orden de convergencia es $p = \tfrac{1+\sqrt{5}}{2} \approx 1.618$ (el número áureo): intermedio entre lineal y cuadrático.
-\end{remark}
-
-
-\section{El método de Newton en dimensión $n$}\label{sec:newton_nd}
-
-\subsection{Formulación para sistemas}
-
-El método de Newton se generaliza naturalmente a sistemas de ecuaciones no lineales.  Dado $F: \mathbb{R}^n \to \mathbb{R}^n$ diferenciable, queremos resolver $F(x) = 0$.  Linealizando $F$ alrededor de $x^{(k)}$:
-\[
-F(x) \approx F(x^{(k)}) + J_F(x^{(k)})(x - x^{(k)}),
-\]
-donde $J_F(x) \in \mathbb{R}^{n \times n}$ es la \textbf{matriz Jacobiana} con $(J_F)_{ij} = \frac{\partial F_i}{\partial x_j}$.  Igualando a cero la aproximación lineal:
-
-\begin{definition}[Método de Newton para sistemas]\label{def:newton_nd}
-Dado $x^{(0)} \in \mathbb{R}^n$, la iteración de Newton es:
-\[
-x^{(k+1)} = x^{(k)} - [J_F(x^{(k)})]^{-1}\,F(x^{(k)}).
-\]
-En la práctica, nunca se invierte $J_F$ explícitamente: se resuelve el \textbf{sistema lineal}
-\begin{equation}\label{eq:newton_step}
-J_F(x^{(k)})\,\delta^{(k)} = -F(x^{(k)}), \qquad x^{(k+1)} = x^{(k)} + \delta^{(k)}.
-\end{equation}
 \end{definition}
 
-Cada iteración requiere: evaluar $F$ y $J_F$, y resolver un sistema lineal $n \times n$ (coste $O(n^3)$ con factorización LU, o menos con estructura esparsa).
+\begin{definition}[Suavidad y convexidad fuerte]
+Diremos que $\varphi$ es $L$-suave si $\nabla\varphi$ es $L$-Lipschitz, y $\mu$-fuertemente convexa si
+\[
+\varphi(y)\ge \varphi(x)+\nabla\varphi(x)^T(y-x)+\frac{\mu}{2}\|y-x\|^2.
+\]
+\end{definition}
 
-\subsection{Convergencia cuadrática local}
+\begin{theorem}[Convergencia con $L$-suavidad]
+Sea $\varphi$ convexa y $L$-suave. Con $\alpha=1/L$ se tiene, para todo $k\ge1$,
+\[
+\varphi(x_k)-\varphi(x^*)\le \frac{L\|x_0-x^*\|^2}{2k}.
+\]
+En particular, el orden es $O(1/k)$ y puede ser lento para alta precisión.
+\end{theorem}
+
+\begin{theorem}[Refinamiento fuertemente convexo]\label{thm:gd_convergence}
+Si además $\varphi$ es $\mu$-fuertemente convexa, con $\kappa=L/\mu$,
+\[
+\|x_k-x^*\|^2\le \left(1-\frac{1}{\kappa}\right)^k\|x_0-x^*\|^2.
+\]
+La convergencia pasa a ser lineal, pero para $\kappa\gg1$ sigue siendo lenta.
+\end{theorem}
+
+\subsection{Aplicaciones: ajuste de curvas, logística y modelo deep linear}
+
+\textbf{Curve fitting.} En cuadrados mínimos, minimizamos
+\[
+\frac{1}{2}\sum_{i=1}^N\big(F(x^{(i)};\theta)-y^{(i)}\big)^2.
+\]
+
+\textbf{Regresión logística (una neurona).} Para etiquetas $y_i\in\{0,1\}$ y variables $z_i$, modelamos
+\[
+p_i=\sigma(wz_i+b),\qquad \sigma(t)=\frac{1}{1+e^{-t}},
+\]
+y ajustamos parámetros con pérdida cuadrática
+\[
+\mathcal L(w,b)=\frac{1}{2}\sum_{i=1}^N\big(p_i-y_i\big)^2.
+\]
+Las ecuaciones de primer orden en $(w,b)$ son no lineales por la composición con la sigmoide.
+
+\textbf{Deep linear.} En un modelo lineal profundo,
+\[
+\hat y = W_LW_{L-1}\cdots W_1x,
+\]
+y el problema de entrenamiento es
+\[
+\min_{W_1,\dots,W_L}\;\frac{1}{2N}\sum_{i=1}^N\|W_L\cdots W_1x^{(i)}-y^{(i)}\|^2.
+\]
+Aunque cada capa sea lineal, la dependencia conjunta en los parámetros es no lineal.
+
+\subsection{Cuadráticas: GD y sistemas lineales iterativos}
+
+Consideremos
+\[
+\varphi(x)=\frac{1}{2}\|Ax-b\|_2^2,\qquad \nabla\varphi(x)=A^T(Ax-b).
+\]
+El descenso por gradiente con paso $\eta$ es
+\[
+x_{k+1}=x_k-\eta A^T(Ax_k-b).
+\]
+Esto es un método iterativo lineal para las ecuaciones normales $A^TAx=A^Tb$:
+\[
+x_{k+1}=(I-\eta A^TA)x_k+\eta A^Tb.
+\]
+Es el método de Richardson/Landweber. Converge para
+\[
+0<\eta<\frac{2}{\|A\|_2^2}.
+\]
+
+\begin{theorem}[Límite de norma mínima por SVD]
+Sea $A=U\Sigma V^T$ y $0<\eta<2/\|A\|_2^2$.  Si $x_0\in\operatorname{Im}(A^T)$ (en particular $x_0=0$), entonces la iteración anterior converge a
+\[
+x_\infty=A^+b,
+\]
+que es el minimizador de norma mínima del problema de cuadrados mínimos.
+\end{theorem}
+
+\begin{proof}
+En base SVD, cada componente sobre $v_i$ con $\sigma_i>0$ verifica
+\[
+c_i^{k+1}=(1-\eta\sigma_i^2)c_i^k+\eta\sigma_i\,u_i^Tb,
+\]
+y por $|1-\eta\sigma_i^2|<1$ converge a $(u_i^Tb)/\sigma_i$.  En $\ker(A)$, la componente permanece constante; si $x_0\in\operatorname{Im}(A^T)$, esa componente es cero para todo $k$.  Luego
+\[
+x_\infty=\sum_{\sigma_i>0}\frac{u_i^Tb}{\sigma_i}v_i=A^+b.
+\]
+\end{proof}
+
+
+\section{Clase 3: Newton en $\mathbb{R}^n$ para sistemas y optimización}
+\label{sec:newton_nd}
+
+\subsection{Sistemas no lineales}
+
+Para $F:\mathbb{R}^n\to\mathbb{R}^n$, la iteración de Newton es
+\[
+J_F(x_k)\,\delta_k=-F(x_k),\qquad x_{k+1}=x_k+\delta_k.
+\]
 
 \begin{theorem}[Convergencia cuadrática de Newton en $\mathbb{R}^n$]\label{thm:newton_nd_conv}
-Sea $F: \mathbb{R}^n \to \mathbb{R}^n$ continuamente diferenciable en un entorno de $x^*$ con $F(x^*) = 0$.  Supongamos:
-\begin{enumerate}
-\item $J_F(x^*)$ es invertible.
-\item $J_F$ es Lipschitz en un entorno de $x^*$: $\|J_F(x) - J_F(y)\| \leq L\,\|x - y\|$.
-\end{enumerate}
-Entonces existe $\delta > 0$ tal que, si $\|x^{(0)} - x^*\| < \delta$, la sucesión de Newton converge a $x^*$ con
+Si $F(x^*)=0$, $J_F(x^*)$ es invertible y $J_F$ es Lipschitz en un entorno de $x^*$, entonces para $x_0$ suficientemente cercano a $x^*$:
 \[
-\|x^{(k+1)} - x^*\| \leq C\,\|x^{(k)} - x^*\|^2, \qquad C = \frac{L}{2}\,\|[J_F(x^*)]^{-1}\|.
+\|x_{k+1}-x^*\|\le C\|x_k-x^*\|^2.
 \]
 \end{theorem}
 
-\begin{proof}
-El desarrollo de Taylor vectorial de $F$ alrededor de $x^{(k)}$, evaluado en $x^*$, es:
-\[
-0 = F(x^*) = F(x^{(k)}) + J_F(x^{(k)})(x^* - x^{(k)}) + R_k,
-\]
-donde el resto es $R_k = \int_0^1 \big[J_F(x^{(k)} + t(x^* - x^{(k)})) - J_F(x^{(k)})\big](x^* - x^{(k)})\,dt$.
+\subsection{Optimización por Newton}
 
-Multiplicando por $[J_F(x^{(k)})]^{-1}$ y usando la definición~\eqref{eq:newton_step}:
+Para minimizar $\varphi$, aplicamos Newton a $F=\nabla\varphi$:
 \[
-x^{(k+1)} - x^* = -[J_F(x^{(k)})]^{-1}\,R_k.
+x_{k+1}=x_k-[\nabla^2\varphi(x_k)]^{-1}\nabla\varphi(x_k).
 \]
-La condición Lipschitz da $\|R_k\| \leq \tfrac{L}{2}\|x^{(k)} - x^*\|^2$, y en un entorno de $x^*$ la inversa $[J_F(x^{(k)})]^{-1}$ está uniformemente acotada, con lo cual:
-\[
-\|x^{(k+1)} - x^*\| \leq \|[J_F(x^{(k)})]^{-1}\|\cdot \frac{L}{2}\,\|x^{(k)} - x^*\|^2 \leq C\,\|x^{(k)} - x^*\|^2. \qedhere
-\]
-\end{proof}
+Si $\nabla^2\varphi(x^*)\succ0$ y estamos en vecindad del minimizador, la convergencia es cuadrática.
 
-\subsection{Aplicación a optimización}
-
-Para el problema $\min_{x} \varphi(x)$ con $\varphi: \mathbb{R}^n \to \mathbb{R}$ dos veces diferenciable, un minimizador local $x^*$ satisface $\nabla \varphi(x^*) = 0$.  Aplicando Newton a $F(x) = \nabla \varphi(x)$:
-\[
-x^{(k+1)} = x^{(k)} - [\nabla^2 \varphi(x^{(k)})]^{-1}\,\nabla \varphi(x^{(k)}),
-\]
-donde $\nabla^2 \varphi$ es la \textbf{matriz Hessiana}.  Si $\nabla^2 \varphi(x^*) \succ 0$ (minimizador local estricto), el Teorema~\ref{thm:newton_nd_conv} aplica directamente y la convergencia es cuadrática.
-
-\begin{remark}[Newton vs.\ descenso por gradiente]
+\begin{remark}[Comparación final]
 \begin{itemize}
-\item \textbf{Convergencia:} Newton es cuadrática (localmente), gradiente es lineal.
-\item \textbf{Costo por iteración:} Newton: $O(n^3)$ (resolver con Hessiana).  Gradiente: $O(n)$.
-\item \textbf{Convergencia global:} Gradiente con paso adecuado converge globalmente; Newton requiere estar cerca del óptimo.
-\item \textbf{En la práctica:} los métodos \textbf{cuasi-Newton} (como BFGS) aproximan la Hessiana a partir de información de gradiente, combinando ventajas de ambos.
+\item Gradiente: bajo costo por iteración y mejor comportamiento global.
+\item Newton: mayor costo por iteración, pero convergencia local cuadrática.
 \end{itemize}
-\end{remark}
-
-
-\section{Descenso por gradiente}\label{sec:descenso_gradiente}
-
-Para problemas de optimización donde la dimensión $n$ es grande o la Hessiana es costosa de calcular, el \textbf{descenso por gradiente} es el método de referencia.  Su idea es simple: moverse en la dirección de mayor decrecimiento de la función.
-
-\subsection{Motivación geométrica y definición}
-
-Sea $\varphi: \mathbb{R}^n \to \mathbb{R}$ diferenciable.  En un punto $x$, el gradiente $\nabla \varphi(x)$ apunta en la dirección de mayor crecimiento de $\varphi$.  Por lo tanto, $-\nabla \varphi(x)$ es la dirección de \textbf{mayor decrecimiento}.
-
-\begin{definition}[Método de descenso por gradiente]\label{def:descenso_gradiente}
-Dado un punto inicial $x^{(0)} \in \mathbb{R}^n$ y tamaños de paso $\{\alpha_k\}$:
-\[
-x^{(k+1)} = x^{(k)} - \alpha_k\,\nabla \varphi(x^{(k)}), \qquad k = 0, 1, 2, \ldots
-\]
-El parámetro $\alpha_k > 0$ se llama \textbf{tamaño de paso} (o \textbf{tasa de aprendizaje} en aprendizaje automático).
-\end{definition}
-
-\subsection{Convergencia con paso constante para funciones fuertemente convexas}
-
-Para obtener un resultado preciso de convergencia, necesitamos hipótesis cuantitativas sobre la función.  Introducimos las nociones de convexidad fuerte y suavidad, y a partir de ellas derivamos una desigualdad de descenso fundamental.
-
-\begin{definition}[Función fuertemente convexa]\label{def:fuertemente_convexa}
-Una función $\varphi: \mathbb{R}^n \to \mathbb{R}$ es \textbf{$\mu$-fuertemente convexa} ($\mu > 0$) si para todo $x, y$:
-\[
-\varphi(y) \geq \varphi(x) + \nabla \varphi(x)^T(y - x) + \frac{\mu}{2}\|y - x\|^2.
-\]
-Si $\varphi$ es $C^2$, esto equivale a $\nabla^2 \varphi(x) \succeq \mu I$ para todo $x$.
-\end{definition}
-
-\begin{definition}[Suavidad de Lipschitz]\label{def:L_suave}
-$\varphi$ es \textbf{$L$-suave} si $\nabla \varphi$ es $L$-Lipschitz:
-\[
-\|\nabla \varphi(x) - \nabla \varphi(y)\| \leq L\,\|x - y\| \qquad \forall\, x, y.
-\]
-Si $\varphi$ es $C^2$, esto equivale a $\nabla^2 \varphi(x) \preceq LI$ para todo $x$.
-\end{definition}
-
-Una función $\mu$-fuertemente convexa y $L$-suave satisface $\mu I \preceq \nabla^2 \varphi \preceq LI$: los autovalores del Hessiano están entre $\mu$ y $L$.  El \textbf{número de condición} $\kappa = L/\mu \geq 1$ mide cuánto difiere $\varphi$ de una función cuadrática isótropa.
-
-\begin{lemma}[Desigualdad de descenso]\label{lem:descenso}
-Si $\varphi$ es $L$-suave, entonces para todo $x, y$:
-\begin{equation}\label{eq:cota_L_suave}
-\varphi(y) \leq \varphi(x) + \nabla \varphi(x)^T(y - x) + \frac{L}{2}\|y - x\|^2.
-\end{equation}
-Recíprocamente, si $\varphi$ es $\mu$-fuertemente convexa:
-\begin{equation}\label{eq:cota_mu_convexa}
-\varphi(y) \geq \varphi(x) + \nabla \varphi(x)^T(y - x) + \frac{\mu}{2}\|y - x\|^2.
-\end{equation}
-La primera desigualdad dice que $\varphi$ está \emph{acotada superiormente} por una parábola de curvatura $L$ en cada punto; la segunda, que está acotada \emph{inferiormente} por una parábola de curvatura $\mu$.
-\end{lemma}
-
-\begin{proof}
-Para~\eqref{eq:cota_L_suave}: por el teorema fundamental del cálculo,
-\[
-\varphi(y) - \varphi(x) = \int_0^1 \nabla \varphi(x + t(y-x))^T(y-x)\,dt.
-\]
-Sumando y restando $\nabla \varphi(x)^T(y-x)$:
-\[
-\varphi(y) - \varphi(x) - \nabla \varphi(x)^T(y-x) = \int_0^1 \big[\nabla \varphi(x + t(y-x)) - \nabla \varphi(x)\big]^T(y-x)\,dt.
-\]
-Por Cauchy--Schwarz y la condición Lipschitz $\|\nabla \varphi(u) - \nabla \varphi(v)\| \leq L\|u-v\|$:
-\[
-\leq \int_0^1 L\,t\,\|y-x\|^2\,dt = \frac{L}{2}\|y-x\|^2.
-\]
-La desigualdad~\eqref{eq:cota_mu_convexa} es exactamente la definición de $\mu$-convexidad fuerte.
-\end{proof}
-
-\begin{theorem}[Convergencia de descenso por gradiente]\label{thm:gd_convergence}
-Sea $\varphi: \mathbb{R}^n \to \mathbb{R}$ $\mu$-fuertemente convexa y $L$-suave, con minimizador $x^*$.  Con paso constante $\alpha = 1/L$:
-\[
-\|x^{(k)} - x^*\|^2 \leq \left(1 - \frac{1}{\kappa}\right)^k\|x^{(0)} - x^*\|^2, \qquad \kappa = \frac{L}{\mu}.
-\]
-\end{theorem}
-
-\begin{proof}
-\textbf{Paso 1: Desigualdad de descenso.}\; Aplicando el Lema~\ref{lem:descenso}~\eqref{eq:cota_L_suave} con $y = x^{(k+1)} = x^{(k)} - \frac{1}{L}\nabla \varphi(x^{(k)})$ y $x = x^{(k)}$:
-\[
-\varphi(x^{(k+1)}) \leq \varphi(x^{(k)}) - \frac{1}{2L}\|\nabla \varphi(x^{(k)})\|^2.
-\]
-
-\textbf{Paso 2: Cota del gradiente.}\; Por~\eqref{eq:cota_mu_convexa} con $y = x^*$ y $x = x^{(k)}$, y usando $\nabla \varphi(x^*)=0$:
-\[
-\varphi(x^{(k)}) - \varphi(x^*) \leq \nabla \varphi(x^{(k)})^T(x^{(k)} - x^*) - \frac{\mu}{2}\|x^{(k)} - x^*\|^2 \leq \frac{1}{2\mu}\|\nabla \varphi(x^{(k)})\|^2,
-\]
-donde la última desigualdad se obtiene aplicando Young con parámetro $\mu$.  Combinando:
-\[
-\varphi(x^{(k+1)}) - \varphi(x^*) \leq \left(1 - \frac{\mu}{L}\right)\big(\varphi(x^{(k)}) - \varphi(x^*)\big).
-\]
-
-\textbf{Paso 3: De energía a distancia.}\; Por inducción, $\varphi(x^{(k)}) - \varphi(x^*) \leq (1 - 1/\kappa)^k(\varphi(x^{(0)}) - \varphi(x^*))$.  Usando $\varphi(x) - \varphi(x^*) \geq \frac{\mu}{2}\|x - x^*\|^2$ y $\varphi(x^{(0)}) - \varphi(x^*) \leq \frac{L}{2}\|x^{(0)} - x^*\|^2$ se obtiene el resultado.
-\end{proof}
-
-\begin{remark}[Convergencia lineal y número de condición]
-La convergencia es \textbf{lineal} con tasa $1 - 1/\kappa$.  Para reducir el error por un factor $\varepsilon$ se necesitan
-\[
-k \approx \kappa\,\log(1/\varepsilon)
-\]
-iteraciones.  Si $\kappa \gg 1$ (problema mal condicionado), la convergencia es lenta.  Esto es el análogo en optimización del mal condicionamiento de sistemas lineales, y motiva los métodos de segundo orden (Newton) y los métodos cuasi-Newton (BFGS) que aproximan la curvatura sin calcular la Hessiana completa.
+La práctica moderna combina ambos (line search, damping, cuasi-Newton, métodos de confianza).
 \end{remark}
 
 

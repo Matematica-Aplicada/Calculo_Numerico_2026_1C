@@ -30,98 +30,92 @@
  \hrulefill
 
  \bigskip
- \centerline{\bf Laboratorio N$^\circ$ 6: Entrenamiento de una Red Neuronal}
+ \centerline{\bf Laboratorio N$^\circ$ 6: Ecuaciones No lineales}
  \bigskip
 
-\subsection*{Red neuronal de una capa}
+\bej
+Consideramos el oscilador de Duffing amortiguado con rigidez ablandadora
+\begin{equation}\label{duffing}
+\ddot{x} + \delta\dot{x} + 2x - \tfrac{2}{3}x^3 = \tfrac{1}{2}\cos(\omega t),\quad \delta = 0.1.
+\end{equation}
+Para una no linealidad arbitraria, caracterizar el comportamiento asintótico exige
+integrar la ODE durante largos tiempos para cada valor de $\omega$.
+El \emph{balance armónico} ofrece una alternativa: buscar directamente una solución
+periódica aproximada $x(t)\approx A\cos(\omega t)$, lo que reduce la ODE a una
+ecuación algebraica en $(A,\omega)$.
+En este caso particular esa ecuación admite solución analítica, lo que permite
+verificar un método numérico de continuación generalizable a no linealidades arbitrarias.
 
-Una \textbf{red neuronal de una capa oculta} con $m$ neuronas es una función $F: \R^d \to \R$ de la forma
+\begin{enumerate}
+
+\item \textbf{Curva de respuesta: balance armónico.}
+Para $\delta=0$, sustituyendo $x(t)=A\cos(\omega t)$ en~\eqref{duffing}
+e igualando coeficientes de $\cos(\omega t)$ se obtiene
 \[
-F(x; W, b, \alpha) = \sum_{j=1}^m \alpha_j\, \sigma\!\left(\sum_{k=1}^d w_{jk}\, x_k + b_j\right) = \sum_{j=1}^m \alpha_j\, \sigma(w_j \cdot x + b_j),
+G(A,\omega) := (2-\omega^2)A - \tfrac{1}{2}A^3 - \tfrac{1}{2} = 0.
 \]
-donde:
+\begin{enumerate}[(a)]
+\item Verifique que esta ecuación se invierte explícitamente para $\omega$:
+\[
+\omega(A) = \sqrt{\,2 - \frac{1+A^3}{2A}\,}.
+\]
+Grafique la curva paramétrica $(\omega(A),A)$ para $A\in[A_{\min},A_{\max}]$,
+donde $A_{\min}\approx 0.254$ y $A_{\max}\approx 1.86$ son las raíces de $\omega(A)=0$.
+Muestre que $d\omega/dA=0$ en $A_c=2^{-1/3}\approx 0.794$,
+con $\omega_c\approx 1.027$.
+
+La curva resultante tiene forma de $S$ inclinada: para $\omega<\omega_c$ la ecuación
+$G(A,\omega)=0$ tiene \emph{tres} soluciones en $A$, mientras que para $\omega>\omega_c$
+no tiene ninguna (con $A>0$).
+El punto $(A_c,\omega_c)$ donde $\partial G/\partial A=0$ se llama \emph{pliegue}
+(\emph{fold}): es donde dos ramas de soluciones se unen y desaparecen.
+La rama de amplitud media (entre los dos pliegues) es inestable.
+
+\item Interprete: ¿qué predice esta curva sobre la amplitud de estado estacionario
+del oscilador amortiguado~\eqref{duffing} para $\omega\in(0,\omega_c)$?
+¿Qué se esperaría observar al barrer $\omega$ hacia arriba y luego hacia abajo?
+\end{enumerate}
+
+\item \textbf{Verificación por simulación directa.}
+Integre~\eqref{duffing} con \texttt{scipy.integrate.solve\_ivp} (\texttt{'RK45'},
+\texttt{rtol=1e-8}) e implemente dos barridos lentos en $\omega\in[0.3,1.2]$
+con $\Delta\omega=0.025$, propagando el estado final de cada paso al siguiente:
 \begin{itemize}
-\item $x \in \R^d$ es la entrada,
-\item $W = (w_1, \ldots, w_m) \in \R^{m \times d}$ son los \textit{pesos} de la capa oculta, $b \in \R^m$ los \textit{sesgos},
-\item $\alpha \in \R^m$ son los pesos de la capa de salida,
-\item $\sigma: \R \to \R$ es la \textit{función de activación}, que se aplica componente a componente.
+\item \emph{Ascendente}: parte de $(x,\dot{x})=(0,0)$.
+\item \emph{Descendente}: parte de $(x,\dot{x})=(2,0)$.
 \end{itemize}
+En cada paso integre durante $T_{\text{trans}}+T_{\text{med}}$ y registre
+$A=\max|x(t)|$ en los últimos $T_{\text{med}}$, con
+$T_{\text{trans}}=80\cdot 2\pi/\omega$ y $T_{\text{med}}=20\cdot 2\pi/\omega$.
+Superponga los resultados al gráfico del ítem~1.
+¿Concuerdan los saltos con el pliegue predicho por el balance armónico?
 
-\noindent El conjunto de todos los parámetros es $\theta = (W, b, \alpha) \in \R^p$ con $p = m(d+2)$.
-
-\medskip
-
-\noindent Usaremos la función de activación \textbf{sigmoide}:
+\item \textbf{Continuación numérica de la curva $G=0$.}
+Partiendo del punto exacto $(\omega_0,A_0)=(1,1)$---verifique que $G(1,1)=0$---implemente
+un predictor-corrector basado en la ecuación de Davidenko:
 \[
-\sigma(z) = \frac{1}{1 + e^{-z}}.
+\frac{dA}{d\omega} = -\frac{G_\omega}{G_A}
+= \frac{2\omega A}{(2-\omega^2) - \tfrac{3}{2}A^2}.
 \]
+Con paso $|\Delta\omega|=0.02$, avance en ambas direcciones usando Euler como predictor
+y un paso de Newton como corrector.
+Grafique la trayectoria y verifique que coincide con la curva analítica del ítem~1.
+¿Qué ocurre con el denominador $G_A$ al acercarse al pliegue?
 
-\subsection*{Problema de regresión}
-
-Dados $N$ datos de entrenamiento $(x^{(i)}, y^{(i)}) \in \R^d \times \R$ ($i = 1, \ldots, N$), buscamos los parámetros $\theta$ que minimicen el \textit{error cuadrático medio}:
+\item \textbf{Continuación por longitud de arco.}
+Para bordear el pliegue, reemplace el predictor en $\omega$ por uno en
+dirección tangente a la curva $G=0$:
 \[
-L(\theta) = \frac{1}{2N} \sum_{i=1}^N \left(F(x^{(i)}; \theta) - y^{(i)}\right)^2.
+\begin{pmatrix}\Delta A\\\Delta\omega\end{pmatrix}
+= \frac{\Delta s}{\|\mathbf{t}\|}\begin{pmatrix}-G_\omega\\G_A\end{pmatrix},
+\quad \mathbf{t}=(-G_\omega,G_A).
 \]
+Mantenga el corrector de Newton.
+Verifique que esta versión traza la curva completa, incluyendo la rama inestable
+que conecta los dos pliegues, y superpóngala al gráfico anterior.
+Discuta: ¿en qué sentido este método es generalizable a una no linealidad $f(x)$
+arbitraria en lugar de $\tfrac{2}{3}x^3$?
 
-\bigskip
-
-\bej
-\textbf{(Derivada de la sigmoide.)}
-Demuestre que $\sigma'(z) = \sigma(z)(1 - \sigma(z))$. Programe una función que evalúe $\sigma(z)$ y su derivada.
-\fej
-
-\bej
-\textbf{(Gradiente de la función de pérdida.)}
-Sea $r_i(\theta) = F(x^{(i)}; \theta) - y^{(i)}$ el residuo en el dato $i$-ésimo.
-\begin{enumerate}
-\item Demuestre que las derivadas parciales de $L$ respecto de los parámetros son:
-\begin{align*}
-\frac{\partial L}{\partial \alpha_j} &= \frac{1}{N} \sum_{i=1}^N r_i\, \sigma(w_j \cdot x^{(i)} + b_j), \\[4pt]
-\frac{\partial L}{\partial b_j} &= \frac{1}{N} \sum_{i=1}^N r_i\, \alpha_j\, \sigma'(w_j \cdot x^{(i)} + b_j), \\[4pt]
-\frac{\partial L}{\partial w_{jk}} &= \frac{1}{N} \sum_{i=1}^N r_i\, \alpha_j\, \sigma'(w_j \cdot x^{(i)} + b_j)\, x^{(i)}_k.
-\end{align*}
-\item Programe una función \texttt{gradiente(theta, X, y)} que, dados los parámetros y los datos, calcule $\nabla L(\theta) \in \R^p$.
-\item Verifique numéricamente su gradiente comparando con diferencias finitas:
-\[
-\frac{\partial L}{\partial \theta_\ell} \approx \frac{L(\theta + h\, e_\ell) - L(\theta - h\, e_\ell)}{2h}
-\]
-para $h$ pequeño (por ejemplo $h = 10^{-5}$) y varias componentes $\ell$.
-\end{enumerate}
-\fej
-
-\bej
-\textbf{(Descenso por gradiente.)}
-El método de descenso por gradiente con paso constante $\eta > 0$ actualiza los parámetros iterativamente:
-\[
-\theta^{(t+1)} = \theta^{(t)} - \eta\, \nabla L(\theta^{(t)}).
-\]
-
-Considere la función $f(x) = \sin(2\pi x)$ muestreada en $N = 50$ puntos equiespaciados en $[0, 1]$, es decir, $x^{(i)} = i/N$ e $y^{(i)} = \sin(2\pi x^{(i)})$. Use $d = 1$ y $m = 10$ neuronas. Inicialice los parámetros $\theta^{(0)}$ con valores aleatorios pequeños (por ejemplo, normales con media 0 y desvío 0.5).
-
-\begin{enumerate}
-\item Programe el algoritmo de descenso por gradiente. En cada iteración, registre el valor de $L(\theta^{(t)})$.
-\item Corra el algoritmo con $\eta = 0.1$ durante $T = 5000$ iteraciones. Grafique $L(\theta^{(t)})$ en función de $t$. ¿Converge? ¿Es rápido o lento?
-\item Repita con $\eta = 1$ y $\eta = 10$. ¿Qué observa? ¿Alguno de estos valores diverge?
-\item Experimente con distintos valores de $\eta$ hasta encontrar el mayor paso para el cual el algoritmo converge de manera estable. Grafique la curva de pérdida para su elección.
-\item Con el mejor $\eta$ encontrado, grafique la función aprendida $F(x; \theta^{(T)})$ junto con los datos de entrenamiento. ¿Se ajusta bien?
-\end{enumerate}
-\fej
-
-\bej
-\textbf{(Efecto del número de neuronas.)}
-Repita el ejercicio anterior con $m = 2, 5, 20, 50$ neuronas (ajustando $\eta$ en cada caso si es necesario).
-\begin{enumerate}
-\item ¿Cómo cambia la calidad del ajuste al aumentar $m$?
-\item ¿Cómo cambia la velocidad de convergencia?
-\item ¿Qué ocurre si $m$ es muy grande comparado con el número de datos $N$?
-\end{enumerate}
-\fej
-
-\bej
-\textbf{(Una función más difícil.)} Repita el entrenamiento para la función $f(x) = |x - 0.5|$ en $[0,1]$. Esta función no es suave.
-\begin{enumerate}
-\item ¿Logra la red aproximar bien la función? ¿Cuántas neuronas necesita?
-\item Compare la curva de pérdida con la del caso $\sin(2\pi x)$. ¿Converge más lento? ¿Por qué podría ser?
 \end{enumerate}
 \fej
  

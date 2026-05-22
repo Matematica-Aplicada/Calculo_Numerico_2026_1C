@@ -30,238 +30,176 @@
  \hrulefill
 
  \bigskip
- \centerline{\bf Práctica N$^\circ$ 6: Sistemas No-Lineales y Optimización Numérica}
+ \centerline{\bf Práctica N$^\circ$ 6: Ecuaciones no-lineales}
  \bigskip
 
-\section*{Método de bisección}
-
-\bej
-El método de bisección busca una raíz de $f$ en un intervalo $[a,b]$ donde $f(a)f(b)<0$.
-\begin{enumerate}[(a)]
-\item Describa el algoritmo de bisección y explique por qué genera una sucesión de intervalos encajados $[a_k,b_k]$ tales que $f(a_k)f(b_k)<0$.
-\item Demuestre que después de $k$ iteraciones el error satisface
+\bej Considere la ecuación de Kepler
 \[
-|x_k - x^*| \leq \frac{b-a}{2^{k+1}},
+E=M+e\sin E.
 \]
-donde $x^* \in [a,b]$ es una raíz de $f$ y $x_k$ es el punto medio de $[a_k,b_k]$.
-\item ¿Cuántas iteraciones se necesitan para garantizar un error menor que $\varepsilon > 0$?
-\item Aplique bisección a $f(x)= x^3-2$ en $[1,2]$ para aproximar $\sqrt[3]{2}$. Calcule las primeras 5 iteraciones.
+\begin{enumerate}[(a)]
+\item Reescriba la ecuación como iteración de punto fijo $E=g(E)$ y muestre que $g$ es una contracción en $\mathbb{R}$ siempre que $e<1$. Estime la constante de contracción.
+\item Escriba la iteración de Newton para $f(E)=E-M-e\sin E$ y verifique que el denominador $f'(E)=1-e\cos E$ no se anula para $e<1$.
+\item Para $M=\pi/4$ y $e=0.1$, calcule cuatro iteraciones de Newton partiendo de $E_0=M$.
+\end{enumerate}
+\fej
+
+\bej Considere la ecuación de Curie-Weiss
+\[
+m=\tanh\!\left(\frac{T_c}{T}m\right).
+\]
+\begin{enumerate}[(a)]
+\item Muestre que el método de punto fijo $m_{k+1}=\tanh(T_c m_k/T)$ converge a $m=0$ cuando $T>T_c$. ¿Cuál es la constante de contracción?
+\item ¿Qué ocurre cuando $T<T_c$? ¿Cuántas soluciones tiene la ecuación? Justifique comparando las pendientes de ambos miembros en $m=0$.
+\item Para $T<T_c$, diseñe un método de bisección para encontrar la solución positiva, y estime cuántas iteraciones son necesarias para obtener un error menor que $10^{-3}$ partiendo de un intervalo $[0,b]$ con $b>m^*$.
+\end{enumerate}
+\fej
+
+\bej Considere la ecuación
+\[
+\tan x=x.
+\]
+\begin{enumerate}[(a)]
+\item ¿Cuántas soluciones tiene esta ecuación? Justifique comparando las gráficas de $y=\tan x$ e $y=x$.
+\item Reformule como iteración de punto fijo $x_{k+1}=\arctan(x_k)$. Muestre que $|g'(x)|=1/(1+x^2)\le 1$ para todo $x$, y determine a qué raíz converge este método independientemente del punto inicial.
+\item Para alcanzar la $n$-ésima raíz positiva $x_n^*$, proponga la iteración $x_{k+1}=\arctan(x_k)+n\pi$. Verifique que sigue siendo una contracción y aplíquela para estimar la primera raíz positiva no nula. ¿Qué ocurre con la tasa de convergencia del método a medida que $n$ crece?
+\end{enumerate}
+\fej
+
+\bej Considere la ecuación
+\[
+\tan y=\frac{c}{y}.
+\]
+Esta ecuación aparece en modelos de resonadores y guías de ondas.
+\begin{enumerate}[(a)]
+\item Para $c=1$, halle un intervalo $[a,b]$ contenido en la primera rama positiva de la tangente donde $f(y)=y\tan y-c$ cambia de signo.
+\item Estime cuántas iteraciones de bisección en ese intervalo son necesarias para obtener un error menor que $10^{-3}$.
+\item Aplique el método de la secante tomando los extremos del intervalo como puntos iniciales, y calcule tres iteraciones.
+\end{enumerate}
+\fej
+
+\bej Considere la ecuación
+\[
+\cos(\beta L)\cosh(\beta L)=-1.
+\]
+Esta ecuación aparece en modos de vibración de vigas empotradas-libres.
+\begin{enumerate}[(a)]
+\item Para $L=1$, halle un intervalo donde $f(\beta)=\cos\beta\cosh\beta+1$ cambia de signo, correspondiente al primer modo de vibración.
+\item Estime cuántas iteraciones de bisección son necesarias para obtener $\beta_1$ con error menor que $10^{-3}$.
+\item ¿Cómo generalizaría la elección de ventana para el $n$-ésimo modo?
+\end{enumerate}
+\fej
+
+\bej Considere la relación de dispersión de ondas de gravedad en agua de profundidad finita
+\[
+\omega^2=gk\tanh(kh).
+\]
+\begin{enumerate}[(a)]
+\item Muestre que $f(k)=gk\tanh(kh)-\omega^2$ es estrictamente creciente para $k>0$. Deduzca que existe una única raíz positiva.
+\item Calcule $f'(k)$ explícitamente y escriba la iteración de Newton.
+\item Para $\omega=1$, $g=9.8$, $h=10$, aplique Newton partiendo de $k_0=\omega^2/g$ y calcule tres iteraciones.
+\end{enumerate}
+\fej
+
+\bej Considere la ecuación de Wien
+\[
+5-x=5e^{-x}.
+\]
+\begin{enumerate}[(a)]
+\item Muestre que $f(x)=x-5+5e^{-x}$ es estrictamente convexa. Deduzca que Newton converge para todo $x_0\ge x^*$.
+\item Escriba la iteración de Newton para $f$ explícitamente.
+\item Halle un $x_0$ que garantice la convergencia y calcule tres iteraciones.
+\end{enumerate}
+\fej
+
+\bej Considere la ecuación de ángulo pseudo-Brewster
+\[
+\sin^2\theta\,\tan^2\theta=|n|^2.
+\]
+\begin{enumerate}[(a)]
+\item Muestre que $f(\theta)=\sin^2\theta\,\tan^2\theta$ es estrictamente creciente en $(0,\pi/2)$. Deduzca que existe una única raíz para cada $|n|>0$.
+\item Para $|n|=1.5$, halle un intervalo $[a,b]\subset(0,\pi/2)$ donde $f(\theta)-|n|^2$ cambia de signo.
+\item Estime cuántas iteraciones de bisección son necesarias para obtener $\theta$ con error menor que $10^{-3}$.
+\end{enumerate}
+\fej
+
+\bej Considere la curva de Cassini:
+\[
+(x^2+y^2)^2-2(x^2-y^2)=3.
+\]
+El punto $(x_0,y_0)=(0,1)$ pertenece a la curva.
+Defina $F(x,y)=(x^2+y^2)^2-2(x^2-y^2)-3$.
+\begin{enumerate}[(a)]
+\item Calcule $\partial_y F(0,1)$ y $\partial_x F(0,1)$.
+Usando el Teorema de la Función Implícita, determine cuál de las dos relaciones $y=y(x)$ o $x=x(y)$ existe localmente en ese punto, y explique geométricamente el resultado.
+\item Avanzamos sobre la curva hasta $x_1=1$, usando $y_0=1$ como predictor.
+Escriba explícitamente $F(y)$ (con $x=x_1$ fijo) y $F'(y)$, y formule la iteración de Newton para hallar $y(x_1)$.
+\item Realice dos iteraciones de Newton.
+\end{enumerate}
+\fej
+
+\bej En el diseño de mecanismos, la posición de un brazo articulado puede estar gobernada por la ecuación de Freudenstein simplificada:
+\[
+2\cos\phi-2\cos\theta+\cos(\theta-\phi)=1.
+\]
+Para el ángulo de entrada $\theta_0=\pi/2$, el mecanismo se encuentra en la configuración $\phi_0=\pi/2$.
+\begin{enumerate}[(a)]
+\item Verifique analíticamente que $(\theta_0,\phi_0)=(\pi/2,\pi/2)$ satisface la ecuación.
+\item Si el ángulo de entrada se mueve a $\theta_1=1.6$, defina la función $F(\phi)$ cuya raíz da el nuevo ángulo $\phi(\theta_1)$ y calcule $F'(\phi)$ explícitamente.
+\item Escriba la iteración de Newton correspondiente.
+¿Qué ocurre mecánicamente cuando $F'(\phi)\to 0$?
 \end{enumerate}
 \fej
 
 \bej
-(Limitaciones de bisección)
+Sea $y'=f(y)$, $y(t_0)=y_0$, con $f:\mathbb{R}\to\mathbb{R}$ diferenciable.
+El \emph{método de Euler implícito} con paso $h$ define la recurrencia
+$y_{k+1}=y_k+h\,f(y_{k+1})$.
 \begin{enumerate}[(a)]
-\item Dé un ejemplo de función continua con una raíz donde bisección no pueda aplicarse directamente. ¿Qué condición falla?
-\item ¿Es posible que bisección converja a un punto que no sea raíz de $f$? Justifique.
-\item Compare la tasa de convergencia de bisección (lineal con factor $1/2$) con la de un método de convergencia cuadrática. Si ambos parten con un error inicial de $1$, ¿cuántas iteraciones necesita cada uno para alcanzar un error de $10^{-12}$?
-\end{enumerate}
-\fej
-
-\section*{Método de Newton en $\R$}
-
-\bej
-Sea $f:\R \to \R$ una función dos veces diferenciable. El método de Newton genera la sucesión:
-\[
-x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)}.
-\]
-\begin{enumerate}[(a)]
-\item Deduzca la fórmula del método a partir de la aproximación lineal (Taylor de orden 1) de $f$ alrededor de $x_k$.
-\item Suponga que $f(x^*)=0$, $f'(x^*)\neq 0$ y $f \in C^2$ en un entorno de $x^*$. Defina el error $e_k = x_k - x^*$ y demuestre que
-\[
-e_{k+1} = -\frac{f''(\xi_k)}{2f'(x_k)}\,e_k^2,
-\]
-para cierto $\xi_k$ entre $x_k$ y $x^*$. Concluya que la convergencia es localmente cuadrática.
-\item Aplique el método de Newton a $f(x)=x^2 - a$ ($a>0$) para obtener la iteración:
-\[
-x_{k+1} = \frac{1}{2}\left(x_k + \frac{a}{x_k}\right).
-\]
-Partiendo de $x_0 = 1$, calcule las primeras 4 iteraciones para $a=2$ y compare con $\sqrt{2}$.
+\item Muestre que calcular $y_{k+1}$ equivale a resolver $G(y)=0$ con
+$G(y):=y-y_k-h\,f(y)$.
+Calcule $G'(y)$ y deduzca la iteración de Newton para $G(y_{k+1})=0$.
+\item La \emph{ecuación logística} $y'=y(1-y)$ modela el crecimiento poblacional
+con capacidad de carga unitaria.
+Calcule $f'(y)$ y exprese $G'(y)$ en función de $h$ e $y$.
+\item Escriba el pseudocódigo de Euler implícito con Newton interno 
+(tolerancia $\varepsilon$, máximo $M$ iteraciones internas).
 \end{enumerate}
 \fej
 
 \bej
-(Raíces múltiples y pérdida de orden)
-Considere $f(x) = (x-1)^2$.
+El \emph{método predictor-corrector} aplica Newton para $G(y_{k+1})=0$ (con la misma $G$ del ejercicio anterior)
+partiendo de $y^{(0)}=\tilde{y}_{k+1}$, pero reemplaza la estimación inicial $y^{(0)}=y_k$
+del ejercicio anterior por el predictor de Euler explícito
+$\tilde{y}_{k+1}=y_k+h\,f(y_k)$.
 \begin{enumerate}[(a)]
-\item Aplique Newton a esta función y muestre que la iteración resultante es:
-\[
-x_{k+1} = \frac{x_k + 1}{2}.
-\]
-\item Demuestre que $|e_{k+1}| = \frac{1}{2}|e_k|$, es decir, la convergencia es solo lineal (no cuadrática). ¿Por qué se pierde el orden?
-\item Proponga la modificación $x_{k+1} = x_k - m\,\frac{f(x_k)}{f'(x_k)}$ con $m=2$ (multiplicidad conocida) y demuestre que se recupera la convergencia cuadrática.
+\item Escriba el pseudocódigo del método predictor-corrector.
+¿En qué difiere del pseudocódigo de Euler implícito puro?
+\item ¿Por qué el predictor reduce las iteraciones de Newton necesarias?
+¿Qué ocurre si $h$ es grande o la solución varía rápidamente?
 \end{enumerate}
 \fej
 
-\bej
-(Método de la secante)
-El método de la secante reemplaza $f'(x_k)$ por la diferencia dividida $\frac{f(x_k)-f(x_{k-1})}{x_k - x_{k-1}}$:
+\bej Para resolver $F(x)=0$ definimos la homotopía
 \[
-x_{k+1} = x_k - f(x_k) \frac{x_k - x_{k-1}}{f(x_k) - f(x_{k-1})}.
+H(x,t) = F(x)-(1-t)F(x_0)=0, \quad t\in[0,1],
 \]
+cuya solución satisface $x(0)=x_0$ y $x(1)$ es una raíz de $F$.
 \begin{enumerate}[(a)]
-\item ¿Qué ventaja tiene este método respecto de Newton?
-\item Aplique el método de la secante a $f(x)=x^3-2$ con $x_0=1$, $x_1=2$. Calcule $x_2$, $x_3$ y $x_4$.
-\item Puede demostrarse que el orden de convergencia del método de la secante es $p=\frac{1+\sqrt{5}}{2} \approx 1.618$ (el número áureo). Compare la eficiencia del método de la secante contra Newton, teniendo en cuenta que la secante no requiere evaluar $f'$.
+\item Diferenciando $H(x(t),t)=0$ respecto de $t$, derive la \emph{ecuación de Davidenko}
+\[
+\dot{x}(t) = -[DF(x)]^{-1}F(x_0).
+\]
+¿Por qué el campo vectorial no depende explícitamente de $t$ para esta homotopía?
+\item Aplique el método de Euler explícito con paso $\Delta t$ a la EDO anterior y escriba
+el predictor $x_{k+1}^{(0)}$ en función de $x_k$, $DF(x_k)$ y $F(x_0)$.
+\item Como paso ``corrector'', escriba la iteración de Newton para $H(x,t_{k+1})=0$.
+\item Para $F(x)=e^x-2$ y $x_0=0$: escriba la ecuación de Davidenko escalar,
+verifique que su solución exacta es $x(t)=\ln(1+t)$ y concluya que $x(1)=\ln 2$.
+Calcule el predictor $x_1^{(0)}$ con $\Delta t=1$ y realice una iteración de Newton como corrector.
+Compare con la raíz exacta $\ln 2\approx 0.693$.
 \end{enumerate}
 \fej
-
-\bej
-Considere la ecuación $e^{-x} = x$.
-\begin{enumerate}[(a)]
-\item Muestre que existe una única solución $x^* \in (0,1)$.
-\item Halle la solución aplicando bisección en $[0,1]$ hasta obtener un error menor que $10^{-2}$.
-\item Aplique Newton a $f(x)=e^{-x}-x$ con $x_0 = 0$. Calcule $x_1$, $x_2$ y $x_3$.
-\item Compare la velocidad de convergencia de ambos métodos.
-\end{enumerate}
-\fej
-
-\section*{Método de Newton para sistemas no lineales en $\R^n$}
-
-\begin{exercise}[Newton para sistemas $2\times 2$]
-Considere el sistema no lineal:
-\[
-F(x,y) = \begin{pmatrix} x^2 + y^2 - 4 \\ xy - 1 \end{pmatrix} = 0.
-\]
-\begin{enumerate}[(a)]
-\item Calcule la matriz Jacobiana $J_F(x,y)$.
-\item Escriba la iteración de Newton: dado $(x_k,y_k)$, resolver $J_F(x_k,y_k)\,\delta = -F(x_k,y_k)$ y actualizar $(x_{k+1},y_{k+1}) = (x_k,y_k) + \delta$.
-\item Partiendo de $(x_0,y_0)=(2,1)$, realice una iteración de Newton. Resuelva el sistema lineal $2\times 2$ explícitamente.
-\item ¿Cuántas soluciones tiene el sistema? Discuta qué punto inicial llevaría a cada una de ellas.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Convergencia cuadrática local]\label{ej_convergencia_newton}
-Sea $F:\R^n \to \R^n$ continuamente diferenciable, con $F(x^*)=0$ y $J_F(x^*)$ invertible.
-\begin{enumerate}[(a)]
-\item Usando el desarrollo de Taylor vectorial
-\[
-F(x^*) = F(x_k) + J_F(x_k)(x^*-x_k) + R_k,
-\]
-y la definición de la iteración de Newton, demuestre que el error $e_{k+1} = x_{k+1}-x^*$ satisface
-\[
-e_{k+1} = -[J_F(x_k)]^{-1}\, R_k.
-\]
-\item Si $J_F$ es Lipschitz con constante $L$, es decir $\|J_F(x)-J_F(y)\| \leq L\|x-y\|$, acote $\|R_k\|$ y concluya que
-\[
-\|e_{k+1}\| \leq C\,\|e_k\|^2,
-\]
-para cierta constante $C>0$, siempre que $x_0$ esté suficientemente cerca de $x^*$.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Intersección de curvas]
-El sistema de ecuaciones:
-\[
-\begin{cases}
-x^2 + y^2 = 1 \\
-y = x^3
-\end{cases}
-\]
-describe la intersección de una circunferencia con una cúbica.
-\begin{enumerate}[(a)]
-\item Plantee el sistema como $F(x,y) = 0$ y calcule la Jacobiana.
-\item Realice dos iteraciones de Newton partiendo de $(x_0,y_0) = (0.8, 0.5)$.
-\item ¿Qué ocurre si se parte de $(x_0,y_0) = (0,0)$? ¿Y de $(0,1)$? Discuta.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Costo computacional del método de Newton]
-Considere la aplicación del método de Newton a un sistema $F:\R^n \to \R^n$.
-\begin{enumerate}[(a)]
-\item ¿Cuál es el costo de cada iteración de Newton si la Jacobiana se resuelve mediante factorización LU? Expréselo en términos de $n$.
-\item Si $n$ es grande y la Jacobiana es esparsa (por ejemplo, tridiagonal), ¿cómo puede explotarse esta estructura?
-\item En el método de Newton modificado, se fija la Jacobiana $J_F(x_0)$ y se resuelve $J_F(x_0)\,\delta = -F(x_k)$ en cada iteración. ¿Cuál es la ventaja computacional? ¿Qué se pierde en términos de convergencia?
-\end{enumerate}
-\end{exercise}
-
-\section*{Newton para optimización}
-
-\begin{exercise}[Newton vs gradiente en 1D]
-Considere la función $f(x) = \frac{1}{2}(x-3)^2 + 1$.
-\begin{enumerate}[(a)]
-\item Aplique una iteración del método de Newton para optimización ($x_{k+1} = x_k - f''(x_k)^{-1}f'(x_k)$) partiendo de $x_0=0$. ¿Qué observa?
-\item Aplique descenso por gradiente con paso $\alpha = 0.5$ partiendo de $x_0=0$. Calcule $x_1$, $x_2$ y $x_3$.
-\item Repita con $f(x) = (x-3)^4$. ¿Qué le pasa a Newton? ¿Y al gradiente?
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Newton para optimización en $\R^n$]
-Para minimizar $f:\R^n \to \R$ suave, el método de Newton busca raíces de $\nabla f(x) = 0$:
-\[
-x_{k+1} = x_k - [\nabla^2 f(x_k)]^{-1}\,\nabla f(x_k).
-\]
-\begin{enumerate}[(a)]
-\item Deduzca esta fórmula a partir de la aproximación cuadrática (Taylor de orden 2) de $f$ alrededor de $x_k$.
-\item Considere $f(x_1,x_2) = x_1^2 + 10\,x_2^2$. Calcule $\nabla f$ y $\nabla^2 f$.
-\item Realice una iteración de Newton partiendo de $x_0 = (5,1)^T$. ¿Qué observa?
-\item ¿Cuál es el número de condición $\kappa = L/\mu$ de esta función? ¿Cómo afecta este valor al descenso por gradiente?
-\end{enumerate}
-\end{exercise}
-
-\section*{Descenso por gradiente}
-
-\begin{exercise}[Descenso por gradiente con paso constante]
-Sea $f:\R^n \to \R$ una función $\mu$-fuertemente convexa y $L$-suave. El método de descenso por gradiente con paso constante $\alpha$ genera la secuencia $x_{k+1} = x_k - \alpha\,\nabla f(x_k)$.
-\begin{enumerate}[(a)]
-\item ¿Qué significa geométricamente que $-\nabla f(x)$ sea la dirección de máximo decrecimiento?
-\item Partiendo de la desigualdad de descenso para funciones $L$-suaves:
-\[
-f(y) \leq f(x) + \nabla f(x)^T(y-x) + \frac{L}{2}\|y-x\|^2,
-\]
-demuestre que con $\alpha = 1/L$:
-\[
-f(x_{k+1}) \leq f(x_k) - \frac{1}{2L}\|\nabla f(x_k)\|^2.
-\]
-\item Usando además la convexidad fuerte, concluya que:
-\[
-f(x_{k+1}) - f(x^*) \leq \left(1 - \frac{\mu}{L}\right)(f(x_k) - f(x^*)).
-\]
-\item ¿Cuántas iteraciones se necesitan para reducir el error $f(x_k)-f(x^*)$ por un factor de $\varepsilon$?
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Efecto del número de condición]
-Considere la función cuadrática $f(x_1,x_2) = \frac{1}{2}(a\,x_1^2 + b\,x_2^2)$ con $0 < a \leq b$.
-\begin{enumerate}[(a)]
-\item Identifique las constantes $\mu$ y $L$ para esta función. ¿Cuál es el número de condición $\kappa$?
-\item Demuestre que descenso por gradiente con $\alpha = 1/b$ produce la iteración:
-\[
-x_1^{(k+1)} = \left(1 - \frac{a}{b}\right)x_1^{(k)}, \quad x_2^{(k+1)} = 0.
-\]
-Concluya que la convergencia es lenta en la dirección $x_1$ cuando $a \ll b$.
-\item Calcule las primeras 5 iteraciones para $a=1$, $b=100$, partiendo de $x_0 = (1,1)^T$.
-\item Repita con $a=1$, $b=1$. ¿Cuántas iteraciones se necesitan ahora?
-\item Explique la analogía entre el número de condición en optimización y el número de condición de una matriz en sistemas lineales.
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Elección del paso]
-\begin{enumerate}[(a)]
-\item Considere $f(x) = \frac{1}{2}x^2$ y descenso por gradiente con paso $\alpha$. Muestre que la iteración es $x_{k+1} = (1-\alpha)x_k$ y determine para qué valores de $\alpha$ el método converge, diverge, u oscila.
-\item Para la misma función, ¿cuál es el paso óptimo?
-\item Para una función general $L$-suave, ¿por qué el paso $\alpha = 1/L$ es una elección natural?
-\item (Búsqueda lineal) En la práctica, a menudo se elige $\alpha_k$ resolviendo (aproximadamente)
-\[
-\alpha_k = \arg\min_{\alpha > 0} f(x_k - \alpha\,\nabla f(x_k)).
-\]
-¿Por qué es esto razonable? ¿Cuál es su desventaja?
-\end{enumerate}
-\end{exercise}
-
-\begin{exercise}[Función de Rosenbrock]
-La función de Rosenbrock es un clásico test de optimización:
-\[
-f(x_1,x_2) = (1-x_1)^2 + 100(x_2-x_1^2)^2.
-\]
-\begin{enumerate}[(a)]
-\item Encuentre el único minimizador $x^*$ de $f$.
-\item Calcule $\nabla f(x_1,x_2)$ y $\nabla^2 f(x_1,x_2)$.
-\item Evalúe la Hessiana en el mínimo. ¿Cuáles son los autovalores? ¿Cuál es el número de condición?
-\item Explique por qué esta función es difícil para descenso por gradiente. ¿Qué forma tienen las curvas de nivel?
-\item Realice dos iteraciones de Newton partiendo de $(x_0,y_0) = (0,0)$.
-\end{enumerate}
-\end{exercise}
 
 
 \end{document}
