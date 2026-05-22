@@ -19,104 +19,137 @@
 
 \begin{document}
 \centerline{{\small Universidad de Buenos Aires - Facultad de Ciencias Exactas y Naturales - Depto. de Matemática}}
- 
- \vskip 0.2cm
- \hrulefill
- \vskip 0.2cm
 
- \centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
- \vskip 0.2cm
- \centerline{\ttfamily Primer Cuatrimestre 2026}
- \hrulefill
+\vskip 0.2cm
+\hrulefill
+\vskip 0.2cm
 
- \bigskip
- \centerline{\bf Laboratorio N$^\circ$ 6: Ecuaciones No lineales}
- \bigskip
+\centerline{{\bf\Huge {\sc Elementos de Cálculo Numérico}}}
+\vskip 0.2cm
+\centerline{\ttfamily Primer Cuatrimestre 2026}
+\hrulefill
 
+\bigskip
+\centerline{\bf Laboratorio N$^\circ$ 6: Método de Newton en varias variables y Descenso por Gradiente}
+\bigskip
+
+
+% -----------------------------------------------------------------------
 \bej
-Consideramos el oscilador de Duffing amortiguado con rigidez ablandadora
-\begin{equation}\label{duffing}
-\ddot{x} + \delta\dot{x} + 2x - \tfrac{2}{3}x^3 = \tfrac{1}{2}\cos(\omega t),\quad \delta = 0.1.
+\textbf{(Intersección de curvas planas: método de Newton en $\R^2$.)}
+
+Considere el sistema de ecuaciones
+\begin{equation}\label{eq:sistema}
+  F(x,y) =
+  \begin{pmatrix} f_1(x,y) \\ f_2(x,y) \end{pmatrix}
+  =
+  \begin{pmatrix} x^2 + y^2 + xy - 7 \\ x^3 - y + 1 \end{pmatrix}
+  = \mathbf{0}.
 \end{equation}
-Para una no linealidad arbitraria, caracterizar el comportamiento asintótico exige
-integrar la ODE durante largos tiempos para cada valor de $\omega$.
-El \emph{balance armónico} ofrece una alternativa: buscar directamente una solución
-periódica aproximada $x(t)\approx A\cos(\omega t)$, lo que reduce la ODE a una
-ecuación algebraica en $(A,\omega)$.
-En este caso particular esa ecuación admite solución analítica, lo que permite
-verificar un método numérico de continuación generalizable a no linealidades arbitrarias.
+Geométricamente, $f_1 = 0$ es una elipse (rotada) y $f_2 = 0$ es la curva cúbica $y = x^3 + 1$.
 
-\begin{enumerate}
-
-\item \textbf{Curva de respuesta: balance armónico.}
-Para $\delta=0$, sustituyendo $x(t)=A\cos(\omega t)$ en~\eqref{duffing}
-e igualando coeficientes de $\cos(\omega t)$ se obtiene
-\[
-G(A,\omega) := (2-\omega^2)A - \tfrac{1}{2}A^3 - \tfrac{1}{2} = 0.
-\]
 \begin{enumerate}[(a)]
-\item Verifique que esta ecuación se invierte explícitamente para $\omega$:
-\[
-\omega(A) = \sqrt{\,2 - \frac{1+A^3}{2A}\,}.
-\]
-Grafique la curva paramétrica $(\omega(A),A)$ para $A\in[A_{\min},A_{\max}]$,
-donde $A_{\min}\approx 0.254$ y $A_{\max}\approx 1.86$ son las raíces de $\omega(A)=0$.
-Muestre que $d\omega/dA=0$ en $A_c=2^{-1/3}\approx 0.794$,
-con $\omega_c\approx 1.027$.
+  \item Verifique algebraicamente que $(x_\ast, y_\ast) = (1, 2)$ es solución exacta de~\eqref{eq:sistema}.
 
-La curva resultante tiene forma de $S$ inclinada: para $\omega<\omega_c$ la ecuación
-$G(A,\omega)=0$ tiene \emph{tres} soluciones en $A$, mientras que para $\omega>\omega_c$
-no tiene ninguna (con $A>0$).
-El punto $(A_c,\omega_c)$ donde $\partial G/\partial A=0$ se llama \emph{pliegue}
-(\emph{fold}): es donde dos ramas de soluciones se unen y desaparecen.
-La rama de amplitud media (entre los dos pliegues) es inestable.
+  \item Calcule analíticamente la matriz jacobiana
+    \[
+      J(x,y) = \frac{\partial F}{\partial(x,y)}
+             = \begin{pmatrix}
+                 \partial_x f_1 & \partial_y f_1 \\
+                 \partial_x f_2 & \partial_y f_2
+               \end{pmatrix}.
+    \]
+    Evalúe $J(1,2)$ y verifique que es invertible.
 
-\item Interprete: ¿qué predice esta curva sobre la amplitud de estado estacionario
-del oscilador amortiguado~\eqref{duffing} para $\omega\in(0,\omega_c)$?
-¿Qué se esperaría observar al barrer $\omega$ hacia arriba y luego hacia abajo?
-\end{enumerate}
+  \item El método de Newton para $F(x,y)=\mathbf{0}$ es la iteración
+    \[
+      \mathbf{p}^{(k+1)} = \mathbf{p}^{(k)} - J\!\left(\mathbf{p}^{(k)}\right)^{-1} F\!\left(\mathbf{p}^{(k)}\right).
+    \]
+    Implemente esta iteración. En la práctica, en lugar de invertir $J$, resuelva el sistema lineal $J \delta = -F$ y actualice $\mathbf{p} \leftarrow \mathbf{p} + \delta$ (use \texttt{numpy.linalg.solve}).
+    Itere hasta que $\|F(\mathbf{p}^{(k)})\| < 10^{-10}$.
 
-\item \textbf{Verificación por simulación directa.}
-Integre~\eqref{duffing} con \texttt{scipy.integrate.solve\_ivp} (\texttt{'RK45'},
-\texttt{rtol=1e-8}) e implemente dos barridos lentos en $\omega\in[0.3,1.2]$
-con $\Delta\omega=0.025$, propagando el estado final de cada paso al siguiente:
-\begin{itemize}
-\item \emph{Ascendente}: parte de $(x,\dot{x})=(0,0)$.
-\item \emph{Descendente}: parte de $(x,\dot{x})=(2,0)$.
-\end{itemize}
-En cada paso integre durante $T_{\text{trans}}+T_{\text{med}}$ y registre
-$A=\max|x(t)|$ en los últimos $T_{\text{med}}$, con
-$T_{\text{trans}}=80\cdot 2\pi/\omega$ y $T_{\text{med}}=20\cdot 2\pi/\omega$.
-Superponga los resultados al gráfico del ítem~1.
-¿Concuerdan los saltos con el pliegue predicho por el balance armónico?
+  \item Ejecute Newton a partir de $\mathbf{p}^{(0)} = (0, 0)$. Registre $\|F(\mathbf{p}^{(k)})\|$ en cada iteración y grafíquelo en escala semilogarítmica. ¿En cuántas iteraciones converge? ¿Observa convergencia cuadrática?
 
-\item \textbf{Continuación numérica de la curva $G=0$.}
-Partiendo del punto exacto $(\omega_0,A_0)=(1,1)$---verifique que $G(1,1)=0$---implemente
-un predictor-corrector basado en la ecuación de Davidenko:
-\[
-\frac{dA}{d\omega} = -\frac{G_\omega}{G_A}
-= \frac{2\omega A}{(2-\omega^2) - \tfrac{3}{2}A^2}.
-\]
-Con paso $|\Delta\omega|=0.02$, avance en ambas direcciones usando Euler como predictor
-y un paso de Newton como corrector.
-Grafique la trayectoria y verifique que coincide con la curva analítica del ítem~1.
-¿Qué ocurre con el denominador $G_A$ al acercarse al pliegue?
-
-\item \textbf{Continuación por longitud de arco.}
-Para bordear el pliegue, reemplace el predictor en $\omega$ por uno en
-dirección tangente a la curva $G=0$:
-\[
-\begin{pmatrix}\Delta A\\\Delta\omega\end{pmatrix}
-= \frac{\Delta s}{\|\mathbf{t}\|}\begin{pmatrix}-G_\omega\\G_A\end{pmatrix},
-\quad \mathbf{t}=(-G_\omega,G_A).
-\]
-Mantenga el corrector de Newton.
-Verifique que esta versión traza la curva completa, incluyendo la rama inestable
-que conecta los dos pliegues, y superpóngala al gráfico anterior.
-Discuta: ¿en qué sentido este método es generalizable a una no linealidad $f(x)$
-arbitraria en lugar de $\tfrac{2}{3}x^3$?
+  \item La curva cúbica y la elipse se intersectan en más de un punto. Grafique ambas curvas
+    en la región $[-3, 3] \times [-3, 6]$ e identifique visualmente una segunda solución.
+    Ejecute Newton desde un punto inicial próximo a ella y repórtela.
 
 \end{enumerate}
 \fej
- 
+
+
+% -----------------------------------------------------------------------
+\bej
+\textbf{(Descenso por gradiente para regresión logística: dataset \textit{Titanic}.)}
+
+Se desea predecir la supervivencia de un pasajero del Titanic a partir de tres atributos:
+género (\texttt{sex}), clase del pasaje (\texttt{pclass}) y edad (\texttt{age}).
+El modelo es una \textit{regresión logística}: dado el vector de atributos extendido
+$\mathbf{x} \in \R^4$ (los tres atributos más un $1$ para el sesgo), la probabilidad
+predicha de supervivencia es
+\[
+  \hat{p}(\mathbf{x};\, \mathbf{w}) = \sigma(\mathbf{w}^\top \mathbf{x}),
+  \qquad \sigma(z) = \frac{1}{1+e^{-z}}.
+\]
+El parámetro $\mathbf{w} \in \R^4$ se ajusta minimizando la
+\textit{pérdida cuadrática}
+\[
+  L(\mathbf{w}) = \frac{1}{n} \sum_{i=1}^{n} \bigl(\hat{p}(\mathbf{x}_i;\,\mathbf{w}) - y_i\bigr)^2,
+\]
+donde $y_i \in \{0,1\}$ es la etiqueta de supervivencia del pasajero $i$.
+
+\begin{enumerate}[(a)]
+  \item \textbf{Preparación de datos.} Cargue el dataset con
+    \begin{center}
+      \texttt{import seaborn as sns; df = sns.load\_dataset('titanic')}
+    \end{center}
+    Construya la matriz $X \in \R^{n \times 4}$ y el vector $\mathbf{y} \in \{0,1\}^n$ de la siguiente forma:
+    \begin{itemize}
+      \item Elimine las filas con valores faltantes en \texttt{age}, \texttt{sex} o \texttt{pclass}.
+      \item Codifique \texttt{sex}: \texttt{male} $\mapsto 0$, \texttt{female} $\mapsto 1$.
+      \item Normalice \texttt{age} y \texttt{pclass} restando la media y dividiendo por el desvío estándar.
+      \item Añada una columna de unos (sesgo) como última columna de $X$.
+      \item Tome $\mathbf{y}$ de la columna \texttt{survived}.
+    \end{itemize}
+    Reporte $n$, la fracción de supervivientes y las dimensiones de $X$.
+
+  \item \textbf{Gradiente de la pérdida.} Muestre que
+    \[
+      \nabla_{\mathbf{w}} L(\mathbf{w})
+        = \frac{2}{n} \sum_{i=1}^{n}
+          \bigl(\hat{p}_i - y_i\bigr)\, \hat{p}_i(1 - \hat{p}_i)\, \mathbf{x}_i,
+    \]
+    donde $\hat{p}_i = \sigma(\mathbf{w}^\top \mathbf{x}_i)$.
+    En forma matricial, si $\hat{\mathbf{p}} = \sigma(X\mathbf{w})$ (componente a componente):
+    \[
+      \nabla_{\mathbf{w}} L(\mathbf{w})
+        = \frac{2}{n}\, X^\top \bigl[(\hat{\mathbf{p}} - \mathbf{y}) \odot
+          \hat{\mathbf{p}} \odot (1 - \hat{\mathbf{p}})\bigr],
+    \]
+    donde $\odot$ denota el producto de Hadamard (componente a componente).
+    Verifique numéricamente esta fórmula comparándola con diferencias finitas centradas
+    para un $\mathbf{w}$ de prueba.
+
+  \item \textbf{Implementación.} Programe la función
+    \texttt{descenso\_gradiente(X, y, alpha, n\_iter)} que, partiendo de $\mathbf{w}^{(0)} = \mathbf{0}$,
+    ejecute $n_{\mathrm{iter}}$ pasos de descenso con paso constante $\alpha$:
+    \[
+      \mathbf{w}^{(k+1)} = \mathbf{w}^{(k)} - \alpha \,\nabla L\!\left(\mathbf{w}^{(k)}\right).
+    \]
+    La función debe devolver el historial de pérdidas $\{L(\mathbf{w}^{(k)})\}_{k=0}^{n_{\mathrm{iter}}}$.
+
+  \item \textbf{Efecto del paso $\alpha$.} Ejecute el método para
+    $\alpha \in \{0.01,\, 0.1,\, 1.0,\, 5.0\}$ con $n_{\mathrm{iter}} = 500$.
+    Grafique en una misma figura las curvas de pérdida vs.\ iteración.
+    ¿Qué ocurre con $\alpha$ demasiado grande? ¿Converge para todos los valores?
+
+  \item \textbf{Evaluación.} Con el $\alpha$ que produjo mejor convergencia,
+    calcule la \textit{accuracy} (fracción de predicciones correctas) usando el criterio
+    $\hat{y}_i = \mathbf{1}[\hat{p}_i \geq 0.5]$.
+    Compare este resultado con el clasificador trivial que siempre predice la clase mayoritaria.
+
+\end{enumerate}
+\fej
+
+
 \end{document}
