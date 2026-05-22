@@ -51,7 +51,7 @@ m=\tanh\!\left(\frac{T_c}{T}m\right).
 \begin{enumerate}[(a)]
 \item Muestre que el método de punto fijo $m_{k+1}=\tanh(T_c m_k/T)$ converge a $m=0$ cuando $T>T_c$. ¿Cuál es la constante de contracción?
 \item ¿Qué ocurre cuando $T<T_c$? ¿Cuántas soluciones tiene la ecuación? Justifique comparando las pendientes de ambos miembros en $m=0$.
-\item Para $T<T_c$, diseñe un método de bisección para encontrar la solución positiva, y estime cuántas iteraciones son necesarias para obtener un error menor que $10^{-3}$ partiendo de un intervalo $[0,b]$ con $b>m^*$.
+\item Para $T<T_c$, diseñe un método de bisección para encontrar la solución positiva $m^*>0$, y estime cuántas iteraciones son necesarias para obtener un error menor que $10^{-3}$. (Nota: como $h(0)=0$, el intervalo inicial debe ser $[a,b]$ con $0<a<m^*<b$, verificando que $h(a)<0$ y $h(b)>0$.)
 \end{enumerate}
 \fej
 
@@ -95,7 +95,7 @@ Esta ecuación aparece en modos de vibración de vigas empotradas-libres.
 \omega^2=gk\tanh(kh).
 \]
 \begin{enumerate}[(a)]
-\item Muestre que $f(k)=gk\tanh(kh)-\omega^2$ es estrictamente creciente para $k>0$. Deduzca que existe una única raíz positiva.
+\item Muestre que $f(k)=gk\tanh(kh)-\omega^2$ es estrictamente creciente para $k>0$. Observe que $f(0)=-\omega^2<0$ y $f(k)\to+\infty$ cuando $k\to+\infty$, y deduzca que existe una única raíz positiva.
 \item Calcule $f'(k)$ explícitamente y escriba la iteración de Newton.
 \item Para $\omega=1$, $g=9.8$, $h=10$, aplique Newton partiendo de $k_0=\omega^2/g$ y calcule tres iteraciones.
 \end{enumerate}
@@ -106,7 +106,7 @@ Esta ecuación aparece en modos de vibración de vigas empotradas-libres.
 5-x=5e^{-x}.
 \]
 \begin{enumerate}[(a)]
-\item Muestre que $f(x)=x-5+5e^{-x}$ es estrictamente convexa. Deduzca que Newton converge para todo $x_0\ge x^*$.
+\item Muestre que $f(x)=x-5+5e^{-x}$ es estrictamente convexa. Observe que $f(0)=0$, de modo que $x=0$ es una raíz trivial; la raíz de interés físico es la positiva $x^*\approx 4.965$. Deduzca que Newton converge monótonamente a $x^*$ para todo $x_0\ge x^*$.
 \item Escriba la iteración de Newton para $f$ explícitamente.
 \item Halle un $x_0$ que garantice la convergencia y calcule tres iteraciones.
 \end{enumerate}
@@ -118,8 +118,8 @@ Esta ecuación aparece en modos de vibración de vigas empotradas-libres.
 \]
 \begin{enumerate}[(a)]
 \item Muestre que $f(\theta)=\sin^2\theta\,\tan^2\theta$ es estrictamente creciente en $(0,\pi/2)$. Deduzca que existe una única raíz para cada $|n|>0$.
-\item Para $|n|=1.5$, halle un intervalo $[a,b]\subset(0,\pi/2)$ donde $f(\theta)-|n|^2$ cambia de signo.
-\item Estime cuántas iteraciones de bisección son necesarias para obtener $\theta$ con error menor que $10^{-3}$.
+\item Para $|n|=1.5$, halle un intervalo $[a,b]\subset(0,\pi/2)$ donde $f(\theta)-|n|^2$ cambia de signo. (Sugerencia: verifique si $\theta=\pi/3$ es la raíz exacta; si es así, use el resultado para validar el método.)
+\item Estime cuántas iteraciones de bisección serían necesarias para obtener $\theta$ con error menor que $10^{-3}$ partiendo del intervalo hallado en (b).
 \end{enumerate}
 \fej
 
