@@ -6687,40 +6687,13 @@ En resumen, los métodos espectrales son la herramienta de elección cuando la s
 
 
 \fi
-\chapter{Ecuaciones No Lineales}
+\chapter{Métodos iterativos para Ecuaciones No Lineales}
 
-Encontrar las raíces de una función $f:\mathbb{R}\to\mathbb{R}$,
-es decir resolver $f(x)=0$, es uno de los problemas más recurrentes en la práctica
-científica y en la ingeniería.
-En este capítulo desarrollamos cuatro métodos clásicos:
-bisección, iteración de punto fijo, Newton y la secante.
-El hilo conductor es la construcción de sucesiones $\{x_k\}$
-convergentes a una raíz, y el análisis cuantitativo de su velocidad de convergencia.
-
-\section{Motivación: ajuste de curvas y ecuaciones no lineales}
-\label{sec:motivacion_nolineal}
-
-Partimos de un problema unificador: tenemos datos $(t_i,y_i)$ y un modelo
-$m(t;\theta)$ con parámetros $\theta\in\mathbb{R}^p$.
-Queremos hallar $\theta$ de modo que el modelo reproduzca los datos, minimizando
-la pérdida cuadrática
-\[
-\Phi(\theta)=\frac{1}{2}\sum_{i=1}^N\bigl(m(t_i;\theta)-y_i\bigr)^2.
-\]
-Los puntos críticos satisfacen $\nabla\Phi(\theta)=0$, que en general es un
-\emph{sistema no lineal}.  Si $p=1$ se reduce a una sola ecuación no lineal en una variable.
-
-\begin{example}[Oscilador amortiguado]
-En mecánica, un modelo clásico es
-$x(t;A,\beta,\omega,\varphi)=A\,e^{-\beta t}\cos(\omega t+\varphi)$.
-El ajuste de $(A,\beta,\omega,\varphi)$ por mínimos cuadrados contra datos
-$(t_i,x_i^{\mathrm{obs}})$ es un problema no lineal: los parámetros aparecen en
-exponentes y argumentos de coseno, y no existe un cambio de variables que lo
-linealice en todos los parámetros simultáneamente.
-\end{example}
-
-\begin{example}[Ley de desplazamiento de Wien]\label{ex:wien}
-La ley de Planck para la radiancia espectral es
+Resolver $f(x)=0$ para una función no lineal $f$ es uno de los problemas más
+recurrentes en la práctica científica y en la ingeniería.
+El problema aparece de forma \emph{directa} cuando el modelo de un fenómeno conduce
+a una ecuación trascendente para la que no existe fórmula cerrada.
+Un ejemplo clásico: la ley de Planck para la radiancia espectral es
 \[
 I(\lambda;T)=\frac{2hc^2}{\lambda^5}\,\frac{1}{e^{hc/(\lambda k_B T)}-1}.
 \]
@@ -6730,9 +6703,45 @@ $x=hc/(\lambda k_B T)$ reduce el problema a la ecuación trascendente
 5-x=5e^{-x},
 \]
 cuya raíz de interés físico es $x^*\approx 4.965$.
-Este ejemplo es ubícuo: conecta la temperatura de las estrellas con su color,
-y es la base de la pirometría óptica y de las cámaras térmicas.
+Esta constante relaciona la temperatura de las estrellas con su color
+y es la base de la pirometría óptica: no hay forma de extraerla sin métodos numéricos.
+
+El problema también aparece \emph{indirectamente} en optimización y ajuste de curvas. En efecto, cuando se ajusta un modelo $m(t;\theta)$ no lineal en sus parámetros $\theta$ minimizando el error cuadrático
+$$\Phi(\theta)=\tfrac12\sum_i(m(t_i;\theta)-y_i)^2,$$
+se requiere, como condición necesaria de primer orden, que el gradiente se anule. En este caso, se obtienen las ecuaciones normales 
+$$\nabla_\theta\Phi=0$$ 
+que son un sistema no lineal. 
+
+\begin{example}
+Para ajustar los parámetros $\theta=(A,\beta,\omega,\varphi)$ del oscilador amortiguado
+\[
+x(t;\theta)=Ae^{-\beta t}\cos(\omega t+\varphi)
+\]
+contra datos experimentales $(t_i,x_i^{\mathrm{obs}})$, se plantea el problema de
+cuadrados mínimos no lineal:
+\[
+\min_{\theta}\;\Phi(\theta)=\frac{1}{2}\sum_{i=1}^N\bigl(x(t_i;\theta)-x_i^{\mathrm{obs}}\bigr)^2.
+\]
+La condición necesaria de primer orden $\nabla\Phi(\theta)=0$ da el sistema de cuatro ecuaciones
+\[
+\frac{\partial\Phi}{\partial\theta_j}=\sum_{i=1}^N\bigl(x(t_i;\theta)-x_i^{\mathrm{obs}}\bigr)
+\frac{\partial x}{\partial\theta_j}(t_i;\theta)=0,\qquad j=1,2,3,4,
+\]
+donde las derivadas parciales son
+\begin{align*}
+\frac{\partial x}{\partial A}&=e^{-\beta t}\cos(\omega t+\varphi),\\
+\frac{\partial x}{\partial \beta}&=-Ate^{-\beta t}\cos(\omega t+\varphi),\\
+\frac{\partial x}{\partial \omega}&=-Ate^{-\beta t}\sin(\omega t+\varphi),\\
+\frac{\partial x}{\partial \varphi}&=-Ae^{-\beta t}\sin(\omega t+\varphi).
+\end{align*}
+Dado que $\theta$ aparece dentro de exponentes y funciones trigonométricas, este sistema
+es no lineal y no puede resolverse con álgebra lineal: requiere métodos iterativos.
 \end{example}
+
+
+Si bien los métodos de optimización están muy emparentados con los métodos de raíz, en este capítulo nos centraremos exclusivamente en la resolución de ecuaciones no lineales. Por simplicidad, nos limitaremos a funciones de una variable, aunque la mayoría de los métodos se extienden a sistemas no lineales multidimensionales. Desarrollamos cuatro métodos clásicos: bisección, iteración de punto fijo, Newton y la secante.
+
+Los métodos que estudiaremos en este capítulo se conocen como \textit{métodos iterativos}. En efecto, el hilo conductor de este capítulo es la construcción de sucesiones $\{x_k\}$ convergentes a una raíz, y el análisis cuantitativo de su velocidad de convergencia.
 
 \section{El método de bisección}
 \label{sec:biseccion}
