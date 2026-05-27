@@ -5172,11 +5172,106 @@ Esta distinción motiva la noción de \textbf{A-estabilidad}: un método es A-es
 
 \section{Problema de valores de contorno}
 
-En problemas de contorno no se avanza paso a paso en el tiempo: la discretización espacial conduce a un sistema lineal
+Consideramos el problema de Dirichlet con reacción
+\[
+-u''(x)+\sigma u(x)=f(x),\quad x\in(0,1),\qquad u(0)=\alpha,\ \ u(1)=\beta,
+\]
+con $\sigma>0$. Sea la malla uniforme $x_j=jh$, $j=0,1,\dots,m+1$, con $h=1/(m+1)$. En nodos interiores $j=1,\dots,m$, aproximamos $u(x_j)$ por $u_j$ y usamos la diferencia centrada para $u''$:
+\[
+  -\frac{u_{j-1}-2u_j+u_{j+1}}{h^2}+\sigma u_j=f(x_j).
+\]
+Las condiciones de borde se imponen fijando $u_0=\alpha$ y $u_{m+1}=\beta$.
+
+\begin{proposition}[Fórmula centrada para $u''$]\label{prop:centered_second_derivative_new}
+Si $u\in C^4([0,1])$, entonces para todo nodo interior $x_j$ existe $\xi_j\in(x_{j-1},x_{j+1})$ tal que
+\[
+  \frac{u(x_{j-1})-2u(x_j)+u(x_{j+1})}{h^2}
+  =u''(x_j)+\frac{h^2}{12}u^{(4)}(\xi_j).
+\]
+En particular, la aproximación centrada de la segunda derivada tiene error $O(h^2)$.
+\end{proposition}
+
+\begin{lemma}[Promedio de extremos en un punto intermedio]\label{lem:average_bolzano_new}
+Si $g\in C([a,b])$, entonces existe $\xi\in[a,b]$ tal que
+\[
+g(\xi)=\frac{g(a)+g(b)}{2}.
+\]
+Si además $g(a)\neq g(b)$, entonces $\xi\in(a,b)$.
+\end{lemma}
+
+\begin{proof}
+Sea
+\[
+m:=\frac{g(a)+g(b)}{2},
+\qquad
+h(x):=g(x)-m.
+\]
+La función $h$ es continua, y $h(a)$ y $h(b)$ tienen signos opuestos (o alguno es cero). Por Bolzano, existe $\xi\in[a,b]$ con $h(\xi)=0$, esto es, $g(\xi)=m$. Si $g(a)\neq g(b)$, entonces $h(a)h(b)<0$ y Bolzano da $\xi\in(a,b)$.
+\end{proof}
+
+\begin{proof}
+Escribimos Taylor con resto de Lagrange alrededor de $x_j$ en ambos sentidos:
+\[
+  u(x_{j\pm1})=u(x_j)\pm h u'(x_j)+\frac{h^2}{2}u''(x_j)\pm\frac{h^3}{6}u^{(3)}(x_j)+\frac{h^4}{24}u^{(4)}(\xi_j^{\pm}).
+\]
+Aquí $\xi_j^-\in(x_{j-1},x_j)$ y $\xi_j^+\in(x_j,x_{j+1})$. Al sumar, se cancelan los términos impares:
+\[
+  u(x_{j-1})-2u(x_j)+u(x_{j+1})
+  =h^2u''(x_j)+\frac{h^4}{24}\bigl(u^{(4)}(\xi_j^-)+u^{(4)}(\xi_j^+)\bigr).
+\]
+Dividiendo por $h^2$:
+\[
+\frac{u(x_{j-1})-2u(x_j)+u(x_{j+1})}{h^2}
+=u''(x_j)+\frac{h^2}{24}\bigl(u^{(4)}(\xi_j^-)+u^{(4)}(\xi_j^+)\bigr).
+\]
+Aplicando el Lema~\ref{lem:average_bolzano_new} a $g=u^{(4)}$ en $[\xi_j^-,\xi_j^+]$, existe $\xi_j\in[\xi_j^-,\xi_j^+]\subset(x_{j-1},x_{j+1})$ tal que
+\[
+u^{(4)}(\xi_j)=\frac{u^{(4)}(\xi_j^-)+u^{(4)}(\xi_j^+)}{2}.
+\]
+Esto justifica la escritura abreviada de ``absorber el promedio en un punto intermedio'' y queda
+\[
+\frac{u(x_{j-1})-2u(x_j)+u(x_{j+1})}{h^2}
+=u''(x_j)+\frac{h^2}{12}u^{(4)}(\xi_j).
+\]
+\end{proof}
+
+Con esta fórmula, el esquema para el vector incógnita
+\[
+  u^h=(u_1,\dots,u_m)^T
+\]
+toma la forma lineal
+\[
+  A^h u^h=F^h,
+\]
+con
+\[
+  A^h=
+  \begin{pmatrix}
+    \frac{2}{h^2}+\sigma & -\frac{1}{h^2} & 0 & \cdots & 0\\
+    -\frac{1}{h^2} & \frac{2}{h^2}+\sigma & -\frac{1}{h^2} & \ddots & \vdots\\
+    0 & \ddots & \ddots & \ddots & 0\\
+    \vdots & \ddots & -\frac{1}{h^2} & \frac{2}{h^2}+\sigma & -\frac{1}{h^2}\\
+    0 & \cdots & 0 & -\frac{1}{h^2} & \frac{2}{h^2}+\sigma
+  \end{pmatrix},
+\qquad
+  F^h=
+  \begin{pmatrix}
+    f(x_1)+\frac{\alpha}{h^2}\\
+    f(x_2)\\
+    \vdots\\
+    f(x_{m-1})\\
+    f(x_m)+\frac{\beta}{h^2}
+  \end{pmatrix}.
+\]
+
+
+\subsection{Estabilidad y convergencia}
+
+Al discretizar problemas de valores de contorno en espacio, obtenemos un sistema lineal global
 \[
   A^h u^h = F^h,
 \]
-y la estabilidad se estudia en términos de la invertibilidad de $A^h$ y del tamaño de $(A^h)^{-1}$.
+que debe resolverse en forma simultánea para todos los nodos interiores. Por eso, la estabilidad no se analiza mediante factores de amplificación (como en evolución temporal), sino en términos de la invertibilidad de $A^h$ y del tamaño de $(A^h)^{-1}$.
 
 Para vectores de malla $v=(v_1,\dots,v_m)^T$ usaremos la norma discreta
 \[
@@ -5209,75 +5304,18 @@ y por lo tanto
 \]
 En consecuencia, para problemas lineales estacionarios la convergencia se obtiene combinando \emph{consistencia} ($\tau^h\to0$) y \emph{estabilidad en norma 2}.
 
-\begin{proposition}[Fórmula centrada para $u''$]\label{prop:centered_second_derivative_new}
-Si $u\in C^4([0,1])$, entonces para todo nodo interior $x_j$ existe $\xi_j\in(x_{j-1},x_{j+1})$ tal que
-\[
-  \frac{u(x_{j-1})-2u(x_j)+u(x_{j+1})}{h^2}
-  =u''(x_j)+\frac{h^2}{12}u^{(4)}(\xi_j).
-\]
-En particular, la aproximación centrada de la segunda derivada tiene error $O(h^2)$.
-\end{proposition}
 
-\begin{proof}
-Taylor alrededor de $x_j$ da
-\[
-  u(x_{j\pm1})=u(x_j)\pm h u'(x_j)+\frac{h^2}{2}u''(x_j)\pm\frac{h^3}{6}u^{(3)}(x_j)+\frac{h^4}{24}u^{(4)}(\xi_j^{\pm}).
-\]
-Sumando ambas expresiones se cancelan los términos impares y queda
-\[
-  u(x_{j-1})-2u(x_j)+u(x_{j+1})
-  =h^2u''(x_j)+\frac{h^4}{24}\bigl(u^{(4)}(\xi_j^-)+u^{(4)}(\xi_j^+)\bigr).
-\]
-Dividiendo por $h^2$ y absorbiendo el promedio de las derivadas cuartas en un punto intermedio $\xi_j$ se obtiene la fórmula.
-\end{proof}
 
-\subsection{Dirichlet con reacción: esquema centrado y convergencia}
 
-Sea
-\[
--u''(x)+\sigma u(x)=f(x),\quad x\in(0,1),\quad u(0)=\alpha,\ u(1)=\beta,\ \sigma>0.
-\]
-Tomamos la malla uniforme $x_j=jh$, $j=0,1,\dots,m+1$, con $h=1/(m+1)$, y buscamos aproximaciones $u_j\approx u(x_j)$ para los nodos interiores $j=1,\dots,m$. La discretización centrada interior es
-\[
--\frac{u_{j-1}-2u_j+u_{j+1}}{h^2}+\sigma u_j=f(x_j),\qquad j=1,\dots,m.
-\]
-Las condiciones de borde se imponen fijando directamente $u_0=\alpha$ y $u_{m+1}=\beta$. Por lo tanto, en las ecuaciones para $j=1$ y $j=m$ esos valores se trasladan al lado derecho. El sistema para el vector incógnita
-\[
-  u^h=(u_1,\dots,u_m)^T
-\]
-toma la forma
-\[
-  A^h u^h=F^h,
-\]
-con
-\[
-  A^h=
-  \begin{pmatrix}
-    \frac{2}{h^2}+\sigma & -\frac{1}{h^2} & 0 & \cdots & 0\\
-    -\frac{1}{h^2} & \frac{2}{h^2}+\sigma & -\frac{1}{h^2} & \ddots & \vdots\\
-    0 & \ddots & \ddots & \ddots & 0\\
-    \vdots & \ddots & -\frac{1}{h^2} & \frac{2}{h^2}+\sigma & -\frac{1}{h^2}\\
-    0 & \cdots & 0 & -\frac{1}{h^2} & \frac{2}{h^2}+\sigma
-  \end{pmatrix},
-\qquad
-  F^h=
-  \begin{pmatrix}
-    f(x_1)+\frac{\alpha}{h^2}\\
-    f(x_2)\\
-    \vdots\\
-    f(x_{m-1})\\
-    f(x_m)+\frac{\beta}{h^2}
-  \end{pmatrix}.
-\]
-
-\begin{theorem}[Dirichlet con reacción: consistencia + estabilidad + convergencia]\label{thm:dirichlet_reaction_new}
-Si $u\in C^4([0,1])$, entonces el esquema centrado anterior es consistente de orden 2, estable en norma 2 y converge con
+\begin{theorem}[Dirichlet con reacción: estabilidad + truncado = convergencia]\label{thm:dirichlet_reaction_new}
+Si $u\in C^4([0,1])$, entonces el esquema centrado para el problema de Dirichlet con reacción es de orden 2 y estable en norma 2. En consecuencia,
 \[
   \|E^h\|_{2,h}\le Ch^2.
 \]
 \end{theorem}
 
 \begin{proof}
+\textbf{Paso 1: truncado (consistencia).}
 Aplicando la Proposición~\ref{prop:centered_second_derivative_new} a la solución exacta en cada nodo interior obtenemos
 \[
   -\frac{u(x_{j-1})-2u(x_j)+u(x_{j+1})}{h^2}+\sigma u(x_j)=f(x_j)-\frac{h^2}{12}u^{(4)}(\xi_j).
@@ -5287,7 +5325,8 @@ Por lo tanto, el error de truncamiento local satisface $|\tau_j|\le Ch^2$, y de 
   \|\tau^h\|_{2,h}\le Ch^2.
 \]
 
-Para la estabilidad, observamos que $A^h$ es una matriz real simétrica; en consecuencia, todos sus autovalores son reales. Además, cada fila tiene centro
+\textbf{Paso 2: estabilidad.}
+La matriz $A^h$ es real simétrica, luego sus autovalores son reales. Cada fila tiene centro
 \[
   c_j=\frac{2}{h^2}+\sigma
 \]
@@ -5295,7 +5334,7 @@ y radio de Gershgorin
 \[
   r_j\le \frac{2}{h^2}.
 \]
-Por el teorema de Gershgorin, todo autovalor $\lambda$ de $A^h$ pertenece al intervalo
+Por Gershgorin, todo autovalor $\lambda$ de $A^h$ pertenece al intervalo
 \[
   \left[\sigma,\,\frac{4}{h^2}+\sigma\right].
 \]
@@ -5307,12 +5346,11 @@ Como $A^h$ es simétrica definida positiva,
 \[
   \|(A^h)^{-1}\|_2=\frac{1}{\lambda_{\min}(A^h)}\le \frac{1}{\sigma},
 \]
-que es exactamente la estabilidad en norma 2.
+que es una cota uniforme en $h$ para el inverso: estabilidad en norma 2.
 
-Finalmente,
+\textbf{Paso 3: estabilidad + truncado $=$ convergencia.}
+Del error global $A^hE^h=\tau^h$ se obtiene
 \[
-  A^hE^h=\tau^h
-  \qquad\Longrightarrow\qquad
   \|E^h\|_{2,h}\le \|(A^h)^{-1}\|_2\,\|\tau^h\|_{2,h}
   \le \frac{C}{\sigma}h^2.
 \]
