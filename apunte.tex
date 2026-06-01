@@ -5371,6 +5371,19 @@ que incorpora automáticamente las condiciones de borde periódicas mediante las
 \[
   w_j^{(k)}=e^{2\pi i kj/N}.
 \]
+La condición sobre la derivada se interpreta en la malla con la diferencia centrada de primer orden
+\[
+  (\delta_x u)_j:=\frac{u_{j+1}-u_{j-1}}{2h},
+\]
+también con índices módulo $N$. En consecuencia,
+\[
+  (\delta_x u)_{j+N}=(\delta_x u)_j,
+\]
+y en particular en el borde periódico
+\[
+  (\delta_x u)_0=\frac{u_1-u_{N-1}}{2h},
+\]
+que coincide con el valor en el nodo identificado $x=1$.
 Estos modos satisfacen las condiciones periódicas, pues
 \[
   w_N^{(k)}=e^{2\pi i k}=w_0^{(k)},
