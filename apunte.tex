@@ -5590,18 +5590,66 @@ El \textbf{factor de amplificación} $G_h(\theta_k)$ es el símbolo del operador
 \[
   S_h\,v^{(k)}=G_h(\theta_k)\,v^{(k)}.
 \]
-Interpretación: en cada paso de tiempo, la componente de frecuencia $k$ queda multiplicada por $G_h(\theta_k)$. Tras $n$ pasos queda multiplicada por $G_h(\theta_k)^n$, de modo que la estabilidad de la frecuencia $k$ equivale a $|G_h(\theta_k)|\le C$ (con $C$ independiente de $h$ y $\Delta t$).
+Interpretación: en cada paso de tiempo, la componente de frecuencia $k$ queda multiplicada por $G_h(\theta_k)$. Tras $n$ pasos queda multiplicada por $G_h(\theta_k)^n$, por lo que la estabilidad uniforme hasta tiempo $T$ exige controlar estas potencias para todo $n\Delta t\le T$.
 
 \begin{proposition}[Equivalencia con estabilidad de Fourier]
 Si $S_h$ es circulante con factores de amplificación $G_h(\theta_k)$, entonces
 \[
 \|S_h^n\|_{2,h\to2,h}=\max_k|G_h(\theta_k)|^n.
 \]
-En particular, estabilidad de Lax--Richtmyer $\Leftrightarrow$ $\sup_{h,k}|G_h(\theta_k)|\le C$.
+En particular, para un tiempo final fijo $T$,
+\[
+\text{estabilidad de Lax--Richtmyer en }[0,T]
+\iff
+\sup_h\sup_{n\Delta t\le T}\max_k |G_h(\theta_k)|^n\le C_T.
+\]
+Además, esto es equivalente a la existencia de $\omega\in\mathbb{R}$ tal que, para $h$ suficientemente pequeño,
+\[
+\max_k|G_h(\theta_k)|\le e^{\omega\Delta t}
+\quad\Longleftrightarrow\quad
+\max_k|G_h(\theta_k)|=1+O(\Delta t).
+\]
 \end{proposition}
 
 \begin{proof}
-$S_h=F_h^{-1}\operatorname{diag}(G_h(\theta_k))F_h$ con $F_h$ unitario en $\ell^2_h$ (Teorema~\ref{thm:dft_unitary}). Las potencias $S_h^n$ se diagonalizan igual, y la norma operador es el máximo módulo.
+$S_h=F_h^{-1}\operatorname{diag}(G_h(\theta_k))F_h$ con $F_h$ unitario en $\ell^2_h$ (Teorema~\ref{thm:dft_unitary}). Por lo tanto,
+\[
+S_h^n=F_h^{-1}\operatorname{diag}(G_h(\theta_k)^n)F_h,
+\]
+y al tomar norma operador en $\ell_h^2$ se obtiene
+\[
+\|S_h^n\|_{2,h\to2,h}=\max_k|G_h(\theta_k)|^n.
+\]
+La equivalencia con Lax--Richtmyer en $[0,T]$ es inmediata al sustituir esta identidad en la definición
+\(
+\|S_h^n\|_{2,h\to2,h}\le C_T
+\) para todo $n\Delta t\le T$.
+
+Para la equivalencia con la cota por paso, sea $M_h:=\max_k|G_h(\theta_k)|$.
+
+Si $M_h\le e^{\omega\Delta t}$, entonces para todo $n\Delta t\le T$:
+\[
+\|S_h^n\|_{2,h\to2,h}=M_h^n\le e^{\omega n\Delta t}\le e^{\omega T},
+\]
+y el esquema es estable.
+
+Recíprocamente, si el esquema es estable en $[0,T]$, entonces existe $C_T$ con
+\[
+M_h^n\le C_T\quad\forall\,n\Delta t\le T.
+\]
+Tomando $n=N_h:=\lfloor T/\Delta t\rfloor$:
+\[
+M_h\le C_T^{1/N_h}=\exp\!\left(\frac{\log C_T}{N_h}\right).
+\]
+Para $\Delta t$ suficientemente pequeño, $N_h\ge T/(2\Delta t)$, luego
+\[
+M_h\le \exp\!\left(\frac{2\log C_T}{T}\,\Delta t\right)=e^{\omega\Delta t},
+\]
+con $\omega:=2\log(C_T)/T$. Finalmente,
+\[
+e^{\omega\Delta t}=1+\omega\Delta t+O(\Delta t^2),
+\]
+de donde $M_h=1+O(\Delta t)$.
 \end{proof}
 
 \subsection{Análisis de estabilidad de Fourier: explícito e implícito}
