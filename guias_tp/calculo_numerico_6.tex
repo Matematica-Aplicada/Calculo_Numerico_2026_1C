@@ -30,7 +30,7 @@
  \hrulefill
 
  \bigskip
- \centerline{\bf Práctica N$^\circ$ 6: Ecuaciones no-lineales}
+ \centerline{\bf Práctica N$^\circ$ 6: Métodos iterativos para Ecuaciones no-lineales}
  \bigskip
 
 \bej Considere la ecuación de Kepler
@@ -40,7 +40,7 @@ E=M+e\sin E.
 \begin{enumerate}[(a)]
 \item Reescriba la ecuación como iteración de punto fijo $E=g(E)$ y muestre que $g$ es una contracción en $\mathbb{R}$ siempre que $e<1$. Estime la constante de contracción.
 \item Escriba la iteración de Newton para $f(E)=E-M-e\sin E$ y verifique que el denominador $f'(E)=1-e\cos E$ no se anula para $e<1$.
-\item Para $M=\pi/4$ y $e=0.1$, calcule cuatro iteraciones de Newton partiendo de $E_0=M$.
+\item Para $M=\pi/4$ y $e=0.1$, calcule tres iteraciones de Newton partiendo de $E_0=M$.
 \end{enumerate}
 \fej
 
@@ -180,7 +180,7 @@ $\tilde{y}_{k+1}=y_k+h\,f(y_k)$.
 \end{enumerate}
 \fej
 
-\bej Para resolver $F(x)=0$ definimos la homotopía
+\bej\textbf{(*)} Para resolver $F(x)=0$ definimos la homotopía
 \[
 H(x,t) = F(x)-(1-t)F(x_0)=0, \quad t\in[0,1],
 \]
@@ -198,6 +198,80 @@ el predictor $x_{k+1}^{(0)}$ en función de $x_k$, $DF(x_k)$ y $F(x_0)$.
 verifique que su solución exacta es $x(t)=\ln(1+t)$ y concluya que $x(1)=\ln 2$.
 Calcule el predictor $x_1^{(0)}$ con $\Delta t=1$ y realice una iteración de Newton como corrector.
 Compare con la raíz exacta $\ln 2\approx 0.693$.
+\end{enumerate}
+\fej
+
+\bej\textbf{(*)} (Búsqueda de sección áurea para minimización unidimensional.) Sea $f:[a_0,b_0]\to\R$ continua y unimodal en $[a_0,b_0]$ (es decir, existe un único minimizador
+$x_\ast\in[a_0,b_0]$ y $f$ decrece a la izquierda de $x_\ast$ y crece a su derecha).
+El método de sección áurea mantiene dos puntos interiores
+\[
+	x_1 = b_k - \tau(b_k-a_k),\qquad x_2 = a_k + \tau(b_k-a_k),\qquad 0<\tau<1,
+\]
+y, según la comparación entre $f(x_1)$ y $f(x_2)$, descarta uno de los extremos para construir
+$[a_{k+1},b_{k+1}]\subset[a_k,b_k]$.
+\begin{enumerate}[(a)]
+	\item Imponga la condición de \emph{reutilización}: al pasar de $[a_k,b_k]$ a $[a_{k+1},b_{k+1}]$,
+	uno de los dos puntos interiores del paso $k$ debe coincidir con un punto interior del paso $k+1$.
+	Deduza que $\tau$ debe satisfacer $\tau^2 = 1-\tau$ y concluya que $\tau = \frac{\sqrt{5}-1}{2}$.
+	\item Demuestre que, con esta elección de $\tau$, en cada iteración se realiza \textbf{una sola}
+	evaluación nueva de la función (la otra se reutiliza de la iteración anterior).
+	\item Pruebe que la longitud del intervalo verifica $b_{k+1}-a_{k+1} = \tau\,(b_k-a_k)$. A partir de esto, obtenga una cota del número de iteraciones necesario para garantizar
+	$b_k-a_k\leq \varepsilon$.
+	\item Demuestre que el minimizador $x_\ast$ pertenece a todos los intervalos generados y por lo tanto el método converge al minimizador. Si define la aproximación
+	$m_k=(a_k+b_k)/2$, pruebe además que $m_k\to x_\ast$.
+\end{enumerate}
+\fej
+
+\bej\textbf{(*)} (Newton para optimización en 1D.)
+Sea $f\in C^2(I)$, con $I\subset\R$ intervalo, y suponga que $f$ es estrictamente convexa en $I$.
+Para hallar el minimizador $x_\ast$ se busca un cero de $g(x)=f'(x)$.
+\begin{enumerate}[(a)]
+	\item A partir de Newton para $g(x)=0$, deduzca la iteración
+	\[
+		x_{k+1}=x_k-\frac{f'(x_k)}{f''(x_k)}.
+	\]
+	Interprete este paso como minimización de la aproximación cuadrática local de $f$ en $x_k$.
+
+	\item Suponga que existe $x_\ast\in I$ tal que $f'(x_\ast)=0$. Use la convexidad estricta para justificar
+	que $x_\ast$ es el único minimizador en $I$.
+
+	\item (Convergencia) Suponga además que $f\in C^3$ en un entorno de $x_\ast$ y que
+	$f''(x_\ast)>0$. Demuestre que, si $x_0$ es suficientemente cercano a $x_\ast$, la iteración anterior
+	converge a $x_\ast$ (de hecho, con orden cuadrático).
+\end{enumerate}
+\fej
+
+\bej\textbf{(**)} (Descenso por gradiente en 1D.)
+Sea $f:\R\to\R$ de clase $C^1$, convexa, y suponga que su derivada es Lipschitz:
+\[
+|f'(x)-f'(y)|\le L|x-y|\qquad (L>0).
+\]
+Considere descenso por gradiente con paso constante
+\[
+x_{k+1}=x_k-\alpha f'(x_k),\qquad \alpha>0.
+\]
+\begin{enumerate}[(a)]
+	\item Defina $\phi(t)=f\bigl(v+t(u-v)\bigr)$ para $t\in[0,1]$. Por el TFC, obtenga
+	\[
+	f(u) - f(v) = \int_0^1 f'\bigl(v+t(u-v)\bigr)(u-v)\,dt.
+	\]
+	\item Usando la condición de Lipschitz para $f'$, pruebe que
+	\[
+	f(u)\le f(v)+f'(v)(u-v)+\frac{L}{2}(u-v)^2,
+	\]
+	y concluya que
+	\[
+	f(x_{k+1})\le f(x_k)-\alpha\Bigl(1-\frac{L\alpha}{2}\Bigr)|f'(x_k)|^2.
+	\]
+
+	\item Deduzca que, si $0<\alpha<2/L$, la sucesión $\{f(x_k)\}$ es decreciente y
+	$\sum_{k\ge0}|f'(x_k)|^2<\infty$.
+
+	\item Suponga además que $f$ tiene minimizador único $x_\ast$ (por ejemplo, si $f$ es estrictamente convexa).
+	Concluya que $x_k\to x_\ast$ para todo $x_0\in\R$ cuando $0<\alpha<2/L$.
+
+	\item Aplique el método a $f(x)=\frac12(x-3)^2$ y verifique explícitamente para qué valores de
+	$\alpha$ hay convergencia.
 \end{enumerate}
 \fej
 
