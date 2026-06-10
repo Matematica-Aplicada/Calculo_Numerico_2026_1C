@@ -45,7 +45,7 @@
 El cálculo numérico se ocupa de resolver problemas matemáticos mediante algoritmos, es decir, de la ``construcción efectiva'' de soluciones a problemas matemáticos, y se preocupa por la precisión y la eficiencia de los métodos desarrollados.
 El cálculo numérico parte de la realización concreta de la visión de la matemática constructiva: la filosofía según la cual un objeto matemático existe cuando disponemos de un algoritmo para construirlo. En el Capítulo~1 veremos que esta idea está lejos de ser trivial, mostrando que el conjunto de números ``efectivamente computables'' es apenas \textit{numerable} --- con lo cual, para la inmensa mayoría de los números reales no puede existir un algoritmo capaz de aproximarlos. También en ese capítulo introduciremos la noción de complejidad computacional, que cuantifica los recursos necesarios para resolver un problema.
 
-Uno de los hilos centrales del apunte es el problema de representar y aproximar funciones, y un tópico recurrente para abordar este problema es el de la ortogonalidad. 
+Uno de los hilos centrales del apunte es el problema de representar y aproximar funciones, y un tópico recurrente para abordar este problema es el de la ortogonalidad.
 
 En el Capítulo~2 introducimos la noción de espacios de producto interno, que generalizan la geometría euclidiana a espacios abstractos. En estos espacios, la ortogonalidad y las proyecciones permiten construir algoritmos estables y eficientes para resolver problemas de álgebra lineal, como sistemas lineales, autovalores, y problemas de cuadrados mínimos.
 
@@ -53,7 +53,7 @@ En el Capítulo~3 estudiamos la interpolación polinomial: dado un conjunto de p
 
 En el Capítulo~4 retomamos la noción de ortogonalidad, esta vez en espacios de funciones. Estudiamos las series de Fourier y las expansiones en polinomios de Chebyshev como casos centrales: para funciones suaves su convergencia es espectral ---exponencialmente rápida---, lo que las hace especialmente útiles en la práctica.  Nuestro interés central será entender este régimen de convergencia rápida y el error de proyección, mientras que dejamos para cursos teóricos avanzados las cuestiones de convergencia puntual en espacios más generales.
 
-El Capítulo~5 aborda ecuaciones diferenciales, donde centralmente utilizaremos el análisis de Fourier discreto para estudiar estabilidad (análisis de von Neumann). 
+El Capítulo~5 aborda ecuaciones diferenciales, donde centralmente utilizaremos el análisis de Fourier discreto para estudiar estabilidad (análisis de von Neumann).
 
 El Capítulo~6 introduce métodos iterativos para optimización y ecuaciones no lineales como el método de bisección, Newton, o el descenso por gradiente, este último conocido por su aplicación al entrenamiento de redes neuronales.
 
@@ -6943,16 +6943,38 @@ La condición $|g'|\le q$ y el Teorema del Valor Medio dan
 $|g(x)-g(y)|\le q|x-y|$ para todo $x,y\in I$.
 
 \textit{Existencia.}
-La sucesión $\{x_k\}$ es de Cauchy en $I$.
-Dados $n>m$, se tiene por la desigualdad triangular y la cota geométrica:
+Primero,
+\[
+|x_{j+1}-x_j|=|g(x_j)-g(x_{j-1})|\le q|x_j-x_{j-1}|\le\cdots\le q^j|x_1-x_0|.
+\]
+Luego, para $n>m$, por desigualdad triangular:
 \[
 |x_n-x_m|\le\sum_{j=m}^{n-1}|x_{j+1}-x_j|
            \le\sum_{j=m}^{n-1}q^j|x_1-x_0|
-           =\frac{q^m-q^n}{1-q}\,|x_1-x_0|
+           =\left(\sum_{j=m}^{n-1}q^j\right)|x_1-x_0|.
+\]
+Para la suma de potencias, factorizamos $q^m$ y reindexamos:
+\[
+\sum_{j=m}^{n-1}q^j
+=q^m\sum_{j=m}^{n-1}q^{j-m}
+=q^m\sum_{r=0}^{n-1-m}q^r.
+\]
+Resultado auxiliar (fórmula geométrica finita):
+\[
+\sum_{r=0}^{N}q^r=\frac{1-q^{N+1}}{1-q}\qquad(q\neq1).
+\]
+Con $N=n-1-m$:
+\[
+\sum_{j=m}^{n-1}q^j
+=q^m\frac{1-q^{n-m}}{1-q}
+=\frac{q^m-q^n}{1-q}.
+\]
+Entonces
+\[
+|x_n-x_m|\le\frac{q^m-q^n}{1-q}\,|x_1-x_0|
            \le\frac{q^m}{1-q}\,|x_1-x_0|.
 \]
-Como $q<1$, el lado derecho tiende a $0$ cuando $m\to\infty$,
-por lo que $\{x_k\}$ es de Cauchy.
+Como $q<1$, el lado derecho tiende a $0$ cuando $m\to\infty$, así $\{x_k\}$ es de Cauchy.
 $\mathbb{R}$ es completo, luego existe $x^*=\lim_{k\to\infty}x_k\in I$.
 Tomando límite en $x_{k+1}=g(x_k)$ y usando la continuidad de $g$
 se obtiene $x^*=g(x^*)$.
@@ -6981,10 +7003,19 @@ sin conocer la ubicación de $x^*$.
 \end{corollary}
 
 \begin{proof}
-Por la condición de contracción, $|x_{j+1}-x_j|\le q|x_j-x_{j-1}|\le\cdots\le q^j|x_1-x_0|$.
-Luego
+Para todo $n>k$ se tiene la identidad telescópica finita
+\[
+x_n-x_k=\sum_{j=k}^{n-1}(x_{j+1}-x_j).
+\]
+Como $x_n\to x^*$, al tomar límite en $n$:
+\[
+x^*-x_k=\sum_{j=k}^{\infty}(x_{j+1}-x_j),
+\]
+y por tanto
 \[
 |x_k-x^*|\le\sum_{j=k}^{\infty}|x_{j+1}-x_j|
+=\sum_{j=k}^{\infty}|g(x_j)-g(x_{j-1})|
+\le\sum_{j=k}^{\infty}q|x_j-x_{j-1}|
 \le\sum_{j=k}^{\infty}q^j|x_1-x_0|
 =\frac{q^k}{1-q}\,|x_1-x_0|.\qedhere
 \]
@@ -7127,7 +7158,7 @@ sin necesidad de estar muy próximo a la raíz.
 \begin{theorem}[Newton para funciones estrictamente convexas]\label{thm:newton_convex}
 Sea $f\in C^2([a,b])$ con $f''(x)>0$ para todo $x\in[a,b]$,
 y sea $x^*\in(a,b)$ la única raíz de $f$ en ese intervalo.
-Si $x_0\in[x^*,b]$ (de modo que $f(x_0)\ge 0$ y $f'(x_0)>0$), entonces:
+Si $x_0\in[x^*,b]$ y $f(x_0)\ge 0$ (condición de Fourier), entonces:
 \begin{enumerate}[(i)]
 \item Los iterados satisfacen $x^*\le x_{k+1}\le x_k$ para todo $k\ge 0$.
 \item La sucesión $\{x_k\}$ converge monótonamente a $x^*$.
@@ -7137,21 +7168,76 @@ La condición $f(x_0)>0$, $f''(x_0)>0$ se denomina \emph{condición de Fourier}.
 \end{theorem}
 
 \begin{proof}
-Dado que $f$ es convexa, la recta tangente a su gráfica en $(x_k,f(x_k))$ queda
-por debajo de la gráfica: $f(x)\ge f(x_k)+f'(x_k)(x-x_k)$ para todo $x$.
-Evaluando en $x=x^*$:
+Sea
 \[
-0=f(x^*)\ge f(x_k)+f'(x_k)(x^*-x_k).
+g(x)=x-\frac{f(x)}{f'(x)},\qquad x_{k+1}=g(x_k).
 \]
-Como $f(x_k)\ge 0$ y $f'(x_k)>0$, se deduce
+Como $f$ es continua, $x^*$ es la única raíz y $f(x_0)\ge0$ con $x_0\ge x^*$,
+se tiene $f(x)\ge0$ para todo $x\in[x^*,x_0]$.
+
+\textit{Paso 1 (función creciente).}
+Si $x\in(x^*,x_0]$, entonces $f(x)>0$ (unicidad de raíz).
+Por el Teorema del Valor Medio entre $x^*$ y $x$, existe $\xi\in(x^*,x)$ tal que
 \[
-x^*-x_k\le-\frac{f(x_k)}{f'(x_k)}<0,
+f'(\xi)=\frac{f(x)-f(x^*)}{x-x^*}=\frac{f(x)}{x-x^*}>0.
 \]
-lo que da $x_{k+1}=x_k-f(x_k)/f'(x_k)\ge x^*$.
-Por otro lado, $x_{k+1}\le x_k$ porque $f(x_k)\ge 0$ y $f'(x_k)>0$.
-Así $x^*\le x_{k+1}\le x_k$, y como la sucesión es monótona y acotada por
-abajo por $x^*$, converge.  El límite es $x^*$ por continuidad de $g$.
+Como $f''>0$, $f'$ es creciente, luego $f'(x)\ge f'(\xi)>0$.
+
+\textit{Paso 2 (cota inferior).}
+Tomemos $x_k\in[x^*,x_0]$. La convexidad da
+\[
+f(x^*)\ge f(x_k)+f'(x_k)(x^*-x_k),
+\]
+y como $f(x^*)=0$:
+\[
+0\ge f(x_k)+f'(x_k)(x^*-x_k).
+\]
+Además, por el Paso 1, $f'(x_k)>0$, y podemos dividir:
+\[
+x_{k+1}=x_k-\frac{f(x_k)}{f'(x_k)}\ge x^*.
+\]
+
+\textit{Paso 3 (monotonía).}
+Como $f$ es creciente en $(x^*,x_0]$ y $x_k\ge x^*$, se tiene $f(x_k)\ge0$.
+Entonces
+\[
+x_{k+1}=x_k-\frac{f(x_k)}{f'(x_k)}\le x_k.
+\]
+Por lo tanto, $x^*\le x_{k+1}\le x_k$.
+Repitiendo este paso desde $x_0$, la sucesión es decreciente y acotada inferiormente por $x^*$,
+luego converge a algún $\ell\ge x^*$.
+
+Además, $g$ es continua en un entorno de $\ell$ (si $\ell>x^*$, por el mismo argumento
+del Paso 1 se tiene $f'(\ell)>0$), y por tanto
+\[
+\ell=\lim_{k\to\infty}x_{k+1}=\lim_{k\to\infty}g(x_k)=g(\ell).
+\]
+Así, $f(\ell)=0$, contradicción con la unicidad de la raíz y $\ell>x^*$.
+Por lo tanto, $\ell=x^*$.
 La convergencia cuadrática se sigue del Teorema~\ref{thm:newton_1d_conv}.
+\end{proof}
+
+\begin{corollary}[Caso cóncavo (simétrico)]\label{cor:newton_concavo}
+Sea $f\in C^2([a,b])$ con $f''(x)<0$ para todo $x\in[a,b]$,
+y sea $x^*\in(a,b)$ la única raíz de $f$ en ese intervalo.
+Si $x_0\in[a,x^*]$ y $f(x_0)\le 0$ (condición de Fourier), entonces:
+\begin{enumerate}[(i)]
+\item Los iterados satisfacen $x_k\le x_{k+1}\le x^*$ para todo $k\ge 0$.
+\item La sucesión $\{x_k\}$ converge monótonamente a $x^*$.
+\item La convergencia es cuadrática.
+\end{enumerate}
+En particular, este es el caso de la condición de Fourier
+$f(x_0)<0$ y $f''(x_0)<0$.
+\end{corollary}
+
+\begin{proof}
+Aplicamos el Teorema~\ref{thm:newton_convex} a $\tilde f=-f$, que es estrictamente convexa.
+La iteración de Newton no cambia porque
+\[
+x-\frac{\tilde f(x)}{\tilde f'(x)}=x-\frac{-f(x)}{-f'(x)}=x-\frac{f(x)}{f'(x)}.
+\]
+Además, $\tilde f(x_0)\ge 0$ y $\tilde f''(x_0)>0$, de modo que se obtiene la conclusión
+monótona y la convergencia cuadrática para la misma sucesión $\{x_k\}$.
 \end{proof}
 
 \begin{example}[Ley de Wien: convergencia desde $x_0\ge x^*$]
