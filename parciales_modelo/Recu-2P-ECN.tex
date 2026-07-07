@@ -1,0 +1,167 @@
+\documentclass[12pt]{article}%
+\usepackage{graphicx, verbatim}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{enumerate}
+\usepackage[spanish, provide=*]{babel}
+\usepackage{palatino}
+\usepackage[utf8]{inputenc}
+
+
+\setlength{\headsep}{-2cm} \setlength{\oddsidemargin}{-0.9cm}
+\setlength{\evensidemargin}{1.5cm} \setlength{\textheight}{25cm}
+\setlength{\textwidth}{17.7cm} \setlength{\parindent}{0cm}
+\parindent=0mm
+
+\pagestyle{empty}
+
+\def\R{\mathbb{R}}
+\def\Z{\mathbb{Z}}
+\def\C{\mathbb{C}}
+\def\N{\mathbb{N}}
+\def\A{\mathcal{Z}}
+\def\V{\mathcal V}
+\def\W{\mathcal W}
+\def\F{\mathcal F}
+\def\a{\alpha}
+\def\vf{\varphi}
+\def\re{\operatorname{Re}}
+\def\log{\operatorname{Log}}
+\def\adj{\operatorname{adj}}
+\def\img{\operatorname{Im}}
+\def\nu{\operatorname{Nu}}
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+% \renewcommand{\labelenumi}{\bf{(\numb{enumi})}}
+\renewcommand{\labelenumii}{(\alph{enumii})}
+
+\begin{document}
+
+\pagestyle{empty}%
+
+\label{t1}
+
+
+\bigskip
+
+%\hfill\textsc{\textbf{Tema }}
+
+\textsc{Nombre y apellido:}
+
+\vskip0.2cm
+
+\textsc{DNI y Libreta Universitaria:}
+
+\vskip0.2cm
+
+\textsc{Carrera:}
+
+\vskip0.4cm
+
+
+\def\espac{\LARGE$\phantom{\displaystyle\sum\, \,}$}
+
+\begin{tabular}[c]{|c | c | c | c| c|}
+\hline
+1 & 2 & 3 & 4 & Calif. \\
+\hline
+\espac& \espac & \espac & \espac & \espac \\
+\hline
+\end{tabular}
+
+\bigskip
+\medskip
+
+\noindent
+
+\hrulefill\ \vskip8pt
+
+\begin{large}\centerline{{\textbf{C\'alculo Num\'erico / Elementos de C\'alculo Num\'erico}}}\end{large}
+
+\vskip.2cm
+
+\begin{large}\centerline{{\textbf{Recuperatorio del segundo parcial - 6 de julio de 2026}}}\end{large}
+
+\hrulefill
+
+\vskip 0.5cm
+
+\begin{exercise}Considere el problema estacionario de advección-difusión-reacción:$$-u''(x) + \sigma u'(x) + \mu u(x) = f(x), \quad x \in [0, 2\pi],$$con $\sigma \neq 0$, $\mu > 0$ y condiciones de borde periódicas $u(0) = u(2\pi)$ y $u'(0) = u'(2\pi)$. Suponga que $f \in C_{per}^2([0, 2\pi])$ y admite el desarrollo en serie de Fourier $$f(x) = \sum_{k\in\mathbb{Z}} \hat{f}_k e^{ikx},$$ donde $|\hat{f}_k| = O(|k|^{-2})$. Se busca una solución de la forma $u(x) = \sum_{k\in\mathbb{Z}} \hat{u}_k e^{ikx}$. Sea $S_N(u)(x) = \sum_{|k|\le N} \hat{u}_k e^{ikx}$ el truncado de la serie de la solución.
+\begin{enumerate}[(a)]
+\item Determine el multiplicador (o símbolo) $G_k$ que satisface $\hat{u}_k = G_k \hat{f}_k$.
+
+%\item Analice el comportamiento asintótico de $|G_k|$ cuando $|k| \to \infty$. Sabiendo que $f \in C_{per}^2$, utilice este resultado para justificar qué nivel de derivabilidad se encuentra garantizada para la solución $u$.
+
+\item Muestre que el error de truncamiento para la primera derivada en norma $L^2$ satisface la cota
+\vspace{-0.3cm}
+$$\|u' - (S_N(u))'\|_{L^2} \le \frac{C}{N^{5/2}}$$para alguna constante $C > 0$ independiente de $N$. 
+\end{enumerate}
+\end{exercise}
+
+\vskip 0.5cm
+
+\begin{exercise}
+Considere la ecuación
+\[
+u_t= 3 u_{xx}-u,\qquad 0<x<1, \qquad t>0,
+\]
+con condiciones de borde periódicas $u(0,t)=u(1,t)$.
+Use una malla uniforme $x_j=jh$, $j=0,\dots,M$, y $t^n=n\Delta t$. Se propone el esquema Euler explícito en tiempo y diferencia centrada en espacio.
+\begin{enumerate}[(a)]
+\item Obtenga el sistema lineal $\mathbf u^{n+1} = A\,\mathbf u^{n}$ que hay que plantear en cada paso de tiempo.
+
+%\item Usando resultados vistos en clase, estime el orden de decaimiento del error de truncamiento.
+
+\item Haga un an\'alisis de Fourier y
+obtenga el factor de amplificaci\'on $G(\theta)$. Encuentre condiciones sobre $\Delta t>0$ y $h>0$ que garanticen la estabilidad de Fourier del esquema.
+\end{enumerate}
+\end{exercise}
+
+\vskip 0.5cm
+
+\begin{exercise}
+Considere el siguiente problema de valor inicial:$$y' = -y + t, \quad y(0) = 0, \quad t \in [0, 1].$$Se propone aproximar la solución utilizando el siguiente método:$$y_{n+1} = y_n + \Delta t f\left(t_n + \frac{\Delta t}{2}, y_n + \frac{\Delta t}{2} f(t_n, y_n)\right).$$
+\begin{enumerate}[(a)]
+\item Escriba este método numérico en la forma general $y_{n+1} = y_n + \Delta t \,\Phi(t_n, y_n, \Delta t)$ y escriba explícitamente la función incremento $\Phi(t, y, \Delta t)$ para esta ecuación diferencial concreta.
+
+\item Determine la constante de Lipschitz $L_\Phi$ de la función incremento respecto a la variable $y$. Asumiendo un paso razonable $\Delta t < 2$, verifique que se cumple la cota $L_\Phi \le 1$.
+
+\item Suponga que el error de truncamiento local está acotado por $|\tau_n| \le \frac{\Delta t^2}{2}$. Utilizando la cota $L_\Phi \le 1$ obtenida en el ítem anterior, determine una condición sobre el paso $\Delta t$ que garantice que el error global sea menor a $10^{-3}$ en todo el dominio.
+\end{enumerate}
+\end{exercise}
+
+% \begin{exercise} Considere el problema escalar$$y' = -\alpha y + h(y), \quad y(0) = y_0,$$donde $\alpha > 0$ y $h: \mathbb{R} \to \mathbb{R}$ es Lipschitz con constante $L_h$. Considere el siguiente esquema IMEX, donde la parte lineal se aproxima con Crank-Nicolson y la parte no lineal con Euler Explícito:$$\frac{y^{n+1} - y^n}{\Delta t} = -\alpha \frac{y^{n+1} + y^n}{2} + h(y^n), \quad n \ge 0.$$
+% \begin{enumerate}[(a)]
+% \item Despeje $y^{n+1}$ y escriba el operador de avance $\Phi_{\Delta t}$ que satisface $y^{n+1} = \Phi_{\Delta t}(y^n)$.
+
+% \item Halle una constante de Lipschitz para $\Phi_{\Delta t}$ en función de $\Delta t, \alpha$ y $L_h$. Demuestre que, para cualquier $\Delta t > 0$, se satisface la cota $\text{Lip}(\Phi_{\Delta t}) \le 1 + \Delta t L_h$. Concluya que el método posee una constante de Lipschitz independiente del parámetro $\alpha$.
+
+% \item Considere $h(y) = \sin(y)$ y $t \in [0, 1]$. Asuma que el esquema propuesto posee un error de truncamiento local acotado por $|\tau_n| \le 2 \Delta t$. Determine una cota superior para $\Delta t$ que garantice que el error global sea menor a $10^{-3}$ en $[0,1]$.
+% \end{enumerate}
+% \end{exercise}
+
+\vskip 0.5cm
+
+\begin{exercise}
+Se desea aproximar la única raíz real $x^*$ de la función $f(x) = x^3 + x - 1$, la cual se sabe que pertenece al intervalo $I = [0, 1]$. Para ello, se propone una familia de métodos iterativos de punto fijo de la forma $x_{k+1} = g_\alpha(x_k)$, donde $$g_\alpha(x) = x - \alpha f(x).$$
+\begin{enumerate}[(a)]
+\item Determine analíticamente para qué valores del parámetro $\alpha > 0$ la función $g_\alpha$ resulta una contracción estricta en el intervalo $I$.
+
+\item Fije el parámetro en $\alpha = 1/4$ y verifique las hipótesis del método de punto fijo para garantizar que la sucesión $\{x_k\}$ converge a la raíz $x^*$ comenzando desde cualquier punto inicial $x_0 \in [0, 1]$.
+
+%\item Suponga que, alternativamente, decide utilizar el método de la secante para encontrar $x^*$. Escriba la fórmula iterativa explícita para este caso. Si la sucesión de la secante converge a la raíz, ¿cómo se compara cualitativamente su orden de convergencia asintótico frente al método de punto fijo del ítem (b)? Justifique brevemente basándose en las propiedades de $f$.
+\end{enumerate}
+\end{exercise}
+
+\vskip 2.5cm
+
+\begin{center}
+    \textit{En todos los casos debe justificar sus respuestas.}
+\end{center}
+
+
+\end{document}

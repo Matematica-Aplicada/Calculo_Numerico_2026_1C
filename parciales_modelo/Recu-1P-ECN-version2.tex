@@ -1,0 +1,165 @@
+\documentclass[12pt]{article}%
+\usepackage{graphicx, verbatim}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{enumerate}
+\usepackage[spanish, provide=*]{babel}
+\usepackage{palatino}
+\usepackage[utf8]{inputenc}
+
+
+\setlength{\headsep}{-2cm} \setlength{\oddsidemargin}{-0.9cm}
+\setlength{\evensidemargin}{1.5cm} \setlength{\textheight}{25cm}
+\setlength{\textwidth}{17.7cm} \setlength{\parindent}{0cm}
+\parindent=0mm
+
+\pagestyle{empty}
+
+\def\R{\mathbb{R}}
+\def\Z{\mathbb{Z}}
+\def\C{\mathbb{C}}
+\def\N{\mathbb{N}}
+\def\A{\mathcal{Z}}
+\def\V{\mathcal V}
+\def\W{\mathcal W}
+\def\F{\mathcal F}
+\def\a{\alpha}
+\def\vf{\varphi}
+\def\re{\operatorname{Re}}
+\def\log{\operatorname{Log}}
+\def\adj{\operatorname{adj}}
+\def\img{\operatorname{Im}}
+\def\nu{\operatorname{Nu}}
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+% \renewcommand{\labelenumi}{\bf{(\numb{enumi})}}
+\renewcommand{\labelenumii}{(\alph{enumii})}
+
+\begin{document}
+
+\pagestyle{empty}%
+
+\label{t1}
+
+
+\bigskip
+
+%\hfill\textsc{\textbf{Tema }}
+
+\textsc{Nombre y apellido:}
+
+\vskip0.2cm
+
+\textsc{DNI y Libreta Universitaria:}
+
+\vskip0.2cm
+
+\textsc{Carrera:}
+
+\vskip0.4cm
+
+
+\def\espac{\LARGE$\phantom{\displaystyle\sum\, \,}$}
+
+\begin{tabular}[c]{|c | c | c | c| c|}
+\hline
+1 & 2 & 3 & 4 & Calif. \\
+\hline
+\espac& \espac & \espac & \espac & \espac \\
+\hline
+\end{tabular}
+
+\bigskip
+\medskip
+
+\noindent
+
+\hrulefill\ \vskip8pt
+
+\begin{large}\centerline{{\textbf{Cálculo Numérico / Elementos de Cálculo Numérico}}}\end{large}
+
+\vskip.2cm
+
+\begin{large}\centerline{{\textbf{Recuperatorio del Primer Parcial - 29 de junio de 2026}}}\end{large}
+
+\hrulefill
+
+\vskip 0.5cm
+
+\begin{exercise}
+Supongamos que tenemos los datos experimentales $(t_1, y_1), \dots, (t_m, y_m)$ con $m > 2$ y se desea ajustar un modelo exponencial de la forma $y(t) = \alpha \,e^{\beta t}$.
+
+\begin{enumerate}
+    \item[a)] Muestre cómo linealizar este modelo para transformarlo en un problema de cuadrados mínimos lineal estándar de la forma $\min_{x\in \R^2} \|Ax - b\|_2^2$. Defina explícitamente el contenido y las dimensiones de la matriz $A$ y de los vectores $x$ y $b$.
+
+    \item[b)] Suponga que la matriz $A$ obtenida en a) está mal condicionada. Dada su descomposición en valores singulares (SVD), $A = U\Sigma V^T$, halle la expresión explícita de la solución de cuadrados mínimos $x^*$ utilizando $U$, $\Sigma$ y $V$.
+\end{enumerate}
+
+\end{exercise}
+
+\vskip 0.5cm
+
+\begin{exercise}
+Suponga que se conocen $N$ valores equiespaciados $f_j = f(x_j)$ de una función periódica y suave $f(x)$ en el intervalo $[0, 2\pi)$, donde $x_j = j \frac{2\pi}{N}$ para $j=0, \dots, N-1$. Se desea aproximar los valores de la derivada $f'(x_j)$ en los mismos nodos.
+
+\begin{enumerate}
+
+    \item[a)] Si los datos se interpolan mediante el polinomio trigonométrico $p(x) = \sum_{k=0}^{N-1} c_k e^{ikx}$, indique algebraicamente cómo se obtienen los coeficientes $d_k$ del polinomio trigonométrico correspondiente a su derivada $p'(x)$ en función de los coeficientes $c_k$.
+
+    \item[b)] Basándose en el inciso anterior, proponga un algoritmo que reciba el vector de datos $f \in \mathbb{C}^N$ y calcule el vector de derivadas aproximadas $f' \in \mathbb{C}^N$ en los nodos $x_j$. Detalle explícitamente en qué pasos utiliza la FFT y la IFFT. Determine el costo computacional de su algoritmo
+
+\end{enumerate}
+\end{exercise}
+
+
+
+\begin{exercise}
+Se desea aproximar la integral definida $$I = \int_{0}^1 \ln(x) g(x) \, dx,$$ donde $g \in C^\infty([-1, 1])$ es una función dada. Se desea construir una regla de cuadratura en la forma
+
+$$ Q(g) = \sum_{j=0}^{n} w_j g(x_j),$$
+utilizando nodos equiespaciados $\{ x_j = -1 + jh \}_{j=0}^{n}$, con $h = \frac{2}{n}$, y pesos $\{ w_j \}_{j=0}^{n}$ a determinar.
+
+\begin{enumerate}[(a)]
+    \item Obtenga un sistema lineal para determinar los pesos $w_j$ de manera que la regla de cuadratura sea exacta para polinomios de grado menor o igual a $n$, es decir, para $Q(x^k)=I(x^k)$ con $k=0,1,2, \dots, n$. (Ejemplifique con el caso $n=4$).
+    \item Vincule la matriz obtenida en el sistema lineal de (a) con una matriz conocida, e identifique el inconveniente de invertir \textit{numéricamente} la matriz obtenida cuando $n$ es grande. 
+    \item Proponga un método alternativo para determinar los pesos $w_j$ que no involucre invertir \textit{numéricamente} la matriz obtenida en (a). (Sugerencia: considere la base de Lagrange.).
+\end{enumerate}
+
+\end{exercise}
+
+
+
+
+
+\begin{exercise}
+Se desea calcular eficientemente la $N$-ésima potencia de una matriz $A \in \mathbb{R}^{n \times n}$ y la suma de su serie geométrica matricial $S_N = \sum_{j=0}^{N-1} A^j$, donde $N = 2^m$.
+
+Se propone un algoritmo iterativo que en cada paso $k$ actualiza una matriz extendida $$M_k = \begin{pmatrix} X_k & Y_k \end{pmatrix} \in \mathbb{R}^{n \times 2n},$$ compuesta por dos bloques cuadrados puestos en forma horizontal. El algoritmo se inicializa con $M_0 = \begin{pmatrix} A & I \end{pmatrix}$ (donde $I$ es la identidad de $n \times n$) y en cada iteración $k = 0, \dots, m-1$ actualiza los bloques de la siguiente manera:
+\begin{equation*}
+    X_{k+1} = X_k^2, \quad Y_{k+1} = X_k Y_k + Y_k
+\end{equation*}
+
+\begin{enumerate}
+    \item[a)] Escriba en pseudocódigo un algoritmo iterativo que, dadas la matriz $A$ y el entero $m$, calcule y devuelva los bloques finales $X_m$ e $Y_m$.
+
+    \item[b)] Demuestre por inducción (o verifique para $m=1$ y $m=2$) que después de $m$ iteraciones, los bloques obtenidos corresponden exactamente a $X_m = A^{2^m}$ y $Y_m = \sum_{j=0}^{2^m-1} A^j$.
+
+    \item[c)] Determine el costo computacional de su algoritmo contando cuántas multiplicaciones de matrices de $n \times n$ se realizan en total en función de $m$. Compárelo con la cantidad de multiplicaciones matriciales que requeriría calcular $S_N$ directamente.
+\end{enumerate}
+
+\end{exercise}
+
+
+
+\vspace{2.5cm}
+
+\begin{center}
+JUSTIFIQUE TODAS SUS RESPUESTAS
+\end{center}
+
+\end{document}\grid
+\grid

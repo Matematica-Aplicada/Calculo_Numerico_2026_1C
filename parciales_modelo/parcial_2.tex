@@ -1,0 +1,196 @@
+\documentclass[12pt]{article}%
+\usepackage{graphicx, verbatim}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{enumerate}
+\usepackage[spanish, provide=*]{babel}
+\usepackage{palatino}
+\usepackage[utf8]{inputenc}
+
+
+\setlength{\headsep}{-2cm} \setlength{\oddsidemargin}{-0.9cm}
+\setlength{\evensidemargin}{1.5cm} \setlength{\textheight}{25cm}
+\setlength{\textwidth}{17.7cm} \setlength{\parindent}{0cm}
+\parindent=0mm
+
+\pagestyle{empty}
+
+\def\R{\mathbb{R}}
+\def\Z{\mathbb{Z}}
+\def\C{\mathbb{C}}
+\def\N{\mathbb{N}}
+\def\A{\mathcal{Z}}
+\def\V{\mathcal V}
+\def\W{\mathcal W}
+\def\F{\mathcal F}
+\def\a{\alpha}
+\def\vf{\varphi}
+\def\re{\operatorname{Re}}
+\def\log{\operatorname{Log}}
+\def\adj{\operatorname{adj}}
+\def\img{\operatorname{Im}}
+\def\nu{\operatorname{Nu}}
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+% \renewcommand{\labelenumi}{\bf{(\numb{enumi})}}
+\renewcommand{\labelenumii}{(\alph{enumii})}
+
+\begin{document}
+
+\pagestyle{empty}%
+
+\label{t1}
+
+
+\bigskip
+
+%\hfill\textsc{\textbf{Tema }}
+
+\textsc{Nombre y apellido:}
+
+\vskip0.2cm
+
+\textsc{DNI y Libreta Universitaria:}
+
+\vskip0.2cm
+
+\textsc{Carrera:}
+
+\vskip0.2cm
+
+\textsc{Mail:}
+
+\vskip0.4cm
+
+
+\def\espac{\LARGE$\phantom{\displaystyle\sum\, \,}$}
+
+\begin{tabular}[c]{|c | c | c | c| c|}
+\hline
+1 & 2 & 3 & 4 & Calif. \\
+\hline
+\espac& \espac & \espac & \espac & \espac \\
+\hline
+\end{tabular}
+
+\bigskip
+\medskip
+
+\noindent
+
+\hrulefill\ \vskip8pt
+
+\begin{large}\centerline{{\textbf{C\'alculo Num\'erico / Elementos de C\'alculo Num\'erico}}}\end{large}
+
+\vskip.2cm
+
+\begin{large}\centerline{{\textbf{Segundo Parcial - 24 de junio de 2026}}}\end{large}
+
+\hrulefill
+
+\vskip 0.5cm
+
+\begin{exercise}[Matriz de diferenciaci\'on de Chebyshev para ecuaci\'on diferencial ordinaria]
+Considere el problema de contorno
+\[
+-u''(x)+u(x)=1,\qquad x\in[-1,1],\qquad u(-1)=u(1)=0.
+\]
+Tome los nodos de Chebyshev--Gauss--Lobatto para $N=2$:
+\[
+x_0=1,\;x_1=0,\;x_2=-1,
+\]
+y la matriz de diferenciación de Chebyshev de primer orden
+\[
+D=
+\begin{pmatrix}
+\tfrac32 & -2 & \tfrac12\\
+\tfrac12 & 0 & -\tfrac12\\
+-\tfrac12 & 2 & -\tfrac32
+\end{pmatrix}.
+\]
+\begin{enumerate}[(a)]
+\item Si $U=(U_0,U_1,U_2)$ es el vector de aproximaciones de la función $u$ en los nodos $x_0, x_1, x_2$, ¿cómo puede aproximarse la derivada segunda de $u$ en los nodos usando $D$ y $U$?
+\item Usando la ecuación diferencial, las condiciones de borde $u(-1)=u(1)=0$, y la matriz $D$, obtenga una ecuación para aproximar $u(x_1)$. Resuelva esa ecuación y obtenga la aproximación numérica de $u(x_1)$.
+\end{enumerate}
+\end{exercise}
+
+
+\begin{exercise}[Diferencias finitas para reacci\'on-difusi\'on]
+Considere
+\[
+u_t=u_{xx}-u,\qquad 0<x<1,\ t>0,
+\]
+con condiciones de borde homog\'eneas $u(0,t)=u(1,t)=0$.
+Use una malla uniforme $x_j=jh$, $j=0,\dots,M$, y $t^n=n\Delta t$.
+
+Se propone el esquema impl\'icito (Euler hacia atr\'as en tiempo y diferencia
+centrada en espacio).
+\begin{enumerate}[(a)]
+\item Obtenga el sistema lineal tridiagonal $A\,\mathbf u^{n+1}=\mathbf u^n$ que hay que resolver en cada paso de tiempo.
+\item Para el problema peri\'odico asociado (es decir, con condiciones de borde $u(0,t)=u(1,t)$), haga un an\'alisis de Fourier y
+obtenga el factor de amplificaci\'on $G(\theta)$. ¿El esquema es estable para todo $\Delta t,h>0$?
+\end{enumerate}
+\end{exercise}
+
+
+\begin{exercise}[M\'etodo IMEX para ODE]
+Considere el problema escalar
+\[
+y'=-\alpha y+g(y),\qquad y(0)=y_0,
+\]
+donde $\alpha>0$ y $g:\R\to\R$ es Lipschitz con constante $L_g$. Considere el siguiente esquema IMEX de orden 1 (parte lineal impl\'icita y parte no lineal expl\'icita):
+\[
+\frac{y^{n+1}-y^n}{\Delta t}=-\alpha y^{n+1}+g(y^n),\qquad n\ge 0.
+\]
+
+\begin{enumerate}[(a)]
+\item Despeje $y^{n+1}$ y escriba el operador de avance $\Phi_{\Delta t}$ que satisface
+$y^{n+1}=\Phi_{\Delta t}(y^n)$.
+\item Halle una constante de Lipschitz de $\Phi_{\Delta t}$ en funci\'on de
+$\Delta t$, $\alpha$ y $L_g$. Muestre que se puede tomar una cota
+$\operatorname{Lip}(\Phi_{\Delta t})\le 1+\Delta t\,L_g,$ y concluya que existe una constante de Lipschitz del m\'etodo independiente de $\alpha$.
+\item Para dos soluciones num\'ericas $\{y^n\}$ y $\{z^n\}$ con datos iniciales
+distintos, obtenga una cota de estabilidad para $|y^n-z^n|$ hasta tiempo
+$T=n\Delta t$.
+\end{enumerate}
+
+\end{exercise}
+
+
+\begin{exercise}[M\'etodo de Newton]
+En un circuito con una fuente continua $V_s>0$, una resistencia $R>0$ y un
+diodo ideal de Shockley con par\'ametros $I_s>0$ y $V_T>0$, la tensi\'on en el
+diodo $v$ satisface
+\[
+I_s\left(e^{v/V_T}-1\right)=\frac{V_s-v}{R}.
+\]
+Defina
+\[
+f(v)=I_s\left(e^{v/V_T}-1\right)-\frac{V_s-v}{R}.
+\]
+\begin{enumerate}[(a)]
+\item Escriba la iteraci\'on de Newton para resolver $f(v)=0$, es decir,
+una f\'ormula expl\'icita para $v_{k+1}$ en funci\'on de $v_k$.
+\item Verifique que $f$ es estrictamente creciente y convexa en $\R$, y
+concluya que la ecuaci\'on tiene una \'unica ra\'iz $v^*$ (de hecho,
+$0<v^*<V_s$).
+\item Considere $v_0=V_s$. Usando convexidad, muestre que la sucesi\'on de
+Newton queda bien definida, cumple $v^*\le v_{k+1}\le v_k$, y por lo tanto
+converge a $v^*$.
+\end{enumerate}
+\end{exercise}
+
+
+
+
+\vskip 2.5cm
+\begin{center}
+    \textit{En todos los casos debe justificar sus respuestas.}
+\end{center}
+
+
+\end{document}
