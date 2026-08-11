@@ -1,0 +1,170 @@
+\documentclass[12pt]{article}%
+\usepackage{graphicx, verbatim}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{enumerate}
+\usepackage[spanish, provide=*]{babel}
+\usepackage{palatino}
+\usepackage[utf8]{inputenc}
+
+
+\setlength{\headsep}{-2cm} \setlength{\oddsidemargin}{-0.9cm}
+\setlength{\evensidemargin}{1.5cm} \setlength{\textheight}{25cm}
+\setlength{\textwidth}{17.7cm} \setlength{\parindent}{0cm}
+\parindent=0mm
+
+\pagestyle{empty}
+
+\def\R{\mathbb{R}}
+\def\Z{\mathbb{Z}}
+\def\C{\mathbb{C}}
+\def\N{\mathbb{N}}
+\def\A{\mathcal{Z}}
+\def\V{\mathcal V}
+\def\W{\mathcal W}
+\def\F{\mathcal F}
+\def\a{\alpha}
+\def\vf{\varphi}
+\def\re{\operatorname{Re}}
+\def\log{\operatorname{Log}}
+\def\adj{\operatorname{adj}}
+\def\img{\operatorname{Im}}
+\def\nu{\operatorname{Nu}}
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+% \renewcommand{\labelenumi}{\bf{(\numb{enumi})}}
+\renewcommand{\labelenumii}{(\alph{enumii})}
+
+\begin{document}
+
+\pagestyle{empty}%
+
+\label{t1}
+
+
+\bigskip
+
+%\hfill\textsc{\textbf{Tema }}
+
+\textsc{Nombre y apellido:}
+
+\vskip0.2cm
+
+\textsc{DNI y Libreta Universitaria:}
+
+\vskip0.2cm
+
+\textsc{Carrera:}
+
+\vskip0.4cm
+
+
+\def\espac{\LARGE$\phantom{\displaystyle\sum\, \,}$}
+
+\begin{tabular}[c]{|c | c | c | c| c|}
+\hline
+1 & 2 & 3 & 4 & Calif. \\
+\hline
+\espac& \espac & \espac & \espac & \espac \\
+\hline
+\end{tabular}
+
+\bigskip
+\medskip
+
+\noindent
+
+\hrulefill\ \vskip8pt
+
+\begin{large}\centerline{{\textbf{Cálculo Numérico / Elementos de Cálculo Numérico}}}\end{large}
+
+\vskip.2cm
+
+\begin{large}\centerline{{\textbf{Examen Final - 15 de Julio de 2026}}}\end{large}
+
+\hrulefill
+
+\vskip 0.5cm
+
+\begin{exercise}[Ajuste de una función racional por cuadrados mínimos]
+Se tienen datos complejos $(z_k,w_k)\in\C\times\C$, $k=1,\ldots,N$, y se desea ajustar un modelo de función racional general de la forma
+
+
+$$R(z)=\frac{P(z)}{Q(z)}=\frac{a_n z^n + a_{n-1} z^{n-1} + \cdots + a_0}{b_m z^m + b_{m-1} z^{m-1} + \cdots + b_1 z + 1},$$
+
+
+con $n \ge 0$, $m \ge 0$ y coeficientes $a_0, \ldots, a_n$ y $b_1, \ldots, b_m$ en $\C$, de modo que $R(z_k)\approx w_k$.
+
+\begin{enumerate}[(a)]
+\item Muestre que multiplicar por el denominador $Q(z_k)$ permite linealizar el modelo respecto a los coeficientes incógnita y reformular el ajuste como un problema de cuadrados mínimos complejos
+$$\min_{x\in\C^{n+m+1}}\Vert{}Ax-y\Vert{}_2^2,$$
+identificando explícitamente el vector de incógnitas $x$, la matriz de diseño $A\in\C^{N\times (n+m+1)}$ y el término independiente $y\in\C^N$ en función de los datos $\{(z_k,w_k)\}_{k=1}^N$ y de los grados $n$ y $m$.
+\item Proponga un método numérico para resolver el problema de cuadrados mínimos obtenido utilizando la factorización SVD de la matriz $A$.
+\end{enumerate}
+\end{exercise}
+
+
+\begin{exercise}[Diferencias finitas para la ecuación del calor]
+Considere la ecuación del calor
+\[
+u_t= \kappa u_{xx}, \qquad 0<x<1,\ t>0,  \kappa>0
+\]
+con condiciones de borde homog\'eneas $u(0,t)=u(1,t)=0$. Use una malla uniforme $x_j=jh$, $j=0,\dots,M$, y $t^n=n\Delta t$. Se propone el esquema implícito (Euler hacia atrás en tiempo y diferencias centradas en espacio).
+\begin{enumerate}[(a)]
+\item Obtenga el sistema lineal tridiagonal $Au^{n+1}= \mathbf u^n$ que hay que resolver en cada paso de tiempo.
+\item Para el problema peri\'odico asociado (es decir, con condiciones de borde $u(0,t)=u(1,t)$), haga un an\'alisis de estabilidad de Fourier ¿Bajo qué condiciones sobre $\Delta t,h>0$ el esquema es estable?
+\end{enumerate}
+\end{exercise}
+
+
+\begin{exercise}[Método de ``shooting'' para transferencia orbital simplificada]
+La transferencia de un satélite a una órbita geoestacionaria se puede modelar de forma muy simplificada mediante la ecuación diferencial para su posición radial $r(t)$:
+\[
+r''(t) = -\frac{\mu}{r(t)^2} + \frac{L^2}{r(t)^3}, \qquad 0 < t < T,
+\]
+donde $\mu, L > 0$ son constantes físicas. Dados un radio de partida $R_0$, el radio de destino $R_f$ y el tiempo de transferencia $T$ deseado, esto determina una problema de valores de contorno (PVC) para $r(t)$ con condiciones de contorno:
+\[
+r(0) = R_0, \qquad r(T) = R_f.
+\]
+Para resolver este problema, planteamos el problema de valores iniciales (PVI) parametrizado por la velocidad radial inicial $v$:
+\[
+\begin{cases}
+u''(t; v) = -\frac{\mu}{u(t; v)^2} + \frac{L^2}{u(t; v)^3}, \qquad 0 < t < T, \\
+u(0; v) = R_0, \\ u'(0; v) = v.
+\end{cases}
+\]
+y definimos la función de discrepancia $F(v) = u(T; v) - R_f$. El objetivo es encontrar $v$ tal que $F(v) = 0$.
+
+\begin{enumerate}[(a)]
+\item Escriba el pseudocódigo de un algoritmo que combine un método de Runge-Kutta y el método de bisección sobre un intervalo inicial $[v_a, v_b]$ tal que $F(v_a)F(v_b) < 0$, halle la velocidad inicial $v$ que permita alcanzar la órbita de destino con una tolerancia \texttt{tol}. 
+\item ¿Qué método más eficiente podría utilizarse en lugar de la bisección? Explique cómo se implementaría.
+\end{enumerate}
+\end{exercise}
+
+
+\begin{exercise}[Difracción de Fraunhofer mediante la FFT]
+El campo difractado en la aproximación de Fraunhofer para una abertura unidimensional de ancho $L$ se modela como
+
+$$U(q) = \int_{-L/2}^{L/2} t(s)\,e^{-i q s}\,ds,$$
+
+con $t(s)$ una función de abertura suave que se anula en los extremos. Se define una malla uniforme $s_j = -L/2 + j\,\Delta s$ con paso $\Delta s = L/n$ ($j=0, \ldots, n$) y las frecuencias discretas $q_k = 2\pi k/L$ ($k=0, \ldots, n-1$).
+
+\begin{enumerate}[(a)]
+\item Aplique la regla del trapecio compuesta para discretizar la integral en los puntos de la malla, obteniendo una aproximación $U_k \approx U(q_k)$ en función de los valores $t(s_j)$. ¿Cuál es el costo computacional de evaluar directamente $U_k$ para todos los $k = 0, \ldots, n-1$? 
+\item ¿Cuál es el orden del error de la aproximación en función de $\Delta s$, si $t\in C^2$? ¿Y si $t\in C^\infty$ y todas sus derivadas se anulan en los extremos?
+\item Escriba en pseudocódigo cómo calcular eficientemente el patrón de intensidad $I_k = \vert{}U_k\vert{}^2$ para todos los $k = 0, \ldots, n-1$ utilizando la Transformada Rápida de Fourier (FFT). (Sugerencia: reexprese el resultado del item anterior utilizando explícitamente las raíces de la unidad.)
+\end{enumerate}
+\end{exercise}
+
+
+\vskip 2.5cm
+\begin{center}
+    \textit{En todos los casos debe justificar sus respuestas.}
+\end{center}
+
+
+\end{document}

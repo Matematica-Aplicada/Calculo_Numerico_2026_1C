@@ -1,0 +1,169 @@
+\documentclass[12pt]{article}%
+\usepackage{graphicx, verbatim}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{enumerate}
+\usepackage[spanish, provide=*]{babel}
+\usepackage{palatino}
+\usepackage[utf8]{inputenc}
+
+
+\setlength{\headsep}{-2cm} \setlength{\oddsidemargin}{-0.9cm}
+\setlength{\evensidemargin}{1.5cm} \setlength{\textheight}{25cm}
+\setlength{\textwidth}{17.7cm} \setlength{\parindent}{0cm}
+\parindent=0mm
+
+\pagestyle{empty}
+
+\def\R{\mathbb{R}}
+\def\Z{\mathbb{Z}}
+\def\C{\mathbb{C}}
+\def\N{\mathbb{N}}
+\def\A{\mathcal{Z}}
+\def\V{\mathcal V}
+\def\W{\mathcal W}
+\def\F{\mathcal F}
+\def\a{\alpha}
+\def\vf{\varphi}
+\def\re{\operatorname{Re}}
+\def\log{\operatorname{Log}}
+\def\adj{\operatorname{adj}}
+\def\img{\operatorname{Im}}
+\def\nu{\operatorname{Nu}}
+\newtheorem{exercise}{Ejercicio}
+\newcommand{\bej}{\begin{exercise}\rm}
+\newcommand{\fej}{\end{exercise}}
+
+% \renewcommand{\labelenumi}{\bf{(\numb{enumi})}}
+\renewcommand{\labelenumii}{(\alph{enumii})}
+
+\begin{document}
+
+\pagestyle{empty}%
+
+\label{t1}
+
+
+\bigskip
+
+%\hfill\textsc{\textbf{Tema }}
+
+\textsc{Nombre y apellido:}
+
+\vskip0.2cm
+
+\textsc{DNI y Libreta Universitaria:}
+
+\vskip0.2cm
+
+\textsc{Carrera:}
+
+\vskip0.4cm
+
+
+\def\espac{\LARGE$\phantom{\displaystyle\sum\, \,}$}
+
+\begin{tabular}[c]{|c | c | c | c| c|}
+\hline
+1 & 2 & 3 & 4 & Calif. \\
+\hline
+\espac& \espac & \espac & \espac & \espac \\
+\hline
+\end{tabular}
+
+\bigskip
+\medskip
+
+\noindent
+
+\hrulefill\ \vskip8pt
+
+\begin{large}\centerline{{\textbf{Cálculo Numérico / Elementos de Cálculo Numérico}}}\end{large}
+
+\vskip.2cm
+
+\begin{large}\centerline{{\textbf{Examen Final - 15 de Julio de 2026}}}\end{large}
+
+\hrulefill
+
+\vskip 0.5cm
+
+\begin{exercise}[Ajuste de una función de Möbius por cuadrados mínimos]
+Se tienen datos complejos $(z_k,w_k)\in\C\times\C$, $k=1,\ldots,m$, y se desea ajustar el modelo
+\[
+M(z)=\frac{az+b}{cz+1},\qquad a,b,c\in\C,
+\]
+de modo que $M(z_k)\approx w_k$.
+
+\begin{enumerate}[(a)]
+\item Muestre que multiplicar por el denominador permite linealizar el modelo y reformular el ajuste como un problema de cuadrados mínimos complejos
+\[
+\min_{x\in\C^3}\|Ax-y\|_2^2,
+\]
+identificando $x$, $A\in\C^{m\times 3}$ e $y\in\C^m$ en función de $\{(z_k,w_k)\}_{k=1}^m$.
+\item Proponga un método numérico para resolver el problema obtenido utilizando la factorización QR.
+\end{enumerate}
+\end{exercise}
+
+\begin{exercise}[Integración numérica oscilatoria]
+Se desea aproximar la integral
+\[
+I=\int_0^1 \sin\!\left(\frac{1}{x}\right)f(x)\,dx,
+\]
+donde $f\in C^2([0,1])$. Para ello, se propone truncar el dominio a $[\varepsilon,1]$ para cierto $\varepsilon>0$ y aplicar la regla de trapecios compuesta con $N$ subintervalos.
+
+\begin{enumerate}[(a)]
+    \item Muestre que el error analítico introducido al descartar el intervalo $[0,\varepsilon]$ está acotado por $M\varepsilon$, donde $M=\max_{x\in[0,1]} |f(x)|$. 
+    \item Considere el caso particular $f(x)\equiv 1$ y una tolerancia total $10^{-4}$. Tomando $\varepsilon = 0.5 \times 10^{-4}$ (para acotar el error de truncamiento), estime una cantidad suficiente de subintervalos $N$ para que la cota del error de cuadratura sea estrictamente menor a $0.5 \times 10^{-4}$. (Sugerencia: puede acotar la derivada segunda del integrando)
+\end{enumerate}
+\end{exercise}
+
+
+\begin{exercise}[Diferencias finitas para la ecuación del calor]
+Considere la ecuación del calor
+\[
+u_t= \kappa u_{xx}, \qquad 0<x<1,\ t>0,  \kappa>0
+\]
+con condiciones de borde homog\'eneas $u(0,t)=u(1,t)=0$. Use una malla uniforme $x_j=jh$, $j=0,\dots,M$, y $t^n=n\Delta t$. Se propone el esquema explícito (Euler hacia adelante en tiempo y diferencias centradas en espacio).
+\begin{enumerate}[(a)]
+\item Obtenga el sistema lineal tridiagonal $u^{n+1}= A\mathbf u^n$ que hay que aplicar en cada paso de tiempo.
+\item Para el problema peri\'odico asociado (es decir, con condiciones de borde $u(0,t)=u(1,t)$), haga un an\'alisis de estabilidad de Fourier ¿Bajo qué condiciones sobre $\Delta t,h>0$ el esquema es estable?
+\end{enumerate}
+\end{exercise}
+
+
+
+
+\begin{exercise}[Método de ``shooting'' para transferencia orbital simplificada]
+La transferencia de un satélite a una órbita geoestacionaria se puede modelar de forma muy simplificada mediante la ecuación diferencial para su posición radial $r(t)$:
+\[
+r''(t) = -\frac{\mu}{r(t)^2} + \frac{L^2}{r(t)^3}, \qquad 0 < t < T,
+\]
+donde $\mu, L > 0$ son constantes físicas. Dados un radio de partida $R_0$, el radio de destino $R_f$ y el tiempo de transferencia $T$ deseado, esto determina una problema de valores de contorno (PVC) para $r(t)$ con condiciones de contorno:
+\[
+r(0) = R_0, \qquad r(T) = R_f.
+\]
+Para resolver este problema, planteamos el problema de valores iniciales (PVI) parametrizado por la velocidad radial inicial $v$:
+\[
+\begin{cases}
+u''(t; v) = -\frac{\mu}{u(t; v)^2} + \frac{L^2}{u(t; v)^3}, \qquad 0 < t < T, \\
+u(0; v) = R_0, \\ u'(0; v) = v.
+\end{cases}
+\]
+y definimos la función de discrepancia $F(v) = u(T; v) - R_f$. El objetivo es encontrar $v$ tal que $F(v) = 0$.
+
+\begin{enumerate}[(a)]
+\item Escriba el pseudocódigo de un algoritmo que combine un método de Runge-Kutta y el método de bisección sobre un intervalo inicial $[v_a, v_b]$ tal que $F(v_a)F(v_b) < 0$, halle la velocidad inicial $v$ que permita alcanzar la órbita de destino con una tolerancia \texttt{tol}. 
+\item ¿Qué método más eficiente podría utilizarse en lugar de la bisección? Explique cómo se implementaría.
+\end{enumerate}
+\end{exercise}
+
+\vskip 2.5cm
+\begin{center}
+    \textit{En todos los casos debe justificar sus respuestas.}
+\end{center}
+
+
+\end{document}
